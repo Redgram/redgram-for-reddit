@@ -3,7 +3,7 @@ An Android Reddit client focusing primarily on media images/videos.
 
 --------------
 
-##Introduction:
+##Introduction
 
 As an individual developer, I am interested in showcasing the workflow I'm going through. This project uses the 
 [Reddit API](http://www.reddit.com/dev/api) to fetch user data and display it to the end user. What makes it different from other
@@ -20,7 +20,7 @@ in their Reddit posts, either as the image itself or a link to image page as a w
 While the app will *eventually* include all features in Reddit, it will make use of Imgur API to get images that are within albums
 and galleries, provided their set of image URL's. Luckily, Reddit's API can determine in what cases other API's are required.
 
-##Potential Plan:
+##Potential Plan
 
 A boilerplate of the app shall be released at first, which will include a basic usage of [public endpoints such as this 
 one](http://www.reddit.com/r/aww.json), and it shall provide a base to the whole app from where extra features could be developed
