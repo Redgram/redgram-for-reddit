@@ -41,8 +41,8 @@ Design previews will be added to this README file till there is enough content t
 
 ##MVP Pattern
 
-The Model-View-Presenter pattern's main advantage is avoiding the UI or views from dealing with obtaining the data and only deals with
-updating the UI as the data becomes available. For this, the use of (base) interfaces is recommended so Fragments 
+The Model-View-Presenter pattern's main advantage is avoiding the UI or views from obtaining the data and make it deal with
+updating the UI as the data becomes available only. For this, the use of (base) interfaces is recommended so Fragments 
 can share similar actions by implementing them while the presenters has a reference of these Fragments so it would be able to
 call for UI changes as the data becomes available. 
 
