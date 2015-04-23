@@ -34,7 +34,7 @@ Design previews will be added to this README file till there is enough content t
 - The [MVP pattern](http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93presenter)
 - Custom Navigation Drawer
 - Custom Toolbar Animation
-- Reddit Client using Retrofit with custom deserializers (thanks to [jacobtabak's repo](https://github.com/jacobtabak/droidcon))
+- Reddit API client using Retrofit with custom deserializers (thanks to [jacobtabak's repo](https://github.com/jacobtabak/droidcon))
 - RxJava/Android + Retrofit use case
 - The new [Fresco](http://frescolib.org/) library for obtaning images from the device/cache/network
 
