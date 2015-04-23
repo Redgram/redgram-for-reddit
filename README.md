@@ -55,9 +55,9 @@ Here is a really nice project that illustrates it really well -> [Material-Movie
 
 ##Use of RxJava
 
-[RxJava](https://github.com/ReactiveX/RxJava) is a library for composing asynchronous and event-based programs 
+[RxJava](https://github.com/ReactiveX/RxJava) *is a library for composing asynchronous and event-based programs 
 by using observable sequences. It has built-in operators such as aggregators and ways to be implemented synchronously 
-if needed. 
+if needed.*
 
 The use here shall be for *ensuring data from different endpoints are obtained at the same time, and displayed at the same time,
 while throwing errors if one of the Observables (source of data) fails to operate*. Fortunately, RxJava works pretty well with
