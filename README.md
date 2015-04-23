@@ -59,7 +59,7 @@ Here is a really nice project that illustrates it really well -> [Material-Movie
 by using observable sequences. It has built-in operators such as aggregators and ways to be implemented synchronously 
 if needed.*
 
-The use here shall be for *ensuring data from different endpoints are obtained at the same time, and displayed at the same time,
+The use here shall be for *ensuring data from different endpoints are obtained, and displayed later, at the same time,
 while throwing errors if one of the Observables (source of data) fails to operate*. Fortunately, RxJava works pretty well with
 Retrofit, which is responsible for obtaining/updating data from the API's, and an (Android library)[https://github.com/ReactiveX/RxAndroid]
 is availble as well to provide a Scheduler to handle UI threads.
