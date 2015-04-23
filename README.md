@@ -61,7 +61,7 @@ if needed.*
 
 The use here shall be for *ensuring data from different endpoints are obtained, and displayed later, at the same time,
 while throwing errors if one of the Observables (source of data) fails to operate*. Fortunately, RxJava works pretty well with
-Retrofit, which is responsible for obtaining/updating data from the API's, and an (Android library)[https://github.com/ReactiveX/RxAndroid]
+Retrofit, which is responsible for obtaining/updating data from the API's, and an [Android library](https://github.com/ReactiveX/RxAndroid)
 is availble as well to provide a Scheduler to handle UI threads.
 
 The documentation and resources explain things really well, so it is recomended to go through them step by step.
