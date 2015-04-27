@@ -18,7 +18,7 @@ Also, Reddit and [Imgur](https://imgur.com/) (an image hosting site) work friend
 in their Reddit posts, either as the image itself or a link to image page as a whole. Imgur allows flexible viewing of their URL's and it also has its own API to access its database. 
 
 While the app will *eventually* include all features in Reddit, it will make use of Imgur API to get images that are within albums
-and galleries, provided their set of image URL's. Luckily, Reddit's API can determine in what cases other API's are required.
+and galleries, provided their set of image URL's. Luckily, Reddit's API can determine in which cases other API's are required.
 
 ##Potential Plan
 
