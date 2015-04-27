@@ -40,9 +40,9 @@ Design previews will be added to this README file till there is enough content t
 
 ##MVP Pattern
 
-The **Model-View-Presenter** pattern's main advantage is keeping the UI or views away from obtaining the data and make it deal with
-updating themselves as the data becomes available only. For this, the use of (base) interfaces is recommended so Fragments 
-can share similar actions by implementing them while the presenters has a reference of these Fragments so it would be able to
+The **Model-View-Presenter** pattern's main advantage is limiting the UI or views from obtaining the data and make it deal with
+updating the UI as the data becomes available only. For this, the use of (base) interfaces is recommended so Fragments 
+can share similar actions by implementing them while the presenters has a reference of these Fragments so they would be able to
 call for UI changes as the data is (being) obtained. 
 
 For the data to be sent back and forth, an event bus is used, which is a singleton that pass data around between classes and/or
