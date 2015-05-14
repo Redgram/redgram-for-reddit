@@ -5,14 +5,10 @@ An Android Reddit client focusing primarily on media images/videos.
 
 ##Introduction
 
-As an individual developer, I am interested in showcasing the workflow I'm going through. This project uses the 
-[Reddit API](http://www.reddit.com/dev/api) to fetch user data and display it to the end user. What makes it different from other
-clients in the market is its focus on media images, including animated ones (GIFs), and the methods used to download the data which are efficient
-and reliable. Most clients display thumbnails to the end user or low quality images until the user decides to view the full version.
+This project uses the [Reddit API](http://www.reddit.com/dev/api) to fetch user data and display it to the end user. What makes it different from other clients in the market is its focus on media images, including animated ones (GIFs), and the methods used to download the data which are efficient and reliable. Most clients display thumbnails to the end user or low quality images until the user decides to view the full version.
 
 This app will focus on rendering the best quality image possible in large views instead of downloading the full version of it in
-order to minimize network data consumption as some media content tend to be large in size. The user will also have the option to render
-the whole thing.
+order to minimize network data consumption as some media content tend to be large in size. The user will also have the option to render the whole thing.
 
 Also, Reddit and [Imgur](https://imgur.com/) (an image hosting site) work friendly together and users frequently link to their hosted images
 in their Reddit posts, either as the image itself or a link to image page as a whole. Imgur allows flexible viewing of their URL's and it also has its own API to access its database. 
@@ -47,7 +43,7 @@ call for UI changes as the data is (being) obtained.
 
 For the data to be sent back and forth, an event bus is used, which is a singleton that pass data around between classes and/or
 Activities/Fragments. So as the data is being obtained asynchronously, an event is emitted, and an update is reflected
-to the end user immediately, as long as the view is subscribed to the bus. This project will be using [Eventbus](https://github.com/greenrobot/EventBus).
+to the end user immediately, as long as the view is subscribed to a singleton enity. This project will be using RxJava instead of [Eventbus](https://github.com/greenrobot/EventBus).
 
 ![mvp](images/Model_View_Presenter_GUI_Design_Pattern.png)
 
@@ -64,10 +60,11 @@ while throwing errors if one of the Observables (source of data) fails to operat
 Retrofit, which is responsible for obtaining/updating data from the API's, and an [Android library](https://github.com/ReactiveX/RxAndroid)
 is availble as well to provide a Scheduler to handle UI threads.
 
+Moreover, I have decided to use Rx [Subjects](http://reactivex.io/documentation/subject.html) as an event bus because they act as both an Observer and Observerable. Therefore, the same generic Observable that emits items will listen to them as long as `subscribe()` is called. There are two types of Subjects I am debating about: `PublishSubject` (cuurent) and `BehaviorSubject`
+
 The documentation and resources explain things really well, so it is recomended to go through them step by step.
 
-I am willing to create another repo just to explain my experience in learning
-RxJava under Redgram.
+A good starting point would be this [learning repository](https://github.com/MohamadAtieh/learning-RxJava)
 
 ##Diagrams
 
@@ -79,9 +76,5 @@ Here is an example of the current item view drawn using [Gliffy](http://www.glif
 
 ------------
 
-**I am currently practicing RxJava and implementing the image manager that will be responsible for viewing 
-the possible image types and sizes.**  
-
-Watch this repo as I will be updating it frequently from now on.
-
-
+**Status:** Implementing the image manager that will be responsible for viewing 
+the possible image types and sizes.  
