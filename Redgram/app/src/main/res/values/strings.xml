@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Redgram</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+    <string name="user_name">atioxx</string>
+    <string name="user_email">atiyaleb@gmail.com</string>
+    <string name="fragment_home">Home</string>
+    <string name="fragment_profile">Profile</string>
+    <string name="fragment_inbox">Inbox</string>
+    <string name="fragment_friends">Friends</string>
+    <string name="fragment_search">Search</string>
+    <string name="fragment_subreddits">My Subreddits</string>
+    <string name="fragment_settings">Settings</string>
+    <string name="fragment_about">About</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="email_constant">Email</string>
+    <string name="password_constant">Password</string>
+    <string name="register_question_msg">Don\'t have an account? Sign up</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_question_msg">Already have an account? Log in</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="register_button_text">Register</string>
+    <string name="login_button_text">Login</string>
+    <string name="password_confirm">Confirm Password</string>
+
+</resources>

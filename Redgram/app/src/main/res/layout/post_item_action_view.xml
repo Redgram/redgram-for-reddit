@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.matie.redgram.views.widgets.PostList.PostItemActionView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MatchWidth"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:id="@+id/comments_action_button"
+        style="@style/Wrap"
+        android:layout_marginLeft="12dp"
+        android:text="2000 comments"
+        android:textColor="@color/red_light"
+        android:textSize="10sp"
+        android:clickable="true"
+        android:textStyle="bold"/>
+
+
+    <TextView
+        android:id="@+id/reply_action_button"
+        style="@style/Wrap"
+        android:layout_marginLeft="@dimen/default_horizontal_margin"
+        android:layout_toRightOf="@id/comments_action_button"
+        android:text="reply"
+        android:textColor="@color/red_light"
+        android:textSize="10sp"
+        android:clickable="true"
+        android:textStyle="bold"/>
+
+
+    <!--this is only visible in case of images and not text-->
+    <!--<TextView-->
+        <!--android:id="@+id/hd_action_button"-->
+        <!--style="@style/Wrap"-->
+        <!--android:layout_marginLeft="@dimen/default_horizontal_margin"-->
+        <!--android:layout_toRightOf="@id/reply_action_button"-->
+        <!--android:text="HD"-->
+        <!--android:textSize="15sp"-->
+        <!--android:textColor="@color/black"-->
+        <!--android:clickable="true"/>-->
+
+
+    <TextView
+        android:id="@+id/source_action_view"
+        style="@style/Wrap"
+        android:layout_marginLeft="@dimen/default_horizontal_margin"
+        android:layout_toRightOf="@id/reply_action_button"
+        android:textColor="@color/red_light"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:text="[source]"
+        />
+
+</com.matie.redgram.views.widgets.PostList.PostItemActionView>

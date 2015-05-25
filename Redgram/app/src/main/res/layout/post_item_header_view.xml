@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.matie.redgram.views.widgets.PostList.PostItemHeaderView
+    xmlns:android="http://schemas.android.com/apk/res/android" style="@style/MatchWidth"
+    android:padding="@dimen/default_small_padding"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/header_title_view"
+        style="@style/Wrap"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:text="title"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:paddingLeft="4dp"
+        android:gravity="center_vertical"/>
+    <TextView
+        android:id="@+id/header_time_view"
+        style="@style/Wrap"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:text="time"
+        android:paddingTop="3dp"
+        android:paddingRight="4dp"
+        android:gravity="center_vertical"/>
+
+
+
+</com.matie.redgram.views.widgets.PostList.PostItemHeaderView>

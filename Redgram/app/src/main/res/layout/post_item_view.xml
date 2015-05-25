@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.matie.redgram.views.widgets.PostList.PostItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/post_item_view"
+    style="@style/MatchWidth"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardBackgroundColor="@color/white">
+
+       <RelativeLayout
+           android:id="@+id/post_wrapper"
+           style="@style/Match">
+
+            <include
+                android:id="@+id/post_item_header_view"
+                layout="@layout/post_item_header_view"/>
+
+           <!--Layout width and height have to explicit in the rest-->
+            <!--<include-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/post_item_image_view"-->
+                <!--android:layout_below="@id/post_item_header_view"-->
+                <!--layout="@layout/post_item_image_view"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_alignParentEnd="true" />-->
+           <FrameLayout
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:id="@+id/post_item_dynamic_view"
+               android:layout_below="@id/post_item_header_view"
+               android:layout_alignParentRight="true"
+               android:layout_alignParentEnd="true"></FrameLayout>
+            <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/post_item_text_view"
+                android:layout_below="@id/post_item_dynamic_view"
+                layout="@layout/post_item_text_view"/>
+            <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/post_item_action_view"
+                android:layout_below="@id/post_item_text_view"
+                layout="@layout/post_item_action_view"/>
+
+       </RelativeLayout>
+
+</com.matie.redgram.views.widgets.PostList.PostItemView>
