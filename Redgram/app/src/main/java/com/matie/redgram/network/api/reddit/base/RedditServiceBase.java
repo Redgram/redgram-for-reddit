@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.matie.redgram.MainActivity;
 import com.matie.redgram.RedgramApp;
+import com.matie.redgram.managers.ConnectionManager;
 import com.matie.redgram.models.reddit.base.RedditObject;
 import com.matie.redgram.utils.reddit.DateTimeDeserializer;
 import com.matie.redgram.utils.reddit.RedditObjectDeserializer;
@@ -38,8 +39,21 @@ public class RedditServiceBase extends RedditBase {
             .setClient(new OkClient(getHttpClient())); //check if needed
 
 
-    public static RestAdapter getRestAdapter(String url) {
-        return ADAPTER_BUILDER.setEndpoint(url)
+    public static RestAdapter getRestAdapter() {
+        //preferred--------------------
+//        String endpoint = null;
+//        boolean isAuth = isAuth();
+//        if(isAuth){
+//            endpoint = OAUTH_URL;
+//        }else{
+//            endpoint = REDDIT_HOST;
+//        }
+//        return ADAPTER_BUILDER.setEndpoint(REDDIT_HOST)
+//                .setRequestInterceptor(getInterceptor(isAuth)).build();
+
+
+        //for now
+        return ADAPTER_BUILDER.setEndpoint(REDDIT_HOST)
                 .setRequestInterceptor(getInterceptor()).build();
     }
 
@@ -50,7 +64,7 @@ public class RedditServiceBase extends RedditBase {
                 // todo: implement interceptor
                 // Use cache by default unless specified otherwise in header.
                 request.addHeader("Accept", "application/json");
-                if(RedgramApp.isOnline()){
+                if(ConnectionManager.getInstance().isOnline()){
                     int maxAge = 120; //1 minute
                     request.addHeader("Cache-Control", "public, max-age=" + maxAge);
                 }else{

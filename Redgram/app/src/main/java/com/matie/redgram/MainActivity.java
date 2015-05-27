@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.matie.redgram.fragments.Fragments;
 import com.matie.redgram.fragments.DrawerFragments.FragmentHome;
+import com.matie.redgram.managers.ConnectionManager;
 import com.matie.redgram.managers.rxbus.RxBus;
 import com.matie.redgram.models.DrawerItem;
 import com.matie.redgram.views.widgets.Drawer.DrawerView;
@@ -231,5 +232,6 @@ public class MainActivity extends ActionBarActivity implements ScrimInsetsFrameL
         toolbar.setLayoutParams(lp);
         insets.top = top; // revert
     }
+
 }
 

@@ -46,7 +46,7 @@ public class HomePresenterImpl implements HomePresenter{
     public HomePresenterImpl(HomeView homeView) {
         this.homeView = homeView;
         this.homeRecyclerView = homeView.getRecyclerView();
-        this.redditClient = RedditClient.getInstance(false);
+        this.redditClient = RedditClient.getInstance();
         this.items = new ArrayList<PostItem>();
     }
 

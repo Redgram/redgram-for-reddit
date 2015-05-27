@@ -18,18 +18,15 @@ public class RedditClient extends RedditServiceBase {
 
     private final RedditProviderBase provider;
 
-    private RedditClient(boolean isAuth) {
-        if(isAuth)
-            provider = getRestAdapter(OAUTH_URL).create(RedditProviderBase.class);
-        else
-            provider = getRestAdapter(REDDIT_HOST).create(RedditProviderBase.class);
+    private RedditClient() {
+        provider = getRestAdapter().create(RedditProviderBase.class);
     }
 
-    public static RedditClient getInstance(boolean isAuth){
-        if(clientInstance == null)
-            return new RedditClient(isAuth);
-        else
-            return clientInstance;
+    public static RedditClient getInstance() {
+        if (clientInstance == null)
+            clientInstance = new RedditClient();
+
+        return clientInstance;
     }
 
     public Observable<PostItem> getSubredditListing(String query) {

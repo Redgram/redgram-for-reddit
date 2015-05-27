@@ -11,13 +11,23 @@ import java.io.IOException;
  */
 public class ConnectionManager {
 
-    private final Context mContext;
+    private static ConnectionManager instance = null;
 
+    private static Context mContext;
     private static ConnectivityManager cm;
     private static NetworkInfo netInfo;
 
-    public ConnectionManager(Context mContext) {
-        this.mContext = mContext;
+    private ConnectionManager(){}
+
+    public static ConnectionManager getInstance(){
+        if(instance == null)
+            instance = new ConnectionManager();
+        return instance;
+    }
+
+    //You have to call this method for the isOnline() method works.
+    public static void init(Context context){
+        mContext = context;
     }
 
     //only accessible method.
