@@ -13,6 +13,14 @@ This project is under **GPL license**. Although other licenses are prefered, no 
 
 For collaborations, please view [this issue](https://github.com/Redgram/redgram-for-reddit/issues/1) and follow the links, specifically the article on the suggested branching model.
 
+###Installation:
+
+- Clone this repo.
+- In AndroidStudio, *File > Open*.
+- Choose the top level folder (Redgram).
+- Gradle should automatically build the file. If not, navigation to *Build > ReBuild Project*.
+- Run project.
+
 ###Todo:
 
 - Create XML Layouts for the different list items.
