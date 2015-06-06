@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.views.widgets.PostList.PostItemHeaderView
+<com.matie.redgram.ui.home.views.widgets.postlist.PostItemHeaderView
     xmlns:android="http://schemas.android.com/apk/res/android" style="@style/MatchWidth"
     android:padding="@dimen/default_small_padding"
     android:background="@color/white">
@@ -27,4 +27,4 @@
 
 
 
-</com.matie.redgram.views.widgets.PostList.PostItemHeaderView>
+</com.matie.redgram.ui.home.views.widgets.postlist.PostItemHeaderView>

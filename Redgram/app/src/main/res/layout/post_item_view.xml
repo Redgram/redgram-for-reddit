@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.views.widgets.PostList.PostItemView
+<com.matie.redgram.ui.home.views.widgets.postlist.PostItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/post_item_view"
@@ -46,4 +46,4 @@
 
        </RelativeLayout>
 
-</com.matie.redgram.views.widgets.PostList.PostItemView>
+</com.matie.redgram.ui.home.views.widgets.postlist.PostItemView>
