@@ -1,4 +1,4 @@
-package com.matie.redgram.data.managers.connection;
+package com.matie.redgram.data.network.connection;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -9,24 +9,13 @@ import java.io.IOException;
 /**
  * Created by matie on 22/05/15.
  */
-public class ConnectionManager {
-
-    private static ConnectionManager instance = null;
+public class ConnectionStatus {
 
     private static Context mContext;
     private static ConnectivityManager cm;
     private static NetworkInfo netInfo;
 
-    private ConnectionManager(){}
-
-    public static ConnectionManager getInstance(){
-        if(instance == null)
-            instance = new ConnectionManager();
-        return instance;
-    }
-
-    //You have to call this method for the isOnline() method works.
-    public static void init(Context context){
+    public ConnectionStatus(Context context){
         mContext = context;
     }
 

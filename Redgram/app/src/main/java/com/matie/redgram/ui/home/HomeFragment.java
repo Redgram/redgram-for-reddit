@@ -16,9 +16,14 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
+import com.matie.redgram.ui.common.BaseComponent;
+import com.matie.redgram.ui.common.BaseFragment;
+import com.matie.redgram.ui.common.MainComponent;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
 import com.nineoldandroids.view.ViewHelper;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -26,7 +31,7 @@ import butterknife.InjectView;
 /**
  * Created by matie on 17/01/15.
  */
-public class HomeFragment extends Fragment implements HomeView, ObservableScrollViewCallbacks{
+public class HomeFragment extends BaseFragment implements HomeView, ObservableScrollViewCallbacks{
     @InjectView(R.id.home_recycler_view)
     PostRecyclerView homeRecyclerView;
 
@@ -34,6 +39,9 @@ public class HomeFragment extends Fragment implements HomeView, ObservableScroll
     View mContentView;
     LinearLayoutManager mLayoutManager;
 
+    HomeComponent component;
+
+    @Inject
     HomePresenterImpl homePresenter;
 
     @Override
@@ -42,7 +50,7 @@ public class HomeFragment extends Fragment implements HomeView, ObservableScroll
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.inject(this, view);
 
-        homePresenter = new HomePresenterImpl(this);
+        //homePresenter = new HomePresenterImpl(this);
         homeRecyclerView.setScrollViewCallbacks(this);
 
         this.mLayoutManager = (LinearLayoutManager)homeRecyclerView.getLayoutManager();
@@ -52,6 +60,22 @@ public class HomeFragment extends Fragment implements HomeView, ObservableScroll
         homePresenter.populateView();
 
         return view;
+    }
+
+
+    @Override
+    protected void setupComponent(BaseComponent component) {
+        MainComponent mainComponent = (MainComponent)component;
+        component = DaggerHomeComponent.builder()
+                    .mainComponent(mainComponent)
+                    .homeModule(new HomeModule(this))
+                    .build()
+                    .inject(this);
+    }
+
+    @Override
+    protected BaseComponent component() {
+        return component;
     }
 
     @Override

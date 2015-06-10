@@ -1,11 +1,14 @@
 package com.matie.redgram.data.network.api.reddit;
 
+import android.app.Application;
+
 import com.matie.redgram.data.managers.rxbus.RxBus;
 import com.matie.redgram.data.models.PostItem;
 import com.matie.redgram.data.models.events.SubredditEvent;
 import com.matie.redgram.data.models.reddit.RedditLink;
 import com.matie.redgram.data.network.api.reddit.base.RedditProviderBase;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
+import com.matie.redgram.data.network.connection.ConnectionStatus;
 
 import rx.Observable;
 
@@ -14,22 +17,14 @@ import rx.Observable;
  */
 public class RedditClient extends RedditServiceBase {
 
-    private static RedditClient clientInstance = null;
-
     private final RedditProviderBase provider;
 
-    private RedditClient() {
+    public RedditClient(Application app, ConnectionStatus status) {
+        super(app,status);
         provider = getRestAdapter().create(RedditProviderBase.class);
     }
 
-    public static RedditClient getInstance() {
-        if (clientInstance == null)
-            clientInstance = new RedditClient();
-
-        return clientInstance;
-    }
-
-    public Observable<PostItem> getSubredditListing(String query) {
+   public Observable<PostItem> getSubredditListing(String query) {
         return provider.getSubreddit(query)
                 .flatMap(response -> Observable.from(response.getData().getChildren()))
                 .cast(RedditLink.class)

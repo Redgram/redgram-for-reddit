@@ -6,7 +6,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.data.managers.connection.ConnectionManager;
+import com.matie.redgram.data.network.connection.ConnectionStatus;
 import com.matie.redgram.data.models.reddit.base.RedditObject;
 import com.matie.redgram.data.utils.reddit.DateTimeDeserializer;
 import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
@@ -28,15 +28,20 @@ import retrofit.converter.GsonConverter;
  */
 public class RedditServiceBase extends RedditBase {
 
-    private static final Context mContext = App.getContext();
+    private final Context mContext;
+    private final ConnectionStatus connectionStatus;
 
-    private static final RestAdapter.Builder ADAPTER_BUILDER =  new RestAdapter.Builder()
+    private final RestAdapter.Builder ADAPTER_BUILDER =  new RestAdapter.Builder()
             .setLogLevel(RestAdapter.LogLevel.FULL)
             .setConverter(new GsonConverter(getGson()))
-            .setClient(new OkClient(getHttpClient())); //check if needed
+            .setClient(new OkClient(getHttpClient())); //check if nee
 
+    public RedditServiceBase(Context context, ConnectionStatus cs) {
+        mContext = context;
+        connectionStatus = cs;
+    }
 
-    public static RestAdapter getRestAdapter() {
+    public RestAdapter getRestAdapter() {
         //preferred--------------------
 //        String endpoint = null;
 //        boolean isAuth = isAuth();
@@ -54,14 +59,14 @@ public class RedditServiceBase extends RedditBase {
                 .setRequestInterceptor(getInterceptor()).build();
     }
 
-    private static RequestInterceptor getInterceptor() {
+    private RequestInterceptor getInterceptor() {
         return new RequestInterceptor() {
             @Override
             public void intercept(RequestFacade request){
                 // todo: implement interceptor
                 // Use cache by default unless specified otherwise in header.
                 request.addHeader("Accept", "application/json");
-                if(ConnectionManager.getInstance().isOnline()){
+                if(connectionStatus.isOnline()){
                     int maxAge = 120; //1 minute
                     request.addHeader("Cache-Control", "public, max-age=" + maxAge);
                 }else{
@@ -84,13 +89,13 @@ public class RedditServiceBase extends RedditBase {
     }
 
 
-    private static OkHttpClient getHttpClient(){
+    private OkHttpClient getHttpClient(){
         OkHttpClient client = new OkHttpClient();
         client.setCache(getCache());
         return client;
     }
 
-    private static Cache getCache(){
+    private Cache getCache(){
         //setup cache
         File httpCacheDir = new File(mContext.getCacheDir(), "http");
 
