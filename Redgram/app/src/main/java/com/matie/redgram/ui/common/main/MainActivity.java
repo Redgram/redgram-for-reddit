@@ -1,11 +1,10 @@
-package com.matie.redgram.ui;
+package com.matie.redgram.ui.common.main;
 
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
@@ -17,9 +16,11 @@ import android.support.v7.widget.Toolbar;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.matie.redgram.R;
+import com.matie.redgram.ui.AppComponent;
+import com.matie.redgram.ui.common.base.BaseActivity;
+import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout;
 import com.matie.redgram.ui.home.HomeFragment;
-import com.matie.redgram.data.managers.rxbus.RxBus;
 import com.matie.redgram.data.models.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
 
@@ -31,7 +32,7 @@ import butterknife.InjectView;
 import butterknife.OnItemClick;
 
 
-public class MainActivity extends ActionBarActivity implements ScrimInsetsFrameLayout.OnInsetsCallback{
+public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout.OnInsetsCallback{
 
     private int currentSelectedPosition = 0;
 
@@ -60,7 +61,7 @@ public class MainActivity extends ActionBarActivity implements ScrimInsetsFrameL
 
     private List<DrawerItem> navigationItems;
 
-    private RxBus mBus;
+    private MainComponent mainComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,6 @@ public class MainActivity extends ActionBarActivity implements ScrimInsetsFrameL
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
-        mBus = null;
 
         mTitle = mDrawerTitle = getTitle();
 
@@ -85,6 +85,20 @@ public class MainActivity extends ActionBarActivity implements ScrimInsetsFrameL
         }
 
          setup();
+    }
+
+    @Override
+    protected void setupComponent(AppComponent appComponent) {
+        mainComponent = DaggerMainComponent.builder()
+                        .appComponent(appComponent)
+                        .mainModule(new MainModule(this))
+                        .build();
+        mainComponent.inject(this);
+    }
+
+    @Override
+    public MainComponent component() {
+        return mainComponent;
     }
 
     private void setup(){

@@ -13,6 +13,8 @@ import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -43,10 +45,12 @@ public class HomePresenterImpl implements HomePresenter{
      * Called onCreate(View) of Activity/Fragment
      * @param homeView
      */
-    public HomePresenterImpl(HomeView homeView) {
+    @Inject
+    public HomePresenterImpl(HomeView homeView, RedditClient redditClient) {
         this.homeView = homeView;
         this.homeRecyclerView = homeView.getRecyclerView();
-        this.redditClient = RedditClient.getInstance();
+        this.redditClient = redditClient;
+        //this.redditClient = RedditClient.getInstance();
         this.items = new ArrayList<PostItem>();
     }
 
