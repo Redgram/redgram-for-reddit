@@ -26,7 +26,7 @@ public class HomeModule {
     public HomeView provideView(){return homeView;}
 
     @Provides
-    public HomePresenter provideHomePresenter(HomeView homeView, RedditClient redditClient){
+    public HomePresenter provideHomePresenter(RedditClient redditClient){
         return new HomePresenterImpl(homeView,redditClient);
     }
 }

@@ -9,6 +9,9 @@ import com.matie.redgram.data.models.reddit.RedditLink;
 import com.matie.redgram.data.network.api.reddit.base.RedditProviderBase;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
 import com.matie.redgram.data.network.connection.ConnectionStatus;
+import com.matie.redgram.ui.App;
+
+import javax.inject.Inject;
 
 import rx.Observable;
 
@@ -19,8 +22,10 @@ public class RedditClient extends RedditServiceBase {
 
     private final RedditProviderBase provider;
 
-    public RedditClient(Application app, ConnectionStatus status) {
+    @Inject
+    public RedditClient(App app, ConnectionStatus status) {
         super(app,status);
+
         provider = getRestAdapter().create(RedditProviderBase.class);
     }
 

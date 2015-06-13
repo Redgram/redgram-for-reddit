@@ -6,6 +6,8 @@ import android.net.NetworkInfo;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 /**
  * Created by matie on 22/05/15.
  */
@@ -15,11 +17,12 @@ public class ConnectionStatus {
     private static ConnectivityManager cm;
     private static NetworkInfo netInfo;
 
+    @Inject
     public ConnectionStatus(Context context){
         mContext = context;
     }
 
-    //only accessible method.
+    //only used method.
     public boolean isOnline(){
         return isNetworkActive() && isPingable();
     }

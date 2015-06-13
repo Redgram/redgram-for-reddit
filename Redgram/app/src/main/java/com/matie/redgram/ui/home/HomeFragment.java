@@ -16,9 +16,9 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
-import com.matie.redgram.ui.common.BaseComponent;
-import com.matie.redgram.ui.common.BaseFragment;
-import com.matie.redgram.ui.common.MainComponent;
+import com.matie.redgram.ui.common.base.BaseComponent;
+import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
 import com.nineoldandroids.view.ViewHelper;
@@ -41,7 +41,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
     HomeComponent component;
 
-    @Inject
     HomePresenterImpl homePresenter;
 
     @Override
@@ -50,31 +49,34 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.inject(this, view);
 
-        //homePresenter = new HomePresenterImpl(this);
         homeRecyclerView.setScrollViewCallbacks(this);
 
         this.mLayoutManager = (LinearLayoutManager)homeRecyclerView.getLayoutManager();
         this.mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
         this.mContentView = getActivity().findViewById(R.id.container);
 
-        homePresenter.populateView();
+//        homePresenter.populateView();
 
         return view;
     }
 
 
     @Override
-    protected void setupComponent(BaseComponent component) {
-        MainComponent mainComponent = (MainComponent)component;
+    protected void setupComponent(MainComponent mainComponent) {
         component = DaggerHomeComponent.builder()
                     .mainComponent(mainComponent)
                     .homeModule(new HomeModule(this))
-                    .build()
-                    .inject(this);
+                    .build();
+        component.inject(this);
+
+        //todo: find another way to use injected instances
+        homePresenter = (HomePresenterImpl)component.getHomePresenter();
+        //todo: call in a separate method
+        homePresenter.populateView();
     }
 
     @Override
-    protected BaseComponent component() {
+    public HomeComponent component() {
         return component;
     }
 

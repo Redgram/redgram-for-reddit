@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
 import com.matie.redgram.data.network.connection.ConnectionStatus;
+import com.matie.redgram.ui.App;
 
 import javax.inject.Singleton;
 
@@ -15,10 +16,8 @@ import dagger.Provides;
  */
 @Module
 public class RedditModule {
-
     @Provides
-    @Singleton
-    public RedditClient provideRedditClient(Application app, ConnectionStatus connectionStatus){
+    public RedditClient provideRedditClient(App app, ConnectionStatus connectionStatus){
         return new RedditClient(app, connectionStatus);
     }
 

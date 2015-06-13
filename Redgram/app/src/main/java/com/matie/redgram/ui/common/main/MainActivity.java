@@ -1,11 +1,10 @@
-package com.matie.redgram.ui.common;
+package com.matie.redgram.ui.common.main;
 
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
@@ -18,9 +17,10 @@ import android.support.v7.widget.Toolbar;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.matie.redgram.R;
 import com.matie.redgram.ui.AppComponent;
+import com.matie.redgram.ui.common.base.BaseActivity;
+import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout;
 import com.matie.redgram.ui.home.HomeFragment;
-import com.matie.redgram.data.managers.rxbus.RxBus;
 import com.matie.redgram.data.models.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
 
@@ -92,12 +92,12 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         mainComponent = DaggerMainComponent.builder()
                         .appComponent(appComponent)
                         .mainModule(new MainModule(this))
-                        .build()
-                        .inject(this);
+                        .build();
+        mainComponent.inject(this);
     }
 
     @Override
-    protected BaseComponent component() {
+    public MainComponent component() {
         return mainComponent;
     }
 

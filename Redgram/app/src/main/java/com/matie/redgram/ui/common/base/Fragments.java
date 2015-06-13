@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common;
+package com.matie.redgram.ui.common.base;
 
 import android.support.v4.app.Fragment;
 

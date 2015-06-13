@@ -15,8 +15,7 @@ import dagger.Provides;
 @Module
 public class ConnectionModule {
     @Provides
-    @Singleton
-    public ConnectionStatus provideConnectionStatus(Application app){
+    public ConnectionStatus provideConnectionStatus(App app){
         return new ConnectionStatus(app.getApplicationContext());
     }
 }

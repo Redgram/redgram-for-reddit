@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common;
+package com.matie.redgram.ui.common.main;
 
 import android.app.Activity;
 
@@ -20,7 +20,7 @@ public class MainModule {
         this.activity = activity;
     }
 
-    @Provides @ActivityScope Activity activity(){
-        return activity;
+    @Provides MainActivity activity(){
+        return (MainActivity)activity;
     }
 }

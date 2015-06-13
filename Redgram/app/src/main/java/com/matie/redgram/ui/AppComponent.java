@@ -29,7 +29,7 @@ public interface AppComponent {
 
     //add getters for the instances provided by the included
     //modules.
-    Application application();
+    App getApp();
     ConnectionStatus getConnectionStatus();
     RedditClient getRedditClient();
 }

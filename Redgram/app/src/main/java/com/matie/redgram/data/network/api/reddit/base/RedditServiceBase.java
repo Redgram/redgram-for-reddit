@@ -18,6 +18,8 @@ import org.joda.time.DateTime;
 import java.io.File;
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
@@ -30,15 +32,15 @@ public class RedditServiceBase extends RedditBase {
 
     private final Context mContext;
     private final ConnectionStatus connectionStatus;
+    private final RestAdapter.Builder adapterBuilder;
 
-    private final RestAdapter.Builder ADAPTER_BUILDER =  new RestAdapter.Builder()
-            .setLogLevel(RestAdapter.LogLevel.FULL)
-            .setConverter(new GsonConverter(getGson()))
-            .setClient(new OkClient(getHttpClient())); //check if nee
-
-    public RedditServiceBase(Context context, ConnectionStatus cs) {
-        mContext = context;
+    @Inject
+    public RedditServiceBase(App app, ConnectionStatus cs) {
+        mContext = app.getApplicationContext();
         connectionStatus = cs;
+
+        //create a builder once that has all the necessary build components
+        adapterBuilder = getAdapterBuilder();
     }
 
     public RestAdapter getRestAdapter() {
@@ -55,8 +57,16 @@ public class RedditServiceBase extends RedditBase {
 
 
         //for now
-        return ADAPTER_BUILDER.setEndpoint(REDDIT_HOST)
-                .setRequestInterceptor(getInterceptor()).build();
+//        return adapterBuilder.setEndpoint(REDDIT_HOST)
+//                .setRequestInterceptor(getInterceptor()).build();
+        return adapterBuilder.setEndpoint(REDDIT_HOST).build();
+    }
+
+    private RestAdapter.Builder getAdapterBuilder(){
+        return new RestAdapter.Builder()
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setConverter(new GsonConverter(getGson()))
+                .setClient(new OkClient(getHttpClient())); //check if needed
     }
 
     private RequestInterceptor getInterceptor() {
@@ -67,7 +77,7 @@ public class RedditServiceBase extends RedditBase {
                 // Use cache by default unless specified otherwise in header.
                 request.addHeader("Accept", "application/json");
                 if(connectionStatus.isOnline()){
-                    int maxAge = 120; //1 minute
+                    int maxAge = 60; //1 minute
                     request.addHeader("Cache-Control", "public, max-age=" + maxAge);
                 }else{
                     int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
