@@ -13,6 +13,10 @@ This project is under **GPL license**. Although other licenses are prefered, no 
 
 For collaborations, please view [this issue](https://github.com/Redgram/redgram-for-reddit/issues/1) and follow the links, specifically the article on the suggested branching model.
 
+###Latest:
+
+Dagger 2 integration.
+
 ###Installation:
 
 - Clone this repo.
@@ -25,5 +29,5 @@ For collaborations, please view [this issue](https://github.com/Redgram/redgram-
 
 - Create XML Layouts for the different list items.
 - Cache doesn't seem to work. Investigate.
-- Learn/Integrate Dagger(2).
+- <del>Learn/Integrate Dagger(2).
 - Follow the Program to Interface approach. [Read More](http://stackoverflow.com/questions/383947/what-does-it-mean-to-program-to-an-interface).
