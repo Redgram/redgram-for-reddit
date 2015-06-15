@@ -8,6 +8,7 @@
     <dimen name="default_horizontal_margin">16dp</dimen>
     <dimen name="default_vertical_margin">16dp</dimen>
     <dimen name="default_padding">16dp</dimen>
+    <dimen name="default_medium_padding">12dp</dimen>
     <dimen name="default_small_padding">8dp</dimen>
     <dimen name="reset_dimen">0dp</dimen>
 
@@ -27,5 +28,8 @@
     <dimen name="text_size_medium">18sp</dimen>
     <dimen name="text_size_large">22sp</dimen>
     <dimen name="text_size_xlarge">28sp</dimen>
+
+
+    <dimen name="content_text_padding">4dp</dimen>
 
 </resources>

@@ -21,7 +21,7 @@
         android:id="@+id/navigationDrawerItemTitleTV"
         style="@style/Wrap"
         android:layout_marginLeft="12dp"
-        android:textColor="@color/gray"
+        android:textColor="@color/material_blue_grey_900"
         android:textSize="@dimen/text_size_small"
         android:textStyle="normal"
         android:layout_centerVertical="true"

@@ -1,10 +1,12 @@
-package com.matie.redgram.ui.common.views.widgets;
+package com.matie.redgram.ui.home.views.widgets.postlist.dynamic;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
+
+import com.matie.redgram.data.models.PostItem;
 
 /**
  * Created by matie on 19/05/15.
@@ -14,7 +16,7 @@ import android.widget.RelativeLayout;
  *
  * Common overlays could be inflated in this view
  */
-public class DynamicView extends RelativeLayout {
+public abstract class DynamicView extends RelativeLayout {
 
     public DynamicView(Context context) {
         super(context);
@@ -32,4 +34,6 @@ public class DynamicView extends RelativeLayout {
     public DynamicView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
+
+    public abstract void setUpView(PostItem item);
 }

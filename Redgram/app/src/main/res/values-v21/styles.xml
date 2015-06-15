@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/red_light</item>
-        <item name="colorPrimaryDark">@color/red_dark</item>
+        <item name="colorPrimary">@color/material_redA700</item>
+        <item name="colorPrimaryDark">@color/material_red900</item>
         <item name="colorAccent">@color/accent_material_light</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>

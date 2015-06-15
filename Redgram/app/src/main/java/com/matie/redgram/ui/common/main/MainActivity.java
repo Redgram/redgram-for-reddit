@@ -74,7 +74,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         mTitle = mDrawerTitle = getTitle();
 
         mDrawerLayout.setStatusBarBackgroundColor(
-                getResources().getColor(R.color.red_dark));
+                getResources().getColor(R.color.material_red900));
 
 
         if (savedInstanceState == null) {

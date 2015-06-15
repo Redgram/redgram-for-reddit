@@ -4,7 +4,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
        <!--//Customize it-->
         <item name="windowActionModeOverlay">true</item>
-        <item name="colorAccent">@color/blue_dark</item>
+        <item name="colorAccent">@color/material_blue900</item>
     </style>
 
     <style name="ToolbarTheme" parent="AppTheme">
@@ -14,7 +14,7 @@
 
         <!-- android:textColorPrimaryInverse is the  color of the title
              text in the Toolbar, in the Theme.AppCompat.Light theme:  -->
-         <item name="android:textColorPrimaryInverse">@color/abc_primary_text_material_light</item>
+         <item name="android:textColorPrimaryInverse">@color/material_blue_grey_900</item>
 
         <!-- android:actionMenuTextColor is the color of the text of
               action (menu) items in the Toolbar, at least in the
@@ -23,10 +23,10 @@
               when running on API 21, but not on older versions of
               Android, so this is only necessary to support older
               Android versions.-->
-        <item name="actionMenuTextColor">@color/abc_primary_text_material_light</item>
+        <item name="actionMenuTextColor">@color/material_white</item>
         <!-- android:textColorSecondary is the color of the menu
              overflow icon (three vertical dots) -->
-        <item name="android:textColorSecondary">@color/abc_secondary_text_material_light</item>
+        <item name="android:textColorSecondary">@color/material_blue_grey_900</item>
 
         <!-- This would set the toolbar's background color,
               but setting this also changes the popup menu's background,
