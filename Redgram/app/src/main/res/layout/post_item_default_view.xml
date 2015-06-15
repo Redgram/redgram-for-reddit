@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemDefaultView
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android" style="@style/MatchWidth"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:paddingLeft="@dimen/default_medium_padding"
+    android:paddingBottom="@dimen/default_small_padding">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/default_thumbnail_view"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        fresco:actualImageScaleType="focusCrop"
+        fresco:placeholderImage="@color/ripple_material_light"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:failureImage="@drawable/ic_error_grey600_48dp"
+        fresco:failureImageScaleType="centerInside"
+        />
+    <include
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/default_text_view"
+        android:layout_toRightOf="@id/default_thumbnail_view"
+        layout="@layout/post_item_text_view"/>
 
 </com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemDefaultView>

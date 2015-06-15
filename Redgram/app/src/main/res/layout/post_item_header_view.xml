@@ -9,11 +9,11 @@
         style="@style/Wrap"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:text="title"
-        android:textSize="18sp"
+        android:textSize="@dimen/text_size_small"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:paddingLeft="4dp"
+        android:text="title"
+        android:paddingLeft="@dimen/content_text_padding"
         android:gravity="center_vertical"/>
     <TextView
         android:id="@+id/header_time_view"
@@ -21,8 +21,9 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:text="time"
-        android:paddingTop="3dp"
-        android:paddingRight="4dp"
+        android:textSize="@dimen/text_size_micro"
+        android:paddingTop="1dp"
+        android:paddingRight="@dimen/content_text_padding"
         android:gravity="center_vertical"/>
 
 
