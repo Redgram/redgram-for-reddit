@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemTagView
+    xmlns:android="http://schemas.android.com/apk/res/android" style="@style/MatchWidth"
+    android:paddingLeft="@dimen/default_small_padding"
+    android:paddingRight="@dimen/default_small_padding"
+    android:paddingBottom="@dimen/default_small_padding"
+    android:background="@color/white">
+
+    <!--over 18 tag-->
+    <TextView
+        android:id="@+id/tag_nsfw"
+        style="@style/Wrap"
+        android:text="@string/post_tag_nsfw"
+        android:textSize="@dimen/text_size_micro"
+        android:textStyle="bold"
+        android:textColor="@color/material_blue700"
+        android:paddingLeft="@dimen/content_text_padding"
+        android:paddingRight="@dimen/content_text_padding"
+        />
+
+</com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemTagView>

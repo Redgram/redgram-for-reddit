@@ -23,6 +23,7 @@ public class PostItem {
        // IMGUR_MEME, not sure of this
         IMGUR_SUBREDDIT
     }
+
     private Type type;
     private String author;
     private int time;
@@ -33,21 +34,51 @@ public class PostItem {
     private String text;
     private int numComments;
     private boolean isSelf;
+    private int score;
+    private boolean isAdult;
+    private String distinguished;
+    private String subreddit;
 
+    public PostItem(){}
 
-    public PostItem(String author, int time, String url, String thumbnail, String title, String domain, String text, int numComments, boolean isSelf) {
+    public String getSubreddit() {
+        return subreddit;
+    }
 
-        this.author = author;
-        this.time = time;
-        this.url = url;
-        this.thumbnail = thumbnail;
-        this.title = title;
-        this.domain = domain;
-        this.text = text;
-        this.numComments = numComments;
+    public void setSubreddit(String subreddit) {
+        this.subreddit = subreddit;
+    }
+
+    public String distinguished() {
+        return distinguished;
+    }
+
+    public void setIsDistinguished(String distinguished) {
+        this.distinguished = distinguished;
+    }
+
+    public boolean isAdult() {
+        return isAdult;
+    }
+
+    public void setIsAdult(boolean isAdult) {
+        this.isAdult = isAdult;
+    }
+
+    public boolean isSelf() {
+        return isSelf;
+    }
+
+    public void setIsSelf(boolean isSelf) {
         this.isSelf = isSelf;
+    }
 
-        this.type = adjustType();;
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public Type getType() {

@@ -48,20 +48,30 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    //android-specific
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.android.support:cardview-v7:21.0.+'
     compile 'com.android.support:recyclerview-v7:21.0.+'
-    compile 'com.squareup.retrofit:retrofit:1.9.0'
+
+    //util
     compile 'joda-time:joda-time:2.7'
     compile 'io.reactivex:rxjava:1.0.8'
     compile 'io.reactivex:rxandroid:0.24.0'
-    compile 'com.jakewharton:butterknife:6.0.0'
+
+    //network
     compile 'com.squareup.okhttp:mockwebserver:2.2.0'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
+
+    //image management
     compile 'com.facebook.fresco:fresco:0.5.0+'
+
+    //UI
+    compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
 
     //dagger2
     compile 'com.google.dagger:dagger:2.0.1'
     apt 'com.google.dagger:dagger-compiler:2.0.1'
     provided 'org.glassfish:javax.annotation:10.0-b28'
+
 }

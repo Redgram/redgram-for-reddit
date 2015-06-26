@@ -15,7 +15,8 @@ For collaborations, please view [this issue](https://github.com/Redgram/redgram-
 
 ###Latest:
 
-Dagger 2 integration.
+- Caching fixed - [Implementation](/Redgram/app/src/main/java/com/matie/redgram/data/network/api/reddit/base/RedditServiceBase.java)
+- Dagger 2 integration.
 
 ###Installation:
 
@@ -27,7 +28,8 @@ Dagger 2 integration.
 
 ###Todo:
 
+- Implement a reliable Search functionality.
 - Create XML Layouts for the different list items.
-- Cache doesn't seem to work. Investigate.
+- <del>Cache doesn't seem to work. Investigate.
 - <del>Learn/Integrate Dagger(2).
 - Follow the Program to Interface approach. [Read More](http://stackoverflow.com/questions/383947/what-does-it-mean-to-program-to-an-interface).

@@ -41,6 +41,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
     HomeComponent component;
 
+    @Inject
     HomePresenterImpl homePresenter;
 
     @Override
@@ -55,8 +56,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         this.mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
         this.mContentView = getActivity().findViewById(R.id.container);
 
-//        homePresenter.populateView();
-
         return view;
     }
 
@@ -67,7 +66,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                     .mainComponent(mainComponent)
                     .homeModule(new HomeModule(this))
                     .build();
-        component.inject(this);
+        //component.inject(this);
 
         //todo: find another way to use injected instances
         homePresenter = (HomePresenterImpl)component.getHomePresenter();
@@ -78,6 +77,11 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     @Override
     public HomeComponent component() {
         return component;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override

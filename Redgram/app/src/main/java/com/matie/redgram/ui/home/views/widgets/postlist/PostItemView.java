@@ -13,10 +13,13 @@ import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.PostItem;
+import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemActionView;
 import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemDefaultView;
 import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemGalleryView;
 import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemGifView;
+import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemHeaderView;
 import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemImageView;
+import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemTagView;
 import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemTextView;
 
 import butterknife.ButterKnife;
@@ -32,19 +35,8 @@ public class PostItemView extends CardView {
 
     @InjectView(R.id.post_item_header_view)
     PostItemHeaderView postItemHeaderView;
-    @InjectView(R.id.header_title_view)
-    TextView headerTitleView;
-    @InjectView(R.id.header_time_view)
-    TextView headerTimeView;
-
     @InjectView(R.id.post_item_action_view)
     PostItemActionView postItemActionView;
-    @InjectView(R.id.comments_action_button)
-    TextView commentsActionButton;
-    @InjectView(R.id.reply_action_button)
-    TextView replyActionButton;
-    @InjectView(R.id.source_action_view)
-    TextView sourceActionView;
 
     @InjectView(R.id.post_item_dynamic_view)
     ViewGroup dynamicParent;
@@ -106,13 +98,10 @@ public class PostItemView extends CardView {
             resolveOtherItemsDimensions();
         }
 
-        headerTitleView.setText(item.getAuthor());
-        headerTimeView.setText(item.getTime() + "");
-
+        postItemHeaderView.setUpView(item);
         getAndSetUpView(item);
+        postItemActionView.setUpView(item);
 
-        commentsActionButton.setText(item.getNumComments()+ " comments");
-        sourceActionView.setText("("+item.getDomain()+")");
     }
 
     private void getAndSetUpView(PostItem item) {

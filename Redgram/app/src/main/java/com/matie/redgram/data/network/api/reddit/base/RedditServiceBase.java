@@ -11,7 +11,10 @@ import com.matie.redgram.data.models.reddit.base.RedditObject;
 import com.matie.redgram.data.utils.reddit.DateTimeDeserializer;
 import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
 import com.squareup.okhttp.Cache;
+import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.joda.time.DateTime;
 
@@ -30,6 +33,10 @@ import retrofit.converter.GsonConverter;
  */
 public class RedditServiceBase extends RedditBase {
 
+    private static final int MAX_AGE = 60; //1 minute
+    private static final int MAX_STALE = 60 * 60 * 24 * 28; //tolerate 4-weeks
+    private static final int CACHE_DIR_SIZE = 10 * 1024 * 1024; //
+
     private final Context mContext;
     private final ConnectionStatus connectionStatus;
     private final RestAdapter.Builder adapterBuilder;
@@ -39,53 +46,37 @@ public class RedditServiceBase extends RedditBase {
         mContext = app.getApplicationContext();
         connectionStatus = cs;
 
-        //create a builder once that has all the necessary build components
+        //create a builder once that has all the common build components
         adapterBuilder = getAdapterBuilder();
     }
 
     public RestAdapter getRestAdapter() {
-        //preferred--------------------
-//        String endpoint = null;
-//        boolean isAuth = isAuth();
-//        if(isAuth){
-//            endpoint = OAUTH_URL;
-//        }else{
-//            endpoint = REDDIT_HOST;
-//        }
-//        return ADAPTER_BUILDER.setEndpoint(REDDIT_HOST)
-//                .setRequestInterceptor(getInterceptor(isAuth)).build();
 
-
-        //for now
-//        return adapterBuilder.setEndpoint(REDDIT_HOST)
-//                .setRequestInterceptor(getInterceptor()).build();
-        return adapterBuilder.setEndpoint(REDDIT_HOST).build();
+        //todo: get rid of Request Interceptor and use okHttp request interceptor
+         return adapterBuilder.setEndpoint(REDDIT_HOST)
+                 .setRequestInterceptor(getInterceptor()).build();
     }
 
     private RestAdapter.Builder getAdapterBuilder(){
         return new RestAdapter.Builder()
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setConverter(new GsonConverter(getGson()))
-                .setClient(new OkClient(getHttpClient())); //check if needed
+                .setClient(new OkClient(getHttpClient()));
     }
 
     private RequestInterceptor getInterceptor() {
         return new RequestInterceptor() {
             @Override
             public void intercept(RequestFacade request){
-                // todo: implement interceptor
-                // Use cache by default unless specified otherwise in header.
+
                 request.addHeader("Accept", "application/json");
-                if(connectionStatus.isOnline()){
-                    int maxAge = 60; //1 minute
-                    request.addHeader("Cache-Control", "public, max-age=" + maxAge);
-                }else{
-                    int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
+
+                if(!connectionStatus.isOnline()){
                     request.addHeader("Cache-Control",
-                            "public, only-if-cached, max-stale=" + maxStale);
+                            "public, only-if-cached, max-stale=" + MAX_STALE);
+                    Log.d("CSTATUS", "no connection!, stale = "+ MAX_STALE);
                 }
 
-                // If authenticated,set Authorization header
                 //todo: Auth headers
             }
         };
@@ -100,19 +91,50 @@ public class RedditServiceBase extends RedditBase {
 
 
     private OkHttpClient getHttpClient(){
+
+        Cache cache = getCache();
+
         OkHttpClient client = new OkHttpClient();
-        client.setCache(getCache());
+        client.networkInterceptors().add(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+
+                boolean isOnline = connectionStatus.isOnline();
+
+//                Request.Builder requestBuilder = chain.request().newBuilder();
+//                if (!isOnline) {
+//                    int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
+//                    requestBuilder.header("Cache-Control",
+//                            "public, only-if-cached, max-stale=" + maxStale);
+//                    Log.d("CSTATUS", "no connection!, stale = " + maxStale);
+//                }
+//
+//                Response.Builder responseBuilder = chain.proceed(requestBuilder.build()).newBuilder();
+
+                Response.Builder responseBuilder = chain.proceed(chain.request()).newBuilder();
+                if (isOnline) {
+                    responseBuilder.header("cache-control", "public, max-age=" + MAX_AGE);
+                    Log.d("CSTATUS", "connected to internet! age = " + MAX_AGE + " seconds");
+                }
+
+                return responseBuilder.build();
+            }
+        });
+
+        if(cache != null)
+            client.setCache(cache);
+
         return client;
     }
 
     private Cache getCache(){
         //setup cache
-        File httpCacheDir = new File(mContext.getCacheDir(), "http");
+        File httpCacheDir = new File(mContext.getCacheDir(), "HttpCacheDir");
 
         Cache httpResponseCache = null;
 
         try {
-            httpResponseCache = new Cache(httpCacheDir, 10 * 1024 * 1024);
+            httpResponseCache = new Cache(httpCacheDir, CACHE_DIR_SIZE);
         } catch (IOException e) {
             Log.e("Retrofit", "Could not create http cache", e);
         }

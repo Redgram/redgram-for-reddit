@@ -18,6 +18,16 @@ public class RedditLink extends RedditSubmission {
     private String title;
     private int num_comments;
     private boolean visited;
+    private boolean over_18;
+    private String distinguished;
+
+    public String isDistinguished() {
+        return distinguished;
+    }
+
+    public boolean isAdult() {
+        return over_18;
+    }
 
     public String getDomain() {
         return domain;
@@ -82,7 +92,5 @@ public class RedditLink extends RedditSubmission {
     public void setUrl(String url) {
         this.url = url;
     }
-
-
 
 }
