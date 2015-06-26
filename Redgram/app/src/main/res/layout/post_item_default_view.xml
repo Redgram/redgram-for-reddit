@@ -21,5 +21,12 @@
         android:id="@+id/default_text_view"
         android:layout_toRightOf="@id/default_thumbnail_view"
         layout="@layout/post_item_text_view"/>
+    <include
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/default_tag_view"
+        android:layout_toRightOf="@id/default_thumbnail_view"
+        android:layout_below="@id/default_text_view"
+        layout="@layout/post_item_tag_view"/>
 
 </com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemDefaultView>

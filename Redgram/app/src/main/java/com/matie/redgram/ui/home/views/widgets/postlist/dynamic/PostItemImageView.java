@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.net.Uri;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
@@ -14,6 +13,7 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.PostItem;
+import com.matie.redgram.ui.home.views.widgets.postlist.PostBaseView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -21,7 +21,7 @@ import butterknife.InjectView;
 /**
  * Created by matie on 04/04/15.
  */
-public class PostItemImageView extends DynamicView {
+public class PostItemImageView extends PostBaseView {
 
     @InjectView(R.id.image_view)
     SimpleDraweeView imageView;
@@ -29,6 +29,8 @@ public class PostItemImageView extends DynamicView {
     @InjectView(R.id.image_text_view)
     PostItemTextView postItemTextView;
 
+    @InjectView(R.id.image_tag_view)
+    PostItemTagView postItemTagView;
 
     public PostItemImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -44,6 +46,7 @@ public class PostItemImageView extends DynamicView {
     public void setUpView(PostItem item) {
 
         postItemTextView.setUpView(item);
+        postItemTagView.setUpView(item);
 
         Uri thumbnailUri = Uri.parse(item.getThumbnail());
         ImageRequest thumbnail = ImageRequestBuilder.newBuilderWithSource(thumbnailUri)

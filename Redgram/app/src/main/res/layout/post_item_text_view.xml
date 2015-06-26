@@ -15,6 +15,9 @@
             android:paddingLeft="@dimen/content_text_padding"
             android:paddingRight="@dimen/content_text_padding"
             android:textColor="@color/black"
+
+            android:maxLines="3"
+            android:ellipsize="end"
             />
 
         <!--description is optional, so we set visibility to GONE-->
@@ -25,10 +28,13 @@
             android:layout_marginTop="3dp"
             android:paddingLeft="@dimen/content_text_padding"
             android:paddingRight="@dimen/content_text_padding"
-            android:text="this is description about a title which is optional"
+            android:text="this is description of a title which is optional"
             android:textColor="@color/material_blue_grey_950"
             android:textSize="@dimen/text_size_micro"
             android:visibility="gone"
+
+            android:maxLines="6"
+            android:ellipsize="end"
         />
 
 

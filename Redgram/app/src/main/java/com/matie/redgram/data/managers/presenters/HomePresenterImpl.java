@@ -99,7 +99,7 @@ public class HomePresenterImpl implements HomePresenter{
                     @Override
                     public void onNext(PostItem postItem) {
                         items.add(postItem);
-                        Log.d("ITEM URL", postItem.getAuthor() + "--" + postItem.getType() + "--" + postItem.getDomain());
+                        Log.d("ITEM URL", postItem.getAuthor() + "--" + postItem.getType() + "--" + postItem.getUrl());
                     }
                 });
     }
@@ -111,7 +111,7 @@ public class HomePresenterImpl implements HomePresenter{
 
     private void identifyAndPerformEvent(Object event){
         if(event instanceof SubredditEvent){
-            Toast.makeText(homeView.getContext(), "subscribed YO!", Toast.LENGTH_LONG).show();
+            Toast.makeText(homeView.getContext(), "subscribed!", Toast.LENGTH_LONG).show();
         }
 
     }

@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                         .appComponent(appComponent)
                         .mainModule(new MainModule(this))
                         .build();
-        mainComponent.inject(this);
+       // mainComponent.inject(this);
     }
 
     @Override

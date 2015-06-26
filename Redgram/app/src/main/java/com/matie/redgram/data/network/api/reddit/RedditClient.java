@@ -33,9 +33,7 @@ public class RedditClient extends RedditServiceBase {
         return provider.getSubreddit(query)
                 .flatMap(response -> Observable.from(response.getData().getChildren()))
                 .cast(RedditLink.class)
-                .map(link -> new PostItem(link.getAuthor(), link.getCreatedUtc().getHourOfDay(),
-                        link.getUrl(), link.getThumbnail(), link.getTitle(),
-                        link.getDomain(), link.getSelftext(), link.getNumComments(), link.isSelf()))
+                .map(link -> mapLinkToPostItem(link))
                 .concatMap(postItem -> {
 
                     //todo: request API
@@ -64,6 +62,31 @@ public class RedditClient extends RedditServiceBase {
                     return Observable.merge(imageObservable, imgurObservable, mp4Observable, galleryObservable,
                             selfObservable, defaultObservable);
                 }).doOnSubscribe(()-> RxBus.getDefault().send(new SubredditEvent()));
+    }
+
+    public PostItem mapLinkToPostItem(RedditLink link){
+
+        PostItem item = new PostItem();
+
+        item.setScore(link.getScore());
+        item.setAuthor(link.getAuthor());
+        item.setTime(link.getCreatedUtc().getHourOfDay());
+        item.setUrl(link.getUrl());
+        item.setThumbnail(link.getThumbnail());
+        item.setTitle(link.getTitle());
+        item.setDomain(link.getDomain());
+        item.setText(link.getSelftext());
+        item.setNumComments(link.getNumComments());
+        item.setIsSelf(link.isSelf());
+
+        item.setIsAdult(link.isAdult());
+        item.setIsDistinguished(link.isDistinguished());
+        item.setSubreddit(link.getSubreddit());
+
+        item.setType(item.adjustType());
+
+        return item;
+
     }
 
 }
