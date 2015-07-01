@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical">
+    <EditText
+        android:id="@+id/search_view"
+        style="@style/MatchWidth"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:hint="Search"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingLeft="2dp"
+        android:singleLine="true" />
+    <Button
+        android:id="@+id/search_button"
+        style="@style/MatchWidth"
+        android:background="@color/material_red400"
+        android:text="Submit" />
+
+    <include android:id="@+id/search_recycler_view"
+        layout="@layout/post_recycler_view"></include>
+
+</LinearLayout>

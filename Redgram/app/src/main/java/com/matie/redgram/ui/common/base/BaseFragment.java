@@ -3,8 +3,8 @@ package com.matie.redgram.ui.common.base;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
+import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.main.MainActivity;
-import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.home.HomeComponent;
 
 /**
@@ -17,7 +17,7 @@ public abstract class BaseFragment extends Fragment {
         setupComponent(((MainActivity)getActivity()).component());
     }
 
-    protected abstract void setupComponent(MainComponent mainComponent);
+    protected abstract void setupComponent(AppComponent component);
 
-    public abstract HomeComponent component();
+//    public abstract HomeComponent component();
 }

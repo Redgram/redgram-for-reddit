@@ -28,5 +28,6 @@
     <string name="password_confirm">Confirm Password</string>
 
     <string name="text_bullet">\u2022</string>
+
     <string name="post_tag_nsfw">NSFW</string>
 </resources>
