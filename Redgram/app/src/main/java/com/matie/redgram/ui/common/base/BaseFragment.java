@@ -14,10 +14,15 @@ public abstract class BaseFragment extends Fragment {
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setupComponent(((MainActivity)getActivity()).component());
+
+        //all common tasks
+        setupComponent(((MainActivity) getActivity()).component());
+        setupToolbar();
     }
 
     protected abstract void setupComponent(AppComponent component);
+
+    protected abstract void setupToolbar();
 
 //    public abstract HomeComponent component();
 }

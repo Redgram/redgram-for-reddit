@@ -108,6 +108,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         this.setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             scrimInsetsFrameLayout.setOnInsetsCallback(this);
@@ -129,8 +130,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                 R.string.navigation_drawer_close) {
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getSupportActionBar()
-                        .setTitle(navigationItems.get(currentSelectedPosition).getItemName());
+
                 supportInvalidateOptionsMenu();
             }
 
@@ -185,6 +185,14 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public int getCurrentSelectedPosition() {
+        return currentSelectedPosition;
+    }
+
+    public List<DrawerItem> getNavigationItems() {
+        return navigationItems;
     }
 
     @OnItemClick(R.id.leftDrawerListView)

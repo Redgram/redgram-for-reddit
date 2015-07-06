@@ -1,16 +1,30 @@
 package com.matie.redgram.ui.search;
 
 import android.animation.ValueAnimator;
+import android.app.ActionBar;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -36,32 +50,53 @@ import rx.subjects.PublishSubject;
  */
 public class SearchFragment extends BaseFragment implements SearchView, ObservableScrollViewCallbacks {
 
-    @InjectView(R.id.search_view)
-    EditText searchText;
-    @InjectView(R.id.search_button)
-    Button searchButton;
+    @InjectView(R.id.progress_bar)
+    ProgressBar progressBar;
+    @InjectView(R.id.search_linear_layout)
+    LinearLayout searchLinearLayout;
     @InjectView(R.id.search_recycler_view)
     PostRecyclerView searchRecyclerView;
 
     Toolbar mToolbar;
     View mContentView;
+    LayoutInflater mInflater;
 
     SearchComponent component;
     @Inject
     SearchPresenterImpl searchPresenter;
 
+    FrameLayout frameLayout;
+    EditText searchView;
+    ImageView searchClear;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        ButterKnife.inject(this, view);
+        ButterKnife.inject(this,view);
 
-    return view;
+        mContentView = getActivity().findViewById(R.id.container);
+        mInflater = inflater;
+
+        searchRecyclerView.setScrollViewCallbacks(this);
+
+        return view;
 
     }
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -74,24 +109,88 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         searchPresenter = (SearchPresenterImpl)component.getSearchPresenter();
     }
 
-    @OnClick(R.id.search_button)
-    public void executeSearch(){
-        String query = searchText.getText().toString();
-        if(query.length() > 0){
-            searchPresenter.executeSearch(query);
-        }
+    @Override
+    protected void setupToolbar() {
+        mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
+        frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
+
+        LinearLayout ll = (LinearLayout) mInflater.inflate(R.layout.fragment_search_toolbar, frameLayout, false);
+        frameLayout.removeAllViews();
+        frameLayout.addView(ll);
+
+        searchView = (EditText)ll.findViewById(R.id.search_view);
+        searchClear = (ImageView)ll.findViewById(R.id.search_clear);
+
+        //show keyboard on fragment enter
+        toggleKeyboard(searchView, true);
+
+        searchView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                String query = v.getText().toString();
+                if(query.length() > 0){
+                    searchPresenter.executeSearch(query);
+                    searchView.setCursorVisible(false);
+                }
+
+                return false;
+            }
+        });
+
+        searchView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() > 0)
+                    searchClear.setVisibility(View.VISIBLE);
+                else
+                    searchClear.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        searchClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchView.setText("");
+                searchView.setHint("Search");
+                searchView.setCursorVisible(true);
+                toggleKeyboard(searchView, true);
+            }
+        });
+
+    }
+
+    private void toggleKeyboard(View focusedView, boolean show) {
+        //you can use focusedView instead of getCurrentFocus() in the same way
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(show)
+            inputMethodManager.showSoftInput(getActivity().getCurrentFocus(), InputMethodManager.SHOW_IMPLICIT);
+        else
+            inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
         searchPresenter.registerForEvents();
     }
 
     @Override
-    public void onStop() {
+    public void onPause() {
+        super.onPause();
+        //hide keyboard
+        toggleKeyboard(searchView, false);
+
         searchPresenter.unregisterForEvents();
-        super.onStop();
     }
 
 
@@ -163,12 +262,14 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
 
     @Override
     public void showProgress() {
-
+        searchRecyclerView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgress() {
-
+        progressBar.setVisibility(View.GONE);
+        searchRecyclerView.setVisibility(View.VISIBLE);
     }
 
     @Override

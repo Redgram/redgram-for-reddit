@@ -92,6 +92,7 @@ public class HomePresenterImpl implements HomePresenter{
 
                     @Override
                     public void onError(Throwable e) {
+                        homeView.hideProgress();
                         homeView.showErrorMessage();
                     }
 

@@ -1,6 +1,7 @@
 package com.matie.redgram.data.managers.presenters;
 
 import android.util.Log;
+import android.view.View;
 
 import com.matie.redgram.data.models.PostItem;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
@@ -43,20 +44,22 @@ public class SearchPresenterImpl implements SearchPresenter {
 
     @Override
     public void registerForEvents() {
-        subscriptions = new CompositeSubscription();
+        if(subscriptions == null)
+            subscriptions = new CompositeSubscription();
     }
 
 
     @Override
     public void unregisterForEvents() {
-        subscriptions.unsubscribe();
+        if(subscriptions.hasSubscriptions() || subscriptions != null)
+            subscriptions.unsubscribe();
     }
 
     @Override
     public void executeSearch(String query) {
-        //empty items
+        //empty items and hide list
         items = new ArrayList<PostItem>();
-
+        //loading widget
         searchView.showProgress();
 
         searchSubscription = (Subscription)bindFragment(searchView.getFragment(), redditClient.getSubredditListing(query))
@@ -65,12 +68,14 @@ public class SearchPresenterImpl implements SearchPresenter {
                 .subscribe(new Subscriber<PostItem>() {
                     @Override
                     public void onCompleted() {
+                        //hide progress and show list
                         searchView.hideProgress();
                         searchRecyclerView.replaceWith(items);
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        searchView.hideProgress();
                         searchView.showErrorMessage();
                     }
 
@@ -80,9 +85,11 @@ public class SearchPresenterImpl implements SearchPresenter {
                         Log.d("ITEM URL", postItem.getAuthor() + "--" + postItem.getType() + "--" + postItem.getUrl());
                     }
                 });
+
         //todo: executes every time I search!! FIX
         if(!searchSubscription.isUnsubscribed()){
             subscriptions.add(searchSubscription);
         }
+
     }
 }

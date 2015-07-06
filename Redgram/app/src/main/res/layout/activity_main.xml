@@ -25,7 +25,18 @@
             android:theme="@style/ToolbarTheme"
             android:background="@color/material_red400"
             android:minHeight="?attr/actionBarSize"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+            app:contentInsetLeft="72dp"
+            app:contentInsetStart="72dp"
+            contentInsetLeft="72dp"
+            contentInsetStart="72dp"
+            android:elevation="4dp">
+
+            <FrameLayout
+                style="@style/Match"
+                android:id="@+id/toolbar_child_view"></FrameLayout>
+
+
         </android.support.v7.widget.Toolbar>
 
 
