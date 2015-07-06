@@ -50,7 +50,6 @@ public class HomePresenterImpl implements HomePresenter{
         this.homeView = homeView;
         this.homeRecyclerView = homeView.getRecyclerView();
         this.redditClient = redditClient;
-        //this.redditClient = RedditClient.getInstance();
         this.items = new ArrayList<PostItem>();
     }
 
@@ -93,6 +92,7 @@ public class HomePresenterImpl implements HomePresenter{
 
                     @Override
                     public void onError(Throwable e) {
+                        homeView.hideProgress();
                         homeView.showErrorMessage();
                     }
 

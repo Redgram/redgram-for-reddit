@@ -23,6 +23,7 @@ import com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.data.models.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
+import com.matie.redgram.ui.search.SearchFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +108,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         this.setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             scrimInsetsFrameLayout.setOnInsetsCallback(this);
@@ -116,8 +118,9 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
         //menu items
         navigationItems.add(new DrawerItem(getString(R.string.fragment_home), R.drawable.ic_home_black_48dp, true));
+        navigationItems.add(new DrawerItem(getString(R.string.fragment_search), R.drawable.ic_search_black_48dp, true));
 
-        //non-menu items
+        //sub-menu items
         navigationItems.add(new DrawerItem(getString(R.string.fragment_about), R.drawable.ic_help_black_48dp, false));
 
         mNavigationDrawerListViewWrapper.replaceWith(navigationItems);
@@ -127,8 +130,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                 R.string.navigation_drawer_close) {
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getSupportActionBar()
-                        .setTitle(navigationItems.get(currentSelectedPosition).getItemName());
+
                 supportInvalidateOptionsMenu();
             }
 
@@ -185,6 +187,14 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         return super.onOptionsItemSelected(item);
     }
 
+    public int getCurrentSelectedPosition() {
+        return currentSelectedPosition;
+    }
+
+    public List<DrawerItem> getNavigationItems() {
+        return navigationItems;
+    }
+
     @OnItemClick(R.id.leftDrawerListView)
     public void OnItemClick(int position, long id) {
         if (mDrawerLayout.isDrawerOpen(scrimInsetsFrameLayout)) {
@@ -226,7 +236,15 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                 break;
 
             //add one for each navigation item
-
+            case 1:
+                if (!(getSupportFragmentManager().getFragments()
+                        .get(0) instanceof SearchFragment)) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, Fragment
+                                    .instantiate(MainActivity.this, Fragments.SEARCH.getFragment()))
+                            .commit();
+                }
+                break;
         }
 
     }

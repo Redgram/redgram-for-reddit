@@ -5,19 +5,27 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
+import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.common.base.Fragments;
+import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
@@ -32,12 +40,21 @@ import butterknife.InjectView;
  * Created by matie on 17/01/15.
  */
 public class HomeFragment extends BaseFragment implements HomeView, ObservableScrollViewCallbacks{
+
+    @InjectView(R.id.progress_bar)
+    ProgressBar progressBar;
+    @InjectView(R.id.home_linear_layout)
+    LinearLayout homeLinearLayout;
     @InjectView(R.id.home_recycler_view)
     PostRecyclerView homeRecyclerView;
 
     Toolbar mToolbar;
     View mContentView;
+    LayoutInflater mInflater;
     LinearLayoutManager mLayoutManager;
+
+    FrameLayout frameLayout;
+    TextView toolbarTitle;
 
     HomeComponent component;
 
@@ -52,16 +69,19 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
         homeRecyclerView.setScrollViewCallbacks(this);
 
-        this.mLayoutManager = (LinearLayoutManager)homeRecyclerView.getLayoutManager();
-        this.mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
-        this.mContentView = getActivity().findViewById(R.id.container);
+        mLayoutManager = (LinearLayoutManager)homeRecyclerView.getLayoutManager();
+        mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
+        mContentView = getActivity().findViewById(R.id.container);
+        mInflater = inflater;
 
         return view;
     }
 
 
     @Override
-    protected void setupComponent(MainComponent mainComponent) {
+
+    protected void setupComponent(AppComponent appComponent) {
+        MainComponent mainComponent = (MainComponent)appComponent;
         component = DaggerHomeComponent.builder()
                     .mainComponent(mainComponent)
                     .homeModule(new HomeModule(this))
@@ -70,30 +90,46 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
         //todo: find another way to use injected instances
         homePresenter = (HomePresenterImpl)component.getHomePresenter();
+    }
+
+    @Override
+    protected void setupToolbar() {
+        //setting up toolbar
+        frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
+        frameLayout.removeAllViews();
+
+        LinearLayout ll = (LinearLayout) mInflater.inflate(R.layout.fragment_home_toolbar, frameLayout, false);
+        frameLayout.addView(ll);
+
+        toolbarTitle = (TextView)ll.findViewById(R.id.home_toolbar_title);
+
+        MainActivity mainActivity = ((MainActivity)getActivity());
+
+        toolbarTitle.setText(mainActivity.getNavigationItems().get(mainActivity.getCurrentSelectedPosition()).getItemName());
+    }
+
+//    @Override
+//    public HomeComponent component() {
+//        return component;
+//    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
         //todo: call in a separate method
         homePresenter.populateView();
     }
 
     @Override
-    public HomeComponent component() {
-        return component;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
         homePresenter.registerForEvents();
     }
 
     @Override
-    public void onStop() {
+    public void onPause() {
+        super.onPause();
         homePresenter.unregisterForEvents();
-        super.onStop();
     }
 
 
@@ -126,12 +162,14 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
     @Override
     public void showProgress() {
-
+        homeRecyclerView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgress() {
-
+        progressBar.setVisibility(View.GONE);
+        homeRecyclerView.setVisibility(View.VISIBLE);
     }
 
     @Override

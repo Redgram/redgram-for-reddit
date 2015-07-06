@@ -49,7 +49,7 @@ public class PostRecyclerView extends ObservableRecyclerView {
         return layoutManager;
     }
 
-    public PostAdapterBase getPostRecyclerViewAdapter() {
+    public PostAdapterBase getPostAdapter() {
         return postAdapter;
     }
 }
