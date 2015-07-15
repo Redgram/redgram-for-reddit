@@ -54,21 +54,30 @@ public class HomePresenterImpl implements HomePresenter{
     }
 
     /**
-     * Called onStart of Activity/Fragment
+     * Called onResume of Activity/Fragment
      */
     @Override
     public void registerForEvents() {
-        rxBus = RxBus.getDefault();
-        subscriptions = new CompositeSubscription();
-        subscriptions.add(getEventHandler());
-        subscriptions.add(subredditSubscription);
+
+        if(rxBus == null)
+            rxBus = RxBus.getDefault();
+
+        if(subscriptions == null)
+            subscriptions = new CompositeSubscription();
+
+        if(subscriptions.isUnsubscribed()){
+            subscriptions.add(subredditSubscription);
+            subscriptions.add(getEventHandler());
+        }
+
     }
     /**
-     * Called onStop of Activity/Fragment
+     * Called onPause of Activity/Fragment
      */
     @Override
     public void unregisterForEvents() {
-        subscriptions.unsubscribe();
+        if(subscriptions.hasSubscriptions() || subscriptions != null)
+            subscriptions.unsubscribe();
     }
 
     /**
@@ -80,7 +89,7 @@ public class HomePresenterImpl implements HomePresenter{
     public void populateView() {
         homeView.showProgress();
         subredditSubscription =
-                (Subscription)bindFragment(homeView.getFragment(), redditClient.getSubredditListing("toronto"))
+                (Subscription)bindFragment(homeView.getFragment(), redditClient.getSubredditListing("toronto", null, null))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<PostItem>() {
@@ -102,6 +111,7 @@ public class HomePresenterImpl implements HomePresenter{
                         Log.d("ITEM URL", postItem.getAuthor() + "--" + postItem.getType() + "--" + postItem.getUrl());
                     }
                 });
+
     }
 
     private Subscription getEventHandler(){

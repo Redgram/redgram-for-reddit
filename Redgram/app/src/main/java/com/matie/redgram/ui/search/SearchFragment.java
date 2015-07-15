@@ -32,6 +32,7 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.search.views.SearchView;
@@ -121,9 +122,6 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         searchView = (EditText)ll.findViewById(R.id.search_view);
         searchClear = (ImageView)ll.findViewById(R.id.search_clear);
 
-        //show keyboard on fragment enter
-        toggleKeyboard(searchView, true);
-
         searchView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -146,10 +144,10 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length() > 0)
+                if (s.length() > 0)
                     searchClear.setVisibility(View.VISIBLE);
                 else
-                    searchClear.setVisibility(View.INVISIBLE);
+                    searchClear.setVisibility(View.GONE);
             }
 
             @Override
@@ -167,12 +165,16 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
             }
         });
 
+        //show keyboard on fragment enter
+        toggleKeyboard(searchView, true);
+
+
     }
 
     private void toggleKeyboard(View focusedView, boolean show) {
-        //you can use focusedView instead of getCurrentFocus() in the same way
+        //you can use focusedView param instead of getCurrentFocus() in the same way
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if(show)
+        if (show)
             inputMethodManager.showSoftInput(getActivity().getCurrentFocus(), InputMethodManager.SHOW_IMPLICIT);
         else
             inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
@@ -187,6 +189,7 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     @Override
     public void onPause() {
         super.onPause();
+
         //hide keyboard
         toggleKeyboard(searchView, false);
 

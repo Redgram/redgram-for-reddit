@@ -6,6 +6,7 @@
         android:id="@+id/search_linear_layout"
         style="@style/Match"
         android:orientation="vertical">
+
         <include android:id="@+id/search_recycler_view"
             layout="@layout/post_recycler_view"></include>
     </LinearLayout>

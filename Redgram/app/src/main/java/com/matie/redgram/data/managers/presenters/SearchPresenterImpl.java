@@ -9,7 +9,9 @@ import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.search.views.SearchView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -62,7 +64,11 @@ public class SearchPresenterImpl implements SearchPresenter {
         //loading widget
         searchView.showProgress();
 
-        searchSubscription = (Subscription)bindFragment(searchView.getFragment(), redditClient.getSubredditListing(query))
+//        todo:temporarily
+        Map<String, String> params = new HashMap<String,String>();
+        params.put("q", query);
+
+        searchSubscription = (Subscription)bindFragment(searchView.getFragment(), redditClient.executeSearch(null, params))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<PostItem>() {
