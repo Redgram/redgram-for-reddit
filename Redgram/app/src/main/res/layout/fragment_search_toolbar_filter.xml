@@ -1,18 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="24dp">
+
+    <EditText
+        android:id="@+id/filter_query"
+        style="@style/MatchWidth"
+        android:background="@android:color/transparent"
+        android:gravity="center_vertical"
+        android:hint="Search"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingLeft="2dp"
+        android:singleLine="true"
+        android:textColor="@color/material_red400"
+        android:layout_gravity="center_vertical"
+        android:textSize="@dimen/text_size_large"/>
 
     <TextView
-        style="@style/MatchWidth"
-        android:text="criteria1"/>
+        android:id="@+id/filter_sort"
+        android:layout_below="@+id/filter_query"
+        style="@style/Wrap"
+        android:text="SORT BY"
+        android:paddingLeft="2dp"
+        android:layout_marginTop="@dimen/default_vertical_margin"
+        android:textSize="@dimen/text_size_small"/>
+    <Spinner
+        android:id="@+id/spinner_sort"
+        style="@style/Wrap"
+        android:layout_below="@+id/filter_query"
+        android:layout_toRightOf="@+id/filter_sort"
+        android:paddingLeft="2dp"
+        android:layout_marginLeft="@dimen/default_horizontal_margin"
+        android:drawSelectorOnTop="true"
+        ></Spinner>
 
     <TextView
-        style="@style/MatchWidth"
-        android:text="criteria2"/>
-
+        android:id="@+id/filter_from"
+        android:layout_below="@+id/filter_sort"
+        style="@style/Wrap"
+        android:text="FROM"
+        android:paddingLeft="2dp"
+        android:layout_marginTop="@dimen/default_vertical_margin"
+        android:textSize="@dimen/text_size_small"/>
+    <Spinner
+        android:id="@+id/spinner_from"
+        style="@style/Wrap"
+        android:paddingLeft="2dp"
+        android:layout_marginLeft="@dimen/default_horizontal_margin"
+        android:layout_below="@+id/filter_sort"
+        android:layout_toRightOf="@+id/filter_from"
+        android:drawSelectorOnTop="true"
+        ></Spinner>
     <TextView
+        android:id="@+id/filter_limit"
+        android:layout_below="@id/filter_from"
+        style="@style/Wrap"
+        android:text="LIMIT TO"
+        android:paddingLeft="2dp"
+        android:layout_marginTop="@dimen/default_vertical_margin"
+        android:textSize="@dimen/text_size_small"/>
+    <EditText
+        android:id="@+id/limit_view"
         style="@style/MatchWidth"
-        android:text="criteria3"/>
-
-</LinearLayout>
+        android:background="@android:color/transparent"
+        android:hint="Subreddit"
+        android:inputType="text"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="@color/material_red400"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/text_size_medium"
+        android:layout_marginLeft="@dimen/default_horizontal_margin"
+        android:layout_marginTop="@dimen/default_vertical_margin"
+        android:paddingLeft="2dp"
+        android:layout_below="@id/filter_from"
+        android:layout_toRightOf="@+id/filter_limit"/>
+</RelativeLayout>

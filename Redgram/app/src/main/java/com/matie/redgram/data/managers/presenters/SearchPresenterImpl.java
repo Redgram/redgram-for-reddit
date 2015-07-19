@@ -58,17 +58,13 @@ public class SearchPresenterImpl implements SearchPresenter {
     }
 
     @Override
-    public void executeSearch(String query) {
+    public void executeSearch(String subreddit, Map<String, String> params) {
         //empty items and hide list
         items = new ArrayList<PostItem>();
         //loading widget
         searchView.showProgress();
 
-//        todo:temporarily
-        Map<String, String> params = new HashMap<String,String>();
-        params.put("q", query);
-
-        searchSubscription = (Subscription)bindFragment(searchView.getFragment(), redditClient.executeSearch(null, params))
+        searchSubscription = (Subscription)bindFragment(searchView.getFragment(), redditClient.executeSearch(subreddit, params))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<PostItem>() {

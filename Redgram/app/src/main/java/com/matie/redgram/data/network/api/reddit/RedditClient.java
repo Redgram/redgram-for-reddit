@@ -79,11 +79,13 @@ public class RedditClient extends RedditServiceBase {
                 });
     }
 
-    public Observable<PostItem> executeSearch(@Nullable String subreddit, @Nullable Map<String, String> params) {
+    public Observable<PostItem> executeSearch(String subreddit, @Nullable Map<String, String> params) {
 
         Observable<RedditResponse<RedditListing>> searchObservable = null;
 
-        if(subreddit != null){
+        //todo: client should only be responsible for passing parameters to network calls.
+        if(!subreddit.isEmpty() && subreddit != null){
+            params.put("restrict_sr", "true");
             searchObservable = provider.executeSearch(subreddit, params);
         }else{
             //at least have a "q" param set
