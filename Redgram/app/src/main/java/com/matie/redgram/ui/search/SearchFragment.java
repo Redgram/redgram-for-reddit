@@ -1,49 +1,53 @@
 package com.matie.redgram.ui.search;
 
 import android.animation.ValueAnimator;
-import android.app.ActionBar;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
+import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.search.views.SearchView;
 import com.nineoldandroids.view.ViewHelper;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
-import rx.functions.Action1;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by matie on 28/06/15.
@@ -62,12 +66,23 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     LayoutInflater mInflater;
 
     SearchComponent component;
+
     @Inject
     SearchPresenterImpl searchPresenter;
 
     FrameLayout frameLayout;
     EditText searchView;
     ImageView searchClear;
+
+    ImageView searchFilter;
+    Spinner sortSpinner;
+    Spinner fromSpinner;
+    EditText limitToView;
+    RelativeLayout filterContentLayout;
+
+    List<String> sortArray;
+    List<String> fromArray;
+    Map<String, String> params;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,6 +100,10 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         mInflater = inflater;
 
         searchRecyclerView.setScrollViewCallbacks(this);
+
+        sortArray = Arrays.asList(getContext().getResources().getStringArray(R.array.searchSortArray));
+        fromArray = Arrays.asList(getContext().getResources().getStringArray(R.array.fromArray));
+        params = new HashMap<>();
 
         return view;
 
@@ -120,18 +139,19 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
 
         searchView = (EditText)ll.findViewById(R.id.search_view);
         searchClear = (ImageView)ll.findViewById(R.id.search_clear);
-
-        //show keyboard on fragment enter
-        toggleKeyboard(searchView, true);
+        searchFilter = (ImageView)ll.findViewById(R.id.search_filter);
 
         searchView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                //clear params
+                params.clear();
 
                 String query = v.getText().toString();
                 if(query.length() > 0){
-                    searchPresenter.executeSearch(query);
-                    searchView.setCursorVisible(false);
+                   params.put("q", query);
+                   searchPresenter.executeSearch("", params);
+                   searchView.setCursorVisible(false);
                 }
 
                 return false;
@@ -146,10 +166,10 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length() > 0)
+                if (s.length() > 0)
                     searchClear.setVisibility(View.VISIBLE);
                 else
-                    searchClear.setVisibility(View.INVISIBLE);
+                    searchClear.setVisibility(View.GONE);
             }
 
             @Override
@@ -167,12 +187,90 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
             }
         });
 
+        setupFilterContentLayout();
+
+        searchFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDialogUtil().init();
+
+                //remove layout from its parent, to set it to another, new parent
+                if(filterContentLayout.getParent()!= null){
+                    ((ViewGroup)filterContentLayout.getParent()).removeView(filterContentLayout);
+                }
+
+                try {
+                    getDialogUtil().getDialogBuilder()
+                            .title("Advanced Search")
+                            .customView(filterContentLayout, false)
+                            .positiveText("Search")
+                            .negativeText("Cancel")
+                            .callback(new MaterialDialog.ButtonCallback() {
+                                @Override
+                                public void onPositive(MaterialDialog dialog) {
+                                    super.onPositive(dialog);
+                                    performPositiveEvent(dialog);
+                                }
+
+                                @Override
+                                public void onNegative(MaterialDialog dialog) {
+                                    super.onNegative(dialog);
+                                }
+                            })
+                            .show();
+                }catch (NullPointerException e){
+                    Log.d("DIALOG", "Make sure you are initializing the builder.");
+                }
+
+            }
+        });
+
+        //show keyboard on fragment enter
+        //todo: set cursor visible not working...investigate
+        toggleKeyboard(searchView, true);
+    }
+
+    private void setupFilterContentLayout() {
+        filterContentLayout = (RelativeLayout)mInflater.inflate(R.layout.fragment_search_toolbar_filter, null);
+        fromSpinner = (Spinner)filterContentLayout.findViewById(R.id.spinner_from);
+        sortSpinner = (Spinner)filterContentLayout.findViewById(R.id.spinner_sort);
+
+        ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(
+                getActivity(), R.layout.support_simple_spinner_dropdown_item, fromArray);
+        fromAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        ArrayAdapter<String> sortAdapter = new ArrayAdapter<String>(
+                getActivity(), R.layout.support_simple_spinner_dropdown_item, sortArray);
+        sortAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+
+        fromSpinner.setAdapter(fromAdapter);
+        sortSpinner.setAdapter(sortAdapter);
+
+        limitToView = (EditText)filterContentLayout.findViewById(R.id.limit_view);
+
+    }
+
+    private void performPositiveEvent(MaterialDialog dialog) {
+        RelativeLayout layout = (RelativeLayout) dialog.getCustomView();
+        EditText editText = (EditText) layout.findViewById(R.id.filter_query);
+
+        String query = editText.getText().toString();
+        String limitTo = limitToView.getText().toString();
+
+        params.put("q", (query.trim()));
+        params.put("t", fromSpinner.getSelectedItem().toString());
+        params.put("sort", sortSpinner.getSelectedItem().toString());
+
+        searchPresenter.executeSearch(limitTo.trim(), params);
+
+        if (!searchView.getText().toString().equals(query)) {
+            searchView.setText(query);
+        }
     }
 
     private void toggleKeyboard(View focusedView, boolean show) {
-        //you can use focusedView instead of getCurrentFocus() in the same way
+        //you can use focusedView param instead of getCurrentFocus() in the same way
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if(show)
+        if (show)
             inputMethodManager.showSoftInput(getActivity().getCurrentFocus(), InputMethodManager.SHOW_IMPLICIT);
         else
             inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
@@ -187,6 +285,7 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     @Override
     public void onPause() {
         super.onPause();
+
         //hide keyboard
         toggleKeyboard(searchView, false);
 
@@ -280,6 +379,11 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     @Override
     public void showErrorMessage() {
 
+    }
+
+    @Override
+    public DialogUtil getDialogUtil() {
+        return ((MainActivity)getActivity()).getDialogUtil();
     }
 
     @Override

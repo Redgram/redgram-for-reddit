@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/search_container"
-    style="@style/Match"
-    android:gravity="center_vertical"
-    android:orientation="horizontal">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/home_toolbar_container"
+    style="@style/Match">
 
-    <TextView android:id="@+id/home_toolbar_title"
-        style="@style/Wrap"
-        android:textSize="@dimen/abc_text_size_medium_material"></TextView>
-</LinearLayout>
+    <!--use the default text size of toolbar -->
+    <!--<TextView android:id="@+id/home_toolbar_title"-->
+        <!--style="@style/Wrap"-->
+        <!--android:textColor="@color/material_black"-->
+        <!--android:textSize="@dimen/abc_text_size_medium_material"-->
+        <!--android:text="HOME"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:gravity="center_vertical"></TextView>-->
+    <LinearLayout
+        android:id="@+id/home_toolbar_linear_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <TextView
+            android:id="@+id/home_toolbar_title"
+            style="@style/Wrap"
+            android:text="Home"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/abc_text_size_medium_material"/>
+        <TextView
+            android:id="@+id/home_toolbar_subtitle"
+            style="@style/Wrap"
+            android:text="Sub"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/text_size_small"/>
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/listing_filter"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginRight="16dp"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_filter_list_white_48dp"/>
+
+
+</RelativeLayout>

@@ -19,6 +19,7 @@ import com.matie.redgram.R;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
+import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.data.models.DrawerItem;
@@ -27,6 +28,8 @@ import com.matie.redgram.ui.search.SearchFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -63,6 +66,8 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     private List<DrawerItem> navigationItems;
 
     private MainComponent mainComponent;
+    @Inject
+    DialogUtil dialogUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +99,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                         .appComponent(appComponent)
                         .mainModule(new MainModule(this))
                         .build();
+        dialogUtil = mainComponent.getDialogUtil();
        // mainComponent.inject(this);
     }
 
@@ -193,6 +199,10 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
     public List<DrawerItem> getNavigationItems() {
         return navigationItems;
+    }
+
+    public DialogUtil getDialogUtil() {
+        return dialogUtil;
     }
 
     @OnItemClick(R.id.leftDrawerListView)

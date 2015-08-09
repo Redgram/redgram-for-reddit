@@ -1,15 +1,20 @@
 package com.matie.redgram.data.network.api.reddit;
 
 import android.app.Application;
+import android.support.annotation.Nullable;
 
 import com.matie.redgram.data.managers.rxbus.RxBus;
 import com.matie.redgram.data.models.PostItem;
 import com.matie.redgram.data.models.events.SubredditEvent;
 import com.matie.redgram.data.models.reddit.RedditLink;
+import com.matie.redgram.data.models.reddit.RedditListing;
+import com.matie.redgram.data.models.reddit.base.RedditResponse;
 import com.matie.redgram.data.network.api.reddit.base.RedditProviderBase;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
 import com.matie.redgram.data.network.connection.ConnectionStatus;
 import com.matie.redgram.ui.App;
+
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -29,9 +34,67 @@ public class RedditClient extends RedditServiceBase {
         provider = getRestAdapter().create(RedditProviderBase.class);
     }
 
-   public Observable<PostItem> getSubredditListing(String query) {
-        return provider.getSubreddit(query)
-                .flatMap(response -> Observable.from(response.getData().getChildren()))
+    public Observable<PostItem> getSubredditListing(String query, @Nullable String filter, @Nullable Map<String, String> params) {
+
+       Observable<RedditResponse<RedditListing>> subObservable = null;
+
+       //todo: check if it belongs to a set of fixed filters (i.e hot,new,top..etc)
+       if(filter != null){
+           subObservable = provider.getSubreddit(query, filter, params);
+       }else{
+           subObservable = provider.getSubreddit(query, params);
+       }
+
+        return getDefaultListingObservable(subObservable);
+    }
+
+    public Observable<PostItem> executeSearch(String subreddit, @Nullable Map<String, String> params) {
+
+        Observable<RedditResponse<RedditListing>> searchObservable = null;
+
+        //todo: client should only be responsible for passing parameters to network calls.
+        if(!subreddit.isEmpty() && subreddit != null){
+            params.put("restrict_sr", "true");
+            searchObservable = provider.executeSearch(subreddit, params);
+        }else{
+            //at least have a "q" param set
+            searchObservable = provider.executeSearch(params);
+        }
+
+        return getDefaultListingObservable(searchObservable);
+    }
+
+    public Observable<PostItem> getListing(String front, @Nullable Map<String, String> params) {
+        Observable<RedditResponse<RedditListing>> listingObservable = provider.getListing(front, params);
+        return getDefaultListingObservable(listingObservable);
+    }
+
+    private PostItem mapLinkToPostItem(RedditLink link){
+
+        PostItem item = new PostItem();
+
+        item.setScore(link.getScore());
+        item.setAuthor(link.getAuthor());
+        item.setTime(link.getCreatedUtc().getHourOfDay());
+        item.setUrl(link.getUrl());
+        item.setThumbnail(link.getThumbnail());
+        item.setTitle(link.getTitle());
+        item.setDomain(link.getDomain());
+        item.setText(link.getSelftext());
+        item.setNumComments(link.getNumComments());
+        item.setIsSelf(link.isSelf());
+
+        item.setIsAdult(link.isAdult());
+        item.setIsDistinguished(link.isDistinguished());
+        item.setSubreddit(link.getSubreddit());
+
+        item.setType(item.adjustType());
+
+        return item;
+    }
+
+    private Observable<PostItem> getDefaultListingObservable(Observable<RedditResponse<RedditListing>> observable){
+        return observable.flatMap(response -> Observable.from(response.getData().getChildren()))
                 .cast(RedditLink.class)
                 .map(link -> mapLinkToPostItem(link))
                 .concatMap(postItem -> {
@@ -61,32 +124,8 @@ public class RedditClient extends RedditServiceBase {
 
                     return Observable.merge(imageObservable, imgurObservable, mp4Observable, galleryObservable,
                             selfObservable, defaultObservable);
-                }).doOnSubscribe(()-> RxBus.getDefault().send(new SubredditEvent()));
+                });
     }
 
-    public PostItem mapLinkToPostItem(RedditLink link){
-
-        PostItem item = new PostItem();
-
-        item.setScore(link.getScore());
-        item.setAuthor(link.getAuthor());
-        item.setTime(link.getCreatedUtc().getHourOfDay());
-        item.setUrl(link.getUrl());
-        item.setThumbnail(link.getThumbnail());
-        item.setTitle(link.getTitle());
-        item.setDomain(link.getDomain());
-        item.setText(link.getSelftext());
-        item.setNumComments(link.getNumComments());
-        item.setIsSelf(link.isSelf());
-
-        item.setIsAdult(link.isAdult());
-        item.setIsDistinguished(link.isDistinguished());
-        item.setSubreddit(link.getSubreddit());
-
-        item.setType(item.adjustType());
-
-        return item;
-
-    }
 
 }

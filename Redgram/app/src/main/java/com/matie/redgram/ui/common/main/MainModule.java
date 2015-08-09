@@ -2,7 +2,9 @@ package com.matie.redgram.ui.common.main;
 
 import android.app.Activity;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.matie.redgram.ui.ActivityScope;
+import com.matie.redgram.ui.common.utils.DialogUtil;
 
 import javax.inject.Singleton;
 
@@ -22,5 +24,10 @@ public class MainModule {
 
     @Provides MainActivity activity(){
         return (MainActivity)activity;
+    }
+
+    @Provides
+    DialogUtil provideDialogUtil(){
+        return new DialogUtil(activity);
     }
 }

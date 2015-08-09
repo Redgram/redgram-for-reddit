@@ -19,17 +19,24 @@
             android:inputType="text"
             android:maxLines="1"
             android:paddingLeft="2dp"
+            android:layout_marginRight="16dp"
             android:singleLine="true"
             android:textColor="#ffffff"
-            android:textColorHint="#b3ffffff" />
-
+            android:textColorHint="#b3ffffff"
+            android:layout_gravity="center_vertical" />
         <ImageView
             android:id="@+id/search_clear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/Wrap"
             android:layout_gravity="center"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:layout_marginRight="16dp"
             android:src="@drawable/abc_ic_clear_mtrl_alpha"
-            android:visibility="invisible"/>
+            android:visibility="gone"/>
+        <ImageView
+            android:id="@+id/search_filter"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/ic_filter_list_white_48dp"/>
+
     </LinearLayout>
