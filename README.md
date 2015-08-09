@@ -31,7 +31,7 @@ For collaborations, please view [this issue](https://github.com/Redgram/redgram-
 
 - Follow the Program to Interface approach. [Read More](http://stackoverflow.com/questions/383947/what-does-it-mean-to-program-to-an-interface).
 - <del>Implement advanced search.
-	- Fix minor issues with search (mostly UI)
+- Fix minor issues with search (mostly UI)
 - Create XML Layouts for the different list items.
 - <del>Implement front page with filters for Home fragment.
 - <del>Implement a reliable Search functionality.
