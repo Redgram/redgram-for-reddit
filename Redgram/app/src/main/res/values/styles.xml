@@ -4,7 +4,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
        <!--//Customize it-->
         <item name="windowActionModeOverlay">true</item>
-        <item name="colorAccent">@color/material_blue900</item>
+        <item name="colorAccent">@color/material_red400</item>
     </style>
 
     <style name="ToolbarTheme" parent="AppTheme">

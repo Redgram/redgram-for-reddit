@@ -45,38 +45,7 @@ public class RedditClient extends RedditServiceBase {
            subObservable = provider.getSubreddit(query, params);
        }
 
-        return subObservable
-                .flatMap(response -> Observable.from(response.getData().getChildren()))
-                .cast(RedditLink.class)
-                .map(link -> mapLinkToPostItem(link))
-                .concatMap(postItem -> {
-
-                    //todo: request API
-                    Observable<PostItem> imgurObservable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.IMGUR_IMAGE);
-                    //todo: convert to MP4 and set new link
-                    Observable<PostItem> mp4Observable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.GIF);
-                    //leave out to render
-                    Observable<PostItem> imageObservable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.IMAGE);
-                    //todo: render new view for text only
-                    Observable<PostItem> selfObservable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.SELF);
-                    //todo: display new fragment with gridview
-                    Observable<PostItem> galleryObservable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.IMGUR_GALLERY
-                                    || item.getType() == PostItem.Type.IMGUR_ALBUM
-                                    || item.getType() == PostItem.Type.IMGUR_CUSTOM_GALLERY
-                                    || item.getType() == PostItem.Type.IMGUR_TAG
-                                    || item.getType() == PostItem.Type.IMGUR_SUBREDDIT);
-                    //todo: display thumbnail with link to view full source along with ant self text
-                    Observable<PostItem> defaultObservable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.DEFAULT);
-
-                    return Observable.merge(imageObservable, imgurObservable, mp4Observable, galleryObservable,
-                            selfObservable, defaultObservable);
-                });
+        return getDefaultListingObservable(subObservable);
     }
 
     public Observable<PostItem> executeSearch(String subreddit, @Nullable Map<String, String> params) {
@@ -92,45 +61,15 @@ public class RedditClient extends RedditServiceBase {
             searchObservable = provider.executeSearch(params);
         }
 
-        return searchObservable
-                .flatMap(response -> Observable.from(response.getData().getChildren()))
-                .cast(RedditLink.class)
-                .map(link -> mapLinkToPostItem(link))
-                .concatMap(postItem -> {
-
-                    //todo: request API
-                    Observable<PostItem> imgurObservable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.IMGUR_IMAGE);
-                    //todo: convert to MP4 and set new link
-                    Observable<PostItem> mp4Observable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.GIF);
-                    //leave out to render
-                    Observable<PostItem> imageObservable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.IMAGE);
-                    //todo: render new view for text only
-                    Observable<PostItem> selfObservable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.SELF);
-                    //todo: display new fragment with gridview
-                    Observable<PostItem> galleryObservable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.IMGUR_GALLERY
-                                    || item.getType() == PostItem.Type.IMGUR_ALBUM
-                                    || item.getType() == PostItem.Type.IMGUR_CUSTOM_GALLERY
-                                    || item.getType() == PostItem.Type.IMGUR_TAG
-                                    || item.getType() == PostItem.Type.IMGUR_SUBREDDIT);
-                    //todo: display thumbnail with link to view full source along with ant self text
-                    Observable<PostItem> defaultObservable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.DEFAULT);
-
-                    return Observable.merge(imageObservable, imgurObservable, mp4Observable, galleryObservable,
-                            selfObservable, defaultObservable);
-                });
+        return getDefaultListingObservable(searchObservable);
     }
 
+    public Observable<PostItem> getListing(String front, @Nullable Map<String, String> params) {
+        Observable<RedditResponse<RedditListing>> listingObservable = provider.getListing(front, params);
+        return getDefaultListingObservable(listingObservable);
+    }
 
-
-
-
-    public PostItem mapLinkToPostItem(RedditLink link){
+    private PostItem mapLinkToPostItem(RedditLink link){
 
         PostItem item = new PostItem();
 
@@ -153,5 +92,40 @@ public class RedditClient extends RedditServiceBase {
 
         return item;
     }
+
+    private Observable<PostItem> getDefaultListingObservable(Observable<RedditResponse<RedditListing>> observable){
+        return observable.flatMap(response -> Observable.from(response.getData().getChildren()))
+                .cast(RedditLink.class)
+                .map(link -> mapLinkToPostItem(link))
+                .concatMap(postItem -> {
+
+                    //todo: request API
+                    Observable<PostItem> imgurObservable = Observable.just(postItem)
+                            .filter(item -> item.getType() == PostItem.Type.IMGUR_IMAGE);
+                    //todo: convert to MP4 and set new link
+                    Observable<PostItem> mp4Observable = Observable.just(postItem)
+                            .filter(item -> item.getType() == PostItem.Type.GIF);
+                    //leave out to render
+                    Observable<PostItem> imageObservable = Observable.just(postItem)
+                            .filter(item -> item.getType() == PostItem.Type.IMAGE);
+                    //todo: render new view for text only
+                    Observable<PostItem> selfObservable = Observable.just(postItem)
+                            .filter(item -> item.getType() == PostItem.Type.SELF);
+                    //todo: display new fragment with gridview
+                    Observable<PostItem> galleryObservable = Observable.just(postItem)
+                            .filter(item -> item.getType() == PostItem.Type.IMGUR_GALLERY
+                                    || item.getType() == PostItem.Type.IMGUR_ALBUM
+                                    || item.getType() == PostItem.Type.IMGUR_CUSTOM_GALLERY
+                                    || item.getType() == PostItem.Type.IMGUR_TAG
+                                    || item.getType() == PostItem.Type.IMGUR_SUBREDDIT);
+                    //todo: display thumbnail with link to view full source along with ant self text
+                    Observable<PostItem> defaultObservable = Observable.just(postItem)
+                            .filter(item -> item.getType() == PostItem.Type.DEFAULT);
+
+                    return Observable.merge(imageObservable, imgurObservable, mp4Observable, galleryObservable,
+                            selfObservable, defaultObservable);
+                });
+    }
+
 
 }

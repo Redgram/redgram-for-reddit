@@ -16,66 +16,69 @@
         android:singleLine="true"
         android:textColor="@color/material_red400"
         android:layout_gravity="center_vertical"
-        android:textSize="@dimen/text_size_large"/>
+        android:textSize="@dimen/text_size_medium"/>
 
-    <TextView
-        android:id="@+id/filter_sort"
-        android:layout_below="@+id/filter_query"
-        style="@style/Wrap"
-        android:text="SORT BY"
-        android:paddingLeft="2dp"
-        android:layout_marginTop="@dimen/default_vertical_margin"
-        android:textSize="@dimen/text_size_small"/>
-    <Spinner
-        android:id="@+id/spinner_sort"
-        style="@style/Wrap"
-        android:layout_below="@+id/filter_query"
-        android:layout_toRightOf="@+id/filter_sort"
-        android:paddingLeft="2dp"
-        android:layout_marginLeft="@dimen/default_horizontal_margin"
-        android:drawSelectorOnTop="true"
-        ></Spinner>
-
-    <TextView
-        android:id="@+id/filter_from"
-        android:layout_below="@+id/filter_sort"
-        style="@style/Wrap"
-        android:text="FROM"
-        android:paddingLeft="2dp"
-        android:layout_marginTop="@dimen/default_vertical_margin"
-        android:textSize="@dimen/text_size_small"/>
-    <Spinner
-        android:id="@+id/spinner_from"
-        style="@style/Wrap"
-        android:paddingLeft="2dp"
-        android:layout_marginLeft="@dimen/default_horizontal_margin"
-        android:layout_below="@+id/filter_sort"
-        android:layout_toRightOf="@+id/filter_from"
-        android:drawSelectorOnTop="true"
-        ></Spinner>
-    <TextView
-        android:id="@+id/filter_limit"
-        android:layout_below="@id/filter_from"
-        style="@style/Wrap"
-        android:text="LIMIT TO"
-        android:paddingLeft="2dp"
-        android:layout_marginTop="@dimen/default_vertical_margin"
-        android:textSize="@dimen/text_size_small"/>
-    <EditText
-        android:id="@+id/limit_view"
+    <TableLayout
         style="@style/MatchWidth"
-        android:background="@android:color/transparent"
-        android:hint="Subreddit"
-        android:inputType="text"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:textColor="@color/material_red400"
-        android:layout_gravity="center_vertical"
-        android:gravity="center_vertical"
-        android:textSize="@dimen/text_size_medium"
-        android:layout_marginLeft="@dimen/default_horizontal_margin"
+        android:id="@+id/tablelayout"
+        android:layout_below="@+id/filter_query"
         android:layout_marginTop="@dimen/default_vertical_margin"
-        android:paddingLeft="2dp"
-        android:layout_below="@id/filter_from"
-        android:layout_toRightOf="@+id/filter_limit"/>
+        >
+        <TableRow>
+            <TextView
+                android:id="@+id/filter_sort"
+                style="@style/Wrap"
+                android:text="SORT BY"
+                android:paddingLeft="2dp"
+                android:textSize="@dimen/text_size_small"/>
+            <Spinner
+                android:id="@+id/spinner_sort"
+                style="@style/Wrap"
+                android:paddingLeft="@dimen/default_padding"
+                android:drawSelectorOnTop="true"
+                ></Spinner>
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/filter_from"
+                style="@style/Wrap"
+                android:text="FROM"
+                android:paddingLeft="2dp"
+                android:textSize="@dimen/text_size_small"/>
+            <Spinner
+                android:id="@+id/spinner_from"
+                style="@style/Wrap"
+                android:paddingLeft="@dimen/default_padding"
+                android:drawSelectorOnTop="true"
+                ></Spinner>
+        </TableRow>
+        <TableRow
+            android:layout_marginTop="@dimen/default_vertical_margin"
+            >
+            <TextView
+                android:id="@+id/filter_limit"
+                style="@style/Wrap"
+                android:text="LIMIT TO"
+                android:paddingLeft="2dp"
+                android:textSize="@dimen/text_size_small"/>
+            <EditText
+                android:id="@+id/limit_view"
+                style="@style/MatchWidth"
+                android:background="@android:color/transparent"
+                android:hint="Subreddit"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/material_red400"
+                android:textSize="@dimen/text_size_small"
+                android:paddingLeft="22dp"
+               />
+        </TableRow>
+
+
+    </TableLayout>
+
+
+
+
 </RelativeLayout>

@@ -8,15 +8,19 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
@@ -27,9 +31,15 @@ import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
+import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
 import com.nineoldandroids.view.ViewHelper;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -55,11 +65,15 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
     FrameLayout frameLayout;
     TextView toolbarTitle;
+    TextView toolbarSubtitle;git 
+    ImageView listingFilter;
 
     HomeComponent component;
 
     @Inject
     HomePresenterImpl homePresenter;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -98,14 +112,61 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
         frameLayout.removeAllViews();
 
-        LinearLayout ll = (LinearLayout) mInflater.inflate(R.layout.fragment_home_toolbar, frameLayout, false);
-        frameLayout.addView(ll);
+        RelativeLayout rl = (RelativeLayout) mInflater.inflate(R.layout.fragment_home_toolbar, frameLayout, false);
+        frameLayout.addView(rl);
 
-        toolbarTitle = (TextView)ll.findViewById(R.id.home_toolbar_title);
+        toolbarTitle = (TextView)rl.findViewById(R.id.home_toolbar_title);
+        toolbarSubtitle = (TextView)rl.findViewById(R.id.home_toolbar_subtitle);
+        listingFilter = (ImageView)rl.findViewById(R.id.listing_filter);
 
-        MainActivity mainActivity = ((MainActivity)getActivity());
+        toolbarTitle.setText("Frontpage");
 
-        toolbarTitle.setText(mainActivity.getNavigationItems().get(mainActivity.getCurrentSelectedPosition()).getItemName());
+        listingFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDialogUtil().init();
+
+                try {
+                    getDialogUtil().getDialogBuilder()
+                            .title("Filter Links By")
+                            .items(R.array.frontArray)
+                            .itemsCallback(new MaterialDialog.ListCallback() {
+                                @Override
+                                public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                                    if (i == 3 || i == 4) {
+                                        callSortDialog(charSequence);
+                                    } else {
+                                        homePresenter.getListing(charSequence.toString().toLowerCase(), null);
+                                        toolbarSubtitle.setText(charSequence.toString());
+                                    }
+                                }
+                            })
+                            .show();
+                }catch (NullPointerException e){
+                    Log.d("DIALOG", "Make sure you are initializing the builder.");
+                }
+            }
+        });
+    }
+
+    private void callSortDialog(CharSequence query) {
+        getDialogUtil().init();
+        getDialogUtil().getDialogBuilder()
+                .title("Sort By")
+                .items(R.array.fromArray)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                        //create parameters list for the network call
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("t", charSequence.toString().toLowerCase());
+                        //perform network call
+                        homePresenter.getListing(query.toString().toLowerCase(), params);
+                        //change subtitle only
+                        String bullet = getContext().getResources().getString(R.string.text_bullet);
+                        toolbarSubtitle.setText(query+" "+bullet+" "+charSequence);
+                    }
+                }).show();
     }
 
 //    @Override
@@ -116,8 +177,10 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-        //todo: call in a separate method
-        homePresenter.populateView();
+
+        String query = "Hot";
+        homePresenter.getListing(query.toLowerCase(), null);
+        toolbarSubtitle.setText(query);
     }
 
     @Override
@@ -191,6 +254,11 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     @Override
     public void hideToolbar() {
         moveToolbar(-mToolbar.getHeight());
+    }
+
+    @Override
+    public DialogUtil getDialogUtil() {
+        return ((MainActivity)getActivity()).getDialogUtil();
     }
 
     @Override

@@ -1,11 +1,9 @@
 package com.matie.redgram.ui.search;
 
 import android.animation.ValueAnimator;
-import android.app.ActionBar;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,11 +14,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -29,9 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -55,17 +48,11 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
-import rx.functions.Action1;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by matie on 28/06/15.
  */
 public class SearchFragment extends BaseFragment implements SearchView, ObservableScrollViewCallbacks {
-
-    public static final List<String> sortArray = Arrays.asList(new String[]{"Relevance", "New", "Top", "Hot","Comments"});
-    public static final List<String> fromArray = Arrays.asList(new String[]{"Hour", "Day", "Week", "Month", "Year", "All"});
 
     @InjectView(R.id.progress_bar)
     ProgressBar progressBar;
@@ -93,6 +80,8 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     EditText limitToView;
     RelativeLayout filterContentLayout;
 
+    List<String> sortArray;
+    List<String> fromArray;
     Map<String, String> params;
 
     @Override
@@ -112,6 +101,8 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
 
         searchRecyclerView.setScrollViewCallbacks(this);
 
+        sortArray = Arrays.asList(getContext().getResources().getStringArray(R.array.searchSortArray));
+        fromArray = Arrays.asList(getContext().getResources().getStringArray(R.array.fromArray));
         params = new HashMap<>();
 
         return view;
@@ -153,12 +144,14 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         searchView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                //clear params
+                params.clear();
 
                 String query = v.getText().toString();
-                params.put("q", query);
                 if(query.length() > 0){
-                    searchPresenter.executeSearch("", params);
-                    searchView.setCursorVisible(false);
+                   params.put("q", query);
+                   searchPresenter.executeSearch("", params);
+                   searchView.setCursorVisible(false);
                 }
 
                 return false;
@@ -233,9 +226,8 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         });
 
         //show keyboard on fragment enter
+        //todo: set cursor visible not working...investigate
         toggleKeyboard(searchView, true);
-
-
     }
 
     private void setupFilterContentLayout() {

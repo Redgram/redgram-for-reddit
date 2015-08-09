@@ -12,6 +12,7 @@ import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -86,10 +87,10 @@ public class HomePresenterImpl implements HomePresenter{
      * todo: Check if it's better to populate onCreate or onStart!!!
      */
     @Override
-    public void populateView() {
+    public void getListing(String front, Map<String,String> params) {
         homeView.showProgress();
         subredditSubscription =
-                (Subscription)bindFragment(homeView.getFragment(), redditClient.getSubredditListing("toronto", null, null))
+                (Subscription)bindFragment(homeView.getFragment(), redditClient.getListing(front, params))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<PostItem>() {

@@ -18,10 +18,21 @@ public interface RedditProviderBase {
     static final String SUBREDDIT = "/r/{subreddit}"; //only used in case of requesting specific subreddits
     static final String SEARCH = "/search";
 
-    //Available filters: hot, new, rising, top, controversial
+    //Available filters: hot, new, rising, (top, controversial, can be mixed with TIME)
     static final String FILTER = "/{filter}";
     static final String JSON = ".json";
 
+
+    /**
+     * @see <a href="https://www.reddit.com/dev/api#section_listings">Listing Section</a>
+     *
+     * @param filter
+     * @param params
+     * @return a listing
+     */
+    @GET(FILTER+JSON)
+    Observable<RedditResponse<RedditListing>> getListing(
+            @Path("filter") String filter, @QueryMap Map<String, String> params);
 
     /**
      * @see <a href="https://www.reddit.com/dev/api#section_listings">Listing Section</a>

@@ -30,4 +30,29 @@
     <string name="text_bullet">\u2022</string>
 
     <string name="post_tag_nsfw">NSFW</string>
+
+    <string-array name="frontArray">
+        <item>Hot</item>
+        <item>New</item>
+        <item>Rising</item>
+        <item>Top</item>
+        <item>Controversial</item>
+    </string-array>
+
+    <string-array name="searchSortArray">
+        <item>Relevance</item>
+        <item>New</item>
+        <item>Top</item>
+        <item>Hot</item>
+        <item>Comments</item>
+    </string-array>
+
+    <string-array name="fromArray">
+        <item>Hour</item>
+        <item>Day</item>
+        <item>Week</item>
+        <item>Month</item>
+        <item>Year</item>
+        <item>All</item>
+    </string-array>
 </resources>
