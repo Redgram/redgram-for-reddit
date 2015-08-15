@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.home.views.widgets.postlist;
+package com.matie.redgram.ui.common.views.widgets.postlist;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
@@ -7,8 +7,8 @@ import android.util.AttributeSet;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.PostItem;
-import com.matie.redgram.ui.home.views.adapters.PostAdapter;
-import com.matie.redgram.ui.home.views.adapters.PostAdapterBase;
+import com.matie.redgram.ui.common.views.adapters.PostAdapter;
+import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 
 import java.util.List;
 

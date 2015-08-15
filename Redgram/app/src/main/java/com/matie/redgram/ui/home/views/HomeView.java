@@ -2,7 +2,7 @@ package com.matie.redgram.ui.home.views;
 
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.common.views.BaseContextView;
-import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 
 /**
  * Created by matie on 12/04/15.

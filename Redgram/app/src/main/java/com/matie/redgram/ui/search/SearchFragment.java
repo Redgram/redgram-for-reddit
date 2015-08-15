@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -35,7 +36,7 @@ import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.DialogUtil;
-import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.search.views.SearchView;
 import com.nineoldandroids.view.ViewHelper;
 
@@ -144,17 +145,21 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         searchView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                //clear params
-                params.clear();
-
-                String query = v.getText().toString();
-                if(query.length() > 0){
-                   params.put("q", query);
-                   searchPresenter.executeSearch("", params);
-                   searchView.setCursorVisible(false);
+                if (event != null && event.getAction() != KeyEvent.ACTION_DOWN) {
+                    return false;
+                } else if (actionId == EditorInfo.IME_ACTION_SEARCH || event == null || event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    //clear params
+                    params.clear();
+                    String query = v.getText().toString();
+                    if (query.length() > 0) {
+                        params.put("q", query);
+                        searchPresenter.executeSearch("", params);
+                        searchView.setCursorVisible(false);
+                    }
                 }
-
-                return false;
+                //hide keyboard
+                toggleKeyboard(false);
+                return true;
             }
         });
 
@@ -183,7 +188,7 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
                 searchView.setText("");
                 searchView.setHint("Search");
                 searchView.setCursorVisible(true);
-                toggleKeyboard(searchView, true);
+                toggleKeyboard(true);
             }
         });
 
@@ -195,8 +200,8 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
                 getDialogUtil().init();
 
                 //remove layout from its parent, to set it to another, new parent
-                if(filterContentLayout.getParent()!= null){
-                    ((ViewGroup)filterContentLayout.getParent()).removeView(filterContentLayout);
+                if (filterContentLayout.getParent() != null) {
+                    ((ViewGroup) filterContentLayout.getParent()).removeView(filterContentLayout);
                 }
 
                 try {
@@ -218,16 +223,17 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
                                 }
                             })
                             .show();
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     Log.d("DIALOG", "Make sure you are initializing the builder.");
                 }
 
             }
         });
 
-        //show keyboard on fragment enter
-        //todo: set cursor visible not working...investigate
-        toggleKeyboard(searchView, true);
+        //focus on edit text and show keyboard
+        searchView.setFocusable(true);
+        searchView.setCursorVisible(true);
+        toggleKeyboard(true);
     }
 
     private void setupFilterContentLayout() {
@@ -246,7 +252,6 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         sortSpinner.setAdapter(sortAdapter);
 
         limitToView = (EditText)filterContentLayout.findViewById(R.id.limit_view);
-
     }
 
     private void performPositiveEvent(MaterialDialog dialog) {
@@ -256,6 +261,7 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         String query = editText.getText().toString();
         String limitTo = limitToView.getText().toString();
 
+        params.clear();
         params.put("q", (query.trim()));
         params.put("t", fromSpinner.getSelectedItem().toString());
         params.put("sort", sortSpinner.getSelectedItem().toString());
@@ -267,13 +273,14 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         }
     }
 
-    private void toggleKeyboard(View focusedView, boolean show) {
-        //you can use focusedView param instead of getCurrentFocus() in the same way
+    private void toggleKeyboard(boolean show) {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (show)
             inputMethodManager.showSoftInput(getActivity().getCurrentFocus(), InputMethodManager.SHOW_IMPLICIT);
-        else
-            inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+        else {
+            View focusedView = getActivity().getCurrentFocus();
+            inputMethodManager.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
+        }
     }
 
     @Override
@@ -287,8 +294,7 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         super.onPause();
 
         //hide keyboard
-        toggleKeyboard(searchView, false);
-
+        toggleKeyboard(false);
         searchPresenter.unregisterForEvents();
     }
 

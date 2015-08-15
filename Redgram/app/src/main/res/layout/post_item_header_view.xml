@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemHeaderView
-    xmlns:android="http://schemas.android.com/apk/res/android" style="@style/MatchWidth"
+<com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemHeaderView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
     android:padding="@dimen/default_small_padding"
     android:background="@color/white">
 
@@ -25,4 +27,4 @@
 
 
 
-</com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemHeaderView>
+</com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemHeaderView>

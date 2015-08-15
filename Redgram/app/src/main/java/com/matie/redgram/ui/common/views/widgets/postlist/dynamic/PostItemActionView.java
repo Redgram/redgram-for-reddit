@@ -1,13 +1,12 @@
-package com.matie.redgram.ui.home.views.widgets.postlist.dynamic;
+package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.PostItem;
-import com.matie.redgram.ui.home.views.widgets.postlist.PostBaseView;
+import com.matie.redgram.ui.common.views.widgets.postlist.PostBaseView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

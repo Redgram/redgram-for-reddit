@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.home.views.widgets.postlist;
+package com.matie.redgram.ui.common.views.widgets.postlist;
 
 import android.support.v7.widget.RecyclerView;
 

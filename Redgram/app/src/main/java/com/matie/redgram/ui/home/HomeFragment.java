@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
@@ -26,19 +24,15 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.base.BaseComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
-import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.home.views.HomeView;
-import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.nineoldandroids.view.ViewHelper;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -65,15 +59,13 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
     FrameLayout frameLayout;
     TextView toolbarTitle;
-    TextView toolbarSubtitle;git 
+    TextView toolbarSubtitle;
     ImageView listingFilter;
 
     HomeComponent component;
 
     @Inject
     HomePresenterImpl homePresenter;
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -133,6 +125,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                             .itemsCallback(new MaterialDialog.ListCallback() {
                                 @Override
                                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                                    //if top or controversial, call sort dialog
                                     if (i == 3 || i == 4) {
                                         callSortDialog(charSequence);
                                     } else {

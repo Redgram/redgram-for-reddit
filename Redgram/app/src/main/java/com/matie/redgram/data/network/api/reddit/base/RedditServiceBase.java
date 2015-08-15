@@ -101,16 +101,6 @@ public class RedditServiceBase extends RedditBase {
 
                 boolean isOnline = connectionStatus.isOnline();
 
-//                Request.Builder requestBuilder = chain.request().newBuilder();
-//                if (!isOnline) {
-//                    int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
-//                    requestBuilder.header("Cache-Control",
-//                            "public, only-if-cached, max-stale=" + maxStale);
-//                    Log.d("CSTATUS", "no connection!, stale = " + maxStale);
-//                }
-//
-//                Response.Builder responseBuilder = chain.proceed(requestBuilder.build()).newBuilder();
-
                 Response.Builder responseBuilder = chain.proceed(chain.request()).newBuilder();
                 if (isOnline) {
                     responseBuilder.header("cache-control", "public, max-age=" + MAX_AGE);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.ui.home.views.widgets.postlist.PostItemView
+<com.matie.redgram.ui.common.views.widgets.postlist.PostItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/post_item_view"
@@ -12,8 +12,12 @@
            style="@style/Match">
 
             <include
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:id="@+id/post_item_header_view"
-                layout="@layout/post_item_header_view"/>
+                layout="@layout/post_item_header_view"
+                android:layout_alignParentTop="true"
+                />
 
             <FrameLayout
                android:layout_width="wrap_content"
@@ -26,9 +30,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/post_item_action_view"
-                android:layout_below="@id/post_item_dynamic_view"
+                android:layout_below="@+id/post_item_dynamic_view"
+                android:layout_alignParentBottom="true"
                 layout="@layout/post_item_action_view"/>
 
        </RelativeLayout>
 
-</com.matie.redgram.ui.home.views.widgets.postlist.PostItemView>
+</com.matie.redgram.ui.common.views.widgets.postlist.PostItemView>
