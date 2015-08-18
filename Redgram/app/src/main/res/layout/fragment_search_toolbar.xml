@@ -39,7 +39,6 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_gravity="center"
-            android:layout_marginRight="16dp"
+            android:layout_marginRight="12dp"
             android:src="@drawable/ic_filter_list_white_48dp"/>
-
     </LinearLayout>

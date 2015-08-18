@@ -52,11 +52,10 @@ import butterknife.InjectView;
 
 /**
  * Created by matie on 28/06/15.
+ * todo: wrap layout with SwipeRefreshLayout and DISABLE functionality, but use loading animation.
  */
 public class SearchFragment extends BaseFragment implements SearchView, ObservableScrollViewCallbacks {
 
-    @InjectView(R.id.progress_bar)
-    ProgressBar progressBar;
     @InjectView(R.id.search_linear_layout)
     LinearLayout searchLinearLayout;
     @InjectView(R.id.search_recycler_view)
@@ -368,12 +367,12 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     @Override
     public void showProgress() {
         searchRecyclerView.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
+        //progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgress() {
-        progressBar.setVisibility(View.GONE);
+        //progressBar.setVisibility(View.GONE);
         searchRecyclerView.setVisibility(View.VISIBLE);
     }
 

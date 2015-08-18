@@ -5,9 +5,12 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,10 +46,10 @@ import butterknife.InjectView;
 /**
  * Created by matie on 17/01/15.
  */
-public class HomeFragment extends BaseFragment implements HomeView, ObservableScrollViewCallbacks{
+public class HomeFragment extends BaseFragment implements HomeView, ObservableScrollViewCallbacks, SwipeRefreshLayout.OnRefreshListener{
 
-    @InjectView(R.id.progress_bar)
-    ProgressBar progressBar;
+    @InjectView(R.id.home_swipe_container)
+    SwipeRefreshLayout homeSwipeContainer;
     @InjectView(R.id.home_linear_layout)
     LinearLayout homeLinearLayout;
     @InjectView(R.id.home_recycler_view)
@@ -61,6 +64,10 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     TextView toolbarTitle;
     TextView toolbarSubtitle;
     ImageView listingFilter;
+    ImageView listingRefresh;
+
+    String filterChoice;
+    Map<String,String> sortMap;
 
     HomeComponent component;
 
@@ -73,12 +80,16 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.inject(this, view);
 
-        homeRecyclerView.setScrollViewCallbacks(this);
-
         mLayoutManager = (LinearLayoutManager)homeRecyclerView.getLayoutManager();
         mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
         mContentView = getActivity().findViewById(R.id.container);
         mInflater = inflater;
+
+        filterChoice = "Hot";
+        sortMap = null;
+
+        setupSwipeContainer();
+        setupRecyclerView();
 
         return view;
     }
@@ -110,6 +121,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         toolbarTitle = (TextView)rl.findViewById(R.id.home_toolbar_title);
         toolbarSubtitle = (TextView)rl.findViewById(R.id.home_toolbar_subtitle);
         listingFilter = (ImageView)rl.findViewById(R.id.listing_filter);
+        listingRefresh = (ImageView)rl.findViewById(R.id.listing_refresh);
 
         toolbarTitle.setText("Frontpage");
 
@@ -129,20 +141,68 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                                     if (i == 3 || i == 4) {
                                         callSortDialog(charSequence);
                                     } else {
-                                        homePresenter.getListing(charSequence.toString().toLowerCase(), null);
-                                        toolbarSubtitle.setText(charSequence.toString());
+                                        //make params null - necessary as not all filters have
+                                        //url parameters in their calls
+                                        sortMap = null;
+                                        //keep track of filter choice
+                                        filterChoice = charSequence.toString();
+                                        homePresenter.getListing(filterChoice.toLowerCase(), sortMap);
+                                        toolbarSubtitle.setText(filterChoice);
                                     }
                                 }
                             })
                             .show();
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     Log.d("DIALOG", "Make sure you are initializing the builder.");
                 }
+            }
+        });
+
+        listingRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                homePresenter.getListing(filterChoice.toLowerCase(), sortMap);
+            }
+        });
+    }
+
+    private void setupSwipeContainer(){
+        homeSwipeContainer.setOnRefreshListener(this);
+        homeSwipeContainer.setColorSchemeResources(android.R.color.holo_green_dark,
+                android.R.color.holo_red_dark,
+                android.R.color.holo_blue_dark,
+                android.R.color.holo_orange_dark);
+        TypedValue tv = new TypedValue();
+        if (getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        {
+            int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
+                    getContext().getResources().getDisplayMetrics());
+            //push it down to the same position as the first item to be loaded
+            homeSwipeContainer.setProgressViewOffset(false, 0 , actionBarHeight+50);
+        }
+    }
+
+    private void setupRecyclerView(){
+        homeRecyclerView.setScrollViewCallbacks(this);
+        //enable swipe to refresh when the FIRST time is visible ONLY.
+        homeRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                boolean enable = false;
+                if(homeRecyclerView != null && homeRecyclerView.getChildCount() > 0){
+                    // check if the first item of the list is visible
+                    boolean firstItemVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
+                    // enabling or disabling the refresh layout
+                    enable = firstItemVisible;
+                }
+                homeSwipeContainer.setEnabled(enable);
             }
         });
     }
 
     private void callSortDialog(CharSequence query) {
+        filterChoice = query.toString();
+
         getDialogUtil().init();
         getDialogUtil().getDialogBuilder()
                 .title("Sort By")
@@ -153,8 +213,10 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                         //create parameters list for the network call
                         Map<String, String> params = new HashMap<String, String>();
                         params.put("t", charSequence.toString().toLowerCase());
+                        //keep track of filter sort choice
+                        sortMap = params;
                         //perform network call
-                        homePresenter.getListing(query.toString().toLowerCase(), params);
+                        homePresenter.getListing(filterChoice.toLowerCase(), sortMap);
                         //change subtitle only
                         String bullet = getContext().getResources().getString(R.string.text_bullet);
                         toolbarSubtitle.setText(query+" "+bullet+" "+charSequence);
@@ -171,9 +233,8 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
 
-        String query = "Hot";
-        homePresenter.getListing(query.toLowerCase(), null);
-        toolbarSubtitle.setText(query);
+        homePresenter.getListing(filterChoice.toLowerCase(), sortMap);
+        toolbarSubtitle.setText(filterChoice);
     }
 
     @Override
@@ -219,12 +280,12 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     @Override
     public void showProgress() {
         homeRecyclerView.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
+        homeSwipeContainer.setRefreshing(true);
     }
 
     @Override
     public void hideProgress() {
-        progressBar.setVisibility(View.GONE);
+        homeSwipeContainer.setRefreshing(false);
         homeRecyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -296,4 +357,8 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         animator.start();
     }
 
+    @Override
+    public void onRefresh() {
+        homePresenter.getListing(filterChoice.toLowerCase() ,sortMap);
+    }
 }
