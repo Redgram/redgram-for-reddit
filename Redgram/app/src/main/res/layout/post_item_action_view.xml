@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemActionView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/MatchWidth"
-    android:paddingBottom="@dimen/default_small_padding">
+<com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:paddingBottom="@dimen/default_small_padding"
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/comments_action_button"
@@ -11,7 +13,11 @@
         android:textColor="@color/material_redA700"
         android:textSize="@dimen/text_size_micro"
         android:clickable="true"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerInParent="true"
+        android:gravity="center_vertical"/>
 
 
     <TextView
@@ -23,7 +29,9 @@
         android:textColor="@color/material_redA700"
         android:textSize="@dimen/text_size_micro"
         android:clickable="true"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:layout_centerInParent="true"
+        android:gravity="center_vertical"/>
 
 
     <!--this is only visible in case of images and not text-->
@@ -47,6 +55,7 @@
         android:textSize="@dimen/text_size_micro"
         android:textStyle="bold"
         android:text="[source]"
-        />
+        android:layout_centerInParent="true"
+        android:gravity="center_vertical"/>
 
-</com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemActionView>
+</com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView>

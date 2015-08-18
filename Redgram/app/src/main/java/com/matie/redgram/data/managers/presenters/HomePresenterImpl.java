@@ -8,7 +8,7 @@ import com.matie.redgram.data.models.PostItem;
 import com.matie.redgram.data.models.events.SubredditEvent;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.home.views.HomeView;
-import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +87,8 @@ public class HomePresenterImpl implements HomePresenter{
      * todo: Check if it's better to populate onCreate or onStart!!!
      */
     @Override
-    public void getListing(String front, Map<String,String> params) {
+    public void getListing(String front, Map<String,String> params) {//empty items and hide list
+        items = new ArrayList<PostItem>();
         homeView.showProgress();
         subredditSubscription =
                 (Subscription)bindFragment(homeView.getFragment(), redditClient.getListing(front, params))

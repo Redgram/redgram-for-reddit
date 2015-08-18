@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.home.views.adapters;
+package com.matie.redgram.ui.common.views.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.matie.redgram.data.models.PostItem;
-import com.matie.redgram.ui.home.views.widgets.postlist.PostItemView;
-import com.matie.redgram.ui.home.views.widgets.postlist.PostViewHolder;
+import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
+import com.matie.redgram.ui.common.views.widgets.postlist.PostViewHolder;
 
 import java.util.ArrayList;
 import java.util.Collections;

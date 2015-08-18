@@ -52,7 +52,6 @@ public class RedditClient extends RedditServiceBase {
 
         Observable<RedditResponse<RedditListing>> searchObservable = null;
 
-        //todo: client should only be responsible for passing parameters to network calls.
         if(!subreddit.isEmpty() && subreddit != null){
             params.put("restrict_sr", "true");
             searchObservable = provider.executeSearch(subreddit, params);

@@ -1,15 +1,13 @@
 package com.matie.redgram.data.managers.presenters;
 
 import android.util.Log;
-import android.view.View;
 
 import com.matie.redgram.data.models.PostItem;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
-import com.matie.redgram.ui.home.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.search.views.SearchView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

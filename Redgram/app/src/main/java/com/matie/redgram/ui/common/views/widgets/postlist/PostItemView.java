@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.home.views.widgets.postlist;
+package com.matie.redgram.ui.common.views.widgets.postlist;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -9,18 +9,16 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.PostItem;
-import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemActionView;
-import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemDefaultView;
-import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemGalleryView;
-import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemGifView;
-import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemHeaderView;
-import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemImageView;
-import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemTagView;
-import com.matie.redgram.ui.home.views.widgets.postlist.dynamic.PostItemTextView;
+import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView;
+import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemDefaultView;
+import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemGalleryView;
+import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemGifView;
+import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemHeaderView;
+import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemImageView;
+import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemTextView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

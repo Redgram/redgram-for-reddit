@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.home.views.adapters;
+package com.matie.redgram.ui.common.views.adapters;
 
 import android.content.Context;
 import android.view.View;

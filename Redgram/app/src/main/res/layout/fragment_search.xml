@@ -11,13 +11,4 @@
             layout="@layout/post_recycler_view"></include>
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@android:style/Widget.ProgressBar.Small"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        />
-
 </RelativeLayout>

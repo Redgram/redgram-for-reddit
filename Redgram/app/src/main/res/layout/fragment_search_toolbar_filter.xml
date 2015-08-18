@@ -13,6 +13,7 @@
         android:inputType="text"
         android:maxLines="1"
         android:paddingLeft="2dp"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:singleLine="true"
         android:textColor="@color/material_red400"
         android:layout_gravity="center_vertical"
