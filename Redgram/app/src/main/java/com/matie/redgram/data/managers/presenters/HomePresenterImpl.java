@@ -87,9 +87,15 @@ public class HomePresenterImpl implements HomePresenter{
      * todo: Check if it's better to populate onCreate or onStart!!!
      */
     @Override
-    public void getListing(String front, Map<String,String> params) {//empty items and hide list
-        items = new ArrayList<PostItem>();
-        homeView.showProgress();
+    public void getListing(String front, Map<String,String> params) {
+
+        //new items collection to replace the old one if and only if ""after" is not specified
+        //todo: maybe add another interface method to load bottom progress bar
+        if(params != null && !params.containsKey("after")){
+            items = new ArrayList<PostItem>();
+            homeView.showProgress();
+        }
+
         subredditSubscription =
                 (Subscription)bindFragment(homeView.getFragment(), redditClient.getListing(front, params))
                 .subscribeOn(Schedulers.io())

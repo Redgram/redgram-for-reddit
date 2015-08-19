@@ -17,9 +17,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
@@ -67,7 +67,11 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     ImageView listingRefresh;
 
     String filterChoice;
-    Map<String,String> sortMap;
+    Map<String,String> params;
+
+    //recycler view listeners to add.
+    RecyclerView.OnScrollListener swipeLayoutEnablerListener;
+    RecyclerView.OnScrollListener loadMoreListener;
 
     HomeComponent component;
 
@@ -86,17 +90,16 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         mInflater = inflater;
 
         filterChoice = "Hot";
-        sortMap = null;
+        params = new HashMap<String,String>();
 
         setupSwipeContainer();
+        setupListeners();
         setupRecyclerView();
 
         return view;
     }
 
-
     @Override
-
     protected void setupComponent(AppComponent appComponent) {
         MainComponent mainComponent = (MainComponent)appComponent;
         component = DaggerHomeComponent.builder()
@@ -141,13 +144,14 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                                     if (i == 3 || i == 4) {
                                         callSortDialog(charSequence);
                                     } else {
-                                        //make params null - necessary as not all filters have
-                                        //url parameters in their calls
-                                        sortMap = null;
-                                        //keep track of filter choice
-                                        filterChoice = charSequence.toString();
-                                        homePresenter.getListing(filterChoice.toLowerCase(), sortMap);
-                                        toolbarSubtitle.setText(filterChoice);
+                                        if(!homeSwipeContainer.isRefreshing()){
+                                            //necessary as not all filters have url parameters in their calls
+                                            params.clear();
+                                            //keep track of filter choice
+                                            filterChoice = charSequence.toString();
+                                            homePresenter.getListing(filterChoice.toLowerCase(), params);
+                                            toolbarSubtitle.setText(filterChoice);
+                                        }
                                     }
                                 }
                             })
@@ -161,17 +165,64 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         listingRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                homePresenter.getListing(filterChoice.toLowerCase(), sortMap);
+                if(!homeSwipeContainer.isRefreshing()){
+                    //IMPORTANT: When the user refreshes the view, pagination should not be executed as per the documentation
+                    params.remove("after");
+                    homePresenter.getListing(filterChoice.toLowerCase(), params);
+                }
             }
         });
     }
 
+
+    private void setupListeners() {
+
+        //this listener is responsible for invoking SWIPE-TO-REFRESH if the first item is fully visible.
+        swipeLayoutEnablerListener = new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                boolean enable = false;
+                if(homeRecyclerView != null && homeRecyclerView.getChildCount() > 0){
+                    // check if the first item of the list is visible
+                    boolean firstItemVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
+                    // enabling or disabling the refresh layout
+                    enable = firstItemVisible;
+                }
+                homeSwipeContainer.setEnabled(enable);
+            }
+        };
+
+        //this listener is responsible for LOAD MORE. This listener object will be added on startup. Removed when
+        // a network call is done and added again when the requested network call is either COMPLETED or had an ERROR.
+        loadMoreListener = new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+
+                if(newState == RecyclerView.SCROLL_STATE_IDLE){
+                    int lastItemPosition = homeRecyclerView.getPostAdapter().getItemCount() - 1;
+                    if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
+                        Toast.makeText(getContext(), "LOAD MORE", Toast.LENGTH_LONG).show();
+                        params.put("after", homeRecyclerView.getPostAdapter().getItem(lastItemPosition).getId());
+                        homePresenter.getListing(filterChoice.toLowerCase(), params);
+                        //todo use #hideProgress() and #showProgress() with a flag (enum?) to indicate loading source
+                        homeRecyclerView.removeOnScrollListener(loadMoreListener);
+                    }
+
+                }
+
+            }
+        };
+
+    }
+
     private void setupSwipeContainer(){
         homeSwipeContainer.setOnRefreshListener(this);
+
         homeSwipeContainer.setColorSchemeResources(android.R.color.holo_green_dark,
                 android.R.color.holo_red_dark,
                 android.R.color.holo_blue_dark,
                 android.R.color.holo_orange_dark);
+
         TypedValue tv = new TypedValue();
         if (getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
         {
@@ -185,19 +236,8 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     private void setupRecyclerView(){
         homeRecyclerView.setScrollViewCallbacks(this);
         //enable swipe to refresh when the FIRST time is visible ONLY.
-        homeRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                boolean enable = false;
-                if(homeRecyclerView != null && homeRecyclerView.getChildCount() > 0){
-                    // check if the first item of the list is visible
-                    boolean firstItemVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
-                    // enabling or disabling the refresh layout
-                    enable = firstItemVisible;
-                }
-                homeSwipeContainer.setEnabled(enable);
-            }
-        });
+        homeRecyclerView.addOnScrollListener(swipeLayoutEnablerListener);
+        homeRecyclerView.addOnScrollListener(loadMoreListener);
     }
 
     private void callSortDialog(CharSequence query) {
@@ -210,16 +250,18 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                        //create parameters list for the network call
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("t", charSequence.toString().toLowerCase());
-                        //keep track of filter sort choice
-                        sortMap = params;
-                        //perform network call
-                        homePresenter.getListing(filterChoice.toLowerCase(), sortMap);
-                        //change subtitle only
-                        String bullet = getContext().getResources().getString(R.string.text_bullet);
-                        toolbarSubtitle.setText(query+" "+bullet+" "+charSequence);
+                        if(!homeSwipeContainer.isRefreshing()){
+                            //create parameters list for the network call
+                            Map<String, String> urlParams = new HashMap<String, String>();
+                            urlParams.put("t", charSequence.toString().toLowerCase());
+                            //keep track of filter sort choice
+                            params = urlParams;
+                            //perform network call
+                            homePresenter.getListing(filterChoice.toLowerCase(), params);
+                            //change subtitle only
+                            String bullet = getContext().getResources().getString(R.string.text_bullet);
+                            toolbarSubtitle.setText(query+" "+bullet+" "+charSequence);
+                        }
                     }
                 }).show();
     }
@@ -233,7 +275,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
 
-        homePresenter.getListing(filterChoice.toLowerCase(), sortMap);
+        homePresenter.getListing(filterChoice.toLowerCase(), params);
         toolbarSubtitle.setText(filterChoice);
     }
 
@@ -281,12 +323,16 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     public void showProgress() {
         homeRecyclerView.setVisibility(View.GONE);
         homeSwipeContainer.setRefreshing(true);
+        //todo: add a flag that is invoked from the presenter to determine the flow
+        homeRecyclerView.removeOnScrollListener(loadMoreListener);
     }
 
     @Override
     public void hideProgress() {
         homeSwipeContainer.setRefreshing(false);
         homeRecyclerView.setVisibility(View.VISIBLE);
+        //todo: same as #showProgress()
+        homeRecyclerView.addOnScrollListener(loadMoreListener);
     }
 
     @Override
@@ -359,6 +405,8 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
     @Override
     public void onRefresh() {
-        homePresenter.getListing(filterChoice.toLowerCase() ,sortMap);
+        //IMPORTANT: When the user refreshes the view, pagination should not be executed as per the documentation
+        params.remove("after");
+        homePresenter.getListing(filterChoice.toLowerCase() , params);
     }
 }

@@ -4,10 +4,14 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -54,16 +58,19 @@ import butterknife.InjectView;
  * Created by matie on 28/06/15.
  * todo: wrap layout with SwipeRefreshLayout and DISABLE functionality, but use loading animation.
  */
-public class SearchFragment extends BaseFragment implements SearchView, ObservableScrollViewCallbacks {
+public class SearchFragment extends BaseFragment implements SearchView, ObservableScrollViewCallbacks{
 
     @InjectView(R.id.search_linear_layout)
     LinearLayout searchLinearLayout;
     @InjectView(R.id.search_recycler_view)
     PostRecyclerView searchRecyclerView;
+    @InjectView(R.id.search_swipe_container)
+    SwipeRefreshLayout searchSwipeContainer;
 
     Toolbar mToolbar;
     View mContentView;
     LayoutInflater mInflater;
+    LinearLayoutManager mLayoutManager;
 
     SearchComponent component;
 
@@ -96,18 +103,21 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.inject(this,view);
 
+        mLayoutManager = (LinearLayoutManager)searchRecyclerView.getLayoutManager();
         mContentView = getActivity().findViewById(R.id.container);
         mInflater = inflater;
-
-        searchRecyclerView.setScrollViewCallbacks(this);
 
         sortArray = Arrays.asList(getContext().getResources().getStringArray(R.array.searchSortArray));
         fromArray = Arrays.asList(getContext().getResources().getStringArray(R.array.fromArray));
         params = new HashMap<>();
 
+        setupSwipeContainer();
+        setupRecyclerView();
+
         return view;
 
     }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
@@ -233,6 +243,28 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         searchView.setFocusable(true);
         searchView.setCursorVisible(true);
         toggleKeyboard(true);
+    }
+
+    private void setupSwipeContainer(){
+        //disable it for search fragment
+        searchSwipeContainer.setEnabled(false);
+        searchSwipeContainer.setColorSchemeResources(android.R.color.holo_green_dark,
+                android.R.color.holo_red_dark,
+                android.R.color.holo_blue_dark,
+                android.R.color.holo_orange_dark);
+
+        TypedValue tv = new TypedValue();
+        if (getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        {
+            int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
+                    getContext().getResources().getDisplayMetrics());
+            //push it down to the same position as the first item to be loaded
+            searchSwipeContainer.setProgressViewOffset(false, 0 , actionBarHeight+50);
+        }
+    }
+
+    private void setupRecyclerView() {
+        searchRecyclerView.setScrollViewCallbacks(this);
     }
 
     private void setupFilterContentLayout() {
@@ -367,12 +399,14 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     @Override
     public void showProgress() {
         searchRecyclerView.setVisibility(View.GONE);
+        searchSwipeContainer.setRefreshing(true);
         //progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgress() {
         //progressBar.setVisibility(View.GONE);
+        searchSwipeContainer.setRefreshing(false);
         searchRecyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -405,4 +439,5 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     public Fragment getFragment() {
         return this;
     }
+
 }

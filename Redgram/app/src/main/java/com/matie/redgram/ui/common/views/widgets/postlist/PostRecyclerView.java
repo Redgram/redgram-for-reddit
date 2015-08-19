@@ -36,8 +36,8 @@ public class PostRecyclerView extends ObservableRecyclerView {
         super.onFinishInflate();
         ButterKnife.inject(this);
 
-        this.setLayoutManager(layoutManager);
-        this.setAdapter(postAdapter);
+        setLayoutManager(layoutManager);
+        setAdapter(postAdapter);
     }
 
     public void replaceWith(List<PostItem> items){

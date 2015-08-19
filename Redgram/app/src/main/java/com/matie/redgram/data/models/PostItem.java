@@ -24,6 +24,7 @@ public class PostItem {
         IMGUR_SUBREDDIT
     }
 
+    private String id;
     private Type type;
     private String author;
     private int time;
@@ -40,6 +41,14 @@ public class PostItem {
     private String subreddit;
 
     public PostItem(){}
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getSubreddit() {
         return subreddit;
