@@ -9,14 +9,15 @@ Please head to the [ABOUT](/ABOUT.md) page to learn more about the project.
 
 **Goal**: Using Android best practices to reach a solid base for further development.
 
-This project is under **GPL license**. Although other licenses are prefered, no change will be considered for the mean time.
-
 For collaborations, please view [this issue](https://github.com/Redgram/redgram-for-reddit/issues/1) and follow the links, specifically the article on the suggested branching model.
 
 ###Latest:
 
-- Frontpage listing complete
-- Basic search component.
+Head over to the `dev` branch for the recent changes. The `master` branch will be merged with `dev` every time a functionality is complete.
+
+- Swipe-to-refresh for both Search and Home views.
+- Frontpage listing with filters.
+- Advanced search component.
 - Caching fixed - [Implementation](/Redgram/app/src/main/java/com/matie/redgram/data/network/api/reddit/base/RedditServiceBase.java).
 
 ###Installation:
@@ -30,10 +31,14 @@ For collaborations, please view [this issue](https://github.com/Redgram/redgram-
 ###Todo:
 
 - Follow the Program to Interface approach. [Read More](http://stackoverflow.com/questions/383947/what-does-it-mean-to-program-to-an-interface).
-- <del>Implement advanced search.
 - Fix minor issues with search (mostly UI)
 - Create XML Layouts for the different list items.
+- <del>Implement advanced search.
 - <del>Implement front page with filters for Home fragment.
 - <del>Implement a reliable Search functionality.
 - <del>Cache doesn't seem to work. Investigate.
 - <del>Learn/Integrate Dagger(2).
+
+###License:
+
+This project is under **GPL license**. Although other licenses are prefered, no change will be considered for the mean time.
