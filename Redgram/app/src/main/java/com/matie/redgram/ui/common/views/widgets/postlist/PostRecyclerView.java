@@ -19,6 +19,10 @@ import butterknife.ButterKnife;
  */
 public class PostRecyclerView extends ObservableRecyclerView {
 
+    //these are used to determine the source of loading
+    public static final int REFRESH = 0;
+    public static final int LOAD_MORE = 1;
+
     private final Context context;
     private final LayoutManager layoutManager;
     private final PostAdapter postAdapter;

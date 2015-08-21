@@ -17,9 +17,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
@@ -54,6 +54,8 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     LinearLayout homeLinearLayout;
     @InjectView(R.id.home_recycler_view)
     PostRecyclerView homeRecyclerView;
+    @InjectView(R.id.home_load_more_bar)
+    ProgressBar homeProgressBar;
 
     Toolbar mToolbar;
     View mContentView;
@@ -201,11 +203,8 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                 if(newState == RecyclerView.SCROLL_STATE_IDLE){
                     int lastItemPosition = homeRecyclerView.getPostAdapter().getItemCount() - 1;
                     if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
-                        Toast.makeText(getContext(), "LOAD MORE", Toast.LENGTH_LONG).show();
-                        params.put("after", homeRecyclerView.getPostAdapter().getItem(lastItemPosition).getId());
+                        params.put("after", homeRecyclerView.getPostAdapter().getItem(lastItemPosition).getName());
                         homePresenter.getListing(filterChoice.toLowerCase(), params);
-                        //todo use #hideProgress() and #showProgress() with a flag (enum?) to indicate loading source
-                        homeRecyclerView.removeOnScrollListener(loadMoreListener);
                     }
 
                 }
@@ -295,6 +294,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        homeRecyclerView.clearOnScrollListeners();
         ButterKnife.reset(this);
     }
 
@@ -320,19 +320,25 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     }
 
     @Override
-    public void showProgress() {
-        homeRecyclerView.setVisibility(View.GONE);
-        homeSwipeContainer.setRefreshing(true);
-        //todo: add a flag that is invoked from the presenter to determine the flow
-        homeRecyclerView.removeOnScrollListener(loadMoreListener);
+    public void showProgress(int loadingSource) {
+        if(loadingSource == PostRecyclerView.REFRESH){
+            homeRecyclerView.setVisibility(View.GONE);
+            homeSwipeContainer.setRefreshing(true);
+        }else if(loadingSource == PostRecyclerView.LOAD_MORE){
+            homeRecyclerView.removeOnScrollListener(loadMoreListener);
+            homeProgressBar.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
-    public void hideProgress() {
-        homeSwipeContainer.setRefreshing(false);
-        homeRecyclerView.setVisibility(View.VISIBLE);
-        //todo: same as #showProgress()
-        homeRecyclerView.addOnScrollListener(loadMoreListener);
+    public void hideProgress(int loadingSource) {
+        if(loadingSource == PostRecyclerView.REFRESH){
+            homeSwipeContainer.setRefreshing(false);
+            homeRecyclerView.setVisibility(View.VISIBLE);
+        }else if(loadingSource == PostRecyclerView.LOAD_MORE){
+            homeRecyclerView.addOnScrollListener(loadMoreListener);
+            homeProgressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override

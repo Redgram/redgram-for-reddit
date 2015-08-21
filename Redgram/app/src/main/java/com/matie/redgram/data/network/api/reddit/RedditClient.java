@@ -73,7 +73,7 @@ public class RedditClient extends RedditServiceBase {
         PostItem item = new PostItem();
 
         item.setId(link.getId());
-
+        item.setName(link.getName());
         item.setScore(link.getScore());
         item.setAuthor(link.getAuthor());
         item.setTime(link.getCreatedUtc().getHourOfDay());

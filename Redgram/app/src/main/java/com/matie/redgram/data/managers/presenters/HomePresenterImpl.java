@@ -42,6 +42,8 @@ public class HomePresenterImpl implements HomePresenter{
 
     private Subscription subredditSubscription;
 
+    int loadingSource;
+
     /**
      * Called onCreate(View) of Activity/Fragment
      * @param homeView
@@ -52,6 +54,7 @@ public class HomePresenterImpl implements HomePresenter{
         this.homeRecyclerView = homeView.getRecyclerView();
         this.redditClient = redditClient;
         this.items = new ArrayList<PostItem>();
+        this.loadingSource = 0;
     }
 
     /**
@@ -92,8 +95,12 @@ public class HomePresenterImpl implements HomePresenter{
         //new items collection to replace the old one if and only if ""after" is not specified
         //todo: maybe add another interface method to load bottom progress bar
         if(params != null && !params.containsKey("after")){
+            loadingSource = PostRecyclerView.REFRESH;
             items = new ArrayList<PostItem>();
-            homeView.showProgress();
+            homeView.showProgress(loadingSource);
+        }else{
+            loadingSource = PostRecyclerView.LOAD_MORE;
+            homeView.showProgress(loadingSource);
         }
 
         subredditSubscription =
@@ -103,20 +110,20 @@ public class HomePresenterImpl implements HomePresenter{
                 .subscribe(new Subscriber<PostItem>() {
                     @Override
                     public void onCompleted() {
-                        homeView.hideProgress();
+                        homeView.hideProgress(loadingSource);
                         homeRecyclerView.replaceWith(items);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        homeView.hideProgress();
+                        homeView.hideProgress(loadingSource);
                         homeView.showErrorMessage();
                     }
 
                     @Override
                     public void onNext(PostItem postItem) {
                         items.add(postItem);
-                        Log.d("ITEM URL", postItem.getAuthor() + "--" + postItem.getType() + "--" + postItem.getUrl());
+                        Log.d("ITEM URL", postItem.getAuthor() + "--" + postItem.getType() + "--" + postItem.getId());
                     }
                 });
 
