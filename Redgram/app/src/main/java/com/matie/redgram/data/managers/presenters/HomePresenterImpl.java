@@ -34,8 +34,6 @@ public class HomePresenterImpl implements HomePresenter{
     final private PostRecyclerView homeRecyclerView;
     final private RedditClient redditClient;
 
-    static private RxBus rxBus;
-
     private CompositeSubscription subscriptions;
 
     private List<PostItem> items;
@@ -63,15 +61,11 @@ public class HomePresenterImpl implements HomePresenter{
     @Override
     public void registerForEvents() {
 
-        if(rxBus == null)
-            rxBus = RxBus.getDefault();
-
         if(subscriptions == null)
             subscriptions = new CompositeSubscription();
 
         if(subscriptions.isUnsubscribed()){
             subscriptions.add(subredditSubscription);
-            subscriptions.add(getEventHandler());
         }
 
     }
@@ -129,10 +123,10 @@ public class HomePresenterImpl implements HomePresenter{
 
     }
 
-    private Subscription getEventHandler(){
-        return (Subscription)bindFragment(homeView.getFragment(), rxBus.toObservable())
-                .subscribe(event -> identifyAndPerformEvent(event));
-    }
+//    private Subscription getEventHandler(){
+//        return (Subscription)bindFragment(homeView.getFragment(), rxBus.toObservable())
+//                .subscribe(event -> identifyAndPerformEvent(event));
+//    }
 
     private void identifyAndPerformEvent(Object event){
         if(event instanceof SubredditEvent){

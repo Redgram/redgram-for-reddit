@@ -8,8 +8,8 @@ import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
  * Created by matie on 12/04/15.
  */
 public interface SearchView extends BaseContextView {
-    public void showProgress();
-    public void hideProgress();
+    public void showProgress(int source);
+    public void hideProgress(int source);
     public void showInfoMessage();
     public void showErrorMessage();
     public void showToolbar();

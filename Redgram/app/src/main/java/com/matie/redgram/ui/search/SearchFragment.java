@@ -66,6 +66,8 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     PostRecyclerView searchRecyclerView;
     @InjectView(R.id.search_swipe_container)
     SwipeRefreshLayout searchSwipeContainer;
+    @InjectView(R.id.search_load_more_bar)
+    ProgressBar searchProgressBar;
 
     Toolbar mToolbar;
     View mContentView;
@@ -89,7 +91,10 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
 
     List<String> sortArray;
     List<String> fromArray;
+    String subreddit;
     Map<String, String> params;
+
+    RecyclerView.OnScrollListener loadMoreListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,9 +114,11 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
 
         sortArray = Arrays.asList(getContext().getResources().getStringArray(R.array.searchSortArray));
         fromArray = Arrays.asList(getContext().getResources().getStringArray(R.array.fromArray));
+        subreddit = "";
         params = new HashMap<>();
 
         setupSwipeContainer();
+        setupListeners();
         setupRecyclerView();
 
         return view;
@@ -160,9 +167,10 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
                     //clear params
                     params.clear();
                     String query = v.getText().toString();
-                    if (query.length() > 0) {
+                    if (query.length() > 0 && !searchSwipeContainer.isRefreshing()) {
                         params.put("q", query);
-                        searchPresenter.executeSearch("", params);
+                        subreddit = "";
+                        searchPresenter.executeSearch(subreddit, params);
                         searchView.setCursorVisible(false);
                     }
                 }
@@ -263,8 +271,29 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         }
     }
 
+    private void setupListeners() {
+        //this listener is responsible for LOAD MORE. This listener object will be added on startup. Removed when
+        // a network call is done and added again when the requested network call is either COMPLETED or had an ERROR.
+        loadMoreListener = new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if(newState == RecyclerView.SCROLL_STATE_IDLE){
+                    if(searchRecyclerView != null && searchRecyclerView.getChildCount() > 0){
+                        int lastItemPosition = searchRecyclerView.getPostAdapter().getItemCount() - 1;
+                        if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
+                            params.put("after", searchRecyclerView.getPostAdapter().getItem(lastItemPosition).getName());
+                            searchPresenter.executeSearch(subreddit, params);
+                        }
+                    }
+                }
+            }
+        };
+
+    }
+
     private void setupRecyclerView() {
         searchRecyclerView.setScrollViewCallbacks(this);
+        searchRecyclerView.addOnScrollListener(loadMoreListener);
     }
 
     private void setupFilterContentLayout() {
@@ -292,16 +321,21 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         String query = editText.getText().toString();
         String limitTo = limitToView.getText().toString();
 
-        params.clear();
-        params.put("q", (query.trim()));
-        params.put("t", fromSpinner.getSelectedItem().toString());
-        params.put("sort", sortSpinner.getSelectedItem().toString());
+        if(!searchSwipeContainer.isRefreshing()) {
+            params.clear();
+            params.put("q", (query.trim()));
+            params.put("t", fromSpinner.getSelectedItem().toString());
+            params.put("sort", sortSpinner.getSelectedItem().toString());
 
-        searchPresenter.executeSearch(limitTo.trim(), params);
+            subreddit = limitTo.trim();
 
-        if (!searchView.getText().toString().equals(query)) {
-            searchView.setText(query);
+            searchPresenter.executeSearch(subreddit, params);
+
+            if (!searchView.getText().toString().equals(query)) {
+                searchView.setText(query);
+            }
         }
+
     }
 
     private void toggleKeyboard(boolean show) {
@@ -397,17 +431,25 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     }
 
     @Override
-    public void showProgress() {
-        searchRecyclerView.setVisibility(View.GONE);
-        searchSwipeContainer.setRefreshing(true);
-        //progressBar.setVisibility(View.VISIBLE);
+    public void showProgress(int loadingSource) {
+        if(loadingSource == PostRecyclerView.REFRESH){
+            searchRecyclerView.setVisibility(View.GONE);
+            searchSwipeContainer.setRefreshing(true);
+        }else if(loadingSource == PostRecyclerView.LOAD_MORE){
+            searchRecyclerView.removeOnScrollListener(loadMoreListener);
+            searchProgressBar.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
-    public void hideProgress() {
-        //progressBar.setVisibility(View.GONE);
-        searchSwipeContainer.setRefreshing(false);
-        searchRecyclerView.setVisibility(View.VISIBLE);
+    public void hideProgress(int loadingSource) {
+        if(loadingSource == PostRecyclerView.REFRESH){
+            searchSwipeContainer.setRefreshing(false);
+            searchRecyclerView.setVisibility(View.VISIBLE);
+        }else if(loadingSource == PostRecyclerView.LOAD_MORE){
+            searchRecyclerView.addOnScrollListener(loadMoreListener);
+            searchProgressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override

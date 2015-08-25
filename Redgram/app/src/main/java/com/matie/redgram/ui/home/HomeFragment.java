@@ -199,16 +199,15 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         loadMoreListener = new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-
                 if(newState == RecyclerView.SCROLL_STATE_IDLE){
-                    int lastItemPosition = homeRecyclerView.getPostAdapter().getItemCount() - 1;
-                    if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
-                        params.put("after", homeRecyclerView.getPostAdapter().getItem(lastItemPosition).getName());
-                        homePresenter.getListing(filterChoice.toLowerCase(), params);
+                    if(homeRecyclerView != null && homeRecyclerView.getChildCount() > 0){
+                        int lastItemPosition = homeRecyclerView.getPostAdapter().getItemCount() - 1;
+                        if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
+                            params.put("after", homeRecyclerView.getPostAdapter().getItem(lastItemPosition).getName());
+                            homePresenter.getListing(filterChoice.toLowerCase(), params);
+                        }
                     }
-
                 }
-
             }
         };
 

@@ -34,12 +34,16 @@ public class SearchPresenterImpl implements SearchPresenter {
     CompositeSubscription subscriptions;
     Subscription searchSubscription;
 
+    int loadingSource;
+
     @Inject
     public SearchPresenterImpl(SearchView searchView, RedditClient redditClient) {
         this.searchView = searchView;
         this.redditClient = redditClient;
 
         searchRecyclerView = searchView.getRecyclerView();
+        this.items = new ArrayList<PostItem>();
+        this.loadingSource = 0;
     }
 
     @Override
@@ -57,10 +61,15 @@ public class SearchPresenterImpl implements SearchPresenter {
 
     @Override
     public void executeSearch(String subreddit, Map<String, String> params) {
-        //empty items and hide list
-        items = new ArrayList<PostItem>();
-        //loading widget
-        searchView.showProgress();
+
+        if(params != null && !params.containsKey("after")){
+            loadingSource = PostRecyclerView.REFRESH;
+            items = new ArrayList<PostItem>();
+            searchView.showProgress(loadingSource);
+        }else{
+            loadingSource = PostRecyclerView.LOAD_MORE;
+            searchView.showProgress(loadingSource);
+        }
 
         searchSubscription = (Subscription)bindFragment(searchView.getFragment(), redditClient.executeSearch(subreddit, params))
                 .subscribeOn(Schedulers.io())
@@ -69,13 +78,13 @@ public class SearchPresenterImpl implements SearchPresenter {
                     @Override
                     public void onCompleted() {
                         //hide progress and show list
-                        searchView.hideProgress();
+                        searchView.hideProgress(loadingSource);
                         searchRecyclerView.replaceWith(items);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        searchView.hideProgress();
+                        searchView.hideProgress(loadingSource);
                         searchView.showErrorMessage();
                     }
 
