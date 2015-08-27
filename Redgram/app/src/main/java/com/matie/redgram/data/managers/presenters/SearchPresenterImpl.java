@@ -52,39 +52,50 @@ public class SearchPresenterImpl implements SearchPresenter {
             subscriptions = new CompositeSubscription();
     }
 
-
     @Override
     public void unregisterForEvents() {
         if(subscriptions.hasSubscriptions() || subscriptions != null)
             subscriptions.unsubscribe();
+
+        searchRecyclerView.clearOnScrollListeners();
     }
 
     @Override
     public void executeSearch(String subreddit, Map<String, String> params) {
+        items = new ArrayList<PostItem>();
+        searchView.showLoading();
+        searchSubscription = getSearchSubscription(subreddit, params, REFRESH);
 
-        if(params != null && !params.containsKey("after")){
-            loadingSource = PostRecyclerView.REFRESH;
-            items = new ArrayList<PostItem>();
-            searchView.showProgress(loadingSource);
-        }else{
-            loadingSource = PostRecyclerView.LOAD_MORE;
-            searchView.showProgress(loadingSource);
+        if(!searchSubscription.isUnsubscribed()){
+            subscriptions.add(searchSubscription);
         }
+    }
 
-        searchSubscription = (Subscription)bindFragment(searchView.getFragment(), redditClient.executeSearch(subreddit, params))
+    @Override
+    public void loadMoreResults(String subreddit, Map<String, String> params) {
+        searchView.showLoadMoreIndicator();
+        searchSubscription = getSearchSubscription(subreddit, params, LOAD_MORE);
+
+        if(!searchSubscription.isUnsubscribed()){
+            subscriptions.add(searchSubscription);
+        }
+    }
+
+    private Subscription getSearchSubscription(String subreddit, Map<String, String> params, int loadingEvent) {
+        return (Subscription)bindFragment(searchView.getFragment(), redditClient.executeSearch(subreddit, params))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<PostItem>() {
                     @Override
                     public void onCompleted() {
                         //hide progress and show list
-                        searchView.hideProgress(loadingSource);
+                        hideLoadingEvent(loadingEvent);
                         searchRecyclerView.replaceWith(items);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        searchView.hideProgress(loadingSource);
+                        hideLoadingEvent(loadingEvent);
                         searchView.showErrorMessage();
                     }
 
@@ -94,11 +105,13 @@ public class SearchPresenterImpl implements SearchPresenter {
                         Log.d("ITEM URL", postItem.getAuthor() + "--" + postItem.getType() + "--" + postItem.getUrl());
                     }
                 });
-
-        //todo: executes every time I search!! FIX
-        if(!searchSubscription.isUnsubscribed()){
-            subscriptions.add(searchSubscription);
-        }
-
     }
+
+    private void hideLoadingEvent(int loadingEvent){
+        if(loadingEvent == REFRESH)
+            searchView.hideLoading();
+        else if(loadingEvent == LOAD_MORE)
+            searchView.hideLoadMoreIndicator();
+    }
+
 }

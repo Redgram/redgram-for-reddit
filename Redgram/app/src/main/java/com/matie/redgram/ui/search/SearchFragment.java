@@ -282,7 +282,7 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
                         int lastItemPosition = searchRecyclerView.getPostAdapter().getItemCount() - 1;
                         if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
                             params.put("after", searchRecyclerView.getPostAdapter().getItem(lastItemPosition).getName());
-                            searchPresenter.executeSearch(subreddit, params);
+                            searchPresenter.loadMoreResults(subreddit, params);
                         }
                     }
                 }
@@ -431,25 +431,27 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     }
 
     @Override
-    public void showProgress(int loadingSource) {
-        if(loadingSource == PostRecyclerView.REFRESH){
-            searchRecyclerView.setVisibility(View.GONE);
-            searchSwipeContainer.setRefreshing(true);
-        }else if(loadingSource == PostRecyclerView.LOAD_MORE){
-            searchRecyclerView.removeOnScrollListener(loadMoreListener);
-            searchProgressBar.setVisibility(View.VISIBLE);
-        }
+    public void showLoading() {
+        searchRecyclerView.setVisibility(View.GONE);
+        searchSwipeContainer.setRefreshing(true);
     }
 
     @Override
-    public void hideProgress(int loadingSource) {
-        if(loadingSource == PostRecyclerView.REFRESH){
-            searchSwipeContainer.setRefreshing(false);
-            searchRecyclerView.setVisibility(View.VISIBLE);
-        }else if(loadingSource == PostRecyclerView.LOAD_MORE){
-            searchRecyclerView.addOnScrollListener(loadMoreListener);
-            searchProgressBar.setVisibility(View.GONE);
-        }
+    public void hideLoading() {
+        searchSwipeContainer.setRefreshing(false);
+        searchRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showLoadMoreIndicator() {
+        searchRecyclerView.removeOnScrollListener(loadMoreListener);
+        searchProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideLoadMoreIndicator() {
+        searchRecyclerView.addOnScrollListener(loadMoreListener);
+        searchProgressBar.setVisibility(View.GONE);
     }
 
     @Override
