@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemTextView
     xmlns:android="http://schemas.android.com/apk/res/android" style="@style/MatchWidth"
-    android:padding="@dimen/default_small_padding"
     android:background="@color/white">
 
         <TextView
@@ -9,16 +8,17 @@
             style="@style/Wrap"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:textSize="@dimen/text_size_small"
-            android:textStyle="bold"
-            android:text="this is a title"
-            android:paddingLeft="@dimen/content_text_padding"
-            android:paddingRight="@dimen/content_text_padding"
-            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_medium"
+            android:text="this is a titlethis is a titlethis is a titlethis is a titlethis is a titlethis is a titlethis is a titlethis is a titlethis is a titlethis is a titlethis is a titlethis is a title"
+            android:layout_marginLeft="@dimen/default_horizontal_margin"
+            android:layout_marginRight="@dimen/default_horizontal_margin"
+            android:textColor="@color/material_blue_grey_950"
 
-            android:maxLines="3"
-            android:ellipsize="end"
-            />
+            android:paddingTop="@dimen/default_small_padding"
+            android:paddingBottom="@dimen/default_small_padding"/>
+
+            <!--android:maxLines="3"-->
+            <!--android:ellipsize="end"-->
 
         <!--description is optional, so we set visibility to GONE-->
         <TextView
@@ -26,16 +26,25 @@
             style="@style/Wrap"
             android:layout_below="@id/text_title_view"
             android:layout_marginTop="3dp"
-            android:paddingLeft="@dimen/content_text_padding"
-            android:paddingRight="@dimen/content_text_padding"
+            android:layout_marginLeft="@dimen/default_horizontal_margin"
+            android:layout_marginRight="@dimen/default_horizontal_margin"
             android:text="this is description of a title which is optional"
             android:textColor="@color/material_blue_grey_950"
-            android:textSize="@dimen/text_size_micro"
+            android:textSize="@dimen/text_size_small"
             android:visibility="gone"
 
             android:maxLines="6"
             android:ellipsize="end"
+
+            android:paddingBottom="@dimen/default_small_padding"
         />
+
+    <include
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_tag_view"
+        android:layout_below="@id/text_content_view"
+        layout="@layout/post_item_tag_view"/>
 
 
 </com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemTextView>

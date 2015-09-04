@@ -3,7 +3,6 @@ package com.matie.redgram.data.managers.presenters;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.matie.redgram.data.managers.rxbus.RxBus;
 import com.matie.redgram.data.models.PostItem;
 import com.matie.redgram.data.models.events.SubredditEvent;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
@@ -34,15 +33,12 @@ public class HomePresenterImpl implements HomePresenter{
     final private PostRecyclerView homeRecyclerView;
     final private RedditClient redditClient;
 
-    static private RxBus rxBus;
-
     private CompositeSubscription subscriptions;
 
     private List<PostItem> items;
 
-    private Subscription subredditSubscription;
+    private Subscription listingSubscription;
 
-    int loadingSource;
 
     /**
      * Called onCreate(View) of Activity/Fragment
@@ -54,7 +50,6 @@ public class HomePresenterImpl implements HomePresenter{
         this.homeRecyclerView = homeView.getRecyclerView();
         this.redditClient = redditClient;
         this.items = new ArrayList<PostItem>();
-        this.loadingSource = 0;
     }
 
     /**
@@ -62,18 +57,12 @@ public class HomePresenterImpl implements HomePresenter{
      */
     @Override
     public void registerForEvents() {
-
-        if(rxBus == null)
-            rxBus = RxBus.getDefault();
-
         if(subscriptions == null)
             subscriptions = new CompositeSubscription();
 
         if(subscriptions.isUnsubscribed()){
-            subscriptions.add(subredditSubscription);
-            subscriptions.add(getEventHandler());
+            subscriptions.add(listingSubscription);
         }
-
     }
     /**
      * Called onPause of Activity/Fragment
@@ -82,41 +71,51 @@ public class HomePresenterImpl implements HomePresenter{
     public void unregisterForEvents() {
         if(subscriptions.hasSubscriptions() || subscriptions != null)
             subscriptions.unsubscribe();
+
+        //homeRecyclerView.clearOnScrollListeners();
     }
 
     /**
      * List populated onCreate(View)
-     *
-     * todo: Check if it's better to populate onCreate or onStart!!!
      */
     @Override
     public void getListing(String front, Map<String,String> params) {
+        items = new ArrayList<PostItem>();
+        homeView.showLoading();
+        listingSubscription = getListingSubscription(front, params, REFRESH);
+    }
 
-        //new items collection to replace the old one if and only if ""after" is not specified
-        //todo: maybe add another interface method to load bottom progress bar
-        if(params != null && !params.containsKey("after")){
-            loadingSource = PostRecyclerView.REFRESH;
-            items = new ArrayList<PostItem>();
-            homeView.showProgress(loadingSource);
-        }else{
-            loadingSource = PostRecyclerView.LOAD_MORE;
-            homeView.showProgress(loadingSource);
-        }
+    @Override
+    public void getMoreListing(String front, Map<String, String> params) {
+        homeView.showLoadMoreIndicator();
+        listingSubscription = getListingSubscription(front, params, LOAD_MORE);
+    }
 
-        subredditSubscription =
-                (Subscription)bindFragment(homeView.getFragment(), redditClient.getListing(front, params))
+    private void hideLoadingEvent(int loadingEvent){
+        if(loadingEvent == REFRESH)
+            homeView.hideLoading();
+        else if(loadingEvent == LOAD_MORE)
+            homeView.hideLoadMoreIndicator();
+    }
+
+    private Subscription getListingSubscription(String front, Map<String,String> params, int loadingEvent){
+
+        return (Subscription)bindFragment(homeView.getFragment(), redditClient.getListing(front, params))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<PostItem>() {
                     @Override
                     public void onCompleted() {
-                        homeView.hideProgress(loadingSource);
+                        //// TODO: 29/08/15 send the last item name to fragment to use for loading more.
+                        String after = items.get(items.size() - 1).getName();
+
+                        hideLoadingEvent(loadingEvent);
                         homeRecyclerView.replaceWith(items);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        homeView.hideProgress(loadingSource);
+                        hideLoadingEvent(loadingEvent);
                         homeView.showErrorMessage();
                     }
 
@@ -126,13 +125,12 @@ public class HomePresenterImpl implements HomePresenter{
                         Log.d("ITEM URL", postItem.getAuthor() + "--" + postItem.getType() + "--" + postItem.getId());
                     }
                 });
-
     }
 
-    private Subscription getEventHandler(){
-        return (Subscription)bindFragment(homeView.getFragment(), rxBus.toObservable())
-                .subscribe(event -> identifyAndPerformEvent(event));
-    }
+    //    private Subscription getEventHandler(){
+//        return (Subscription)bindFragment(homeView.getFragment(), rxBus.toObservable())
+//                .subscribe(event -> identifyAndPerformEvent(event));
+//    }
 
     private void identifyAndPerformEvent(Object event){
         if(event instanceof SubredditEvent){

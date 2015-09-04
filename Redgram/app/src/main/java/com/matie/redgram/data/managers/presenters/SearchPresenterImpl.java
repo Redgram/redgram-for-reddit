@@ -34,12 +34,16 @@ public class SearchPresenterImpl implements SearchPresenter {
     CompositeSubscription subscriptions;
     Subscription searchSubscription;
 
+    int loadingSource;
+
     @Inject
     public SearchPresenterImpl(SearchView searchView, RedditClient redditClient) {
         this.searchView = searchView;
         this.redditClient = redditClient;
 
         searchRecyclerView = searchView.getRecyclerView();
+        this.items = new ArrayList<PostItem>();
+        this.loadingSource = 0;
     }
 
     @Override
@@ -48,34 +52,50 @@ public class SearchPresenterImpl implements SearchPresenter {
             subscriptions = new CompositeSubscription();
     }
 
-
     @Override
     public void unregisterForEvents() {
         if(subscriptions.hasSubscriptions() || subscriptions != null)
             subscriptions.unsubscribe();
+
+        searchRecyclerView.clearOnScrollListeners();
     }
 
     @Override
     public void executeSearch(String subreddit, Map<String, String> params) {
-        //empty items and hide list
         items = new ArrayList<PostItem>();
-        //loading widget
-        searchView.showProgress();
+        searchView.showLoading();
+        searchSubscription = getSearchSubscription(subreddit, params, REFRESH);
 
-        searchSubscription = (Subscription)bindFragment(searchView.getFragment(), redditClient.executeSearch(subreddit, params))
+        if(!searchSubscription.isUnsubscribed()){
+            subscriptions.add(searchSubscription);
+        }
+    }
+
+    @Override
+    public void loadMoreResults(String subreddit, Map<String, String> params) {
+        searchView.showLoadMoreIndicator();
+        searchSubscription = getSearchSubscription(subreddit, params, LOAD_MORE);
+
+        if(!searchSubscription.isUnsubscribed()){
+            subscriptions.add(searchSubscription);
+        }
+    }
+
+    private Subscription getSearchSubscription(String subreddit, Map<String, String> params, int loadingEvent) {
+        return (Subscription)bindFragment(searchView.getFragment(), redditClient.executeSearch(subreddit, params))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<PostItem>() {
                     @Override
                     public void onCompleted() {
                         //hide progress and show list
-                        searchView.hideProgress();
+                        hideLoadingEvent(loadingEvent);
                         searchRecyclerView.replaceWith(items);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        searchView.hideProgress();
+                        hideLoadingEvent(loadingEvent);
                         searchView.showErrorMessage();
                     }
 
@@ -85,11 +105,13 @@ public class SearchPresenterImpl implements SearchPresenter {
                         Log.d("ITEM URL", postItem.getAuthor() + "--" + postItem.getType() + "--" + postItem.getUrl());
                     }
                 });
-
-        //todo: executes every time I search!! FIX
-        if(!searchSubscription.isUnsubscribed()){
-            subscriptions.add(searchSubscription);
-        }
-
     }
+
+    private void hideLoadingEvent(int loadingEvent){
+        if(loadingEvent == REFRESH)
+            searchView.hideLoading();
+        else if(loadingEvent == LOAD_MORE)
+            searchView.hideLoadMoreIndicator();
+    }
+
 }

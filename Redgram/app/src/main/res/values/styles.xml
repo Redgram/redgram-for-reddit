@@ -56,6 +56,13 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <style name="Separator" parent="Match">
+        <item name="android:layout_height">@dimen/separator_height</item>
+        <item name="android:background">@color/material_grey200</item>
+    </style>
 
+    <style name="ImagePostItemText">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+    </style>
 
 </resources>

@@ -105,9 +105,9 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     protected void setupComponent(AppComponent appComponent) {
         MainComponent mainComponent = (MainComponent)appComponent;
         component = DaggerHomeComponent.builder()
-                    .mainComponent(mainComponent)
-                    .homeModule(new HomeModule(this))
-                    .build();
+                .mainComponent(mainComponent)
+                .homeModule(new HomeModule(this))
+                .build();
         //component.inject(this);
 
         //todo: find another way to use injected instances
@@ -176,7 +176,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         });
     }
 
-
     private void setupListeners() {
 
         //this listener is responsible for invoking SWIPE-TO-REFRESH if the first item is fully visible.
@@ -199,16 +198,15 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         loadMoreListener = new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-
                 if(newState == RecyclerView.SCROLL_STATE_IDLE){
-                    int lastItemPosition = homeRecyclerView.getPostAdapter().getItemCount() - 1;
-                    if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
-                        params.put("after", homeRecyclerView.getPostAdapter().getItem(lastItemPosition).getName());
-                        homePresenter.getListing(filterChoice.toLowerCase(), params);
+                    if(homeRecyclerView != null && homeRecyclerView.getChildCount() > 0){
+                        int lastItemPosition = homeRecyclerView.getPostAdapter().getItemCount() - 1;
+                        if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
+                            params.put("after", homeRecyclerView.getPostAdapter().getItem(lastItemPosition).getName());
+                            homePresenter.getMoreListing(filterChoice.toLowerCase(), params);
+                        }
                     }
-
                 }
-
             }
         };
 
@@ -239,7 +237,8 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         homeRecyclerView.addOnScrollListener(loadMoreListener);
     }
 
-    private void callSortDialog(CharSequence query) {
+    private void callSortDialog(CharSequence query)
+    {
         filterChoice = query.toString();
 
         getDialogUtil().init();
@@ -310,7 +309,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
         if (scrollState == ScrollState.UP) {
             if (toolbarIsShown()) {
-               hideToolbar();
+                hideToolbar();
             }
         } else if (scrollState == ScrollState.DOWN) {
             if (toolbarIsHidden()) {
@@ -320,25 +319,27 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     }
 
     @Override
-    public void showProgress(int loadingSource) {
-        if(loadingSource == PostRecyclerView.REFRESH){
-            homeRecyclerView.setVisibility(View.GONE);
-            homeSwipeContainer.setRefreshing(true);
-        }else if(loadingSource == PostRecyclerView.LOAD_MORE){
-            homeRecyclerView.removeOnScrollListener(loadMoreListener);
-            homeProgressBar.setVisibility(View.VISIBLE);
-        }
+    public void showLoading() {
+        homeRecyclerView.setVisibility(View.GONE);
+        homeSwipeContainer.setRefreshing(true);
     }
 
     @Override
-    public void hideProgress(int loadingSource) {
-        if(loadingSource == PostRecyclerView.REFRESH){
-            homeSwipeContainer.setRefreshing(false);
-            homeRecyclerView.setVisibility(View.VISIBLE);
-        }else if(loadingSource == PostRecyclerView.LOAD_MORE){
-            homeRecyclerView.addOnScrollListener(loadMoreListener);
-            homeProgressBar.setVisibility(View.GONE);
-        }
+    public void hideLoading() {
+        homeSwipeContainer.setRefreshing(false);
+        homeRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showLoadMoreIndicator() {
+        homeRecyclerView.removeOnScrollListener(loadMoreListener);
+        homeProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideLoadMoreIndicator() {
+        homeRecyclerView.addOnScrollListener(loadMoreListener);
+        homeProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -362,7 +363,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         moveToolbar(-mToolbar.getHeight());
     }
 
-    @Override
+
     public DialogUtil getDialogUtil() {
         return ((MainActivity)getActivity()).getDialogUtil();
     }

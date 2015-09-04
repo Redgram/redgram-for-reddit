@@ -18,8 +18,6 @@ public class PostItemActionView extends PostBaseView{
 
     @InjectView(R.id.comments_action_button)
     TextView commentsActionButton;
-    @InjectView(R.id.reply_action_button)
-    TextView replyActionButton;
     @InjectView(R.id.source_action_view)
     TextView sourceActionView;
 
@@ -36,6 +34,6 @@ public class PostItemActionView extends PostBaseView{
     @Override
     public void setUpView(PostItem item) {
         commentsActionButton.setText(item.getNumComments()+ " comments");
-        sourceActionView.setText("("+item.getDomain()+")");
+        sourceActionView.setText("("+item.getUrl()+")");
     }
 }

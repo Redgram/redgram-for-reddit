@@ -17,8 +17,8 @@ import butterknife.InjectView;
  */
 public class PostItemTagView extends PostBaseView {
 
-    @InjectView(R.id.tag_nsfw)
-    TextView adultTag;
+    @InjectView(R.id.tags_view)
+    TextView tags;
 
     final Resources res;
 
@@ -35,21 +35,11 @@ public class PostItemTagView extends PostBaseView {
 
     @Override
     public void setUpView(PostItem item) {
-        boolean isVisible = false;
+        String bullet = " "+res.getString(R.string.text_bullet)+" ";
+        String comments = item.getNumComments() + " comments";
+        String source = "[ "+item.getDomain()+" ]";
 
-        if(item.isAdult()){
-            adultTag.setVisibility(VISIBLE);
-            isVisible = true;
-        }else{
-            adultTag.setVisibility(GONE);
-            isVisible = false;
-        }
-
-        //always check at the end, default is false
-        if(isVisible){
-            this.setVisibility(VISIBLE);
-        }else{
-            this.setVisibility(GONE);
-        }
+        tags.setText(comments+" "+bullet+" "+source);
     }
+
 }

@@ -7,29 +7,43 @@
     card_view:cardCornerRadius="0dp"
     card_view:cardBackgroundColor="@color/white">
 
-       <RelativeLayout
-           android:id="@+id/post_wrapper"
-           style="@style/Match">
+    <RelativeLayout
+        android:id="@+id/post_wrapper"
+        style="@style/Match">
 
-            <include
-                android:id="@+id/post_item_header_view"
-                layout="@layout/post_item_header_view"
-                />
+        <include
+            android:id="@+id/post_item_header_view"
+            layout="@layout/post_item_header_view"
+            />
 
-            <FrameLayout
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:id="@+id/post_item_dynamic_view"
-               android:layout_below="@id/post_item_header_view">
-            </FrameLayout>
-           
-            <include
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:id="@+id/post_item_action_view"
-                layout="@layout/post_item_action_view"
-                android:layout_below="@+id/post_item_dynamic_view" />
+        <include
+            android:id="@+id/sep_1"
+            layout="@layout/post_item_separator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/separator_height"
+            android:layout_below="@id/post_item_header_view" />
 
-       </RelativeLayout>
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/post_item_dynamic_view"
+            android:layout_below="@id/sep_1">
+        </FrameLayout>
+
+        <include
+            android:id="@+id/sep_2"
+            layout="@layout/post_item_separator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/separator_height"
+            android:layout_below="@id/post_item_dynamic_view" />
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:id="@+id/post_item_action_view"
+            layout="@layout/post_item_action_view"
+            android:layout_below="@+id/sep_2" />
+
+    </RelativeLayout>
 
 </com.matie.redgram.ui.common.views.widgets.postlist.PostItemView>
