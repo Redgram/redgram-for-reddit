@@ -1,37 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="40dp"
-    android:paddingBottom="@dimen/default_small_padding"
-    android:background="@color/white">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+
+    android:paddingTop="@dimen/default_small_padding"
+    android:paddingBottom="@dimen/default_small_padding">
 
     <TextView
         android:id="@+id/comments_action_button"
         style="@style/Wrap"
-        android:layout_marginLeft="12dp"
+        android:layout_marginLeft="@dimen/default_horizontal_margin"
         android:text="2000 comments"
         android:textColor="@color/material_redA700"
         android:textSize="@dimen/text_size_micro"
         android:clickable="true"
-        android:textStyle="bold"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_centerInParent="true"
-        android:gravity="center_vertical"/>
-
-
-    <TextView
-        android:id="@+id/reply_action_button"
-        style="@style/Wrap"
-        android:layout_marginLeft="@dimen/default_horizontal_margin"
-        android:layout_toRightOf="@id/comments_action_button"
-        android:text="reply"
-        android:textColor="@color/material_redA700"
-        android:textSize="@dimen/text_size_micro"
-        android:clickable="true"
-        android:textStyle="bold"
-        android:layout_centerInParent="true"
-        android:gravity="center_vertical"/>
+        android:layout_alignParentStart="true"/>
 
 
     <!--this is only visible in case of images and not text-->
@@ -50,12 +35,11 @@
         android:id="@+id/source_action_view"
         style="@style/Wrap"
         android:layout_marginLeft="@dimen/default_horizontal_margin"
-        android:layout_toRightOf="@id/reply_action_button"
+        android:layout_toRightOf="@id/comments_action_button"
         android:textColor="@color/material_redA700"
         android:textSize="@dimen/text_size_micro"
-        android:textStyle="bold"
         android:text="[source]"
-        android:layout_centerInParent="true"
-        android:gravity="center_vertical"/>
+        android:maxLines="1"
+        android:ellipsize="end"/>
 
 </com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView>

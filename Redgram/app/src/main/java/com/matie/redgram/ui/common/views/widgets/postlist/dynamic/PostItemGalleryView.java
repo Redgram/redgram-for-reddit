@@ -18,9 +18,6 @@ public class PostItemGalleryView extends PostBaseView {
     @InjectView(R.id.gallery_text_view)
     PostItemTextView postItemTextView;
 
-    @InjectView(R.id.gallery_tag_view)
-    PostItemTagView postItemTagView;
-
     public PostItemGalleryView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -34,6 +31,5 @@ public class PostItemGalleryView extends PostBaseView {
     @Override
     public void setUpView(PostItem item) {
         postItemTextView.setUpView(item);
-        postItemTagView.setUpView(item);
     }
 }

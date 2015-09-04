@@ -17,6 +17,5 @@ public interface HomeView extends BaseContextView {
     public void showToolbar();
     public void hideToolbar();
 
-    public DialogUtil getDialogUtil();
     public PostRecyclerView getRecyclerView();
 }

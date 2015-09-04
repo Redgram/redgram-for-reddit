@@ -1,32 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemDefaultView
     xmlns:android="http://schemas.android.com/apk/res/android" style="@style/MatchWidth"
-    xmlns:fresco="http://schemas.android.com/apk/res-auto"
-    android:paddingLeft="@dimen/default_medium_padding"
-    android:paddingBottom="@dimen/default_small_padding">
+    xmlns:fresco="http://schemas.android.com/apk/res-auto">
 
-    <com.facebook.drawee.view.SimpleDraweeView
-        android:id="@+id/default_thumbnail_view"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        fresco:actualImageScaleType="focusCrop"
-        fresco:placeholderImage="@color/ripple_material_light"
-        fresco:placeholderImageScaleType="fitCenter"
-        fresco:failureImage="@drawable/ic_error_grey600_48dp"
-        fresco:failureImageScaleType="centerInside"
-        />
+
+    <LinearLayout
+        android:id="@+id/default_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="@dimen/default_horizontal_margin"
+        android:layout_marginRight="@dimen/default_horizontal_margin"
+        android:paddingTop="@dimen/default_small_padding"
+        >
+        
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/default_thumbnail_view"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            fresco:actualImageScaleType="focusCrop"
+            fresco:placeholderImage="@color/ripple_material_light"
+            fresco:placeholderImageScaleType="fitCenter"
+            fresco:failureImage="@drawable/ic_error_grey600_48dp"
+            fresco:failureImageScaleType="centerInside"
+
+            />
+
+        <LinearLayout
+            android:id="@+id/info_wrapper"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/default_horizontal_margin"
+            android:layout_marginRight="@dimen/default_horizontal_margin"
+            >
+            <TextView
+                android:id="@+id/default_source_text"
+                style="@style/Wrap"
+                android:textSize="@dimen/text_size_micro"
+                android:text="source"/>
+            <TextView
+                android:id="@+id/default_link_text"
+                style="@style/Wrap"
+                android:textSize="@dimen/text_size_micro"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="google.com"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
     <include
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/default_text_view"
-        android:layout_toRightOf="@id/default_thumbnail_view"
-        layout="@layout/post_item_text_view"/>
-    <include
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/default_tag_view"
-        android:layout_toRightOf="@id/default_thumbnail_view"
-        android:layout_below="@id/default_text_view"
-        layout="@layout/post_item_tag_view"/>
+        layout="@layout/post_item_text_view"
+        android:layout_below="@+id/default_wrapper"/>
+
 
 </com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemDefaultView>

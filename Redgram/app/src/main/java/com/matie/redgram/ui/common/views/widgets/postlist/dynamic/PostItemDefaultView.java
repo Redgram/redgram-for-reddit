@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
@@ -27,11 +28,14 @@ public class PostItemDefaultView extends PostBaseView {
     @InjectView(R.id.default_thumbnail_view)
     SimpleDraweeView thumbnailView;
 
+    @InjectView(R.id.default_source_text)
+    TextView postSourceText;
+
+    @InjectView(R.id.default_link_text)
+    TextView postLinkText;
+
     @InjectView(R.id.default_text_view)
     PostItemTextView postItemTextView;
-
-    @InjectView(R.id.default_tag_view)
-    PostItemTagView postItemTagView;
 
     public PostItemDefaultView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -46,7 +50,9 @@ public class PostItemDefaultView extends PostBaseView {
     @Override
     public void setUpView(PostItem item) {
         postItemTextView.setUpView(item);
-        postItemTagView.setUpView(item);
+
+        postSourceText.setText(item.getDomain());
+        postLinkText.setText(item.getUrl());
 
         Uri thumbnailUri = Uri.parse(item.getThumbnail());
         ImageRequest request = ImageRequestBuilder.newBuilderWithSource(thumbnailUri)

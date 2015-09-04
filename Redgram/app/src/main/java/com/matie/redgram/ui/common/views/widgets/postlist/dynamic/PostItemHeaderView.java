@@ -17,10 +17,10 @@ import butterknife.InjectView;
  */
 public class PostItemHeaderView extends PostBaseView {
 
-    @InjectView(R.id.header_title_view)
-    TextView headerTitleView;
-    @InjectView(R.id.header_time_view)
-    TextView headerTimeView;
+    @InjectView(R.id.header_username_view)
+    TextView headerUsernameView;
+    @InjectView(R.id.header_time_subreddit_view)
+    TextView headerTimeSubredditView;
 
     private  final Resources res;
 
@@ -54,8 +54,7 @@ public class PostItemHeaderView extends PostBaseView {
 
         String subreddit = "/r/"+item.getSubreddit();
 
-        headerTitleView.setText(score + " " + res.getString(R.string.text_bullet)+ " " + author + " " +
-                                                res.getString(R.string.text_bullet) + " " + subreddit);
-        headerTimeView.setText(item.getTime() + " hrs");
+        headerUsernameView.setText(author);
+        headerTimeSubredditView.setText("submitted " + item.getTime() + " hrs ago to " + subreddit);
     }
 }

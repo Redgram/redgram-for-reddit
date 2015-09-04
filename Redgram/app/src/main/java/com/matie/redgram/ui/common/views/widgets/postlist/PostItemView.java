@@ -33,8 +33,8 @@ public class PostItemView extends CardView {
 
     @InjectView(R.id.post_item_header_view)
     PostItemHeaderView postItemHeaderView;
-    @InjectView(R.id.post_item_action_view)
-    PostItemActionView postItemActionView;
+//    @InjectView(R.id.post_item_action_view)
+//    PostItemActionView postItemActionView;
 
     @InjectView(R.id.post_item_dynamic_view)
     ViewGroup dynamicParent;
@@ -98,7 +98,7 @@ public class PostItemView extends CardView {
 
         postItemHeaderView.setUpView(item);
         getAndSetUpView(item);
-        postItemActionView.setUpView(item);
+//        postItemActionView.setUpView(item);
 
     }
 

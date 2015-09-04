@@ -72,7 +72,7 @@ public class HomePresenterImpl implements HomePresenter{
         if(subscriptions.hasSubscriptions() || subscriptions != null)
             subscriptions.unsubscribe();
 
-        homeRecyclerView.clearOnScrollListeners();
+        //homeRecyclerView.clearOnScrollListeners();
     }
 
     /**
@@ -106,6 +106,9 @@ public class HomePresenterImpl implements HomePresenter{
                 .subscribe(new Subscriber<PostItem>() {
                     @Override
                     public void onCompleted() {
+                        //// TODO: 29/08/15 send the last item name to fragment to use for loading more.
+                        String after = items.get(items.size() - 1).getName();
+
                         hideLoadingEvent(loadingEvent);
                         homeRecyclerView.replaceWith(items);
                     }

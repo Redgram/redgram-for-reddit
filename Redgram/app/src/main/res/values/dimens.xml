@@ -30,6 +30,9 @@
     <dimen name="text_size_xlarge">28sp</dimen>
 
 
-    <dimen name="content_text_padding">4dp</dimen>
+    <!--Separator Height-->
+    <dimen name="separator_height">1dp</dimen>
+    <!--Image Height-->
+    <dimen name="image_height">200dp</dimen>
 
 </resources>

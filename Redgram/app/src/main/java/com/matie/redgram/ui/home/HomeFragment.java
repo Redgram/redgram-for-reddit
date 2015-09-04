@@ -105,9 +105,9 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     protected void setupComponent(AppComponent appComponent) {
         MainComponent mainComponent = (MainComponent)appComponent;
         component = DaggerHomeComponent.builder()
-                    .mainComponent(mainComponent)
-                    .homeModule(new HomeModule(this))
-                    .build();
+                .mainComponent(mainComponent)
+                .homeModule(new HomeModule(this))
+                .build();
         //component.inject(this);
 
         //todo: find another way to use injected instances
@@ -309,7 +309,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
         if (scrollState == ScrollState.UP) {
             if (toolbarIsShown()) {
-               hideToolbar();
+                hideToolbar();
             }
         } else if (scrollState == ScrollState.DOWN) {
             if (toolbarIsHidden()) {
@@ -363,7 +363,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         moveToolbar(-mToolbar.getHeight());
     }
 
-    @Override
+
     public DialogUtil getDialogUtil() {
         return ((MainActivity)getActivity()).getDialogUtil();
     }

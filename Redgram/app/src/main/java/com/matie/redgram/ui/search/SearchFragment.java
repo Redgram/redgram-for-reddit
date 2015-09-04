@@ -139,9 +139,9 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     protected void setupComponent(AppComponent appComponent) {
         MainComponent mainComponent = (MainComponent)appComponent;
         component = DaggerSearchComponent.builder()
-                    .mainComponent(mainComponent)
-                    .searchModule(new SearchModule(this))
-                    .build();
+                .mainComponent(mainComponent)
+                .searchModule(new SearchModule(this))
+                .build();
         searchPresenter = (SearchPresenterImpl)component.getSearchPresenter();
     }
 

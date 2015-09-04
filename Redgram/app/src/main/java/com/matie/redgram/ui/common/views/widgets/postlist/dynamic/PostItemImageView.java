@@ -29,9 +29,6 @@ public class PostItemImageView extends PostBaseView {
     @InjectView(R.id.image_text_view)
     PostItemTextView postItemTextView;
 
-    @InjectView(R.id.image_tag_view)
-    PostItemTagView postItemTagView;
-
     public PostItemImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -46,7 +43,6 @@ public class PostItemImageView extends PostBaseView {
     public void setUpView(PostItem item) {
 
         postItemTextView.setUpView(item);
-        postItemTagView.setUpView(item);
 
         Uri thumbnailUri = Uri.parse(item.getThumbnail());
         ImageRequest thumbnail = ImageRequestBuilder.newBuilderWithSource(thumbnailUri)
