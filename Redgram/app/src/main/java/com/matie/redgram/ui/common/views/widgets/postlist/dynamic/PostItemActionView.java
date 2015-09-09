@@ -2,6 +2,8 @@ package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.matie.redgram.R;
@@ -16,10 +18,18 @@ import butterknife.InjectView;
  */
 public class PostItemActionView extends PostBaseView{
 
-    @InjectView(R.id.comments_action_button)
-    TextView commentsActionButton;
-    @InjectView(R.id.source_action_view)
-    TextView sourceActionView;
+    @InjectView(R.id.action_vote_up)
+    ImageView voteUp;
+    @InjectView(R.id.action_vote_down)
+    ImageView voteDown;
+    @InjectView(R.id.action_score_view)
+    TextView scoreView;
+    @InjectView(R.id.action_share)
+    ImageView shareView;
+    @InjectView(R.id.action_favorite)
+    ImageView favoriteView;
+    @InjectView(R.id.action_hide)
+    ImageView hideView;
 
     public PostItemActionView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -33,7 +43,6 @@ public class PostItemActionView extends PostBaseView{
 
     @Override
     public void setUpView(PostItem item) {
-        commentsActionButton.setText(item.getNumComments()+ " comments");
-        sourceActionView.setText("("+item.getUrl()+")");
+        scoreView.setText(item.getScore()+"");
     }
 }

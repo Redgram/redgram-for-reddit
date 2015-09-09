@@ -3,6 +3,7 @@ package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.matie.redgram.R;
@@ -21,6 +22,8 @@ public class PostItemHeaderView extends PostBaseView {
     TextView headerUsernameView;
     @InjectView(R.id.header_time_subreddit_view)
     TextView headerTimeSubredditView;
+    @InjectView(R.id.header_more_view)
+    ImageView headerMoreView;
 
     private  final Resources res;
 

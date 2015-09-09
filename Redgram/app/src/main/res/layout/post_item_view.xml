@@ -39,7 +39,7 @@
 
         <include
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="@dimen/action_view_height"
             android:id="@+id/post_item_action_view"
             layout="@layout/post_item_action_view"
             android:layout_below="@+id/sep_2" />
