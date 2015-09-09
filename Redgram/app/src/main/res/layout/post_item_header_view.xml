@@ -14,7 +14,6 @@
         android:orientation="vertical"
         android:gravity="center_vertical"
         android:layout_gravity="center_vertical"
-        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginLeft="@dimen/default_horizontal_margin"
@@ -24,7 +23,6 @@
             style="@style/Wrap"
             android:textSize="@dimen/text_size_medium"
             android:text="atioxx"
-            android:gravity="center_vertical"
             android:textColor="@color/material_blue_grey_950"
             android:paddingBottom="@dimen/default_small_padding"
             />
@@ -33,8 +31,17 @@
             style="@style/Wrap"
             android:text="submitted 6 hours ago to /r/legendary"
             android:textSize="@dimen/text_size_micro"
-            android:gravity="center_vertical"
             />
     </LinearLayout>
+    <ImageView
+        android:id="@+id/header_more_view"
+        style="@style/Wrap"
+        android:src="@drawable/ic_action_arrow_drop_down"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginLeft="@dimen/default_horizontal_margin"
+        android:layout_marginRight="@dimen/default_horizontal_margin"
+        android:layout_marginTop="@dimen/default_vertical_margin"
+        />
 
 </com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemHeaderView>

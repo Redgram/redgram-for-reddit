@@ -16,7 +16,7 @@
         fresco:actualImageScaleType="focusCrop"
         fresco:placeholderImage="@color/ripple_material_light"
         fresco:placeholderImageScaleType="fitCenter"
-        fresco:failureImage="@drawable/ic_error_grey600_48dp"
+        fresco:failureImage="@drawable/ic_action_error"
         fresco:failureImageScaleType="centerInside"/>
 
 

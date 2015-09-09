@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-<<<<<<< HEAD
-style="@style/Match">
-=======
     style="@style/Match">
->>>>>>> master
+
 
     <ProgressBar
         android:id="@+id/search_load_more_bar"

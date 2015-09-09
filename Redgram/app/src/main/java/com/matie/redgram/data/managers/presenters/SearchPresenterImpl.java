@@ -57,7 +57,7 @@ public class SearchPresenterImpl implements SearchPresenter {
         if(subscriptions.hasSubscriptions() || subscriptions != null)
             subscriptions.unsubscribe();
 
-        searchRecyclerView.clearOnScrollListeners();
+//        searchRecyclerView.clearOnScrollListeners();
     }
 
     @Override

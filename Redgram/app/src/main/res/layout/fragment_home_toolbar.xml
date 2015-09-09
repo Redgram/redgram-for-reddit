@@ -59,7 +59,7 @@
             android:layout_gravity="center_vertical"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/listing_filter"
-            android:src="@drawable/ic_refresh_white_48dp"/>
+            android:src="@drawable/ic_action_refresh"/>
 
         <ImageView
             android:id="@+id/listing_filter"
@@ -70,7 +70,7 @@
             android:layout_gravity="center_vertical"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/home_toolbar_title_linear_layout"
-            android:src="@drawable/ic_filter_list_white_48dp"/>
+            android:src="@drawable/ic_action_sort"/>
     </LinearLayout>
 
 
