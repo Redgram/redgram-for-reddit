@@ -7,8 +7,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.matie.redgram.data.models.reddit.base.RedditObject;
-import com.matie.redgram.data.models.reddit.base.RedditObjectWrapper;
+import com.matie.redgram.data.models.api.reddit.base.RedditObject;
+import com.matie.redgram.data.models.api.reddit.base.RedditObjectWrapper;
 
 import java.lang.reflect.Type;
 

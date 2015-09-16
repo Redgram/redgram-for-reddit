@@ -3,26 +3,25 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
-    android:padding="@dimen/default_small_padding"
+    android:layout_height="@dimen/navigation_drawer_item_height"
     android:id="@+id/itemRR"
-    android:background="@drawable/navigation_drawer_list_item_bg">
+    android:background="@drawable/navigation_drawer_list_item_bg"
+    android:paddingLeft="@dimen/default_padding"
+    android:paddingRight="@dimen/default_padding">
 
     <ImageView
         android:id="@+id/navigationDrawerItemIconIV"
         android:layout_width="@dimen/navigation_drawer_image_view_size"
         android:layout_height="@dimen/navigation_drawer_image_view_size"
-        android:contentDescription="image view"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="6dp"
+        android:src="@drawable/ic_action_public"
+        android:layout_marginRight="32dp"
         android:visibility="gone"/>
 
     <TextView
         android:id="@+id/navigationDrawerItemTitleTV"
         style="@style/Wrap"
-        android:layout_marginLeft="12dp"
         android:textColor="@color/material_blue_grey_900"
-        android:textSize="@dimen/text_size_small"
         android:textStyle="normal"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/navigationDrawerItemIconIV"

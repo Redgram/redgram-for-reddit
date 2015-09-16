@@ -3,6 +3,7 @@ package com.matie.redgram.data.managers.presenters;
 import android.util.Log;
 
 import com.matie.redgram.data.models.PostItem;
+import com.matie.redgram.data.models.main.reddit.PostItemWrapper;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.search.views.SearchView;
@@ -85,12 +86,14 @@ public class SearchPresenterImpl implements SearchPresenter {
         return (Subscription)bindFragment(searchView.getFragment(), redditClient.executeSearch(subreddit, params))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<PostItem>() {
+                .subscribe(new Subscriber<PostItemWrapper>() {
                     @Override
                     public void onCompleted() {
                         //hide progress and show list
                         hideLoadingEvent(loadingEvent);
-                        searchRecyclerView.replaceWith(items);
+//                        for(PostItem item : items){
+//                            Log.d("ITEM URL", item.getAuthor() + "--" + item.getType() + "--" + item.getId());
+//                        }
                     }
 
                     @Override
@@ -100,9 +103,9 @@ public class SearchPresenterImpl implements SearchPresenter {
                     }
 
                     @Override
-                    public void onNext(PostItem postItem) {
-                        items.add(postItem);
-                        Log.d("ITEM URL", postItem.getAuthor() + "--" + postItem.getType() + "--" + postItem.getUrl());
+                    public void onNext(PostItemWrapper wrapper) {
+                        items.addAll(wrapper.getItems());
+                        searchRecyclerView.replaceWith(items);
                     }
                 });
     }

@@ -1,4 +1,4 @@
-package com.matie.redgram.data.models.reddit;
+package com.matie.redgram.data.models.api.reddit;
 
 /**
  * Created by matie on 17/04/15.

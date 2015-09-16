@@ -1,7 +1,7 @@
 package com.matie.redgram.data.network.api.reddit.base;
 
-import com.matie.redgram.data.models.reddit.RedditListing;
-import com.matie.redgram.data.models.reddit.base.RedditResponse;
+import com.matie.redgram.data.models.api.reddit.RedditListing;
+import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 
 import java.util.Map;
 

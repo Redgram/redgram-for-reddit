@@ -73,7 +73,8 @@ public class DrawerItemView extends RelativeLayout {
                 itemIconIV.setImageDrawable(getIcon(item.getItemIcon()));
                 itemIconIV.setVisibility(View.VISIBLE);
             }
-            rr.setBackgroundColor(res.getColor(R.color.grey_background));
+            setBackgroundColor(res.getColor(R.color.grey_background));
+            //rr.setBackgroundColor(res.getColor(R.color.grey_background));
         }
 
         if(item.isSelected()){

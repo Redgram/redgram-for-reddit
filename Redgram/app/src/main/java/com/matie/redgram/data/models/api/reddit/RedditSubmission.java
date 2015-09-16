@@ -1,6 +1,6 @@
-package com.matie.redgram.data.models.reddit;
+package com.matie.redgram.data.models.api.reddit;
 
-import com.matie.redgram.data.models.reddit.base.RedditObject;
+import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 
 import org.joda.time.DateTime;
 

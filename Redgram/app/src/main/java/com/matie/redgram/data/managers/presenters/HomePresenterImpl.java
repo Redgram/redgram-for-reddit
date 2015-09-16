@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.matie.redgram.data.models.PostItem;
 import com.matie.redgram.data.models.events.SubredditEvent;
+import com.matie.redgram.data.models.main.reddit.PostItemWrapper;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
@@ -103,14 +104,13 @@ public class HomePresenterImpl implements HomePresenter{
         return (Subscription)bindFragment(homeView.getFragment(), redditClient.getListing(front, params))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<PostItem>() {
+                .subscribe(new Subscriber<PostItemWrapper>() {
                     @Override
                     public void onCompleted() {
-                        //// TODO: 29/08/15 send the last item name to fragment to use for loading more.
-                        String after = items.get(items.size() - 1).getName();
-
                         hideLoadingEvent(loadingEvent);
-                        homeRecyclerView.replaceWith(items);
+//                        for(PostItem item : items){
+//                            Log.d("ITEM URL", item.getAuthor() + "--" + item.getType() + "--" + item.getId());
+//                        }
                     }
 
                     @Override
@@ -120,9 +120,11 @@ public class HomePresenterImpl implements HomePresenter{
                     }
 
                     @Override
-                    public void onNext(PostItem postItem) {
-                        items.add(postItem);
-                        Log.d("ITEM URL", postItem.getAuthor() + "--" + postItem.getType() + "--" + postItem.getId());
+                    public void onNext(PostItemWrapper wrapper) {
+                        items.addAll(wrapper.getItems());
+                        //todo: replaceWith should be in a new view interface method
+                        homeRecyclerView.replaceWith(items);
+                        // TODO: 29/08/15 send the last item name to fragment to use for loading more.
                     }
                 });
     }

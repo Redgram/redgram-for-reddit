@@ -1,4 +1,4 @@
-package com.matie.redgram.data.models.reddit.base;
+package com.matie.redgram.data.models.api.reddit.base;
 
 import com.google.gson.JsonElement;
 

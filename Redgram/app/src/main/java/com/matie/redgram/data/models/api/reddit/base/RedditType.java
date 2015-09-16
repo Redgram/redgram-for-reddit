@@ -1,7 +1,7 @@
-package com.matie.redgram.data.models.reddit.base;
+package com.matie.redgram.data.models.api.reddit.base;
 
-import com.matie.redgram.data.models.reddit.RedditLink;
-import com.matie.redgram.data.models.reddit.RedditListing;
+import com.matie.redgram.data.models.api.reddit.RedditLink;
+import com.matie.redgram.data.models.api.reddit.RedditListing;
 
 /**
  * Created by matie on 16/04/15.

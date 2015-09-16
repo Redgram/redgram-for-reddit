@@ -127,7 +127,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         navigationItems.add(new DrawerItem(getString(R.string.fragment_search), R.drawable.ic_action_search, true));
 
         //sub-menu items
-        navigationItems.add(new DrawerItem(getString(R.string.fragment_about), R.drawable.ic_action_help, false));
+        navigationItems.add(new DrawerItem(getString(R.string.fragment_about), 0, false));
 
         mNavigationDrawerListViewWrapper.replaceWith(navigationItems);
 
