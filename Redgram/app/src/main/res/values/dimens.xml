@@ -39,4 +39,6 @@
     <dimen name="image_height">250dp</dimen>
     <!--Action view height-->
     <dimen name="action_view_height">48dp</dimen>
+    <!--Header height-->
+    <dimen name="header_height">72dp</dimen>
 </resources>

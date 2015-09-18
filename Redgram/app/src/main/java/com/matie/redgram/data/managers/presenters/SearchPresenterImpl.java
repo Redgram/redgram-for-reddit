@@ -30,21 +30,22 @@ public class SearchPresenterImpl implements SearchPresenter {
     final private SearchView searchView;
     final private RedditClient redditClient;
     final private PostRecyclerView searchRecyclerView;
+
+    private String loadMoreId;
     private List<PostItem> items;
 
     CompositeSubscription subscriptions;
     Subscription searchSubscription;
 
-    int loadingSource;
 
     @Inject
     public SearchPresenterImpl(SearchView searchView, RedditClient redditClient) {
         this.searchView = searchView;
         this.redditClient = redditClient;
 
-        searchRecyclerView = searchView.getRecyclerView();
+        this.searchRecyclerView = searchView.getRecyclerView();
         this.items = new ArrayList<PostItem>();
-        this.loadingSource = 0;
+        this.loadMoreId = "";
     }
 
     @Override
@@ -63,6 +64,11 @@ public class SearchPresenterImpl implements SearchPresenter {
 
     @Override
     public void executeSearch(String subreddit, Map<String, String> params) {
+
+        if(params.containsKey("after")){
+            params.remove("after");
+        }
+
         items = new ArrayList<PostItem>();
         searchView.showLoading();
         searchSubscription = getSearchSubscription(subreddit, params, REFRESH);
@@ -74,6 +80,8 @@ public class SearchPresenterImpl implements SearchPresenter {
 
     @Override
     public void loadMoreResults(String subreddit, Map<String, String> params) {
+        params.put("after", loadMoreId);
+
         searchView.showLoadMoreIndicator();
         searchSubscription = getSearchSubscription(subreddit, params, LOAD_MORE);
 
@@ -91,9 +99,6 @@ public class SearchPresenterImpl implements SearchPresenter {
                     public void onCompleted() {
                         //hide progress and show list
                         hideLoadingEvent(loadingEvent);
-//                        for(PostItem item : items){
-//                            Log.d("ITEM URL", item.getAuthor() + "--" + item.getType() + "--" + item.getId());
-//                        }
                     }
 
                     @Override
@@ -106,6 +111,7 @@ public class SearchPresenterImpl implements SearchPresenter {
                     public void onNext(PostItemWrapper wrapper) {
                         items.addAll(wrapper.getItems());
                         searchRecyclerView.replaceWith(items);
+                        loadMoreId = wrapper.getAfter();
                     }
                 });
     }

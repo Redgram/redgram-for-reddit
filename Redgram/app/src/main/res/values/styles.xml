@@ -61,8 +61,55 @@
         <item name="android:background">@color/material_grey200</item>
     </style>
 
-    <style name="ImagePostItemText">
-        <item name="android:textSize">@dimen/text_size_medium</item>
+    <!--HEADER VIEW-->
+    <style name="HeaderPostItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/header_height</item>
+        <item name="android:background">@color/white</item>
     </style>
+
+    <style name="HeaderPostItemTextContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_marginLeft">@dimen/default_horizontal_margin</item>
+        <item name="android:layout_marginRight">@dimen/default_horizontal_margin</item>
+    </style>
+
+    <style name="HeaderUsernamePostItemText" parent="Wrap">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textColor">@color/material_blue_grey_950</item>
+        <item name="android:paddingBottom">@dimen/default_small_padding</item>
+    </style>
+
+    <style name="HeaderInfoPostItemText" parent="Wrap">
+        <item name="android:textSize">@dimen/text_size_micro</item>
+    </style>
+
+    <style name="HeaderPostItemMore" parent="Wrap">
+        <item name="android:src">@drawable/ic_action_arrow_drop_down</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginLeft">@dimen/default_horizontal_margin</item>
+        <item name="android:layout_marginRight">@dimen/default_horizontal_margin</item>
+        <item name="android:layout_marginTop">@dimen/default_vertical_margin</item>
+    </style>
+
+    <!--IMAGE VIEW-->
+    <style name="ImagePostItem" parent="Match"></style>
+
+    <style name="ImagePostItemView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/image_height</item>
+    </style>
+
+    <style name="ImagePostItemText" parent="Wrap">
+        <item name="android:layout_below">@id/image_view</item>
+    </style>
+
 
 </resources>

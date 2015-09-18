@@ -279,11 +279,7 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 if(newState == RecyclerView.SCROLL_STATE_IDLE){
                     if(searchRecyclerView != null && searchRecyclerView.getChildCount() > 0){
-                        int lastItemPosition = searchRecyclerView.getPostAdapter().getItemCount() - 1;
-                        if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
-                            params.put("after", searchRecyclerView.getPostAdapter().getItem(lastItemPosition).getName());
-                            searchPresenter.loadMoreResults(subreddit, params);
-                        }
+                        searchPresenter.loadMoreResults(subreddit, params);
                     }
                 }
             }
