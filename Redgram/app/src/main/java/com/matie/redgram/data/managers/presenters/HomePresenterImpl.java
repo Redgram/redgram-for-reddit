@@ -35,7 +35,7 @@ public class HomePresenterImpl implements HomePresenter{
     final private RedditClient redditClient;
 
     private CompositeSubscription subscriptions;
-
+    private String loadMoreId;
     private List<PostItem> items;
 
     private Subscription listingSubscription;
@@ -51,6 +51,7 @@ public class HomePresenterImpl implements HomePresenter{
         this.homeRecyclerView = homeView.getRecyclerView();
         this.redditClient = redditClient;
         this.items = new ArrayList<PostItem>();
+        this.loadMoreId = "";
     }
 
     /**
@@ -70,10 +71,9 @@ public class HomePresenterImpl implements HomePresenter{
      */
     @Override
     public void unregisterForEvents() {
-        if(subscriptions.hasSubscriptions() || subscriptions != null)
+        if(subscriptions.hasSubscriptions() || subscriptions != null){
             subscriptions.unsubscribe();
-
-        //homeRecyclerView.clearOnScrollListeners();
+        }
     }
 
     /**
@@ -81,6 +81,9 @@ public class HomePresenterImpl implements HomePresenter{
      */
     @Override
     public void getListing(String front, Map<String,String> params) {
+        if(params.containsKey("after")){
+            params.remove("after");
+        }
         items = new ArrayList<PostItem>();
         homeView.showLoading();
         listingSubscription = getListingSubscription(front, params, REFRESH);
@@ -88,6 +91,7 @@ public class HomePresenterImpl implements HomePresenter{
 
     @Override
     public void getMoreListing(String front, Map<String, String> params) {
+        params.put("after", loadMoreId);
         homeView.showLoadMoreIndicator();
         listingSubscription = getListingSubscription(front, params, LOAD_MORE);
     }
@@ -125,6 +129,7 @@ public class HomePresenterImpl implements HomePresenter{
                         //todo: replaceWith should be in a new view interface method
                         homeRecyclerView.replaceWith(items);
                         // TODO: 29/08/15 send the last item name to fragment to use for loading more.
+                        loadMoreId = wrapper.getAfter();
                     }
                 });
     }

@@ -41,4 +41,8 @@
     <dimen name="action_view_height">48dp</dimen>
     <!--Header height-->
     <dimen name="header_height">72dp</dimen>
+
+    <dimen name="thumbnail_size">80dp</dimen>
+
+    <dimen name="action_icon_margin">12dp</dimen>
 </resources>

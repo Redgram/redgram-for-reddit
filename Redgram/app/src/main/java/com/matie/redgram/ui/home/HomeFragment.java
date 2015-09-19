@@ -91,7 +91,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         mContentView = getActivity().findViewById(R.id.container);
         mInflater = inflater;
 
-        filterChoice = "Hot";
+        filterChoice = "Hot"; //default value
         params = new HashMap<String,String>();
 
         setupSwipeContainer();
@@ -168,8 +168,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
             @Override
             public void onClick(View v) {
                 if(!homeSwipeContainer.isRefreshing()){
-                    //IMPORTANT: When the user refreshes the view, pagination should not be executed as per the documentation
-                    params.remove("after");
                     homePresenter.getListing(filterChoice.toLowerCase(), params);
                 }
             }
@@ -202,7 +200,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                     if(homeRecyclerView != null && homeRecyclerView.getChildCount() > 0){
                         int lastItemPosition = homeRecyclerView.getPostAdapter().getItemCount() - 1;
                         if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
-                            params.put("after", homeRecyclerView.getPostAdapter().getItem(lastItemPosition).getName());
                             homePresenter.getMoreListing(filterChoice.toLowerCase(), params);
                         }
                     }
@@ -412,8 +409,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
     @Override
     public void onRefresh() {
-        //IMPORTANT: When the user refreshes the view, pagination should not be executed as per the documentation
-        params.remove("after");
         homePresenter.getListing(filterChoice.toLowerCase() , params);
     }
 }

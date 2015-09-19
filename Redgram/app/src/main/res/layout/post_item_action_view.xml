@@ -1,65 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/action_view_height"
-    android:background="@color/white">
+    style="@style/ActionPostItem">
 
     <LinearLayout
         android:id="@+id/left_action_wrapper"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@android:color/transparent"
-        android:orientation="horizontal"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true">
+        style="@style/ActionPostItemLeftWrapper">
         <ImageView
             android:id="@+id/action_vote_up"
-            style="@style/Wrap"
-            android:src="@drawable/ic_action_keyboard_arrow_up"
-            android:layout_margin="12dp"/>
+            style="@style/ActionPostItemIcon"
+            android:src="@drawable/ic_action_keyboard_arrow_up"/>
         <TextView
             android:id="@+id/action_score_view"
-            style="@style/Wrap"
-            android:text="2560"
-            android:textSize="@dimen/text_size_small"
-            android:textColor="@color/material_red700"
-            android:layout_gravity="center_vertical"/>
+            style="@style/ActionPostItemScore"
+            android:text="2560"/>
         <ImageView
             android:id="@+id/action_vote_down"
-            style="@style/Wrap"
-            android:src="@drawable/ic_action_keyboard_arrow_down"
-            android:layout_margin="12dp"/>
+            style="@style/ActionPostItemIcon"
+            android:src="@drawable/ic_action_keyboard_arrow_down"/>
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/right_action_wrapper"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@android:color/transparent"
-        android:orientation="horizontal"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true">
+        style="@style/ActionPostItemRightWrapper">
         <ImageView
             android:id="@+id/action_share"
-            style="@style/Wrap"
-            android:src="@drawable/ic_action_share"
-            android:layout_margin="12dp"/>
+            style="@style/ActionPostItemIcon"
+            android:src="@drawable/ic_action_share"/>
 
         <ImageView
             android:id="@+id/action_favorite"
-            style="@style/Wrap"
-            android:src="@drawable/ic_action_favorite"
-            android:layout_margin="12dp"/>
+            style="@style/ActionPostItemIcon"
+            android:src="@drawable/ic_action_favorite"/>
 
         <ImageView
             android:id="@+id/action_hide"
-            style="@style/Wrap"
-            android:src="@drawable/ic_action_remove"
-            android:layout_margin="12dp"/>
+            style="@style/ActionPostItemIcon"
+            android:src="@drawable/ic_action_remove"/>
     </LinearLayout>
 
 </com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView>
