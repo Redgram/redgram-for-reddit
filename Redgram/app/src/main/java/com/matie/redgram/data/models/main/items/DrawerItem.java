@@ -1,4 +1,4 @@
-package com.matie.redgram.data.models;
+package com.matie.redgram.data.models.main.items;
 
 /**
  * Created by matie on 17/01/15.

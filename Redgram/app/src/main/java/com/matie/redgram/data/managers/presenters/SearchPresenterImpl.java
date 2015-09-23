@@ -1,10 +1,9 @@
 package com.matie.redgram.data.managers.presenters;
 
-import android.util.Log;
-
-import com.matie.redgram.data.models.PostItem;
+import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.reddit.PostItemWrapper;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.search.views.SearchView;
 
@@ -39,9 +38,9 @@ public class SearchPresenterImpl implements SearchPresenter {
 
 
     @Inject
-    public SearchPresenterImpl(SearchView searchView, RedditClient redditClient) {
+    public SearchPresenterImpl(SearchView searchView, App app) {
         this.searchView = searchView;
-        this.redditClient = redditClient;
+        this.redditClient = app.getRedditClient();
 
         this.searchRecyclerView = searchView.getRecyclerView();
         this.items = new ArrayList<PostItem>();

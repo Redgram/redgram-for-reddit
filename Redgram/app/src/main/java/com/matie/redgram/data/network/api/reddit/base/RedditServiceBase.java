@@ -36,14 +36,16 @@ public class RedditServiceBase extends RedditBase {
     private static final int MAX_STALE = 60 * 60 * 24 * 28; //tolerate 4-weeks
     private static final int CACHE_DIR_SIZE = 10 * 1024 * 1024; //
 
+    private final App app;
     private final Context mContext;
     private final ConnectionStatus connectionStatus;
     private final RestAdapter.Builder adapterBuilder;
 
     @Inject
-    public RedditServiceBase(App app, ConnectionStatus cs) {
+    public RedditServiceBase(App application) {
+        app = application;
         mContext = app.getApplicationContext();
-        connectionStatus = cs;
+        connectionStatus = app.getConnectionStatus();
 
         //create a builder once that has all the common build components
         adapterBuilder = getAdapterBuilder();

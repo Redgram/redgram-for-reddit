@@ -6,7 +6,8 @@
         <!--android:ellipsize="end"-->
         <TextView
             android:id="@+id/text_title_view"
-            style="@style/TextPostItemTitle"/>
+            style="@style/TextPostItemTitle"
+            android:text="this is a title"/>
 
         <!--description is conditional, so we set visibility to GONE-->
         <TextView

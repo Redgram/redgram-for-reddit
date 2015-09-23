@@ -1,13 +1,13 @@
 package com.matie.redgram.data.models.main.reddit;
 
-import com.matie.redgram.data.models.PostItem;
+import com.matie.redgram.data.models.main.items.PostItem;
 
 import java.util.List;
 
 /**
  * Created by matie on 13/09/15.
  */
-public class PostItemWrapper {
+public class PostItemWrapper  {
     private List<PostItem> items;
     private String modHash;
     private String after;

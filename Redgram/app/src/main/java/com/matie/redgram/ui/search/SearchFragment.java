@@ -76,9 +76,6 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
 
     SearchComponent component;
 
-    @Inject
-    SearchPresenterImpl searchPresenter;
-
     FrameLayout frameLayout;
     EditText searchView;
     ImageView searchClear;
@@ -95,6 +92,11 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     Map<String, String> params;
 
     RecyclerView.OnScrollListener loadMoreListener;
+
+    @Inject
+    SearchPresenterImpl searchPresenter;
+    @Inject
+    DialogUtil dialogUtil;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -142,6 +144,9 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
                 .mainComponent(mainComponent)
                 .searchModule(new SearchModule(this))
                 .build();
+
+        dialogUtil = component.getDialogUtil();
+
         searchPresenter = (SearchPresenterImpl)component.getSearchPresenter();
     }
 
@@ -214,7 +219,7 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         searchFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDialogUtil().init();
+                dialogUtil.init();
 
                 //remove layout from its parent, to set it to another, new parent
                 if (filterContentLayout.getParent() != null) {
@@ -222,7 +227,7 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
                 }
 
                 try {
-                    getDialogUtil().getDialogBuilder()
+                    dialogUtil.getDialogBuilder()
                             .title("Advanced Search")
                             .customView(filterContentLayout, false)
                             .positiveText("Search")
@@ -463,10 +468,10 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
 
     }
 
-    @Override
-    public DialogUtil getDialogUtil() {
-        return ((MainActivity)getActivity()).getDialogUtil();
-    }
+//    @Override
+//    public DialogUtil dialogUtil {
+//        return ((MainActivity)getActivity()).dialogUtil;
+//    }
 
     @Override
     public PostRecyclerView getRecyclerView() {

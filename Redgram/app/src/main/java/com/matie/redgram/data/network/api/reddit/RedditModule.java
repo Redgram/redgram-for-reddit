@@ -17,8 +17,8 @@ import dagger.Provides;
 @Module
 public class RedditModule {
     @Provides
-    public RedditClient provideRedditClient(App app, ConnectionStatus connectionStatus){
-        return new RedditClient(app, connectionStatus);
+    public RedditClient provideRedditClient(App app){
+        return new RedditClient(app);
     }
 
 }

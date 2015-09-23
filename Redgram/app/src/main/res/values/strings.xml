@@ -27,6 +27,8 @@
     <string name="login_button_text">Login</string>
     <string name="password_confirm">Confirm Password</string>
 
+    <string name="no_connection">No Internet Connection</string>
+
     <string name="text_bullet">\u2022</string>
 
     <string name="post_tag_nsfw">NSFW</string>

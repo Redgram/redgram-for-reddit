@@ -11,6 +11,8 @@ public interface HomePresenter {
     public static final int REFRESH = 0;
     public static final int LOAD_MORE = 1;
 
+
+
     public void registerForEvents();
     public void unregisterForEvents();
 

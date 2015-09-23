@@ -17,7 +17,7 @@ import dagger.Component;
                 SearchModule.class
         }
 )
-public interface SearchComponent{
+public interface SearchComponent extends MainComponent{
     void inject(SearchView searchView);
 
     SearchView getSearchView();

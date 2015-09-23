@@ -1,4 +1,4 @@
-package com.matie.redgram.data.models;
+package com.matie.redgram.data.models.main.items;
 
 import android.net.Uri;
 
@@ -23,6 +23,7 @@ public class PostItem {
        // IMGUR_MEME, not sure of this
         IMGUR_SUBREDDIT
     }
+
 
     private String id;
     private String name;

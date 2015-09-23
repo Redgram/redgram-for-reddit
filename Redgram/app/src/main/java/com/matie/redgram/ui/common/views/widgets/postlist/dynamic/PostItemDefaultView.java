@@ -13,7 +13,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.matie.redgram.R;
-import com.matie.redgram.data.models.PostItem;
+import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostBaseView;
 
 import butterknife.ButterKnife;

@@ -79,6 +79,8 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
     @Inject
     HomePresenterImpl homePresenter;
+    @Inject
+    DialogUtil dialogUtil;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,7 +110,8 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                 .mainComponent(mainComponent)
                 .homeModule(new HomeModule(this))
                 .build();
-        //component.inject(this);
+
+        component.inject(this);
 
         //todo: find another way to use injected instances
         homePresenter = (HomePresenterImpl)component.getHomePresenter();
@@ -133,10 +136,10 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         listingFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDialogUtil().init();
+                dialogUtil.init();
 
                 try {
-                    getDialogUtil().getDialogBuilder()
+                    dialogUtil.getDialogBuilder()
                             .title("Filter Links By")
                             .items(R.array.frontArray)
                             .itemsCallback(new MaterialDialog.ListCallback() {
@@ -238,8 +241,8 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     {
         filterChoice = query.toString();
 
-        getDialogUtil().init();
-        getDialogUtil().getDialogBuilder()
+        dialogUtil.init();
+        dialogUtil.getDialogBuilder()
                 .title("Sort By")
                 .items(R.array.fromArray)
                 .itemsCallback(new MaterialDialog.ListCallback() {
@@ -361,9 +364,9 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     }
 
 
-    public DialogUtil getDialogUtil() {
-        return ((MainActivity)getActivity()).getDialogUtil();
-    }
+//    public DialogUtil dialogUtil {
+//        return ((MainActivity)getActivity()).dialogUtil;
+//    }
 
     @Override
     public PostRecyclerView getRecyclerView() {

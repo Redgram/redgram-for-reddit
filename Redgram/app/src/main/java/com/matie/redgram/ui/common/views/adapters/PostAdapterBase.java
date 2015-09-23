@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.matie.redgram.data.models.PostItem;
+import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostViewHolder;
 
@@ -76,6 +76,7 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
     public void onBindViewHolder(PostViewHolder holder, int position) {
 //        Log.d("ITEM VIEW HOLDER" , holder+"");
 //        Log.d("ITEM VIEW" , holder.getItemView()+"");
+        // TODO: 21/09/15 pass the preferences to here
         holder.getItemView().bindTo(items.get(position), position);
     }
 

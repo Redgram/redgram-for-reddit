@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.models.DrawerItem;
+import com.matie.redgram.data.models.main.items.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerItemView;
 
 import java.util.ArrayList;

@@ -2,10 +2,9 @@ package com.matie.redgram.data.network.api.reddit;
 
 import android.support.annotation.Nullable;
 
-import com.matie.redgram.data.models.PostItem;
+import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.api.reddit.RedditLink;
 import com.matie.redgram.data.models.api.reddit.RedditListing;
-import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.main.reddit.PostItemWrapper;
 import com.matie.redgram.data.network.api.reddit.base.RedditProviderBase;
@@ -13,7 +12,6 @@ import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
 import com.matie.redgram.data.network.connection.ConnectionStatus;
 import com.matie.redgram.ui.App;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +30,14 @@ public class RedditClient extends RedditServiceBase {
     public static final String MODHASH = "modhash";
 
     private final RedditProviderBase provider;
+    private final App app;
 
     @Inject
-    public RedditClient(App app, ConnectionStatus status) {
-        super(app,status);
+    public RedditClient(App app) {
+        super(app);
 
-        provider = getRestAdapter().create(RedditProviderBase.class);
+        this.app = app;
+        this.provider = getRestAdapter().create(RedditProviderBase.class);
     }
 
     public Observable<PostItemWrapper> getSubredditListing(String query, @Nullable String filter, @Nullable Map<String, String> params) {
@@ -146,6 +146,7 @@ public class RedditClient extends RedditServiceBase {
         return map;
     }
 
+    // TODO: 22/09/15 move to a builder class
     private PostItem mapLinkToPostItem(RedditLink link){
 
         PostItem item = new PostItem();

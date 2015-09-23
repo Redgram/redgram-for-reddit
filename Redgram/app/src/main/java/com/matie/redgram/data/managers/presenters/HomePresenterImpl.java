@@ -1,12 +1,12 @@
 package com.matie.redgram.data.managers.presenters;
 
-import android.util.Log;
 import android.widget.Toast;
 
-import com.matie.redgram.data.models.PostItem;
+import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.events.SubredditEvent;
 import com.matie.redgram.data.models.main.reddit.PostItemWrapper;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 
@@ -29,7 +29,7 @@ import static rx.android.app.AppObservable.bindFragment;
  */
 
 public class HomePresenterImpl implements HomePresenter{
-
+    final private App app;
     final private HomeView homeView;
     final private PostRecyclerView homeRecyclerView;
     final private RedditClient redditClient;
@@ -46,10 +46,11 @@ public class HomePresenterImpl implements HomePresenter{
      * @param homeView
      */
     @Inject
-    public HomePresenterImpl(HomeView homeView, RedditClient redditClient) {
+    public HomePresenterImpl(HomeView homeView, App app) {
+        this.app = app;
         this.homeView = homeView;
         this.homeRecyclerView = homeView.getRecyclerView();
-        this.redditClient = redditClient;
+        this.redditClient = app.getRedditClient();
         this.items = new ArrayList<PostItem>();
         this.loadMoreId = "";
     }
@@ -81,6 +82,10 @@ public class HomePresenterImpl implements HomePresenter{
      */
     @Override
     public void getListing(String front, Map<String,String> params) {
+        // TODO: 22/09/15 Include this is at http level instead of calling it in every method.
+        // TODO: 22/09/15 Add a flag to indicate if it's loading CACHED data
+        app.showConnectionStatus(app.getConnectionStatus().isOnline());
+
         if(params.containsKey("after")){
             params.remove("after");
         }

@@ -204,8 +204,21 @@
         <item name="android:layout_gravity">center_vertical</item>
     </style>
 
+    <!-- Todo: style the rest of XML where necessary-->
     <!--ACTIVITY MAIN-->
-
+    <style name="MainActivityToolbar" parent="MatchWidth">
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <item name="android:background">@color/material_red400</item>
+        <item name="android:theme">@style/ToolbarTheme</item>
+        <item name="contentInsetLeft">@dimen/content_inset</item>
+        <item name="contentInsetStart">@dimen/content_inset</item>
+    </style>
+    <style name="MainActivityScrimInsetsFrameLayout"></style>
+    <style name="MainActivityLinearDrawer"></style>
+    <style name="MainActivityLinearDrawerHeader"></style>
+    <style name="MainActivityLinearDrawerHeaderImage"></style>
+    <style name="MainActivityLinearDrawerHeaderUsername"></style>
+    <style name="MainActivityLinearDrawerHeaderUserInfo"></style>
     <!--HOME FRAGMENT-->
 
     <!--HOME TOOLBAR-->
@@ -213,5 +226,5 @@
     <!--SEARCH FRAGMENT-->
 
     <!--SEARCH TOOLBAR-->
-
+    <!-- Todo: style the rest of XML where necessary-->
 </resources>

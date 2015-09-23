@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.models.DrawerItem;
+import com.matie.redgram.data.models.main.items.DrawerItem;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

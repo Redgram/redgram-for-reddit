@@ -22,7 +22,7 @@ import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout;
 import com.matie.redgram.ui.home.HomeFragment;
-import com.matie.redgram.data.models.DrawerItem;
+import com.matie.redgram.data.models.main.items.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
 import com.matie.redgram.ui.search.SearchFragment;
 
@@ -66,13 +66,10 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     private List<DrawerItem> navigationItems;
 
     private MainComponent mainComponent;
-    @Inject
-    DialogUtil dialogUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fresco.initialize(this);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
@@ -99,8 +96,8 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                         .appComponent(appComponent)
                         .mainModule(new MainModule(this))
                         .build();
-        dialogUtil = mainComponent.getDialogUtil();
-       // mainComponent.inject(this);
+//        dialogUtil = mainComponent.getDialogUtil();
+        mainComponent.inject(this);
     }
 
     @Override
@@ -199,10 +196,6 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
     public List<DrawerItem> getNavigationItems() {
         return navigationItems;
-    }
-
-    public DialogUtil getDialogUtil() {
-        return dialogUtil;
     }
 
     @OnItemClick(R.id.leftDrawerListView)

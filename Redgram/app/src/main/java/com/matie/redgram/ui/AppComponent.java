@@ -2,6 +2,8 @@ package com.matie.redgram.ui;
 
 import android.app.Application;
 
+import com.matie.redgram.data.managers.preferences.PreferenceManager;
+import com.matie.redgram.data.managers.preferences.PreferenceModule;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.data.network.api.reddit.RedditModule;
 import com.matie.redgram.data.network.connection.ConnectionModule;
@@ -21,7 +23,8 @@ import dagger.Component;
                 //application
                 AppModule.class,
                 ConnectionModule.class,
-                RedditModule.class
+                RedditModule.class,
+                PreferenceModule.class
         }
 )
 public interface AppComponent {
@@ -32,4 +35,5 @@ public interface AppComponent {
     App getApp();
     ConnectionStatus getConnectionStatus();
     RedditClient getRedditClient();
+    PreferenceManager getPreferenceManager();
 }

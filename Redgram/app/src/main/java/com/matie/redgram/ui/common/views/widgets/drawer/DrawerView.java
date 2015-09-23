@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.widget.ListView;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.models.DrawerItem;
+import com.matie.redgram.data.models.main.items.DrawerItem;
 import com.matie.redgram.ui.common.views.adapters.DrawerAdapter;
 
 import java.util.List;

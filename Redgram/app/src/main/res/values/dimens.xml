@@ -45,4 +45,5 @@
     <dimen name="thumbnail_size">80dp</dimen>
 
     <dimen name="action_icon_margin">12dp</dimen>
+    <dimen name="content_inset">72dp</dimen>
 </resources>
