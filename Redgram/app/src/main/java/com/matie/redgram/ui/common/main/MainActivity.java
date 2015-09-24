@@ -57,6 +57,9 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
 
+//    @Inject
+//    DialogUtil dialogUtil;
+
     private ActionBarDrawerToggle mDrawerToggle;
 
     private CharSequence mTitle;

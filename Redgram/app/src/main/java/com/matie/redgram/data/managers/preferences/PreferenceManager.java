@@ -3,6 +3,8 @@ package com.matie.redgram.data.managers.preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import javax.inject.Inject;
+
 /**
  * Created by matie on 20/09/15.
  *
@@ -15,6 +17,7 @@ public class PreferenceManager {
 
     private Context mContext;
 
+    @Inject
     public PreferenceManager(Context context){
         mContext = context;
     }

@@ -24,5 +24,4 @@ public abstract class BaseFragment extends Fragment {
 
     protected abstract void setupToolbar();
 
-//    public abstract HomeComponent component();
 }

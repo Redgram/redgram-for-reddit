@@ -82,10 +82,6 @@ public class HomePresenterImpl implements HomePresenter{
      */
     @Override
     public void getListing(String front, Map<String,String> params) {
-        // TODO: 22/09/15 Include this is at http level instead of calling it in every method.
-        // TODO: 22/09/15 Add a flag to indicate if it's loading CACHED data
-        app.showConnectionStatus(app.getConnectionStatus().isOnline());
-
         if(params.containsKey("after")){
             params.remove("after");
         }

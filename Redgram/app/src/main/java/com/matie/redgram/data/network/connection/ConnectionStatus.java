@@ -13,9 +13,9 @@ import javax.inject.Inject;
  */
 public class ConnectionStatus {
 
-    private static Context mContext;
-    private static ConnectivityManager cm;
-    private static NetworkInfo netInfo;
+    private Context mContext;
+    private ConnectivityManager cm;
+    private NetworkInfo netInfo;
 
     @Inject
     public ConnectionStatus(Context context){

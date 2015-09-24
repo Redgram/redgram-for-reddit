@@ -24,7 +24,5 @@ public interface MainComponent extends AppComponent{
     void inject(MainActivity activity);
 
     MainActivity activity();
-
     DialogUtil getDialogUtil();
-
 }

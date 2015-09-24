@@ -114,7 +114,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         component.inject(this);
 
         //todo: find another way to use injected instances
-        homePresenter = (HomePresenterImpl)component.getHomePresenter();
+//        homePresenter = (HomePresenterImpl)component.getHomePresenter();
     }
 
     @Override

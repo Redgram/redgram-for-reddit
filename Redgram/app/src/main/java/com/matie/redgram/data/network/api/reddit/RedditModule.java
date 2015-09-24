@@ -5,6 +5,7 @@ import android.app.Application;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
 import com.matie.redgram.data.network.connection.ConnectionStatus;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.utils.ToastHandler;
 
 import javax.inject.Singleton;
 

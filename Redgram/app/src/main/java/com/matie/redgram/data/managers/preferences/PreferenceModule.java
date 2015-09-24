@@ -13,7 +13,7 @@ import dagger.Provides;
 @Module
 public class PreferenceModule {
     @Provides
-    public PreferenceManager getPreferenceManager(App app){
+    public PreferenceManager providePreferenceManager(App app){
         return new PreferenceManager(app.getApplicationContext());
     }
 }

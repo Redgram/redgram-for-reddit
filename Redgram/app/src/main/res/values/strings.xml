@@ -28,6 +28,7 @@
     <string name="password_confirm">Confirm Password</string>
 
     <string name="no_connection">No Internet Connection</string>
+    <string name="no_connection_cache_loaded">Loading Cache</string>
 
     <string name="text_bullet">\u2022</string>
 

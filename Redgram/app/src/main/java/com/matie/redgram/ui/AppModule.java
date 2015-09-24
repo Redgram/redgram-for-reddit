@@ -2,6 +2,8 @@ package com.matie.redgram.ui;
 
 import android.app.Application;
 
+import com.matie.redgram.ui.common.utils.ToastHandler;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -22,6 +24,11 @@ public class AppModule {
     @Provides
     public App provideApplication(){
         return app;
+    }
+
+    @Provides
+    public ToastHandler provideToastHandler(){
+        return new ToastHandler(app.getApplicationContext());
     }
 
 }

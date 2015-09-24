@@ -145,6 +145,8 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
                 .searchModule(new SearchModule(this))
                 .build();
 
+//        DOES NOT WORK????!!!!
+//        component.inject(this);
         dialogUtil = component.getDialogUtil();
 
         searchPresenter = (SearchPresenterImpl)component.getSearchPresenter();

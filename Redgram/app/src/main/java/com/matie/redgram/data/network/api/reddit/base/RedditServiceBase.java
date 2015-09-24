@@ -1,15 +1,19 @@
 package com.matie.redgram.data.network.api.reddit.base;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.matie.redgram.R;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.data.network.connection.ConnectionStatus;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.utils.reddit.DateTimeDeserializer;
 import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
+import com.matie.redgram.ui.common.utils.ToastHandler;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
@@ -39,13 +43,18 @@ public class RedditServiceBase extends RedditBase {
     private final App app;
     private final Context mContext;
     private final ConnectionStatus connectionStatus;
+    private final ToastHandler toastHandler;
     private final RestAdapter.Builder adapterBuilder;
+    private final Resources res;
 
     @Inject
     public RedditServiceBase(App application) {
         app = application;
         mContext = app.getApplicationContext();
         connectionStatus = app.getConnectionStatus();
+        toastHandler = app.getToastHandler();
+
+        res = app.getResources();
 
         //create a builder once that has all the common build components
         adapterBuilder = getAdapterBuilder();
@@ -73,8 +82,14 @@ public class RedditServiceBase extends RedditBase {
                 request.addHeader("Accept", "application/json");
 
                 if(!connectionStatus.isOnline()){
+
+                    toastHandler.showBackgroundToast(res.getString(R.string.no_connection_cache_loaded), Toast.LENGTH_SHORT);
+
                     request.addHeader("Cache-Control",
                             "public, only-if-cached, max-stale=" + MAX_STALE);
+
+                    request.addHeader("Connection-Status", "No Connection");
+
                     Log.d("CSTATUS", "no connection!, stale = "+ MAX_STALE);
                 }
 
@@ -105,6 +120,7 @@ public class RedditServiceBase extends RedditBase {
                 Response.Builder responseBuilder = chain.proceed(chain.request()).newBuilder();
                 if (isOnline) {
                     responseBuilder.header("cache-control", "public, max-age=" + MAX_AGE);
+                    responseBuilder.header("Connection-Status", "Connected");
                     Log.d("CSTATUS", "connected to internet! age = " + MAX_AGE + " seconds");
                 }
 

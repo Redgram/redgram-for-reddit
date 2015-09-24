@@ -9,6 +9,7 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.data.network.connection.ConnectionStatus;
+import com.matie.redgram.ui.common.utils.ToastHandler;
 
 import javax.inject.Inject;
 
@@ -20,11 +21,15 @@ public class App extends Application {
     private AppComponent component;
 
     @Inject
+    ToastHandler toastHandler;
+
+    @Inject
     ConnectionStatus connectionStatus;
     String connectionMsg;
 
     @Inject
     PreferenceManager preferenceManager;
+
     @Inject
     RedditClient redditClient;
 
@@ -70,10 +75,14 @@ public class App extends Application {
         return redditClient;
     }
 
+    public ToastHandler getToastHandler() {
+        return toastHandler;
+    }
+
     public void showConnectionStatus(boolean isConnected){
         if(!isConnected){
             connectionMsg = mResources.getString(R.string.no_connection);
-            Toast.makeText(getApplicationContext(), connectionMsg, Toast.LENGTH_SHORT).show();
+            toastHandler.showToast(connectionMsg, Toast.LENGTH_SHORT);
         }
     }
 

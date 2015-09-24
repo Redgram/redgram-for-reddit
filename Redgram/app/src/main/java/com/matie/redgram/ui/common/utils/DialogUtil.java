@@ -9,6 +9,8 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.matie.redgram.R;
 
+import javax.inject.Inject;
+
 /**
  * Created by matie on 16/07/15.
  */
@@ -17,6 +19,7 @@ public class DialogUtil {
     private Context mContext;
     private MaterialDialog.Builder mDialogBuilder;
 
+    @Inject
     public DialogUtil(Context context) {
         mContext = context;
     }
