@@ -43,18 +43,13 @@ public class RedditServiceBase extends RedditBase {
     private final App app;
     private final Context mContext;
     private final ConnectionStatus connectionStatus;
-    private final ToastHandler toastHandler;
     private final RestAdapter.Builder adapterBuilder;
-    private final Resources res;
 
     @Inject
     public RedditServiceBase(App application) {
         app = application;
         mContext = app.getApplicationContext();
         connectionStatus = app.getConnectionStatus();
-        toastHandler = app.getToastHandler();
-
-        res = app.getResources();
 
         //create a builder once that has all the common build components
         adapterBuilder = getAdapterBuilder();
@@ -83,7 +78,7 @@ public class RedditServiceBase extends RedditBase {
 
                 if(!connectionStatus.isOnline()){
 
-                    toastHandler.showBackgroundToast(res.getString(R.string.no_connection_cache_loaded), Toast.LENGTH_SHORT);
+                    connectionStatus.showConnectionStatus(false);
 
                     request.addHeader("Cache-Control",
                             "public, only-if-cached, max-stale=" + MAX_STALE);

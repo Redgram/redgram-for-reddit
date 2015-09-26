@@ -17,6 +17,7 @@ import dagger.Provides;
  */
 @Module
 public class RedditModule {
+    @Singleton
     @Provides
     public RedditClient provideRedditClient(App app){
         return new RedditClient(app);

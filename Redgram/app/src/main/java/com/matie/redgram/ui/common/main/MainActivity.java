@@ -57,8 +57,8 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
 
-//    @Inject
-//    DialogUtil dialogUtil;
+    @Inject
+    DialogUtil dialogUtil;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -99,7 +99,6 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                         .appComponent(appComponent)
                         .mainModule(new MainModule(this))
                         .build();
-//        dialogUtil = mainComponent.getDialogUtil();
         mainComponent.inject(this);
     }
 

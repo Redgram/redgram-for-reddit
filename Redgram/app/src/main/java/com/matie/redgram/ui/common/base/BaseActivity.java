@@ -24,7 +24,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onResume();
 
         //onResume of any activity, show connection status
-        ((App)getApplication()).showConnectionStatus(((App)getApplication()).getConnectionStatus().isOnline());
+        ((App)getApplication()).getConnectionStatus().showConnectionStatus(true);
     }
     protected abstract void setupComponent(AppComponent appComponent);
 

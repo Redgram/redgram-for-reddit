@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.views.widgets.postlist;
+package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.App;
 
 /**
  * Created by matie on 19/05/15.
@@ -16,24 +17,24 @@ import com.matie.redgram.data.models.main.items.PostItem;
  *
  * Common overlays could be inflated in this view
  */
-public abstract class PostBaseView extends RelativeLayout {
+public abstract class PostItemSubView extends RelativeLayout {
 
-    public PostBaseView(Context context) {
+    public PostItemSubView(Context context) {
         super(context);
     }
 
-    public PostBaseView(Context context, AttributeSet attrs) {
+    public PostItemSubView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public PostBaseView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public PostItemSubView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public PostBaseView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public PostItemSubView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public abstract void setUpView(PostItem item);
+    public abstract void setUpView(App app, PostItem item);
 }

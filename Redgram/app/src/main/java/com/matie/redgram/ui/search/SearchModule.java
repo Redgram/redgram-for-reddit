@@ -4,6 +4,7 @@ import com.matie.redgram.data.managers.presenters.SearchPresenter;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.FragmentScope;
 import com.matie.redgram.ui.search.views.SearchView;
 
 import dagger.Module;
@@ -20,9 +21,11 @@ public class SearchModule {
         this.searchView = searchView;
     }
 
+    @FragmentScope
     @Provides
     public SearchView provideView(){return searchView;}
 
+    @FragmentScope
     @Provides
     public SearchPresenter provideSearchPresenter(App app){
         return new SearchPresenterImpl(searchView, app);

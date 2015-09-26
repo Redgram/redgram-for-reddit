@@ -14,7 +14,7 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostBaseView;
+import com.matie.redgram.ui.App;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -23,7 +23,7 @@ import butterknife.InjectView;
  * Created by matie on 19/05/15.
  * todo: FIND OUT WHY THUMBNAILS POSITION IS NOT STABLE
  */
-public class PostItemDefaultView extends PostBaseView {
+public class PostItemDefaultView extends PostItemSubView {
 
     @InjectView(R.id.default_thumbnail_view)
     SimpleDraweeView thumbnailView;
@@ -48,8 +48,8 @@ public class PostItemDefaultView extends PostBaseView {
     }
 
     @Override
-    public void setUpView(PostItem item) {
-        postItemTextView.setUpView(item);
+    public void setUpView(App app, PostItem item) {
+        postItemTextView.setUpView(app, item);
 
         postSourceText.setText(item.getDomain());
         postLinkText.setText(item.getUrl());

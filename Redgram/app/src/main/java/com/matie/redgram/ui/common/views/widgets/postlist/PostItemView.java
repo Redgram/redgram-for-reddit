@@ -6,12 +6,14 @@ import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemDefaultView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemGalleryView;
@@ -87,7 +89,7 @@ public class PostItemView extends CardView {
         this.dynamicView = dynamicView;
     }
 
-    public void bindTo(PostItem item, int position){
+    public void bindTo(App applicationInstance, PostItem item, int position){
         requestLayout();
 
         if(position == 0){
@@ -96,33 +98,33 @@ public class PostItemView extends CardView {
             resolveOtherItemsDimensions();
         }
 
-        postItemHeaderView.setUpView(item);
-        getAndSetUpView(item);
-        postItemActionView.setUpView(item);
+        postItemHeaderView.setUpView(applicationInstance, item);
+        getAndSetUpView(applicationInstance, item);
+        postItemActionView.setUpView(applicationInstance, item);
 
     }
 
-    private void getAndSetUpView(PostItem item) {
+    private void getAndSetUpView(App applicationInstance, PostItem item) {
         if(dynamicView instanceof PostItemDefaultView){
-            ((PostItemDefaultView) dynamicView).setUpView(item);
+            ((PostItemDefaultView) dynamicView).setUpView(applicationInstance, item);
             return;
         }
         if(dynamicView instanceof PostItemTextView){
-            ((PostItemTextView) dynamicView).setUpView(item);
+            ((PostItemTextView) dynamicView).setUpView(applicationInstance, item);
             return;
         }
         if(dynamicView instanceof PostItemImageView){
-            ((PostItemImageView) dynamicView).setUpView(item);
+            ((PostItemImageView) dynamicView).setUpView(applicationInstance, item);
             return;
         }
         if(dynamicView instanceof PostItemGifView){
             //todo
-            ((PostItemGifView) dynamicView).setUpView(item);
+            ((PostItemGifView) dynamicView).setUpView(applicationInstance, item);
             return;
         }
         if(dynamicView instanceof PostItemGalleryView){
             //todo
-            ((PostItemGalleryView) dynamicView).setUpView(item);
+            ((PostItemGalleryView) dynamicView).setUpView(applicationInstance, item);
             return;
         }
     }
@@ -155,4 +157,9 @@ public class PostItemView extends CardView {
         this.setLayoutParams(lp);
     }
 
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        //return false to capture child touch events
+        return false;
+    }
 }

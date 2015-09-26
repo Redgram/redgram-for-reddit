@@ -41,7 +41,7 @@ public class App extends Application {
         mResources = getResources();
         setupGraph();
 
-        showConnectionStatus(connectionStatus.isOnline());
+        connectionStatus.showConnectionStatus(true);
     }
 
     private void setupGraph() {
@@ -79,11 +79,6 @@ public class App extends Application {
         return toastHandler;
     }
 
-    public void showConnectionStatus(boolean isConnected){
-        if(!isConnected){
-            connectionMsg = mResources.getString(R.string.no_connection);
-            toastHandler.showToast(connectionMsg, Toast.LENGTH_SHORT);
-        }
-    }
+
 
 }

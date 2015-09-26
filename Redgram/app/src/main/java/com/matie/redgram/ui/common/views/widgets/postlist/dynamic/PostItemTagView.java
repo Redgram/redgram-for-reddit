@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostBaseView;
+import com.matie.redgram.ui.App;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -15,7 +15,7 @@ import butterknife.InjectView;
 /**
  * Created by matie on 21/06/15.
  */
-public class PostItemTagView extends PostBaseView {
+public class PostItemTagView extends PostItemSubView {
 
     @InjectView(R.id.tags_view)
     TextView tags;
@@ -34,7 +34,7 @@ public class PostItemTagView extends PostBaseView {
     }
 
     @Override
-    public void setUpView(PostItem item) {
+    public void setUpView(App app, PostItem item) {
         String bullet = " "+res.getString(R.string.text_bullet)+" ";
         String comments = item.getNumComments() + " comments";
         String source = "[ "+item.getDomain()+" ]";

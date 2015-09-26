@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostBaseView;
+import com.matie.redgram.ui.App;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -13,7 +13,7 @@ import butterknife.InjectView;
 /**
  * Created by matie on 19/05/15.
  */
-public class PostItemGalleryView extends PostBaseView {
+public class PostItemGalleryView extends PostItemSubView {
 
     @InjectView(R.id.gallery_text_view)
     PostItemTextView postItemTextView;
@@ -29,7 +29,7 @@ public class PostItemGalleryView extends PostBaseView {
     }
 
     @Override
-    public void setUpView(PostItem item) {
-        postItemTextView.setUpView(item);
+    public void setUpView(App app, PostItem item) {
+        postItemTextView.setUpView(app, item);
     }
 }

@@ -1,8 +1,13 @@
 package com.matie.redgram.data.network.connection;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.widget.Toast;
+
+import com.matie.redgram.R;
+import com.matie.redgram.ui.common.utils.ToastHandler;
 
 import java.io.IOException;
 
@@ -14,17 +19,32 @@ import javax.inject.Inject;
 public class ConnectionStatus {
 
     private Context mContext;
+    private Resources res;
     private ConnectivityManager cm;
     private NetworkInfo netInfo;
+    private ToastHandler toastHandler;
 
     @Inject
-    public ConnectionStatus(Context context){
+    public ConnectionStatus(Context context, ToastHandler handler){
         mContext = context;
+        res = mContext.getResources();
+        toastHandler = handler;
     }
 
-    //only used method.
     public boolean isOnline(){
         return isNetworkActive() && isPingable();
+    }
+
+    public void showConnectionStatus(boolean isMain){
+        String connectionMsg = res.getString(R.string.no_connection);
+        if(!isOnline()){
+            if(isMain){
+                toastHandler.showToast(connectionMsg, Toast.LENGTH_SHORT);
+            }else{
+                connectionMsg = res.getString(R.string.no_connection_cache_loaded);
+                toastHandler.showBackgroundToast(connectionMsg,Toast.LENGTH_SHORT);
+            }
+        }
     }
 
     private boolean isNetworkActive() {

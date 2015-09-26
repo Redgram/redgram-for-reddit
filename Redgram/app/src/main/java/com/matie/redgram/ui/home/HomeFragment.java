@@ -26,6 +26,7 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
+import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
@@ -78,6 +79,8 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     HomeComponent component;
 
     @Inject
+    App app;
+    @Inject
     HomePresenterImpl homePresenter;
     @Inject
     DialogUtil dialogUtil;
@@ -113,8 +116,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
         component.inject(this);
 
-        //todo: find another way to use injected instances
-//        homePresenter = (HomePresenterImpl)component.getHomePresenter();
     }
 
     @Override
@@ -264,14 +265,13 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                 }).show();
     }
 
-//    @Override
-//    public HomeComponent component() {
-//        return component;
-//    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
+
+        //required // TODO: 25/09/15 initialize automatically
+        homeRecyclerView.getPostAdapter().setApplicationInstance(app);
 
         homePresenter.getListing(filterChoice.toLowerCase(), params);
         toolbarSubtitle.setText(filterChoice);
@@ -352,7 +352,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
     }
 
-
     @Override
     public void showToolbar() {
         moveToolbar(0);
@@ -362,11 +361,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     public void hideToolbar() {
         moveToolbar(-mToolbar.getHeight());
     }
-
-
-//    public DialogUtil dialogUtil {
-//        return ((MainActivity)getActivity()).dialogUtil;
-//    }
 
     @Override
     public PostRecyclerView getRecyclerView() {

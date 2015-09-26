@@ -4,6 +4,7 @@ import com.matie.redgram.data.managers.presenters.HomePresenter;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.FragmentScope;
 import com.matie.redgram.ui.home.views.HomeView;
 
 import javax.inject.Inject;
@@ -23,9 +24,11 @@ public class HomeModule {
         this.homeView = homeView;
     }
 
+    @FragmentScope
     @Provides
     public HomeView provideView(){return homeView;}
 
+    @FragmentScope
     @Provides
     public HomePresenter provideHomePresenter(App app){
         return new HomePresenterImpl(homeView, app);

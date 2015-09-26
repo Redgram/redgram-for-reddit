@@ -27,7 +27,7 @@ public class PreferenceManager {
      * @param key
      * @return The specified preference
      */
-    public SharedPreferences getSharedPreferences(String context, String key){
+    public SharedPreferences getSharedPreferences(String key){
         return mContext.getSharedPreferences(key, mContext.MODE_PRIVATE);
     }
 

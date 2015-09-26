@@ -21,11 +21,13 @@ public class AppModule {
         this.app = app;
     }
 
+    @Singleton
     @Provides
     public App provideApplication(){
         return app;
     }
 
+    @Singleton
     @Provides
     public ToastHandler provideToastHandler(){
         return new ToastHandler(app.getApplicationContext());

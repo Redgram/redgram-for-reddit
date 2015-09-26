@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.adapters.PostAdapter;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 
@@ -22,7 +23,6 @@ public class PostRecyclerView extends ObservableRecyclerView {
     private final Context context;
     private final LayoutManager layoutManager;
     private final PostAdapter postAdapter;
-
 
     public PostRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);

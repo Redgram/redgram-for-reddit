@@ -3,6 +3,7 @@ package com.matie.redgram.data.network.connection;
 import android.app.Application;
 
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.utils.ToastHandler;
 
 import javax.inject.Singleton;
 
@@ -14,8 +15,9 @@ import dagger.Provides;
  */
 @Module
 public class ConnectionModule {
+    @Singleton
     @Provides
-    public ConnectionStatus provideConnectionStatus(App app){
-        return new ConnectionStatus(app.getApplicationContext());
+    public ConnectionStatus provideConnectionStatus(App app, ToastHandler handler){
+        return new ConnectionStatus(app.getApplicationContext(), handler);
     }
 }

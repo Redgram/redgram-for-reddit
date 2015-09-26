@@ -22,10 +22,13 @@ public class MainModule {
         this.activity = activity;
     }
 
-    @Provides MainActivity activity(){
+    @ActivityScope
+    @Provides
+    MainActivity activity(){
         return (MainActivity)activity;
     }
 
+    @ActivityScope
     @Provides
     DialogUtil provideDialogUtil(){
         return new DialogUtil(activity);

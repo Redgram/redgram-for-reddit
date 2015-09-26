@@ -2,6 +2,8 @@ package com.matie.redgram.data.managers.preferences;
 
 import com.matie.redgram.ui.App;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -12,6 +14,7 @@ import dagger.Provides;
  */
 @Module
 public class PreferenceModule {
+    @Singleton
     @Provides
     public PreferenceManager providePreferenceManager(App app){
         return new PreferenceManager(app.getApplicationContext());
