@@ -9,7 +9,6 @@ import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.main.reddit.PostItemWrapper;
 import com.matie.redgram.data.network.api.reddit.base.RedditProviderBase;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
-import com.matie.redgram.data.network.connection.ConnectionStatus;
 import com.matie.redgram.ui.App;
 
 import java.util.HashMap;

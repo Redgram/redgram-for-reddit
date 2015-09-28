@@ -14,10 +14,11 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.matie.redgram.R;
+import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
+import com.matie.redgram.ui.common.base.BaseActivityComponent;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout;
@@ -57,6 +58,8 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
 
+    @Inject
+    App app;
     @Inject
     DialogUtil dialogUtil;
 
@@ -103,7 +106,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     }
 
     @Override
-    public MainComponent component() {
+    public AppComponent component() {
         return mainComponent;
     }
 
@@ -252,6 +255,14 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                 break;
         }
 
+    }
+
+    public App getApp() {
+        return app;
+    }
+
+    public DialogUtil getDialogUtil() {
+        return dialogUtil;
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.matie.redgram.ui.search;
 
 import com.matie.redgram.data.managers.presenters.SearchPresenter;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
-import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.FragmentScope;
 import com.matie.redgram.ui.search.views.SearchView;

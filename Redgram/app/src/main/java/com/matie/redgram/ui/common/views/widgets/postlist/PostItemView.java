@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.common.views.widgets.postlist;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -89,7 +90,7 @@ public class PostItemView extends CardView {
         this.dynamicView = dynamicView;
     }
 
-    public void bindTo(App applicationInstance, PostItem item, int position){
+    public void bindTo(android.app.Activity activity, PostItem item, int position){
         requestLayout();
 
         if(position == 0){
@@ -98,33 +99,33 @@ public class PostItemView extends CardView {
             resolveOtherItemsDimensions();
         }
 
-        postItemHeaderView.setUpView(applicationInstance, item);
-        getAndSetUpView(applicationInstance, item);
-        postItemActionView.setUpView(applicationInstance, item);
+        postItemHeaderView.setupView(item);
+        getAndSetUpView(item);
+        postItemActionView.setupView(item);
 
     }
 
-    private void getAndSetUpView(App applicationInstance, PostItem item) {
+    private void getAndSetUpView(PostItem item) {
         if(dynamicView instanceof PostItemDefaultView){
-            ((PostItemDefaultView) dynamicView).setUpView(applicationInstance, item);
+            ((PostItemDefaultView) dynamicView).setupView(item);
             return;
         }
         if(dynamicView instanceof PostItemTextView){
-            ((PostItemTextView) dynamicView).setUpView(applicationInstance, item);
+            ((PostItemTextView) dynamicView).setupView(item);
             return;
         }
         if(dynamicView instanceof PostItemImageView){
-            ((PostItemImageView) dynamicView).setUpView(applicationInstance, item);
+            ((PostItemImageView) dynamicView).setupView(item);
             return;
         }
         if(dynamicView instanceof PostItemGifView){
             //todo
-            ((PostItemGifView) dynamicView).setUpView(applicationInstance, item);
+            ((PostItemGifView) dynamicView).setupView(item);
             return;
         }
         if(dynamicView instanceof PostItemGalleryView){
             //todo
-            ((PostItemGalleryView) dynamicView).setUpView(applicationInstance, item);
+            ((PostItemGalleryView) dynamicView).setupView(item);
             return;
         }
     }

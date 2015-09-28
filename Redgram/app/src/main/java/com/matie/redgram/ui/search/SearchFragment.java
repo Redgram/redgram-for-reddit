@@ -35,7 +35,6 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
@@ -95,7 +94,7 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     RecyclerView.OnScrollListener loadMoreListener;
 
     @Inject
-    App app;
+    MainActivity mainActivity;
     @Inject
     SearchPresenterImpl searchPresenter;
     @Inject
@@ -133,9 +132,6 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-
-        //required
-        searchRecyclerView.getPostAdapter().setApplicationInstance(app);
     }
 
     @Override

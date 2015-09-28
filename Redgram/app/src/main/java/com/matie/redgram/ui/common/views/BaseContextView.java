@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.common.views;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 

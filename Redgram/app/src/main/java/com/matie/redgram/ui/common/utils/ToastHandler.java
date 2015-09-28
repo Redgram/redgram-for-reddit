@@ -5,8 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
-import com.matie.redgram.ui.App;
-
 import javax.inject.Inject;
 
 /**

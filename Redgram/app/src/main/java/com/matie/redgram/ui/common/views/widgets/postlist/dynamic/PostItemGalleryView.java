@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 
@@ -29,7 +30,7 @@ public class PostItemGalleryView extends PostItemSubView {
     }
 
     @Override
-    public void setUpView(App app, PostItem item) {
-        postItemTextView.setUpView(app, item);
+    public void setupView(PostItem item) {
+        postItemTextView.setupView(item);
     }
 }

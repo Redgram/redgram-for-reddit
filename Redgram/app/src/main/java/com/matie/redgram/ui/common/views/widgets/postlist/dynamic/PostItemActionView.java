@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -41,7 +42,7 @@ public class PostItemActionView extends PostItemSubView {
     }
 
     @Override
-    public void setUpView(App app, PostItem item) {
+    public void setupView(PostItem item) {
         scoreView.setText(item.getScore()+"");
     }
 }

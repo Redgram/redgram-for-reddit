@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.PointF;
 import android.net.Uri;
@@ -48,8 +49,8 @@ public class PostItemDefaultView extends PostItemSubView {
     }
 
     @Override
-    public void setUpView(App app, PostItem item) {
-        postItemTextView.setUpView(app, item);
+    public void setupView(PostItem item) {
+        postItemTextView.setupView(item);
 
         postSourceText.setText(item.getDomain());
         postLinkText.setText(item.getUrl());

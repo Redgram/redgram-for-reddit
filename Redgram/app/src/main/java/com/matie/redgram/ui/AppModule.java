@@ -1,7 +1,5 @@
 package com.matie.redgram.ui;
 
-import android.app.Application;
-
 import com.matie.redgram.ui.common.utils.ToastHandler;
 
 import javax.inject.Singleton;

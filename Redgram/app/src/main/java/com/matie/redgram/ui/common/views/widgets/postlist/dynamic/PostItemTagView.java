@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
@@ -34,7 +35,7 @@ public class PostItemTagView extends PostItemSubView {
     }
 
     @Override
-    public void setUpView(App app, PostItem item) {
+    public void setupView(PostItem item) {
         String bullet = " "+res.getString(R.string.text_bullet)+" ";
         String comments = item.getNumComments() + " comments";
         String source = "[ "+item.getDomain()+" ]";

@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
@@ -40,9 +41,9 @@ public class PostItemTextView extends PostItemSubView {
     }
 
     @Override
-    public void setUpView(App app, PostItem item) {
+    public void setupView(PostItem item) {
 //        item.getType() + " " +
-        textTagView.setUpView(app, item);
+        textTagView.setupView(item);
         textTitleView.setText(item.getTitle());
 
         if(item.getText().length() > 0){

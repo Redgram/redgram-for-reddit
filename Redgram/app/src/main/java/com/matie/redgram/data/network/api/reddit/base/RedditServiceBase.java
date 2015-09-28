@@ -1,19 +1,15 @@
 package com.matie.redgram.data.network.api.reddit.base;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.matie.redgram.R;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.data.network.connection.ConnectionStatus;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.utils.reddit.DateTimeDeserializer;
 import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
-import com.matie.redgram.ui.common.utils.ToastHandler;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;

@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.common.views.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostViewHolder;
 
@@ -25,7 +25,7 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
 
     private final LayoutInflater inflater;
     private List<PostItem> items = Collections.emptyList();
-    private App applicationInstance;
+    private Activity activityInstance;
 
 
     public PostAdapterBase(Context context, int layoutResId){
@@ -79,7 +79,7 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
 //        Log.d("ITEM VIEW HOLDER" , holder+"");
 //        Log.d("ITEM VIEW" , holder.getItemView()+"");
         // TODO: 21/09/15 pass the preferences to here
-        holder.getItemView().bindTo(applicationInstance ,items.get(position), position);
+        holder.getItemView().bindTo(activityInstance ,items.get(position), position);
     }
 
     @Override
@@ -97,7 +97,4 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
         return getItemType(position);
     }
 
-    public void setApplicationInstance(App applicationInstance) {
-        this.applicationInstance = applicationInstance;
-    }
 }

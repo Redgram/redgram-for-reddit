@@ -1,6 +1,7 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -36,5 +37,5 @@ public abstract class PostItemSubView extends RelativeLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public abstract void setUpView(App app, PostItem item);
+    public abstract void setupView(PostItem item);
 }

@@ -26,7 +26,6 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
@@ -79,7 +78,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     HomeComponent component;
 
     @Inject
-    App app;
+    MainActivity mainActivity;
     @Inject
     HomePresenterImpl homePresenter;
     @Inject
@@ -269,9 +268,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-
-        //required // TODO: 25/09/15 initialize automatically
-        homeRecyclerView.getPostAdapter().setApplicationInstance(app);
 
         homePresenter.getListing(filterChoice.toLowerCase(), params);
         toolbarSubtitle.setText(filterChoice);

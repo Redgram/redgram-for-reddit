@@ -1,7 +1,5 @@
 package com.matie.redgram.ui;
 
-import android.app.Application;
-
 import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.managers.preferences.PreferenceModule;
 import com.matie.redgram.data.network.api.reddit.RedditClient;

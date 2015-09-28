@@ -1,7 +1,5 @@
 package com.matie.redgram.data.network.connection;
 
-import android.app.Application;
-
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.utils.ToastHandler;
 

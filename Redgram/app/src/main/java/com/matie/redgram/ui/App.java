@@ -3,9 +3,7 @@ package com.matie.redgram.ui;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
-import android.widget.Toast;
 
-import com.matie.redgram.R;
 import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.data.network.connection.ConnectionStatus;
