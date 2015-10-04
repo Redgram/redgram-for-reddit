@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--this is an overlay, so it will inherit the style of the image and adds to it the necessary properties to hide it-->
+<RelativeLayout
+    android:id="@+id/image_overlay"
+    style="@style/Match"
+    android:background="@drawable/image_nsfw_overlay"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        style="@style/Wrap"
+        android:layout_centerInParent="true"
+        android:text="NSFW material, click here to view"
+        android:textSize="@dimen/text_size_medium"
+        android:textStyle="bold"/>
+</RelativeLayout>

@@ -28,7 +28,6 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
-import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.home.views.HomeView;
@@ -77,8 +76,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
 
     HomeComponent component;
 
-    @Inject
-    MainActivity mainActivity;
     @Inject
     HomePresenterImpl homePresenter;
     @Inject
@@ -136,10 +133,8 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         listingFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogUtil.init();
 
-                try {
-                    dialogUtil.getDialogBuilder()
+                    dialogUtil.build()
                             .title("Filter Links By")
                             .items(R.array.frontArray)
                             .itemsCallback(new MaterialDialog.ListCallback() {
@@ -161,9 +156,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                                 }
                             })
                             .show();
-                } catch (NullPointerException e) {
-                    Log.d("DIALOG", "Make sure you are initializing the builder.");
-                }
+
             }
         });
 
@@ -201,7 +194,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 if(newState == RecyclerView.SCROLL_STATE_IDLE){
                     if(homeRecyclerView != null && homeRecyclerView.getChildCount() > 0){
-                        int lastItemPosition = homeRecyclerView.getPostAdapter().getItemCount() - 1;
+                        int lastItemPosition = homeRecyclerView.getAdapter().getItemCount() - 1;
                         if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
                             homePresenter.getMoreListing(filterChoice.toLowerCase(), params);
                         }
@@ -241,8 +234,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     {
         filterChoice = query.toString();
 
-        dialogUtil.init();
-        dialogUtil.getDialogBuilder()
+        dialogUtil.build()
                 .title("Sort By")
                 .items(R.array.fromArray)
                 .itemsCallback(new MaterialDialog.ListCallback() {

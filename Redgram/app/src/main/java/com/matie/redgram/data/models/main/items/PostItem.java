@@ -10,18 +10,22 @@ import java.util.regex.Pattern;
  */
 public class PostItem {
 
+    public static final String URL_REGEX = "(http(s)?://.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)";
+
     public enum Type{
         DEFAULT,
         SELF,
         IMAGE,
-        GIF,
-        IMGUR_IMAGE,
+        ANIMATED,
+        GFYCAT,
+        YOUTUBE,
+        IMGUR,
         IMGUR_GALLERY,
         IMGUR_ALBUM,
         IMGUR_CUSTOM_GALLERY,
-        IMGUR_TAG,
+//        IMGUR_TAG,
        // IMGUR_MEME, not sure of this
-        IMGUR_SUBREDDIT
+//        IMGUR_SUBREDDIT
     }
 
 
@@ -172,37 +176,52 @@ public class PostItem {
         this.numComments = numComments;
     }
 
-    public Type adjustType() {
-        if(isImgurContent()){
-            if(isDirectMedia()){
-                int dotIndex = url.lastIndexOf('.');
-                setUrl(url.substring(0,dotIndex) + 'l' + url.substring(dotIndex,url.length()));
-                return Type.IMAGE;
-            }else if(isAnimated()){
-                if(!url.endsWith(".mp4")) {
-                    int dotIndex = url.lastIndexOf('.');
-                    setUrl(url.substring(0, dotIndex) + ".mp4");
-                }
-                return Type.GIF;
-            }else if(isImgurDirectMedia()){
-                return Type.IMGUR_IMAGE;
-            }else if(isImgurAlbum()) {
-                return Type.IMGUR_ALBUM;
-            }else if(isImgurGallery()){
-                return Type.IMGUR_GALLERY;
-            }else if(isImgurCustomGallery()){
-                return Type.IMGUR_CUSTOM_GALLERY;
-            }else if(isImgurSubreddit()){
-                return Type.IMGUR_SUBREDDIT;
-            }else if(isImgurTag()){
-                return Type.IMGUR_TAG;
-            }
-        }else if(isDirectMedia()){
-            return Type.IMAGE;
-        }else if(isSelf){
+    public Type identifyType() {
+        if(isSelf){
             return Type.SELF;
         }
-        return Type.DEFAULT; //normal links
+
+        if(isDirectMedia()){
+            return Type.IMAGE;
+        }
+
+        if(isImgurContent()){
+            if(isImgurDirectMedia() && !isAnimated()){
+                return Type.IMGUR;
+            }
+            if(isImgurAlbum()){
+                return Type.IMGUR_ALBUM;
+            }
+            if(isImgurGallery()){
+                return Type.IMGUR_GALLERY;
+            }
+            if(isImgurCustomGallery()){
+                return Type.IMGUR_CUSTOM_GALLERY;
+            }
+        }
+
+        if(isAnimated()){
+            return Type.ANIMATED;
+        }
+
+        //Check the host
+        if(isGifyCat()){
+            return Type.GFYCAT;
+        }
+//        check the host
+        if(isYoutube()){
+            return Type.YOUTUBE;
+        }
+
+        return Type.DEFAULT; //normal link
+    }
+
+    private boolean isYoutube() {
+        return false;
+    }
+
+    private boolean isGifyCat() {
+        return false;
     }
 
     private boolean isImgurAlbum() {
@@ -247,8 +266,9 @@ public class PostItem {
         return matcher.find();
     }
 
+    // gif or mp4 only
     private boolean isAnimated() {
-        if(url.endsWith(".gif") || url.endsWith(".gifv") || url.endsWith(".mp4")){
+        if(url.endsWith(".gifv") || url.endsWith(".mp4")){
             return true;
         }else{
             return false;

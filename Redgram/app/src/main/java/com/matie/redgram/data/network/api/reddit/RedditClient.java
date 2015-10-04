@@ -107,10 +107,10 @@ public class RedditClient extends RedditServiceBase {
 
                     //todo: request API
                     Observable<PostItem> imgurObservable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.IMGUR_IMAGE);
+                            .filter(item -> item.getType() == PostItem.Type.IMGUR);
                     //todo: convert to MP4 and set new link
                     Observable<PostItem> mp4Observable = Observable.just(postItem)
-                            .filter(item -> item.getType() == PostItem.Type.GIF);
+                            .filter(item -> item.getType() == PostItem.Type.ANIMATED);
                     //leave out to render
                     Observable<PostItem> imageObservable = Observable.just(postItem)
                             .filter(item -> item.getType() == PostItem.Type.IMAGE);
@@ -121,9 +121,7 @@ public class RedditClient extends RedditServiceBase {
                     Observable<PostItem> galleryObservable = Observable.just(postItem)
                             .filter(item -> item.getType() == PostItem.Type.IMGUR_GALLERY
                                     || item.getType() == PostItem.Type.IMGUR_ALBUM
-                                    || item.getType() == PostItem.Type.IMGUR_CUSTOM_GALLERY
-                                    || item.getType() == PostItem.Type.IMGUR_TAG
-                                    || item.getType() == PostItem.Type.IMGUR_SUBREDDIT);
+                                    || item.getType() == PostItem.Type.IMGUR_CUSTOM_GALLERY);
                     //todo: display thumbnail with link to view full source along with ant self text
                     Observable<PostItem> defaultObservable = Observable.just(postItem)
                             .filter(item -> item.getType() == PostItem.Type.DEFAULT);
@@ -167,7 +165,7 @@ public class RedditClient extends RedditServiceBase {
         item.setIsDistinguished(link.isDistinguished());
         item.setSubreddit(link.getSubreddit());
 
-        item.setType(item.adjustType());
+        item.setType(item.identifyType());
 
         return item;
     }

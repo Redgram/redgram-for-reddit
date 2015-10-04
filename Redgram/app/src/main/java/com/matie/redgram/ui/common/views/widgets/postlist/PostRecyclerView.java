@@ -2,6 +2,7 @@ package com.matie.redgram.ui.common.views.widgets.postlist;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
@@ -48,7 +49,8 @@ public class PostRecyclerView extends ObservableRecyclerView {
         return layoutManager;
     }
 
-    public PostAdapterBase getPostAdapter() {
+    @Override
+    public Adapter getAdapter() {
         return postAdapter;
     }
 }

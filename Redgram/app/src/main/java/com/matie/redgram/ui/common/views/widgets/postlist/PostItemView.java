@@ -2,19 +2,25 @@ package com.matie.redgram.ui.common.views.widgets.postlist;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemDefaultView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemGalleryView;
@@ -23,8 +29,11 @@ import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemHeader
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemImageView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemTextView;
 
+import java.util.zip.Inflater;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Created by matie on 04/04/15.
@@ -42,11 +51,17 @@ public class PostItemView extends CardView {
     @InjectView(R.id.post_item_dynamic_view)
     ViewGroup dynamicParent;
 
+    RelativeLayout imageOverlay;
+
     //find view according to type and bind items to it - do not use ButterKnife annotation here
     View dynamicView;
 
-    final Resources res;
-    final Context context;
+    Resources res;
+    Context context;
+    LayoutInflater inflater;
+    MainActivity mainActivity;
+    SharedPreferences sharedPreferences;
+
 
     Uri uri;
 
@@ -54,18 +69,32 @@ public class PostItemView extends CardView {
         super(context);
         this.context = context;
         res = context.getResources();
+        inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        mainActivity = (MainActivity)getContext();
+        sharedPreferences = ((App)mainActivity.getApplication()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
+
     }
 
     public PostItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
         res = context.getResources();
+        inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+
+        mainActivity = (MainActivity)getContext();
+        sharedPreferences = ((App)mainActivity.getApplication()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
     }
 
     public PostItemView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.context = context;
         res = context.getResources();
+        inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        mainActivity = (MainActivity)getContext();
+        sharedPreferences = ((App)mainActivity.getApplication()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
     }
 
     @Override
@@ -102,6 +131,21 @@ public class PostItemView extends CardView {
         postItemHeaderView.setupView(item);
         getAndSetUpView(item);
         postItemActionView.setupView(item);
+
+        imageOverlay = (RelativeLayout)inflater.inflate(R.layout.nsfw_overlay, null);
+        imageOverlay.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleOverlayClickEvent();
+            }
+        });
+
+        //todo fix recycler view refresh
+        if(item.isAdult() && !isNsfwEnabled()){
+            dynamicParent.addView(imageOverlay);
+        }else{
+            imageOverlay.setVisibility(GONE);
+        }
 
     }
 
@@ -148,6 +192,7 @@ public class PostItemView extends CardView {
             this.setLayoutParams(lp);
         }
     }
+
     /**
      * other items
      */
@@ -156,6 +201,38 @@ public class PostItemView extends CardView {
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(this.getLayoutParams());
         lp.setMargins(25, 0, 25, 50);
         this.setLayoutParams(lp);
+    }
+
+    private void handleOverlayClickEvent(){
+        if(imageOverlay.getVisibility() == VISIBLE){
+            if(!isNsfwEnabled()){
+                mainActivity.getDialogUtil().build()
+                        .title("Are you over 18?")
+                        .positiveText("Yes")
+                        .negativeText("Cancel")
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                super.onPositive(dialog);
+
+                                sharedPreferences.edit().putBoolean(PreferenceManager.NSFW_KEY, true).commit();
+                                imageOverlay.setVisibility(GONE);
+//                                ((RecyclerView)getParent()).getAdapter().notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onNegative(MaterialDialog dialog) {
+                                super.onNegative(dialog);
+                            }
+                        })
+                        .show();
+            }
+            // TODO: 21/09/15 add animation, ex: fade in/out
+        }
+    }
+
+    private boolean isNsfwEnabled(){
+        return sharedPreferences.getBoolean(PreferenceManager.NSFW_KEY, false);
     }
 
     @Override

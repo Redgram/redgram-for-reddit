@@ -70,12 +70,11 @@ public class PostAdapter extends PostAdapterBase {
             return id;
         }
         if(getItem(position).getType() == PostItem.Type.IMGUR_GALLERY || getItem(position).getType() == PostItem.Type.IMGUR_ALBUM ||
-                getItem(position).getType() == PostItem.Type.IMGUR_CUSTOM_GALLERY || getItem(position).getType() == PostItem.Type.IMGUR_TAG ||
-                getItem(position).getType() == PostItem.Type.IMGUR_SUBREDDIT){
+                getItem(position).getType() == PostItem.Type.IMGUR_CUSTOM_GALLERY){
             id = TYPE_GALLERY;
             return id;
         }
-        if(getItem(position).getType() == PostItem.Type.GIF){
+        if(getItem(position).getType() == PostItem.Type.ANIMATED){
             id = TYPE_GIF;
             return id;
         }

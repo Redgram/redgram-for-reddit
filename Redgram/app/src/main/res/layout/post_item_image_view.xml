@@ -14,18 +14,6 @@
         fresco:placeholderImageScaleType="fitCenter"
         fresco:failureImage="@drawable/ic_action_error"
         fresco:failureImageScaleType="centerInside"/>
-    <!--this is an overlay, so it will inherit the style of the image and adds to it the necessary properties to hide it-->
-    <RelativeLayout
-        android:id="@+id/image_overlay"
-        style="@style/ImagePostItemView"
-        android:background="@drawable/image_nsfw_overlay">
-        <TextView
-            style="@style/Wrap"
-            android:layout_centerInParent="true"
-            android:text="NSFW material, click here to view"
-            android:textSize="@dimen/text_size_medium"
-            android:textStyle="bold"/>
-    </RelativeLayout>
 
     <include
         style="@style/ImagePostItemText"

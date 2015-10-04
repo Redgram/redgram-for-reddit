@@ -12,8 +12,13 @@ import javax.inject.Inject;
  */
 public class PreferenceManager {
 
-    public static final String HOME_SP = "home_pref_key";
-    public static final String SEARCH_SP = "search_pref_key";
+    //preferences keys
+    public static final String POSTS_PREF = "posts_pref_key";
+    public static final String HOME_PREF = "home_pref_key";
+    public static final String SEARCH_PREF = "search_pref_key";
+
+    //object keys
+    public static final String NSFW_KEY = "is_nsfw_enabled";
 
     private Context mContext;
 
@@ -29,27 +34,6 @@ public class PreferenceManager {
      */
     public SharedPreferences getSharedPreferences(String key){
         return mContext.getSharedPreferences(key, mContext.MODE_PRIVATE);
-    }
-
-    /**
-     *
-     * @param prefs
-     * @param key
-     * @param value
-     */
-    public void setString(SharedPreferences prefs, String key, String value){
-        prefs.edit().putString(key, value).apply();
-    }
-
-    /**
-     *
-     * @param prefs
-     * @param key
-     * @param defaultValue
-     * @return Returns the string paired with the key, or the defaultValue if nothing is returned.
-     */
-    public String getString(SharedPreferences prefs, String key, String defaultValue){
-        return prefs.getString(key, defaultValue);
     }
 
     /**

@@ -37,7 +37,6 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
-import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
@@ -93,8 +92,6 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
 
     RecyclerView.OnScrollListener loadMoreListener;
 
-    @Inject
-    MainActivity mainActivity;
     @Inject
     SearchPresenterImpl searchPresenter;
     @Inject
@@ -220,15 +217,13 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         searchFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogUtil.init();
-
                 //remove layout from its parent, to set it to another, new parent
                 if (filterContentLayout.getParent() != null) {
                     ((ViewGroup) filterContentLayout.getParent()).removeView(filterContentLayout);
                 }
 
                 try {
-                    dialogUtil.getDialogBuilder()
+                    dialogUtil.build()
                             .title("Advanced Search")
                             .customView(filterContentLayout, false)
                             .positiveText("Search")
@@ -285,7 +280,7 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 if(newState == RecyclerView.SCROLL_STATE_IDLE){
                     if(searchRecyclerView != null && searchRecyclerView.getChildCount() > 0){
-                        int lastItemPosition = searchRecyclerView.getPostAdapter().getItemCount() - 1;
+                        int lastItemPosition = searchRecyclerView.getAdapter().getItemCount() - 1;
                         if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
                             searchPresenter.loadMoreResults(subreddit, params);
                         }

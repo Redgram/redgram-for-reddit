@@ -29,6 +29,14 @@
             android:id="@+id/post_item_dynamic_view"
             android:layout_below="@id/sep_1">
         </FrameLayout>
+        <!--overlay-->
+        <!--<include-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:id="@+id/image_overlay"-->
+            <!--layout="@layout/nsfw_overlay"-->
+            <!--android:layout_below="@+id/sep_1" />-->
+
 
         <include
             android:id="@+id/sep_2"

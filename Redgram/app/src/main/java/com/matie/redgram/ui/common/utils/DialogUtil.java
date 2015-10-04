@@ -24,12 +24,8 @@ public class DialogUtil {
         mContext = context;
     }
 
-    public void init(){
-        mDialogBuilder = new MaterialDialog.Builder(mContext);
-    }
-
-    public MaterialDialog.Builder getDialogBuilder() {
-        return mDialogBuilder;
+    public MaterialDialog.Builder build(){
+        return  new MaterialDialog.Builder(mContext);
     }
 
 }
