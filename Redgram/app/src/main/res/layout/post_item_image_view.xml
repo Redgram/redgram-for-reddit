@@ -5,7 +5,6 @@
     <!--android:paddingTop="@dimen/default_small_padding"-->
     <!--android:paddingBottom="@dimen/default_small_padding"-->
 
-    <!--#todo: Overlay buttons-->
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/image_view"
         style="@style/ImagePostItemView"
@@ -14,6 +13,11 @@
         fresco:placeholderImageScaleType="fitCenter"
         fresco:failureImage="@drawable/ic_action_error"
         fresco:failureImageScaleType="centerInside"/>
+
+    <!--Overlay image-->
+    <include android:id="@+id/image_overlay"
+        style="@style/ImagePostItemView"
+        layout="@layout/nsfw_overlay"  />
 
     <include
         style="@style/ImagePostItemText"

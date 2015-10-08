@@ -36,13 +36,13 @@
     <!--Separator Height-->
     <dimen name="separator_height">1dp</dimen>
     <!--Image Height-->
-    <dimen name="image_height">450dp</dimen>
+    <dimen name="image_height">200dp</dimen>
     <!--Action view height-->
     <dimen name="action_view_height">48dp</dimen>
     <!--Header height-->
     <dimen name="header_height">72dp</dimen>
 
-    <dimen name="thumbnail_size">80dp</dimen>
+    <dimen name="thumbnail_size">90dp</dimen>
 
     <dimen name="action_icon_margin">12dp</dimen>
     <dimen name="content_inset">72dp</dimen>

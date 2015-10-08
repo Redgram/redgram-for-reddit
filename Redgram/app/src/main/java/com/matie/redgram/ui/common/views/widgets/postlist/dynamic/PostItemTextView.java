@@ -3,6 +3,7 @@ package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.TextView;
@@ -48,6 +49,7 @@ public class PostItemTextView extends PostItemSubView {
 
         if(item.getText().length() > 0){
             textContentView.setText(item.getText());
+//            textContentView.setText(Html.fromHtml(item.getHtmlText()));
             textContentView.setVisibility(VISIBLE);
         }
 

@@ -51,16 +51,12 @@ public class PostItemView extends CardView {
     @InjectView(R.id.post_item_dynamic_view)
     ViewGroup dynamicParent;
 
-    RelativeLayout imageOverlay;
-
     //find view according to type and bind items to it - do not use ButterKnife annotation here
     View dynamicView;
 
     Resources res;
     Context context;
     LayoutInflater inflater;
-    MainActivity mainActivity;
-    SharedPreferences sharedPreferences;
 
 
     Uri uri;
@@ -70,10 +66,6 @@ public class PostItemView extends CardView {
         this.context = context;
         res = context.getResources();
         inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        mainActivity = (MainActivity)getContext();
-        sharedPreferences = ((App)mainActivity.getApplication()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
-
     }
 
     public PostItemView(Context context, AttributeSet attrs) {
@@ -81,10 +73,6 @@ public class PostItemView extends CardView {
         this.context = context;
         res = context.getResources();
         inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-
-        mainActivity = (MainActivity)getContext();
-        sharedPreferences = ((App)mainActivity.getApplication()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
     }
 
     public PostItemView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -92,9 +80,6 @@ public class PostItemView extends CardView {
         this.context = context;
         res = context.getResources();
         inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        mainActivity = (MainActivity)getContext();
-        sharedPreferences = ((App)mainActivity.getApplication()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
     }
 
     @Override
@@ -131,22 +116,6 @@ public class PostItemView extends CardView {
         postItemHeaderView.setupView(item);
         getAndSetUpView(item);
         postItemActionView.setupView(item);
-
-        imageOverlay = (RelativeLayout)inflater.inflate(R.layout.nsfw_overlay, null);
-        imageOverlay.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleOverlayClickEvent();
-            }
-        });
-
-        //todo fix recycler view refresh
-        if(item.isAdult() && !isNsfwEnabled()){
-            dynamicParent.addView(imageOverlay);
-        }else{
-            imageOverlay.setVisibility(GONE);
-        }
-
     }
 
     private void getAndSetUpView(PostItem item) {
@@ -201,38 +170,6 @@ public class PostItemView extends CardView {
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(this.getLayoutParams());
         lp.setMargins(25, 0, 25, 50);
         this.setLayoutParams(lp);
-    }
-
-    private void handleOverlayClickEvent(){
-        if(imageOverlay.getVisibility() == VISIBLE){
-            if(!isNsfwEnabled()){
-                mainActivity.getDialogUtil().build()
-                        .title("Are you over 18?")
-                        .positiveText("Yes")
-                        .negativeText("Cancel")
-                        .callback(new MaterialDialog.ButtonCallback() {
-                            @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                super.onPositive(dialog);
-
-                                sharedPreferences.edit().putBoolean(PreferenceManager.NSFW_KEY, true).commit();
-                                imageOverlay.setVisibility(GONE);
-//                                ((RecyclerView)getParent()).getAdapter().notifyDataSetChanged();
-                            }
-
-                            @Override
-                            public void onNegative(MaterialDialog dialog) {
-                                super.onNegative(dialog);
-                            }
-                        })
-                        .show();
-            }
-            // TODO: 21/09/15 add animation, ex: fade in/out
-        }
-    }
-
-    private boolean isNsfwEnabled(){
-        return sharedPreferences.getBoolean(PreferenceManager.NSFW_KEY, false);
     }
 
     @Override

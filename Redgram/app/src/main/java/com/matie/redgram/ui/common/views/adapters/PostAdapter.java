@@ -32,6 +32,23 @@ public class PostAdapter extends PostAdapterBase {
         return dynamicView;
     }
 
+    /**
+     * Click events
+     * -----------------------------------------------------
+     * default uses a web view
+     * imgur fetches the image URL from IMGUR api
+     * imgur gallery fetches set of images and creates a slideshow
+     *
+     * ANIMATED - video sign
+     * youtube calls youtube app
+     * gifv becomes .mp4
+     * gfycat fetches .mp4 url
+     *
+     * @param type
+     * @param dynamicView
+     * @param dynamicParent
+     * @return
+     */
     private View inflateViewByType(int type, View dynamicView, ViewGroup dynamicParent) {
         switch (type){
             case TYPE_DEFAULT:
@@ -74,7 +91,8 @@ public class PostAdapter extends PostAdapterBase {
             id = TYPE_GALLERY;
             return id;
         }
-        if(getItem(position).getType() == PostItem.Type.ANIMATED){
+        if(getItem(position).getType() == PostItem.Type.ANIMATED || getItem(position).getType() == PostItem.Type.YOUTUBE
+                || getItem(position).getType() == PostItem.Type.GFYCAT){
             id = TYPE_GIF;
             return id;
         }

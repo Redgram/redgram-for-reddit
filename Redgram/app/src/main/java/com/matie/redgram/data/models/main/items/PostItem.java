@@ -10,8 +10,6 @@ import java.util.regex.Pattern;
  */
 public class PostItem {
 
-    public static final String URL_REGEX = "(http(s)?://.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)";
-
     public enum Type{
         DEFAULT,
         SELF,
@@ -39,6 +37,7 @@ public class PostItem {
     private String title;
     private String domain;
     private String text;
+    private String htmlText;
     private int numComments;
     private boolean isSelf;
     private int score;
@@ -168,6 +167,14 @@ public class PostItem {
         this.text = text;
     }
 
+    public String getHtmlText() {
+        return htmlText;
+    }
+
+    public void setHtmlText(String htmlText) {
+        this.htmlText = htmlText;
+    }
+
     public int getNumComments() {
         return numComments;
     }
@@ -213,13 +220,15 @@ public class PostItem {
             return Type.YOUTUBE;
         }
 
-        return Type.DEFAULT; //normal link
+        return Type.DEFAULT; //external link
     }
 
+    // TODO: 06/10/15
     private boolean isYoutube() {
         return false;
     }
 
+    // TODO: 06/10/15
     private boolean isGifyCat() {
         return false;
     }
@@ -282,7 +291,7 @@ public class PostItem {
             return false;
     }
 
-    private boolean isImgurContent() {
+    public boolean isImgurContent() {
         Uri uri = Uri.parse(url);
         if(uri.getHost() != null && uri.getHost().endsWith("imgur.com"))
             return true;

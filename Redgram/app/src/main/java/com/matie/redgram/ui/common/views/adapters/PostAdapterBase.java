@@ -78,8 +78,7 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
     public void onBindViewHolder(PostViewHolder holder, int position) {
 //        Log.d("ITEM VIEW HOLDER" , holder+"");
 //        Log.d("ITEM VIEW" , holder.getItemView()+"");
-        // TODO: 21/09/15 pass the preferences to here
-        holder.getItemView().bindTo(activityInstance ,items.get(position), position);
+         holder.getItemView().bindTo(activityInstance ,items.get(position), position);
     }
 
     @Override

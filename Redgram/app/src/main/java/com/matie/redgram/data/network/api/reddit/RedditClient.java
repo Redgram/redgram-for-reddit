@@ -158,6 +158,7 @@ public class RedditClient extends RedditServiceBase {
         item.setTitle(link.getTitle());
         item.setDomain(link.getDomain());
         item.setText(link.getSelftext());
+        item.setHtmlText(link.getSelftextHtml());
         item.setNumComments(link.getNumComments());
         item.setIsSelf(link.isSelf());
 

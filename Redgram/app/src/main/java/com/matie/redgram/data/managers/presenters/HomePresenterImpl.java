@@ -1,5 +1,6 @@
 package com.matie.redgram.data.managers.presenters;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.matie.redgram.data.models.main.items.PostItem;
@@ -114,7 +115,7 @@ public class HomePresenterImpl implements HomePresenter{
                     public void onCompleted() {
                         hideLoadingEvent(loadingEvent);
 //                        for(PostItem item : items){
-//                            Log.d("ITEM URL", item.getAuthor() + "--" + item.getType() + "--" + item.getId());
+//                            Log.d("ITEM URL", item.getUrl() + "--" + item.getType());
 //                        }
                     }
 

@@ -3,11 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android" style="@style/DefaultPostItem"
     xmlns:fresco="http://schemas.android.com/apk/res-auto">
 
-
     <LinearLayout
         android:id="@+id/default_wrapper"
         style="@style/DefaultPostItemWrapper">
-        
+
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/default_thumbnail_view"
             style="@style/DefaultPostItemThumbnail"
