@@ -206,7 +206,7 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
             @Override
             public void onClick(View v) {
                 searchView.setText("");
-                searchView.setHint("Search");
+                searchView.setHint(getResources().getString(R.string.enter_search_term));
                 searchView.setCursorVisible(true);
                 toggleKeyboard(true);
             }

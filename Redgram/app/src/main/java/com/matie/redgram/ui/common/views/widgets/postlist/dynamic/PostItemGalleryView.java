@@ -33,4 +33,9 @@ public class PostItemGalleryView extends PostItemSubView {
     public void setupView(PostItem item) {
         postItemTextView.setupView(item);
     }
+
+    @Override
+    public void handleNsfwUpdate(boolean disabled) {
+
+    }
 }

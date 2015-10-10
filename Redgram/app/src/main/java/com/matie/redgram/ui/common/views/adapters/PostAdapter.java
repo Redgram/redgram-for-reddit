@@ -14,7 +14,7 @@ public class PostAdapter extends PostAdapterBase {
     private static final int TYPE_DEFAULT = 0;
     private static final int TYPE_SELF = 1;
     private static final int TYPE_IMAGE = 2;
-    private static final int TYPE_GIF = 3;
+    private static final int TYPE_ANIMATED = 3;
     private static final int TYPE_GALLERY = 4;
     private static final int TYPE_MAX_COUNT = TYPE_GALLERY+1;
 
@@ -39,10 +39,15 @@ public class PostAdapter extends PostAdapterBase {
      * imgur fetches the image URL from IMGUR api
      * imgur gallery fetches set of images and creates a slideshow
      *
-     * ANIMATED - video sign
+     * GIF - video sign
      * youtube calls youtube app
      * gifv becomes .mp4
      * gfycat fetches .mp4 url
+     *
+     * GALLERY - icon - different layout
+     * loads the set of images from imgur
+     *
+     *
      *
      * @param type
      * @param dynamicView
@@ -63,8 +68,8 @@ public class PostAdapter extends PostAdapterBase {
             case TYPE_GALLERY:
                 dynamicView = getInflater().inflate(R.layout.post_item_gallery_view, dynamicParent, false);
                 break;
-            case TYPE_GIF:
-                dynamicView = getInflater().inflate(R.layout.post_item_gif_view, dynamicParent, false);
+            case TYPE_ANIMATED:
+                dynamicView = getInflater().inflate(R.layout.post_item_animated_view, dynamicParent, false);
                 break;
         }
         return dynamicView;
@@ -91,9 +96,9 @@ public class PostAdapter extends PostAdapterBase {
             id = TYPE_GALLERY;
             return id;
         }
-        if(getItem(position).getType() == PostItem.Type.ANIMATED || getItem(position).getType() == PostItem.Type.YOUTUBE
+        if(getItem(position).getType() == PostItem.Type.GIF || getItem(position).getType() == PostItem.Type.YOUTUBE
                 || getItem(position).getType() == PostItem.Type.GFYCAT){
-            id = TYPE_GIF;
+            id = TYPE_ANIMATED;
             return id;
         }
         return id;

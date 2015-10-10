@@ -1,12 +1,9 @@
 package com.matie.redgram.ui.common.views.widgets.postlist;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -15,25 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemDefaultView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemGalleryView;
-import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemGifView;
+import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemAnimatedView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemHeaderView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemImageView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemTextView;
 
-import java.util.zip.Inflater;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 
 /**
  * Created by matie on 04/04/15.
@@ -119,6 +109,7 @@ public class PostItemView extends CardView {
     }
 
     private void getAndSetUpView(PostItem item) {
+
         if(dynamicView instanceof PostItemDefaultView){
             ((PostItemDefaultView) dynamicView).setupView(item);
             return;
@@ -131,9 +122,9 @@ public class PostItemView extends CardView {
             ((PostItemImageView) dynamicView).setupView(item);
             return;
         }
-        if(dynamicView instanceof PostItemGifView){
+        if(dynamicView instanceof PostItemAnimatedView){
             //todo
-            ((PostItemGifView) dynamicView).setupView(item);
+            ((PostItemAnimatedView) dynamicView).setupView(item);
             return;
         }
         if(dynamicView instanceof PostItemGalleryView){
@@ -177,4 +168,5 @@ public class PostItemView extends CardView {
         //return false to capture child touch events
         return false;
     }
+
 }

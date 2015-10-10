@@ -45,4 +45,9 @@ public class PostItemActionView extends PostItemSubView {
     public void setupView(PostItem item) {
         scoreView.setText(item.getScore()+"");
     }
+
+    @Override
+    public void handleNsfwUpdate(boolean disabled) {
+
+    }
 }

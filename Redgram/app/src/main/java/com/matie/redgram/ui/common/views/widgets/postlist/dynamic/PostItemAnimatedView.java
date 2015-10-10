@@ -14,11 +14,11 @@ import butterknife.InjectView;
 /**
  * Created by matie on 19/05/15.
  */
-public class PostItemGifView extends PostItemSubView {
+public class PostItemAnimatedView extends PostItemSubView {
     @InjectView(R.id.gif_text_view)
     PostItemTextView postItemTextView;
 
-    public PostItemGifView(Context context, AttributeSet attrs) {
+    public PostItemAnimatedView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
     @Override
@@ -29,5 +29,10 @@ public class PostItemGifView extends PostItemSubView {
     @Override
     public void setupView(PostItem item) {
         postItemTextView.setupView(item);
+    }
+
+    @Override
+    public void handleNsfwUpdate(boolean disabled) {
+
     }
 }

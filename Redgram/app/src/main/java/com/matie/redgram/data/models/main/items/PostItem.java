@@ -14,7 +14,7 @@ public class PostItem {
         DEFAULT,
         SELF,
         IMAGE,
-        ANIMATED,
+        GIF,
         GFYCAT,
         YOUTUBE,
         IMGUR,
@@ -208,14 +208,12 @@ public class PostItem {
         }
 
         if(isAnimated()){
-            return Type.ANIMATED;
+            return Type.GIF;
         }
 
-        //Check the host
-        if(isGifyCat()){
+        if(isGfyCat()){
             return Type.GFYCAT;
         }
-//        check the host
         if(isYoutube()){
             return Type.YOUTUBE;
         }
@@ -223,14 +221,21 @@ public class PostItem {
         return Type.DEFAULT; //external link
     }
 
-    // TODO: 06/10/15
     private boolean isYoutube() {
-        return false;
+        Uri uri = Uri.parse(url);
+        if(uri.getHost() != null &&
+                (uri.getHost().endsWith("youtube.com") || uri.getHost().endsWith("youtu.be")))
+            return true;
+        else
+            return false;
     }
 
-    // TODO: 06/10/15
-    private boolean isGifyCat() {
-        return false;
+    private boolean isGfyCat() {
+        Uri uri = Uri.parse(url);
+        if(uri.getHost() != null && (uri.getHost().endsWith("gfycat.com") || getDomain().equalsIgnoreCase("gfycat.com")))
+            return true;
+        else
+            return false;
     }
 
     private boolean isImgurAlbum() {

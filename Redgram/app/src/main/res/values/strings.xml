@@ -33,6 +33,8 @@
     <string name="text_bullet">\u2022</string>
 
     <string name="post_tag_nsfw">NSFW</string>
+    <string name="nsfw_material">NSFW material, click here to view</string>
+    <string name="enter_search_term">Enter a Search Term</string>
 
     <string-array name="frontArray">
         <item>Hot</item>

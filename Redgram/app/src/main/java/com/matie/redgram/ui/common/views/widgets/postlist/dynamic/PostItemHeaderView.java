@@ -61,4 +61,9 @@ public class PostItemHeaderView extends PostItemSubView {
         headerUsernameView.setText(author + " " + item.getType());
         headerTimeSubredditView.setText("submitted " + item.getTime() + " hrs ago to " + subreddit);
     }
+
+    @Override
+    public void handleNsfwUpdate(boolean disabled) {
+
+    }
 }

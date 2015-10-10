@@ -43,4 +43,9 @@ public class PostItemTagView extends PostItemSubView {
         tags.setText(comments+" "+bullet+" "+source);
     }
 
+    @Override
+    public void handleNsfwUpdate(boolean disabled) {
+
+    }
+
 }

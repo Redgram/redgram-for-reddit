@@ -17,7 +17,7 @@
             android:textCursorDrawable="@null"
             android:background="@android:color/transparent"
             android:gravity="center_vertical"
-            android:hint="Search"
+            android:hint="@string/enter_search_term"
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1"

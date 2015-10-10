@@ -52,6 +52,14 @@ public class PostItemDefaultView extends PostItemSubView {
     public void setupView(PostItem item) {
         postItemTextView.setupView(item);
 
+        if(item.getType() == PostItem.Type.IMGUR){
+            postLinkText.setTextColor(getResources().getColor(R.color.material_green400));
+            postSourceText.setTextColor(getResources().getColor(R.color.material_green400));
+        }else{
+            postLinkText.setTextColor(getResources().getColor(R.color.material_grey500));
+            postSourceText.setTextColor(getResources().getColor(R.color.material_grey500));
+        }
+
         postSourceText.setText(item.getDomain());
         postLinkText.setText(item.getUrl());
 
@@ -65,5 +73,10 @@ public class PostItemDefaultView extends PostItemSubView {
         DraweeController controller = builder.build();
         thumbnailView.getHierarchy().setActualImageFocusPoint(new PointF(0.5f, 0f));
         thumbnailView.setController(controller);
+    }
+
+    @Override
+    public void handleNsfwUpdate(boolean disabled) {
+
     }
 }
