@@ -89,6 +89,7 @@ public class PostItemAnimatedView extends PostItemSubView {
 //            builder.setOverlay(ContextCompat.getDrawable(getContext(), R.drawable.ic_action_favorite));
 //
 
+
         return builder.build();
     }
 

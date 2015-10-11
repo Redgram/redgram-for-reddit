@@ -8,7 +8,7 @@
         android:id="@+id/image_view"
         style="@style/ImagePostItemView"
         fresco:actualImageScaleType="focusCrop"
-        fresco:placeholderImage="@color/ripple_material_light"
+        fresco:placeholderImage="@color/material_grey800"
         fresco:placeholderImageScaleType="fitCenter"
         fresco:failureImage="@drawable/ic_action_error"
         fresco:failureImageScaleType="centerInside"/>
