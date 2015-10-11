@@ -56,8 +56,8 @@ public class PostItemDefaultView extends PostItemSubView {
             postLinkText.setTextColor(getResources().getColor(R.color.material_green400));
             postSourceText.setTextColor(getResources().getColor(R.color.material_green400));
         }else{
-            postLinkText.setTextColor(getResources().getColor(R.color.material_grey500));
-            postSourceText.setTextColor(getResources().getColor(R.color.material_grey500));
+            postLinkText.setTextColor(getResources().getColor(R.color.material_grey600));
+            postSourceText.setTextColor(getResources().getColor(R.color.material_grey600));
         }
 
         postSourceText.setText(item.getDomain());

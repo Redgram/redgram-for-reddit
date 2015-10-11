@@ -58,7 +58,7 @@ public class PostItemHeaderView extends PostItemSubView {
 
         String subreddit = "/r/"+item.getSubreddit();
 
-        headerUsernameView.setText(author + " " + item.getType());
+        headerUsernameView.setText(author);
         headerTimeSubredditView.setText("submitted " + item.getTime() + " hrs ago to " + subreddit);
     }
 

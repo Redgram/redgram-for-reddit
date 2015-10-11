@@ -109,9 +109,6 @@ public class PostItemImageView extends PostItemSubView{
                 .setLowResImageRequest(thumbnail)
                 .setImageRequest(request)
                 .setOldController(imageView.getController());
-        ;
-        if(item.getType() == PostItem.Type.GIF)
-            builder.setAutoPlayAnimations(true);
 
         DraweeController controller = builder.build();
         return controller;
