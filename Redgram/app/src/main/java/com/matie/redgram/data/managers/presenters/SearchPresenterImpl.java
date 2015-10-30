@@ -1,7 +1,7 @@
 package com.matie.redgram.data.managers.presenters;
 
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.main.reddit.PostItemWrapper;
+import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
@@ -93,7 +93,7 @@ public class SearchPresenterImpl implements SearchPresenter {
         return (Subscription)bindFragment(searchView.getFragment(), redditClient.executeSearch(subreddit, params))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<PostItemWrapper>() {
+                .subscribe(new Subscriber<RedditListing>() {
                     @Override
                     public void onCompleted() {
                         //hide progress and show list
@@ -107,8 +107,9 @@ public class SearchPresenterImpl implements SearchPresenter {
                     }
 
                     @Override
-                    public void onNext(PostItemWrapper wrapper) {
-                        items.addAll(wrapper.getItems());
+                    public void onNext(RedditListing wrapper) {
+                        List<PostItem> postItems = (List<PostItem>) (List<?>) wrapper.getItems();
+                        items.addAll(postItems);
                         searchRecyclerView.replaceWith(items);
                         loadMoreId = wrapper.getAfter();
                     }

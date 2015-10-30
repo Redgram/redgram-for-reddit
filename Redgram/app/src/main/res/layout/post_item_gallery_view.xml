@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemGalleryView
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemGalleryView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/image_view"
+        style="@style/ImagePostItemView"
+        fresco:actualImageScaleType="focusCrop"
+        fresco:placeholderImage="@color/material_grey800"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:failureImage="@drawable/ic_action_error"
+        fresco:failureImageScaleType="centerInside"/>
+
+    <include android:id="@+id/gallery_overlay"
+        style="@style/ImagePostItemView"
+        layout="@layout/animated_overlay"/>
+
     <include
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/ImagePostItemText"
         android:id="@+id/gallery_text_view"
         layout="@layout/post_item_text_view"/>
-
 </com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemGalleryView>

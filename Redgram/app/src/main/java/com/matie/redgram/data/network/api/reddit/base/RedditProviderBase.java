@@ -16,12 +16,24 @@ import rx.Observable;
 public interface RedditProviderBase {
 
     static final String SUBREDDIT = "/r/{subreddit}"; //only used in case of requesting specific subreddits
+    static final String SUBREDDITS = "/subreddits"; //only used in case of requesting specific subreddits
     static final String SEARCH = "/search";
 
     //Available filters: hot, new, rising, (top, controversial, can be mixed with TIME)
     static final String FILTER = "/{filter}";
     static final String JSON = ".json";
 
+
+    /**
+     * @see <a href="https://www.reddit.com/dev/api#GET_subreddits_{where}">Subreddits Listing Section</a>
+     *
+     * @param filter
+     * @param params
+     * @return a listing of subreddit listing
+     */
+    @GET(SUBREDDITS+FILTER+JSON)
+    Observable<RedditResponse<RedditListing>> getSubredditsListing(
+            @Path("filter") String filter, @QueryMap Map<String, String> params);
 
     /**
      * @see <a href="https://www.reddit.com/dev/api#section_listings">Listing Section</a>

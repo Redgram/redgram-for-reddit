@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
@@ -17,6 +18,7 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.common.main.MainActivity;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -81,7 +83,6 @@ public class PostItemImageView extends PostItemSubView{
         GenericDraweeHierarchy hierarchy = builder
                 .setFadeDuration(300)
                 .setActualImageFocusPoint(new PointF(0.5f, 0f))
-//                .setOverlay(getResources().getDrawable(R.drawable.image_nsfw_overlay))
                 .build();
         return hierarchy;
     }
@@ -90,16 +91,6 @@ public class PostItemImageView extends PostItemSubView{
         Uri thumbnailUri = Uri.parse(item.getThumbnail());
         ImageRequest thumbnail = ImageRequestBuilder.newBuilderWithSource(thumbnailUri)
                 .build();
-
-        // TODO: 07/10/15 USE SHARED PREFERENCES TO STORE DEFAULT QUALITY, SEE IMGUR API
-//        if(item.isImgurContent()){
-//
-//            int dot = item.getUrl().lastIndexOf('.');
-//            String newUrl = item.getUrl().substring(0, dot) + "l" + item.getUrl().substring(dot,item.getUrl().length());
-//            item.setUrl(newUrl);
-//
-//            Log.d("IMGUR URL", item.getUrl());
-//        }
 
         Uri uri = Uri.parse(item.getUrl());
         ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
@@ -114,16 +105,15 @@ public class PostItemImageView extends PostItemSubView{
         return controller;
     }
 
-
     @OnClick(R.id.image_overlay)
     public void onClick(){
         handleOverlayClickEvent();
     }
 
     private void handleOverlayClickEvent(){
-        if(imageOverlay.getVisibility() == VISIBLE){
-            if(!isNsfwDisabled()){
-                callNsfwDialog();
+        if(imageOverlay.getVisibility() == GONE){
+            if(getContext() instanceof MainActivity){
+                ((MainActivity) getContext()).getApp().getToastHandler().showToast("NSFW Disabled", Toast.LENGTH_LONG);
             }
         }
     }

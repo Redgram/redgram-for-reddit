@@ -10,8 +10,9 @@
         android:id="@+id/overlay_image"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:src="@drawable/ic_action_play_circle_fill"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:clickable="true"/>
+
     <TextView
         android:id="@+id/overlay_text"
         style="@style/Wrap"

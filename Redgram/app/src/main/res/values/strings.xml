@@ -60,4 +60,8 @@
         <item>Year</item>
         <item>All</item>
     </string-array>
+
+    <!--always lower case them with API-->
+    <string name="default_home_filter">Hot</string>
+    <string name="default_subreddit_filter">Popular</string>
 </resources>

@@ -2,11 +2,12 @@ package com.matie.redgram.data.network.api.reddit;
 
 import android.support.annotation.Nullable;
 
+import com.matie.redgram.data.models.api.reddit.RedditSubreddit;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.api.reddit.RedditLink;
-import com.matie.redgram.data.models.api.reddit.RedditListing;
 import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
-import com.matie.redgram.data.models.main.reddit.PostItemWrapper;
+import com.matie.redgram.data.models.main.items.SubredditItem;
+import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.base.RedditProviderBase;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
 import com.matie.redgram.ui.App;
@@ -39,23 +40,27 @@ public class RedditClient extends RedditServiceBase {
         this.provider = getRestAdapter().create(RedditProviderBase.class);
     }
 
-    public Observable<PostItemWrapper> getSubredditListing(String query, @Nullable String filter, @Nullable Map<String, String> params) {
+    public Observable<RedditListing> getSubredditListing(String query, @Nullable Map<String, String> params) {
 
-       Observable<RedditResponse<RedditListing>> subObservable = null;
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> subObservable
+                = provider.getSubreddit(query, params);
 
-       //todo: check if it belongs to a set of fixed filters (i.e hot,new,top..etc)
-       if(filter != null){
-           subObservable = provider.getSubreddit(query, filter, params);
-       }else{
-           subObservable = provider.getSubreddit(query, params);
-       }
+        return getDefaultPostListObservable(subObservable);
 
-        return getDefaultListingObservable(subObservable);
     }
 
-    public Observable<PostItemWrapper> executeSearch(String subreddit, @Nullable Map<String, String> params) {
+    public Observable<RedditListing> getSubredditListing(String query, @Nullable String filter, @Nullable Map<String, String> params) {
 
-        Observable<RedditResponse<RedditListing>> searchObservable = null;
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> subObservable
+                = provider.getSubreddit(query, filter, params);
+
+        return getDefaultPostListObservable(subObservable);
+    }
+
+
+    public Observable<RedditListing> executeSearch(String subreddit, @Nullable Map<String, String> params) {
+
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> searchObservable = null;
 
         if(!subreddit.isEmpty() && subreddit != null){
             params.put("restrict_sr", "true");
@@ -65,25 +70,23 @@ public class RedditClient extends RedditServiceBase {
             searchObservable = provider.executeSearch(params);
         }
 
-        return getDefaultListingObservable(searchObservable);
+        return getDefaultPostListObservable(searchObservable);
     }
 
-
-    public Observable<PostItemWrapper> getListing(String front, @Nullable Map<String, String> params){
-        Observable<RedditResponse<RedditListing>> listingObservable = provider.getListing(front, params);
-        return getDefaultListingObservable(listingObservable);
+    public Observable<RedditListing> getListing(String front, @Nullable Map<String, String> params){
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> listingObservable = provider.getListing(front, params);
+        return getDefaultPostListObservable(listingObservable);
     }
 
-
-    private Observable<PostItemWrapper> getDefaultListingObservable(Observable<RedditResponse<RedditListing>> listingObservable) {
+    private Observable<RedditListing> getDefaultPostListObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> listingObservable) {
 
         Observable<List<PostItem>> itemsObservable = getItemsObservable(listingObservable);
         Observable<Map<String,String>> fieldsObservable = getFieldsObservable(listingObservable);
 
-        return Observable.zip(itemsObservable, fieldsObservable, new Func2<List<PostItem>, Map<String, String>, PostItemWrapper>() {
+        return Observable.zip(itemsObservable, fieldsObservable, new Func2<List<PostItem>, Map<String, String>, RedditListing>() {
             @Override
-            public PostItemWrapper call(List<PostItem> postItems, Map<String, String> map) {
-                PostItemWrapper postItemWrapper = new PostItemWrapper();
+            public RedditListing call(List<PostItem> postItems, Map<String, String> map) {
+                RedditListing postItemWrapper = new RedditListing();
                 postItemWrapper.setBefore(map.get(BEFORE));
                 postItemWrapper.setAfter(map.get(AFTER));
                 postItemWrapper.setModHash(map.get(MODHASH));
@@ -93,12 +96,7 @@ public class RedditClient extends RedditServiceBase {
         });
     }
 
-
-    private Observable<Map<String,String>> getFieldsObservable(Observable<RedditResponse<RedditListing>> responseObservable) {
-        return responseObservable.map(listing -> mapFieldsToHashMap(listing));
-    }
-
-    private Observable<List<PostItem>> getItemsObservable(Observable<RedditResponse<RedditListing>> observable){
+    private Observable<List<PostItem>> getItemsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> observable){
 
         return observable.flatMap(response -> Observable.from(response.getData().getChildren()))
                 .cast(RedditLink.class)
@@ -136,9 +134,49 @@ public class RedditClient extends RedditServiceBase {
                 .toList();
     }
 
-    private Map<String, String> mapFieldsToHashMap(RedditResponse<RedditListing> listing) {
+    public Observable<RedditListing> getSubreddits(String filter, @Nullable Map<String, String> params){
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> subredditsListingObservable
+                = provider.getSubredditsListing(filter, params);
+
+        Observable<List<SubredditItem>> itemsObservable = subredditsListingObservable
+                .flatMap(response -> Observable.from(response.getData().getChildren()))
+                .cast(RedditSubreddit.class)
+                .map(item -> mapToSubredditItem(item))
+                .toList();
+
+        Observable<Map<String,String>> fieldsObservable = getFieldsObservable(subredditsListingObservable);
+
+        return Observable.zip(itemsObservable, fieldsObservable, new Func2<List<SubredditItem>, Map<String, String>, RedditListing>() {
+            @Override
+            public RedditListing call(List<SubredditItem> items, Map<String, String> map) {
+                RedditListing postItemWrapper = new RedditListing();
+                postItemWrapper.setBefore(map.get(BEFORE));
+                postItemWrapper.setAfter(map.get(AFTER));
+                postItemWrapper.setModHash(map.get(MODHASH));
+                postItemWrapper.setItems(items);
+                return postItemWrapper;
+            }
+        });
+    }
+
+    private SubredditItem mapToSubredditItem(RedditSubreddit item) {
+        SubredditItem subredditItem = new SubredditItem();
+        subredditItem.setName(item.getDisplayName());
+        return subredditItem;
+    }
+
+    /**
+     * Maps attributes that belong to listings only. BEFORE AFTER AND MODHASH.
+     * @param responseObservable
+     * @return
+     */
+    private Observable<Map<String,String>> getFieldsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> responseObservable) {
+        return responseObservable.map(listing -> mapFieldsToHashMap(listing));
+    }
+
+    private Map<String, String> mapFieldsToHashMap(RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing> listing) {
         Map<String, String> map = new HashMap<String,String>();
-        RedditListing listingData = (RedditListing)listing.getData();
+        com.matie.redgram.data.models.api.reddit.RedditListing listingData = (com.matie.redgram.data.models.api.reddit.RedditListing)listing.getData();
 
         map.put(AFTER, listingData.getAfter());
         map.put(BEFORE, listingData.getBefore());

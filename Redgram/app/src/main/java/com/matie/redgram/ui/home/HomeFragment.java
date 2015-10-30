@@ -9,7 +9,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +34,7 @@ import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.nineoldandroids.view.ViewHelper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -62,11 +62,13 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     LinearLayoutManager mLayoutManager;
 
     FrameLayout frameLayout;
+    LinearLayout titleWrapper;
     TextView toolbarTitle;
     TextView toolbarSubtitle;
     ImageView listingFilter;
     ImageView listingRefresh;
 
+    String subredditChoice;
     String filterChoice;
     Map<String,String> params;
 
@@ -92,7 +94,9 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         mContentView = getActivity().findViewById(R.id.container);
         mInflater = inflater;
 
-        filterChoice = "Hot"; //default value
+        // TODO: 2015-10-27 include in settings as values to set
+        subredditChoice = null;
+        filterChoice = getContext().getResources().getString(R.string.default_home_filter); //default value
         params = new HashMap<String,String>();
 
         setupSwipeContainer();
@@ -123,10 +127,53 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         RelativeLayout rl = (RelativeLayout) mInflater.inflate(R.layout.fragment_home_toolbar, frameLayout, false);
         frameLayout.addView(rl);
 
+        titleWrapper = (LinearLayout)rl.findViewById(R.id.home_toolbar_title_linear_layout);
+        //// TODO: 2015-10-20 handle subreddits and change the view to indicate a clickable
+
         toolbarTitle = (TextView)rl.findViewById(R.id.home_toolbar_title);
         toolbarSubtitle = (TextView)rl.findViewById(R.id.home_toolbar_subtitle);
         listingFilter = (ImageView)rl.findViewById(R.id.listing_filter);
         listingRefresh = (ImageView)rl.findViewById(R.id.listing_refresh);
+
+        titleWrapper.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(homeRecyclerView.getVisibility() == View.VISIBLE && homePresenter.getSubreddits() != null){
+
+                    List<String> subreddits = homePresenter.getSubreddits();
+
+                    //if a subreddit was selected before, add an option to return to home
+                    if(subredditChoice != null && !subredditChoice.isEmpty()){
+                        subreddits.add(0, "Return to Frontpage");
+                    }else{
+                        if("Frontpage".equalsIgnoreCase(subreddits.get(0))){
+                            subreddits.remove(0);
+                        }
+                    }
+
+                    dialogUtil.build()
+                            .title("Subreddits")
+                            .items(subreddits.toArray(new CharSequence[subreddits.size()]))
+                            .itemsCallback(new MaterialDialog.ListCallback() {
+                                @Override
+                                public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                                    if (i == 0 && "Return to Frontpage".equalsIgnoreCase(charSequence.toString())) {
+                                        homePresenter.getHomeViewWrapper();
+                                        toolbarTitle.setText("Frontpage");
+                                        filterChoice = getContext().getResources().getString(R.string.default_home_filter);
+                                        toolbarSubtitle.setText(filterChoice);
+                                        subredditChoice = null;
+                                    } else {
+                                        subredditChoice = charSequence.toString();
+                                        toolbarTitle.setText(subredditChoice);
+                                        homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
+                                    }
+                                }
+                            })
+                            .show();
+                }
+            }
+        });
 
         toolbarTitle.setText("Frontpage");
 
@@ -149,7 +196,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                                             params.clear();
                                             //keep track of filter choice
                                             filterChoice = charSequence.toString();
-                                            homePresenter.getListing(filterChoice.toLowerCase(), params);
+                                            homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
                                             toolbarSubtitle.setText(filterChoice);
                                         }
                                     }
@@ -164,7 +211,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
             @Override
             public void onClick(View v) {
                 if(!homeSwipeContainer.isRefreshing()){
-                    homePresenter.getListing(filterChoice.toLowerCase(), params);
+                    homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
                 }
             }
         });
@@ -196,7 +243,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                     if(homeRecyclerView != null && homeRecyclerView.getChildCount() > 0){
                         int lastItemPosition = homeRecyclerView.getAdapter().getItemCount() - 1;
                         if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
-                            homePresenter.getMoreListing(filterChoice.toLowerCase(), params);
+                            homePresenter.getMoreListing(subredditChoice, filterChoice.toLowerCase(), params);
                         }
                     }
                 }
@@ -247,7 +294,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                             //keep track of filter sort choice
                             params = urlParams;
                             //perform network call
-                            homePresenter.getListing(filterChoice.toLowerCase(), params);
+                            homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
                             //change subtitle only
                             String bullet = getContext().getResources().getString(R.string.text_bullet);
                             toolbarSubtitle.setText(query+" "+bullet+" "+charSequence);
@@ -261,7 +308,9 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
 
-        homePresenter.getListing(filterChoice.toLowerCase(), params);
+        homePresenter.getHomeViewWrapper();
+
+        // TODO: 2015-10-27 set the title after the data is retrieved
         toolbarSubtitle.setText(filterChoice);
     }
 
@@ -336,8 +385,12 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     }
 
     @Override
-    public void showErrorMessage() {
+    public void showErrorMessage(String errorMsg) {
+//        App app = (App)(getActivity().getApplication());
+//        ToastHandler toastHandler = app.getToastHandler();
+//        toastHandler.showToast(errorMsg, Toast.LENGTH_SHORT);
 
+        dialogUtil.build().title("Error Message").content(errorMsg).show();
     }
 
     @Override
@@ -392,8 +445,10 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         animator.start();
     }
 
+    // TODO: 2015-10-27 make sure to update the params list IF there was anything set up in sharedPreferences for params.
+    // TODO: 2015-10-27 make sure to update the filterChoice when loading the presenter and found a filterChoice.
     @Override
     public void onRefresh() {
-        homePresenter.getListing(filterChoice.toLowerCase() , params);
+        homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
     }
 }

@@ -17,9 +17,10 @@
         android:layout_width="wrap_content"
         android:layout_height="?attr/actionBarSize"
         android:layout_weight="1"
-        android:background="@android:color/transparent"
+        android:background="@drawable/home_toolbar_wrapper_border"
         android:orientation="vertical"
         android:gravity="center_vertical"
+        android:layout_marginLeft="8dp"
         android:layout_gravity="center_vertical"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
@@ -37,6 +38,7 @@
             android:textColor="#ffffff"
             android:textSize="@dimen/text_size_small"/>
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/home_toolbar_nav_linear_layout"
         android:layout_width="wrap_content"

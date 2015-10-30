@@ -25,7 +25,6 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
 
     private final LayoutInflater inflater;
     private List<PostItem> items = Collections.emptyList();
-    private Activity activityInstance;
 
 
     public PostAdapterBase(Context context, int layoutResId){
@@ -78,7 +77,7 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
     public void onBindViewHolder(PostViewHolder holder, int position) {
 //        Log.d("ITEM VIEW HOLDER" , holder+"");
 //        Log.d("ITEM VIEW" , holder.getItemView()+"");
-         holder.getItemView().bindTo(activityInstance ,items.get(position), position);
+         holder.getItemView().bindTo(items.get(position), position);
     }
 
     @Override

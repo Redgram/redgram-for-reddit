@@ -2,22 +2,23 @@ package com.matie.redgram.data.models.main.reddit;
 
 import com.matie.redgram.data.models.main.items.PostItem;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by matie on 13/09/15.
  */
-public class PostItemWrapper  {
-    private List<PostItem> items;
+public class RedditListing {
+    private List<? extends RedditObject> items;
     private String modHash;
     private String after;
     private String before;
 
-    public List<PostItem> getItems() {
+    public List<? extends RedditObject> getItems() {
         return items;
     }
 
-    public void setItems(List<PostItem> items) {
+    public void setItems(List<? extends RedditObject> items) {
         this.items = items;
     }
 

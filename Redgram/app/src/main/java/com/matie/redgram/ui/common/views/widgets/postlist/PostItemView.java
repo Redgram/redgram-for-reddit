@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.reddit.RedditObject;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemDefaultView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemGalleryView;
@@ -94,7 +95,8 @@ public class PostItemView extends CardView {
         this.dynamicView = dynamicView;
     }
 
-    public void bindTo(android.app.Activity activity, PostItem item, int position){
+    public void bindTo(PostItem item, int position){
+
         requestLayout();
 
         if(position == 0){
@@ -123,7 +125,6 @@ public class PostItemView extends CardView {
             return;
         }
         if(dynamicView instanceof PostItemAnimatedView){
-            //todo
             ((PostItemAnimatedView) dynamicView).setupView(item);
             return;
         }

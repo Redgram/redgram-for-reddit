@@ -13,7 +13,7 @@ public interface HomeView extends BaseContextView {
     public void showLoadMoreIndicator();
     public void hideLoadMoreIndicator();
     public void showInfoMessage();
-    public void showErrorMessage();
+    public void showErrorMessage(String error);
     public void showToolbar();
     public void hideToolbar();
 

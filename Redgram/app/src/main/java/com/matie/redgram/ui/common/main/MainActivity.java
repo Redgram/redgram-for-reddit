@@ -6,13 +6,16 @@ import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
+import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.ui.App;
@@ -26,6 +29,7 @@ import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.data.models.main.items.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
 import com.matie.redgram.ui.search.SearchFragment;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +46,12 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     private int currentSelectedPosition = 0;
 
     static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
+
+    @InjectView(R.id.slide_up_panel_layout)
+    SlidingUpPanelLayout slidingUpPanelLayout;
+
+    @InjectView(R.id.main_slide_up_panel)
+    TextView slidingUpPanel;
 
     @InjectView(R.id.navigationDrawerListViewWrapper)
     DrawerView mNavigationDrawerListViewWrapper;
@@ -138,13 +148,18 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                 R.string.navigation_drawer_close) {
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-
                 supportInvalidateOptionsMenu();
+
+                float pixels = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP, 68, getResources().getDisplayMetrics());
+
+                slidingUpPanelLayout.setPanelHeight((int)pixels);
             }
 
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 supportInvalidateOptionsMenu();
+                slidingUpPanelLayout.setPanelHeight(0);
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);

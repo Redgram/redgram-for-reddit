@@ -1,25 +1,31 @@
 package com.matie.redgram.data.managers.presenters;
 
-import android.util.Log;
+import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import com.matie.redgram.R;
+import com.matie.redgram.data.models.main.home.HomeViewWrapper;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.events.SubredditEvent;
-import com.matie.redgram.data.models.main.reddit.PostItemWrapper;
+import com.matie.redgram.data.models.main.items.SubredditItem;
+import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -36,9 +42,13 @@ public class HomePresenterImpl implements HomePresenter{
     final private RedditClient redditClient;
 
     private CompositeSubscription subscriptions;
+    
     private String loadMoreId;
     private List<PostItem> items;
+    
+    private List<SubredditItem> subredditItems;
 
+    private Subscription homeWrapperSubscription;
     private Subscription listingSubscription;
 
 
@@ -53,6 +63,7 @@ public class HomePresenterImpl implements HomePresenter{
         this.homeRecyclerView = homeView.getRecyclerView();
         this.redditClient = app.getRedditClient();
         this.items = new ArrayList<PostItem>();
+        this.subredditItems = new ArrayList<SubredditItem>();
         this.loadMoreId = "";
     }
 
@@ -65,7 +76,12 @@ public class HomePresenterImpl implements HomePresenter{
             subscriptions = new CompositeSubscription();
 
         if(subscriptions.isUnsubscribed()){
-            subscriptions.add(listingSubscription);
+            if(homeWrapperSubscription != null){
+                subscriptions.add(homeWrapperSubscription);
+            }
+            if(listingSubscription != null){
+                subscriptions.add(listingSubscription);
+            }
         }
     }
     /**
@@ -79,23 +95,92 @@ public class HomePresenterImpl implements HomePresenter{
     }
 
     /**
+     * Only called once on activity started, unlike getListing. So it is safe to add the subscription here
+     */
+    @Override
+    public void getHomeViewWrapper() {
+        // TODO: 2015-10-27 check sharedpreferences and update actual values in home view
+        //make sure it is a new set of items
+        items.clear();
+        homeView.showLoading();
+
+        Map<String,String> params = new HashMap<String, String>();
+        String filterChoice = homeView.getContext().getResources().getString(R.string.default_home_filter).toLowerCase();
+        String subredditFilterChoice = homeView.getContext().getResources().getString(R.string.default_subreddit_filter).toLowerCase();
+
+        homeWrapperSubscription = (Subscription)bindFragment(homeView.getFragment(), Observable
+                .zip(redditClient.getListing(filterChoice, params),
+                        redditClient.getSubreddits(subredditFilterChoice, params), new Func2<RedditListing, RedditListing, HomeViewWrapper>() {
+                            @Override
+                            public HomeViewWrapper call(RedditListing listing, RedditListing subredditListing) {
+                                HomeViewWrapper homeViewWrapper = new HomeViewWrapper();
+                                homeViewWrapper.setRedditListingObservable(listing);
+                                homeViewWrapper.setSubredditsObservable(subredditListing);
+                                return homeViewWrapper;
+                            }
+                }))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<HomeViewWrapper>() {
+                    @Override
+                    public void onCompleted() {
+                        hideLoadingEvent(REFRESH);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        hideLoadingEvent(REFRESH);
+                        homeView.showErrorMessage(e.toString());
+                    }
+
+                    @Override
+                    public void onNext(HomeViewWrapper homeViewWrapper) {
+                        //dealing with the posts
+                        RedditListing redditListing = homeViewWrapper.getRedditListingObservable();
+                        List<PostItem> postItems = (List<PostItem>) (List<?>) redditListing.getItems();
+                        items.addAll(postItems);
+                        //todo: replaceWith should be in a new view interface method
+                        homeRecyclerView.replaceWith(items);
+                        // TODO: 29/08/15 send the last item name to fragment to use for loading more.
+                        loadMoreId = redditListing.getAfter();
+
+                        //dealing with the subreddits
+                        RedditListing subredditListing = homeViewWrapper.getSubredditsObservable();
+                        List<SubredditItem> subItems = (List<SubredditItem>) (List<?>) subredditListing.getItems();
+                        subredditItems.addAll(subItems);
+                        //replace items in recycler view // TODO: 2015-10-27
+                    }
+                });
+    }
+
+
+    /**
      * List populated onCreate(View)
      */
     @Override
-    public void getListing(String front, Map<String,String> params) {
+    public void getListing(String subreddit, String front, Map<String,String> params) {
         if(params.containsKey("after")){
             params.remove("after");
         }
-        items = new ArrayList<PostItem>();
+        items.clear();
         homeView.showLoading();
-        listingSubscription = getListingSubscription(front, params, REFRESH);
+        listingSubscription = getListingSubscription(subreddit, front, params, REFRESH);
     }
 
     @Override
-    public void getMoreListing(String front, Map<String, String> params) {
+    public void getMoreListing(String subreddit, String front, Map<String, String> params) {
         params.put("after", loadMoreId);
         homeView.showLoadMoreIndicator();
-        listingSubscription = getListingSubscription(front, params, LOAD_MORE);
+        listingSubscription = getListingSubscription(subreddit, front, params, LOAD_MORE);
+    }
+
+    @Override
+    public List<String> getSubreddits() {
+        List<String> subredditNames = new ArrayList<String>();
+        for(SubredditItem item : subredditItems){
+            subredditNames.add(item.getName());
+        }
+        return subredditNames;
     }
 
     private void hideLoadingEvent(int loadingEvent){
@@ -105,47 +190,46 @@ public class HomePresenterImpl implements HomePresenter{
             homeView.hideLoadMoreIndicator();
     }
 
-    private Subscription getListingSubscription(String front, Map<String,String> params, int loadingEvent){
+    private Subscription getListingSubscription(@Nullable String subreddit, @Nullable String filter, Map<String,String> params, int loadingEvent){
+        Observable<RedditListing> targetObservable = null;
+        if(subreddit != null){
+            if(filter != null)
+                targetObservable = redditClient.getSubredditListing(subreddit,filter, params);
+            else
+                targetObservable = redditClient.getSubredditListing(subreddit, params);
+        }else{
+                targetObservable = redditClient.getListing(filter, params);
+        }
+        return  buildSubscription(targetObservable, loadingEvent);
+    }
 
-        return (Subscription)bindFragment(homeView.getFragment(), redditClient.getListing(front, params))
+    private Subscription buildSubscription(Observable<RedditListing> observable, int loadingEvent){
+        return (Subscription)bindFragment(homeView.getFragment(), observable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<PostItemWrapper>() {
+                .subscribe(new Subscriber<RedditListing>() {
                     @Override
                     public void onCompleted() {
                         hideLoadingEvent(loadingEvent);
-//                        for(PostItem item : items){
-//                            Log.d("ITEM URL", item.getUrl() + "--" + item.getType());
-//                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         hideLoadingEvent(loadingEvent);
-                        homeView.showErrorMessage();
+                        homeView.showErrorMessage(e.toString());
                     }
 
                     @Override
-                    public void onNext(PostItemWrapper wrapper) {
-                        items.addAll(wrapper.getItems());
+                    public void onNext(RedditListing wrapper) {
+                        // TODO: 2015-10-23 check correctness of this casting
+                        List<PostItem> postItems = (List<PostItem>) (List<?>) wrapper.getItems();
+                        items.addAll(postItems);
                         //todo: replaceWith should be in a new view interface method
                         homeRecyclerView.replaceWith(items);
                         // TODO: 29/08/15 send the last item name to fragment to use for loading more.
                         loadMoreId = wrapper.getAfter();
                     }
                 });
-    }
-
-    //    private Subscription getEventHandler(){
-//        return (Subscription)bindFragment(homeView.getFragment(), rxBus.toObservable())
-//                .subscribe(event -> identifyAndPerformEvent(event));
-//    }
-
-    private void identifyAndPerformEvent(Object event){
-        if(event instanceof SubredditEvent){
-            Toast.makeText(homeView.getContext(), "subscribed!", Toast.LENGTH_LONG).show();
-        }
-
     }
 
 }

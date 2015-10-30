@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -28,29 +29,23 @@ public abstract class PostItemSubView extends RelativeLayout {
     MainActivity mainActivity;
     SharedPreferences postPreferences;
 
-    public PostItemSubView(Context context) {
-        super(context);
-        mainActivity = (MainActivity)getContext();
-        postPreferences = ((App)mainActivity.getApplication()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
-    }
-
     public PostItemSubView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mainActivity = (MainActivity)getContext();
-        postPreferences = ((App)mainActivity.getApplication()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
+        postPreferences = (mainActivity.getApp()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
+
+        setGeneralClickListener();
     }
 
-    public PostItemSubView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        mainActivity = (MainActivity)getContext();
-        postPreferences = ((App)mainActivity.getApplication()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public PostItemSubView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        mainActivity = (MainActivity)getContext();
-        postPreferences = ((App)mainActivity.getApplication()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
+    private void setGeneralClickListener() {
+        this.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isNsfwDisabled()){
+                    callNsfwDialog();
+                }
+            }
+        });
     }
 
     public abstract void setupView(PostItem item);
@@ -61,12 +56,13 @@ public abstract class PostItemSubView extends RelativeLayout {
     }
 
     public void disableNsfw(){
+
         postPreferences.edit().putBoolean(PreferenceManager.NSFW_KEY, true).commit();
         handleNsfwUpdate(true);
         // TODO: 09/10/15 notify data set changed
     }
 
-    public void callNsfwDialog(){
+    private void callNsfwDialog(){
         mainActivity.getDialogUtil().build()
                 .title("Disable NSFW setting?")
                 .positiveText("Yes")

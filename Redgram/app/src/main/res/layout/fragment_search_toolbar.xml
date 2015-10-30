@@ -22,6 +22,7 @@
             android:inputType="text"
             android:maxLines="1"
             android:paddingLeft="2dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginRight="16dp"
             android:singleLine="true"
             android:textColor="#ffffff"

@@ -2,6 +2,7 @@ package com.matie.redgram.data.models.api.reddit.base;
 
 import com.matie.redgram.data.models.api.reddit.RedditLink;
 import com.matie.redgram.data.models.api.reddit.RedditListing;
+import com.matie.redgram.data.models.api.reddit.RedditSubreddit;
 
 /**
  * Created by matie on 16/04/15.
@@ -9,7 +10,8 @@ import com.matie.redgram.data.models.api.reddit.RedditListing;
 public enum RedditType {
 
     Listing(RedditListing.class),
-    t3(RedditLink.class);
+    t3(RedditLink.class),
+    t5(RedditSubreddit.class);
 
     private final Class mClass;
 

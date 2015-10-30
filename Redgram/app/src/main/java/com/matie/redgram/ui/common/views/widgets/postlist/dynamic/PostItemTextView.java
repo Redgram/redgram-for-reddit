@@ -52,11 +52,13 @@ public class PostItemTextView extends PostItemSubView {
         textTitleView.setText(item.getTitle());
 
         if(item.getText().length() > 0){
-            contentText = item.getText();
-             if(!isNsfwDisabled()){
+
+            textContentView.setText(item.getText());
+
+            if(!isNsfwDisabled()){
                 textContentView.setText(res.getString(R.string.nsfw_material));
             }else{
-                textContentView.setText(contentText);
+                textContentView.setText(textContentView.getText());
             }
 
             textContentView.setVisibility(VISIBLE);
@@ -75,7 +77,7 @@ public class PostItemTextView extends PostItemSubView {
     @Override
     public void handleNsfwUpdate(boolean disabled) {
         if(disabled){
-            textContentView.setText(contentText);
+            textContentView.setText(textContentView.getText());
         }else{
             textContentView.setText(res.getString(R.string.nsfw_material));
         }
@@ -83,9 +85,7 @@ public class PostItemTextView extends PostItemSubView {
 
     @OnClick(R.id.text_content_view)
     public void onClick(){
-        if(!isNsfwDisabled() && !textContentView.getText().equals(contentText)){
-            callNsfwDialog();
-        }else{
+        if(textContentView.getText().equals(contentText)){
             // TODO: 09/10/15 Formatted view of content
         }
     }

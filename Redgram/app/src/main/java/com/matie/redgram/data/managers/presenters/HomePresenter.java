@@ -1,6 +1,9 @@
 package com.matie.redgram.data.managers.presenters;
 
+import com.matie.redgram.data.models.main.items.SubredditItem;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,11 +14,13 @@ public interface HomePresenter {
     public static final int REFRESH = 0;
     public static final int LOAD_MORE = 1;
 
-
-
     public void registerForEvents();
     public void unregisterForEvents();
 
-    public void getListing(String front, Map<String,String> params);
-    public void getMoreListing(String front, Map<String,String> params);
+    public void getHomeViewWrapper();
+    public List<String> getSubreddits();
+
+    public void getListing(String subreddit, String front, Map<String,String> params);
+    public void getMoreListing(String subreddit, String front, Map<String,String> params);
+
 }

@@ -47,8 +47,6 @@ public class PostAdapter extends PostAdapterBase {
      * GALLERY - icon - different layout
      * loads the set of images from imgur
      *
-     *
-     *
      * @param type
      * @param dynamicView
      * @param dynamicParent
@@ -78,26 +76,28 @@ public class PostAdapter extends PostAdapterBase {
     @Override
     public int getItemType(int position) {
         int id = 0; //default
-        if(getItem(position).getType() == PostItem.Type.DEFAULT) {
+        PostItem item = ((PostItem)getItem(position));
+
+        if(item.getType() == PostItem.Type.DEFAULT) {
             id = TYPE_DEFAULT;
             return id;
         }
-        if(getItem(position).getType() == PostItem.Type.SELF) {
+        if(item.getType() == PostItem.Type.SELF) {
             id = TYPE_SELF;
             return id;
         }
         //todo: IMGUR images should be of this type, and not default. Modify when integrating IMGUR API
-        if(getItem(position).getType() == PostItem.Type.IMAGE){
+        if(item.getType() == PostItem.Type.IMAGE){
             id = TYPE_IMAGE;
             return id;
         }
-        if(getItem(position).getType() == PostItem.Type.IMGUR_GALLERY || getItem(position).getType() == PostItem.Type.IMGUR_ALBUM ||
-                getItem(position).getType() == PostItem.Type.IMGUR_CUSTOM_GALLERY){
+        if(item.getType() == PostItem.Type.IMGUR_GALLERY || item.getType() == PostItem.Type.IMGUR_ALBUM ||
+                item.getType() == PostItem.Type.IMGUR_CUSTOM_GALLERY){
             id = TYPE_GALLERY;
             return id;
         }
-        if(getItem(position).getType() == PostItem.Type.GIF || getItem(position).getType() == PostItem.Type.YOUTUBE
-                || getItem(position).getType() == PostItem.Type.GFYCAT){
+        if(item.getType() == PostItem.Type.GIF || item.getType() == PostItem.Type.YOUTUBE
+                || item.getType() == PostItem.Type.GFYCAT){
             id = TYPE_ANIMATED;
             return id;
         }

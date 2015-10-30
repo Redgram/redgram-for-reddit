@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
@@ -23,9 +24,12 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.main.MainActivity;
+import com.matie.redgram.ui.common.utils.ToastHandler;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Created by matie on 19/05/15.
@@ -72,7 +76,7 @@ public class PostItemAnimatedView extends PostItemSubView {
 //        add transparency
         overlay.setBackgroundColor(OVERLAY_OPACITY * 0x1000000);
         overlayText.setText(item.getType().toString());
-
+        overlayImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_action_play_circle_fill));
     }
 
     private GenericDraweeHierarchy getDraweeHierarchy(PostItem item) {
@@ -80,16 +84,6 @@ public class PostItemAnimatedView extends PostItemSubView {
                 new GenericDraweeHierarchyBuilder(getResources())
                         .setFadeDuration(300)
                         .setActualImageFocusPoint(new PointF(0.5f, 0f));
-
-//        if(item.getType() == PostItem.Type.GIF)
-//            builder.setOverlay(ContextCompat.getDrawable(getContext(), R.drawable.image_nsfw_overlay));
-//        else  if(item.getType() == PostItem.Type.YOUTUBE)
-//            builder.setOverlay(ContextCompat.getDrawable(getContext(), R.drawable.ic_action_keyboard_arrow_up));
-//        else if(item.getType() == PostItem.Type.GFYCAT)
-//            builder.setOverlay(ContextCompat.getDrawable(getContext(), R.drawable.ic_action_favorite));
-//
-
-
         return builder.build();
     }
 
@@ -106,8 +100,26 @@ public class PostItemAnimatedView extends PostItemSubView {
         return controller;
     }
 
+    @OnClick(R.id.overlay_image)
+    public void onClick(){
+        handlePlayClickEvent();
+    }
+
+    private void handlePlayClickEvent() {
+        if(animatedOverlay.getVisibility() == GONE){
+            // TODO: 2015-10-20 handle media
+            if(getContext() instanceof MainActivity){
+                ((MainActivity) getContext()).getApp().getToastHandler().showToast("NSFW diabled", Toast.LENGTH_SHORT);
+            }
+        }
+    }
+
     @Override
     public void handleNsfwUpdate(boolean disabled) {
-
+        if(disabled){
+            animatedOverlay.setVisibility(GONE);
+        }else{
+            animatedOverlay.setVisibility(VISIBLE);
+        }
     }
 }
