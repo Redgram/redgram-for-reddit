@@ -72,7 +72,7 @@ public class PostItemGalleryView extends PostItemSubView {
 //        add transparency
         overlay.setBackgroundColor(OVERLAY_OPACITY * 0x1000000);
         overlayText.setVisibility(GONE);
-        overlayImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_action_filter_list));
+        overlayImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_photo_library));
     }
 
     private GenericDraweeHierarchy getDraweeHierarchy(PostItem item) {

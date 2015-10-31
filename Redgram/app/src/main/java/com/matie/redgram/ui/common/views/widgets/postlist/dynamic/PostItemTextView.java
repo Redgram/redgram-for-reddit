@@ -55,7 +55,7 @@ public class PostItemTextView extends PostItemSubView {
 
             textContentView.setText(item.getText());
 
-            if(!isNsfwDisabled()){
+            if(item.isAdult() && !isNsfwDisabled()){
                 textContentView.setText(res.getString(R.string.nsfw_material));
             }else{
                 textContentView.setText(textContentView.getText());
@@ -85,8 +85,13 @@ public class PostItemTextView extends PostItemSubView {
 
     @OnClick(R.id.text_content_view)
     public void onClick(){
-        if(textContentView.getText().equals(contentText)){
+        if(textContentView.getText().equals(res.getString(R.string.nsfw_material))){
             // TODO: 09/10/15 Formatted view of content
+            if(!isNsfwDisabled()){
+                callNsfwDialog();
+            }
+        }else{
+
         }
     }
 

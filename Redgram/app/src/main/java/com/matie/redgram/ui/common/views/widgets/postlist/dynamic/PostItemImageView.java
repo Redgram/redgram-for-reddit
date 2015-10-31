@@ -115,6 +115,10 @@ public class PostItemImageView extends PostItemSubView{
             if(getContext() instanceof MainActivity){
                 ((MainActivity) getContext()).getApp().getToastHandler().showToast("NSFW Disabled", Toast.LENGTH_LONG);
             }
+        }else if(imageOverlay.getVisibility() == VISIBLE){
+            if(!isNsfwDisabled()){
+                callNsfwDialog();
+            }
         }
     }
 

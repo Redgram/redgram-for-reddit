@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="?attr/actionBarSize"
         android:layout_weight="1"
-        android:background="@android:color/transparent"
+        android:background="?attr/colorAccent"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:layout_gravity="center_vertical"
@@ -54,24 +54,12 @@
 
         <ImageView
             android:id="@+id/listing_refresh"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_marginRight="16dp"
-            android:gravity="center_vertical"
-            android:layout_gravity="center_vertical"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/listing_filter"
+            style="@style/ActionPostItemIcon"
             android:src="@drawable/ic_action_refresh"/>
 
         <ImageView
             android:id="@+id/listing_filter"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_marginRight="12dp"
-            android:gravity="center_vertical"
-            android:layout_gravity="center_vertical"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/home_toolbar_title_linear_layout"
+            style="@style/ActionPostItemIcon"
             android:src="@drawable/ic_action_sort"/>
     </LinearLayout>
 

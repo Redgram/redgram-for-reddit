@@ -30,16 +30,11 @@
             android:layout_gravity="center_vertical" />
         <ImageView
             android:id="@+id/search_clear"
-            style="@style/Wrap"
-            android:layout_gravity="center"
-            android:layout_marginRight="16dp"
-            android:src="@drawable/abc_ic_clear_mtrl_alpha"
+            style="@style/ActionPostItemIcon"
+            android:src="@drawable/ic_action_clear"
             android:visibility="gone"/>
         <ImageView
             android:id="@+id/search_filter"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_gravity="center"
-            android:layout_marginRight="12dp"
+            style="@style/ActionPostItemIcon"
             android:src="@drawable/ic_action_filter_list"/>
     </LinearLayout>

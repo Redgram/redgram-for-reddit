@@ -6,13 +6,13 @@ import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
-import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
@@ -21,10 +21,10 @@ import com.matie.redgram.R;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.base.BaseActivityComponent;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout;
+import com.matie.redgram.ui.common.utils.SlidingUpPanelInterface;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.data.models.main.items.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
@@ -41,7 +41,7 @@ import butterknife.InjectView;
 import butterknife.OnItemClick;
 
 
-public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout.OnInsetsCallback{
+public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout.OnInsetsCallback, SlidingUpPanelInterface{
 
     private int currentSelectedPosition = 0;
 
@@ -51,7 +51,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     SlidingUpPanelLayout slidingUpPanelLayout;
 
     @InjectView(R.id.main_slide_up_panel)
-    TextView slidingUpPanel;
+    FrameLayout slidingUpFrameLayout;
 
     @InjectView(R.id.navigationDrawerListViewWrapper)
     DrawerView mNavigationDrawerListViewWrapper;
@@ -150,16 +150,13 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                 super.onDrawerClosed(view);
                 supportInvalidateOptionsMenu();
 
-                float pixels = TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP, 68, getResources().getDisplayMetrics());
-
-                slidingUpPanelLayout.setPanelHeight((int)pixels);
+                togglePanel();
             }
 
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 supportInvalidateOptionsMenu();
-                slidingUpPanelLayout.setPanelHeight(0);
+//                slidingUpPanelLayout.setPanelHeight(0);
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -294,5 +291,35 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         insets.top = top; // revert
     }
 
+    @Override
+    public void togglePanel() {
+        if(slidingUpPanelLayout.getPanelState() != SlidingUpPanelLayout.PanelState.EXPANDED){
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+        }else{
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }
+    }
+
+    @Override
+    public void hidePanel() {
+        if(slidingUpPanelLayout.getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN){
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        }
+    }
+
+    @Override
+    public void setPanelHeight(int height) {
+        float pixels = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, height, getResources().getDisplayMetrics());
+        slidingUpPanelLayout.setPanelHeight((int)pixels);
+    }
+
+    @Override
+    public void setPanelView(Fragments fragmentName) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_slide_up_panel, Fragment
+                        .instantiate(MainActivity.this, fragmentName.getFragment()))
+                .commit();
+    }
 }
 

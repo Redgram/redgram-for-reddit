@@ -197,7 +197,10 @@
         <item name="android:layout_alignParentRight">true</item>
     </style>
     <style name="ActionPostItemIcon" parent="Wrap">
+       <item name="android:background">@drawable/default_ripple</item>
        <item name="android:layout_margin">@dimen/action_icon_margin</item>
+       <item name="android:clickable">true</item>
+       <item name="android:focusable">true</item>
     </style>
     <style name="ActionPostItemScore" parent="Wrap">
         <item name="android:textSize">@dimen/text_size_small</item>

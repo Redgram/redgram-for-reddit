@@ -6,6 +6,7 @@ import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 
 /**
  * Created by matie on 12/04/15.
+ * // TODO: 2015-10-31 make it interact with the siding panel
  */
 public interface HomeView extends BaseContextView {
     public void showLoading();

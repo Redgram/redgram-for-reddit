@@ -118,12 +118,16 @@
 
     </android.support.v4.widget.DrawerLayout>
 
-    <TextView
+    <FrameLayout
         android:id="@+id/main_slide_up_panel"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center|top"
-        android:text="The Awesome Sliding Up Panel"
-        android:textSize="16sp" />
+        android:layout_height="match_parent"></FrameLayout>
+    <!--<TextView-->
+        <!--android:id="@+id/main_slide_up_panel"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:gravity="center|top"-->
+        <!--android:text="The Awesome Sliding Up Panel"-->
+        <!--android:textSize="16sp" />-->
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

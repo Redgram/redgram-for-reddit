@@ -1,12 +1,10 @@
 package com.matie.redgram.data.managers.presenters;
 
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.home.HomeViewWrapper;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.events.SubredditEvent;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
@@ -108,14 +106,16 @@ public class HomePresenterImpl implements HomePresenter{
         String filterChoice = homeView.getContext().getResources().getString(R.string.default_home_filter).toLowerCase();
         String subredditFilterChoice = homeView.getContext().getResources().getString(R.string.default_subreddit_filter).toLowerCase();
 
+//        mockData();
+
         homeWrapperSubscription = (Subscription)bindFragment(homeView.getFragment(), Observable
                 .zip(redditClient.getListing(filterChoice, params),
                         redditClient.getSubreddits(subredditFilterChoice, params), new Func2<RedditListing, RedditListing, HomeViewWrapper>() {
                             @Override
                             public HomeViewWrapper call(RedditListing listing, RedditListing subredditListing) {
                                 HomeViewWrapper homeViewWrapper = new HomeViewWrapper();
-                                homeViewWrapper.setRedditListingObservable(listing);
-                                homeViewWrapper.setSubredditsObservable(subredditListing);
+                                homeViewWrapper.setRedditListing(listing);
+                                homeViewWrapper.setSubreddits(subredditListing);
                                 return homeViewWrapper;
                             }
                 }))
@@ -136,7 +136,7 @@ public class HomePresenterImpl implements HomePresenter{
                     @Override
                     public void onNext(HomeViewWrapper homeViewWrapper) {
                         //dealing with the posts
-                        RedditListing redditListing = homeViewWrapper.getRedditListingObservable();
+                        RedditListing redditListing = homeViewWrapper.getRedditListing();
                         List<PostItem> postItems = (List<PostItem>) (List<?>) redditListing.getItems();
                         items.addAll(postItems);
                         //todo: replaceWith should be in a new view interface method
@@ -145,12 +145,42 @@ public class HomePresenterImpl implements HomePresenter{
                         loadMoreId = redditListing.getAfter();
 
                         //dealing with the subreddits
-                        RedditListing subredditListing = homeViewWrapper.getSubredditsObservable();
+                        RedditListing subredditListing = homeViewWrapper.getSubreddits();
                         List<SubredditItem> subItems = (List<SubredditItem>) (List<?>) subredditListing.getItems();
                         subredditItems.addAll(subItems);
                         //replace items in recycler view // TODO: 2015-10-27
                     }
                 });
+    }
+
+    private void mockData() {
+        for(int i = 0; i < 20; i++){
+            PostItem item = new PostItem();
+            if(i % 2 == 0){
+                item.setType(PostItem.Type.SELF);
+            }else{
+                item.setType(PostItem.Type.IMAGE);
+                item.setUrl("http://i.imgur.com/fbbqGVv.jpg");
+                item.setThumbnail("http://i.imgur.com/fbbqGVvl.jpg");
+            }
+//            item.setIsAdult(true);
+            item.setAuthor("julien");
+            item.setIsSelf(true);
+            item.setNumComments(i);
+            item.setTitle("This is a title " + i);
+            item.setText("this is a rnadom text coming from my cave in 2015, happy halloween " + i);
+            item.setScore(i + 100);
+            item.setSubreddit("r/androidev");
+
+            items.add(item);
+
+            SubredditItem subredditItem = new SubredditItem();
+            subredditItem.setName("subreddit"+(i+1));
+            subredditItems.add(subredditItem);
+        }
+
+        homeRecyclerView.replaceWith(items);
+        hideLoadingEvent(REFRESH);
     }
 
 

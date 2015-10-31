@@ -1,6 +1,7 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -33,19 +34,6 @@ public abstract class PostItemSubView extends RelativeLayout {
         super(context, attrs);
         mainActivity = (MainActivity)getContext();
         postPreferences = (mainActivity.getApp()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
-
-        setGeneralClickListener();
-    }
-
-    private void setGeneralClickListener() {
-        this.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!isNsfwDisabled()){
-                    callNsfwDialog();
-                }
-            }
-        });
     }
 
     public abstract void setupView(PostItem item);
@@ -62,7 +50,7 @@ public abstract class PostItemSubView extends RelativeLayout {
         // TODO: 09/10/15 notify data set changed
     }
 
-    private void callNsfwDialog(){
+    public void callNsfwDialog(){
         mainActivity.getDialogUtil().build()
                 .title("Disable NSFW setting?")
                 .positiveText("Yes")
