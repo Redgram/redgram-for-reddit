@@ -15,22 +15,28 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
-import android.widget.TextView;
+import android.widget.Toast;
 
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.images.ImageManager;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
+import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout;
-import com.matie.redgram.ui.common.utils.SlidingUpPanelInterface;
+import com.matie.redgram.ui.common.utils.SlidingPanelControllerInterface;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.data.models.main.items.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
 import com.matie.redgram.ui.search.SearchFragment;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +47,8 @@ import butterknife.InjectView;
 import butterknife.OnItemClick;
 
 
-public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout.OnInsetsCallback, SlidingUpPanelInterface{
+public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout.OnInsetsCallback,
+        SlidingPanelControllerInterface, SlidingUpPanelLayout.PanelSlideListener {
 
     private int currentSelectedPosition = 0;
 
@@ -68,10 +75,15 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
 
+    BasePreviewFragment previewFragment;
+
     @Inject
     App app;
     @Inject
     DialogUtil dialogUtil;
+    @Inject
+    ImageManager imageManager;
+
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -95,7 +107,6 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         mDrawerLayout.setStatusBarBackgroundColor(
                 getResources().getColor(R.color.material_red900));
 
-
         if (savedInstanceState == null) {
           getSupportFragmentManager().beginTransaction().add(R.id.container,
           Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment())).commit();
@@ -103,8 +114,10 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
           currentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
         }
 
-         setup();
+        setup();
+        setUpPanel();
     }
+
 
     @Override
     protected void setupComponent(AppComponent appComponent) {
@@ -149,20 +162,37 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 supportInvalidateOptionsMenu();
-
-                togglePanel();
+                showPanel();
             }
 
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 supportInvalidateOptionsMenu();
-//                slidingUpPanelLayout.setPanelHeight(0);
+                hidePanel();
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         selectItem(currentSelectedPosition);
     }
+
+    private void setUpPanel() {
+        //make it overlay main content
+        slidingUpPanelLayout.setOverlayed(true);
+        //hide the panel
+        hidePanel();
+        //fix the height of the panel to start below the status bar
+        int statusBarHeight = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if(resourceId > 0){
+            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+
+            SlidingUpPanelLayout.LayoutParams fl = new SlidingUpPanelLayout.LayoutParams(slidingUpFrameLayout.getLayoutParams());
+            fl.setMargins(0, statusBarHeight, 0, 0);
+            slidingUpFrameLayout.setLayoutParams(fl);
+        }
+    }
+
 
     @Override
     public void onResume() {
@@ -234,8 +264,6 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
             navigationItems.get(position).setSelected(true);
 
             currentSelectedPosition = position;
-//            getSupportActionBar()
-//                    .setTitle(navigationItems.get(currentSelectedPosition).getItemName());
         }
 
         if (scrimInsetsFrameLayout != null) {
@@ -277,6 +305,10 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         return dialogUtil;
     }
 
+    public ImageManager getImageManager() {
+        return imageManager;
+    }
+
     @Override
     public void onInsetsChanged(Rect insets) {
         Toolbar toolbar = this.toolbar;
@@ -301,6 +333,13 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     }
 
     @Override
+    public void showPanel() {
+        if(slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN){
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }
+    }
+
+    @Override
     public void hidePanel() {
         if(slidingUpPanelLayout.getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN){
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
@@ -311,15 +350,56 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     public void setPanelHeight(int height) {
         float pixels = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, height, getResources().getDisplayMetrics());
-        slidingUpPanelLayout.setPanelHeight((int)pixels);
+        slidingUpPanelLayout.setPanelHeight((int) pixels);
     }
 
     @Override
-    public void setPanelView(Fragments fragmentName) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_slide_up_panel, Fragment
-                        .instantiate(MainActivity.this, fragmentName.getFragment()))
-                .commit();
+    public void setPanelView(Fragments fragmentEnum, Bundle bundle) {
+        List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+        //show panel
+        togglePanel();
+        //load data
+        if(getSupportFragmentManager().getFragments().contains(previewFragment) && previewFragment != null){
+            previewFragment.refreshPreview(bundle);
+        }else{
+
+            previewFragment = (BasePreviewFragment)Fragment.instantiate(MainActivity.this, fragmentEnum.getFragment());
+            previewFragment.setArguments(bundle);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.main_slide_up_panel, previewFragment, fragmentEnum.getFragment())
+                    .commit();
+        }
+    }
+
+    @Override
+    public SlidingUpPanelLayout.PanelState getPanelState() {
+        return slidingUpPanelLayout.getPanelState();
+    }
+
+    @Override
+    public void onPanelSlide(View panel, float slideOffset) {
+
+    }
+
+    @Override
+    public void onPanelCollapsed(View panel) {
+
+    }
+
+    @Override
+    public void onPanelExpanded(View panel) {
+
+    }
+
+    @Override
+    public void onPanelAnchored(View panel) {
+
+    }
+
+    @Override
+    public void onPanelHidden(View panel) {
+
     }
 }
 

@@ -1,13 +1,20 @@
 package com.matie.redgram.ui.common.utils;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.matie.redgram.ui.common.base.Fragments;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 /**
  * Created by matie on 2015-10-31.
  */
-public interface SlidingUpPanelInterface {
+public interface SlidingPanelControllerInterface {
+    /**
+     *  Shows the collapsed panel
+     */
+    public void showPanel();
+
     /**
      *  Hides the panel
      */
@@ -27,6 +34,13 @@ public interface SlidingUpPanelInterface {
     /**
      * Changes the panel view
      */
-    public void setPanelView(Fragments fragmentName);
+    public void setPanelView(Fragments fragmentEnum, Bundle bundle);
+
+    /**
+     * Panel State
+     *
+     * @return
+     */
+    public SlidingUpPanelLayout.PanelState getPanelState();
 
 }

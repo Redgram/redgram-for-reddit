@@ -1,5 +1,7 @@
 package com.matie.redgram.ui.common.main;
 
+import com.matie.redgram.data.managers.images.ImageManager;
+import com.matie.redgram.data.managers.images.ImageModule;
 import com.matie.redgram.ui.ActivityScope;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
@@ -14,11 +16,15 @@ import dagger.Component;
 @ActivityScope
 @Component(
         dependencies = AppComponent.class,
-        modules = MainModule.class
+        modules = {
+                MainModule.class,
+                ImageModule.class
+        }
 )
 public interface MainComponent extends AppComponent{
     void inject(MainActivity activity);
 
     MainActivity activity();
     DialogUtil getDialogUtil();
+    ImageManager getImageManager();
 }

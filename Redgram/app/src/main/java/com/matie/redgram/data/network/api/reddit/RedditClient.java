@@ -32,6 +32,7 @@ public class RedditClient extends RedditServiceBase {
     private final RedditProviderBase provider;
     private final App app;
 
+
     @Inject
     public RedditClient(App app) {
         super(app);

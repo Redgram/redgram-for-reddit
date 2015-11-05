@@ -230,7 +230,8 @@ public class HomePresenterImpl implements HomePresenter{
         }else{
                 targetObservable = redditClient.getListing(filter, params);
         }
-        return  buildSubscription(targetObservable, loadingEvent);
+
+        return buildSubscription(targetObservable, loadingEvent);
     }
 
     private Subscription buildSubscription(Observable<RedditListing> observable, int loadingEvent){

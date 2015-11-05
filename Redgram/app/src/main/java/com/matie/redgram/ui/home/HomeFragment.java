@@ -21,20 +21,25 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.Fragments;
+import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.nineoldandroids.view.ViewHelper;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.io.File;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +52,8 @@ import butterknife.InjectView;
 /**
  * Created by matie on 17/01/15.
  */
-public class HomeFragment extends BaseFragment implements HomeView, ObservableScrollViewCallbacks, SwipeRefreshLayout.OnRefreshListener{
+public class HomeFragment extends SlidingUpPanelFragment implements HomeView, ObservableScrollViewCallbacks,
+        SwipeRefreshLayout.OnRefreshListener{
 
     @InjectView(R.id.home_swipe_container)
     SwipeRefreshLayout homeSwipeContainer;
@@ -119,7 +125,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
         component.inject(this);
 
     }
-
     @Override
     protected void setupToolbar() {
         //setting up toolbar
@@ -305,7 +310,6 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
                 }).show();
     }
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
@@ -382,9 +386,7 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     }
 
     @Override
-    public void showInfoMessage() {
-
-    }
+    public void showInfoMessage() {}
 
     @Override
     public void showErrorMessage(String errorMsg) {
@@ -452,5 +454,35 @@ public class HomeFragment extends BaseFragment implements HomeView, ObservableSc
     @Override
     public void onRefresh() {
         homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
+    }
+
+    @Override
+    public void showPanel() {
+        ((MainActivity)getActivity()).showPanel();
+    }
+
+    @Override
+    public void hidePanel() {
+        ((MainActivity)getActivity()).hidePanel();
+    }
+
+    @Override
+    public void togglePanel() {
+        ((MainActivity)getActivity()).togglePanel();
+    }
+
+    @Override
+    public void setPanelHeight(int height) {
+        ((MainActivity)getActivity()).setPanelHeight(height);
+    }
+
+    @Override
+    public void setPanelView(Fragments fragmentEnum, Bundle bundle) {
+//        ((MainActivity)getActivity()).setPanelView(fragmentName);
+    }
+
+    @Override
+    public SlidingUpPanelLayout.PanelState getPanelState() {
+        return ((MainActivity)getActivity()).getPanelState();
     }
 }

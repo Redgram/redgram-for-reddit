@@ -69,6 +69,7 @@ dependencies {
 
     //image management
     compile 'com.facebook.fresco:fresco:0.7.0+'
+    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.4.1'
 
     //UI
     compile 'com.jakewharton:butterknife:6.0.0'

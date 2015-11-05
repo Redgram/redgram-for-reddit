@@ -37,11 +37,15 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.common.base.Fragments;
+import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
+import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.search.views.SearchView;
 import com.nineoldandroids.view.ViewHelper;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,7 +61,7 @@ import butterknife.InjectView;
  * Created by matie on 28/06/15.
  * todo: wrap layout with SwipeRefreshLayout and DISABLE functionality, but use loading animation.
  */
-public class SearchFragment extends BaseFragment implements SearchView, ObservableScrollViewCallbacks{
+public class SearchFragment extends SlidingUpPanelFragment implements SearchView, ObservableScrollViewCallbacks{
 
     @InjectView(R.id.search_linear_layout)
     LinearLayout searchLinearLayout;
@@ -464,11 +468,6 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
 
     }
 
-//    @Override
-//    public DialogUtil dialogUtil {
-//        return ((MainActivity)getActivity()).dialogUtil;
-//    }
-
     @Override
     public PostRecyclerView getRecyclerView() {
         return searchRecyclerView;
@@ -484,4 +483,33 @@ public class SearchFragment extends BaseFragment implements SearchView, Observab
         return this;
     }
 
+    @Override
+    public void showPanel() {
+        ((MainActivity)getActivity()).showPanel();
+    }
+
+    @Override
+    public void hidePanel() {
+        ((MainActivity)getActivity()).hidePanel();
+    }
+
+    @Override
+    public void togglePanel() {
+        ((MainActivity)getActivity()).togglePanel();
+    }
+
+    @Override
+    public void setPanelHeight(int height) {
+        ((MainActivity)getActivity()).setPanelHeight(height);
+    }
+
+    @Override
+    public void setPanelView(Fragments fragmentEnum, Bundle bundle) {
+//        ((MainActivity)getActivity()).setPanelView(fragmentName);
+    }
+
+    @Override
+    public SlidingUpPanelLayout.PanelState getPanelState() {
+        return ((MainActivity)getActivity()).getPanelState();
+    }
 }

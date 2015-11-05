@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/material_grey100">
+
+    <LinearLayout
+        android:id="@+id/top_banner"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_height"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:background="@color/material_red400">
+        <!--make the view take all of the space, leaving the required space for subsequent views-->
+        <TextView
+            android:id="@+id/top_banner_title"
+            style="@style/Wrap"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/action_icon_margin"
+            android:layout_gravity="center_vertical"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="TITLE"/>
+        <ImageView
+            android:id="@+id/close_fragment"
+            style="@style/ActionPostItemIcon"
+            android:layout_weight="0"
+            android:src="@drawable/ic_action_clear" />
+    </LinearLayout>
+
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+        android:id="@+id/image_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:layout_below="@+id/top_banner"
+        android:layout_above="@+id/bottom_banner"/>
+
+    <LinearLayout
+        android:id="@+id/bottom_banner"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_height"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:background="@color/material_red400">
+    </LinearLayout>
+
+</RelativeLayout>

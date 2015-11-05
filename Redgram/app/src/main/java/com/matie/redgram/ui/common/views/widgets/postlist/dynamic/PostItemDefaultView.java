@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.PointF;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -13,16 +15,19 @@ import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.base.Fragments;
+import com.matie.redgram.ui.common.previews.ImagePreviewFragment;
+import com.matie.redgram.ui.common.previews.WebPreviewFragment;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 /**
  * Created by matie on 19/05/15.
- * todo: FIND OUT WHY THUMBNAILS POSITION IS NOT STABLE
  */
 public class PostItemDefaultView extends PostItemSubView {
 
@@ -38,8 +43,22 @@ public class PostItemDefaultView extends PostItemSubView {
     @InjectView(R.id.default_text_view)
     PostItemTextView postItemTextView;
 
+    PostItem postItem;
+
     public PostItemDefaultView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+//        this.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(postItem != null){
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(postItem));
+//                    getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
+//                }
+//            }
+//        });
+        
     }
 
     @Override
@@ -50,6 +69,8 @@ public class PostItemDefaultView extends PostItemSubView {
 
     @Override
     public void setupView(PostItem item) {
+        postItem = item;
+
         postItemTextView.setupView(item);
 
         if(item.getType() == PostItem.Type.IMGUR){

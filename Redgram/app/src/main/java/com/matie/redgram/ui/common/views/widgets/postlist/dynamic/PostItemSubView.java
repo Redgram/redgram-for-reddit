@@ -27,13 +27,17 @@ import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
  */
 public abstract class PostItemSubView extends RelativeLayout {
 
-    MainActivity mainActivity;
-    SharedPreferences postPreferences;
+    private MainActivity mainActivity;
+    private SharedPreferences postPreferences;
 
     public PostItemSubView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mainActivity = (MainActivity)getContext();
         postPreferences = (mainActivity.getApp()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
+    }
+
+    public MainActivity getMainActivity() {
+        return mainActivity;
     }
 
     public abstract void setupView(PostItem item);
@@ -44,7 +48,6 @@ public abstract class PostItemSubView extends RelativeLayout {
     }
 
     public void disableNsfw(){
-
         postPreferences.edit().putBoolean(PreferenceManager.NSFW_KEY, true).commit();
         handleNsfwUpdate(true);
         // TODO: 09/10/15 notify data set changed
@@ -68,7 +71,7 @@ public abstract class PostItemSubView extends RelativeLayout {
                     }
                 })
                 .show();
-        }
+    }
 
 
 }
