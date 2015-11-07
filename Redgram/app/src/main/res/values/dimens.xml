@@ -37,7 +37,7 @@
     <dimen name="separator_height">1dp</dimen>
     <!--Image Height-->
     <dimen name="image_height">200dp</dimen>
-    <dimen name="panel_height">68dp</dimen>
+    <dimen name="panel_height">48dp</dimen>
     <!--Action view height-->
     <dimen name="action_view_height">48dp</dimen>
     <!--Header height-->

@@ -31,11 +31,19 @@
             android:src="@drawable/ic_action_clear" />
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/web_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="7dp"
+        android:visibility="visible"
+        android:layout_below="@+id/top_banner"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+
     <WebView
         android:id="@+id/web_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/top_banner"
+        android:layout_below="@+id/web_progress_bar"
         android:layout_above="@+id/bottom_banner"/>
 
     <LinearLayout

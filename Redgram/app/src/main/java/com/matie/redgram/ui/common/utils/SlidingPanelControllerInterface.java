@@ -2,6 +2,7 @@ package com.matie.redgram.ui.common.utils;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.View;
 
 import com.matie.redgram.ui.common.base.Fragments;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -35,6 +36,13 @@ public interface SlidingPanelControllerInterface {
      * Changes the panel view
      */
     public void setPanelView(Fragments fragmentEnum, Bundle bundle);
+
+    /**
+     * Sets the dragable
+     * @param view
+     */
+    public void setDragable(View view);
+
 
     /**
      * Panel State

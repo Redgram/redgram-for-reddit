@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -25,11 +26,15 @@ import com.matie.redgram.ui.common.previews.WebPreviewFragment;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Created by matie on 19/05/15.
  */
 public class PostItemDefaultView extends PostItemSubView {
+
+    @InjectView(R.id.default_wrapper)
+    LinearLayout defaultWrapper;
 
     @InjectView(R.id.default_thumbnail_view)
     SimpleDraweeView thumbnailView;
@@ -47,18 +52,6 @@ public class PostItemDefaultView extends PostItemSubView {
 
     public PostItemDefaultView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-//        this.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(postItem != null){
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(postItem));
-//                    getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
-//                }
-//            }
-//        });
-        
     }
 
     @Override
@@ -99,5 +92,14 @@ public class PostItemDefaultView extends PostItemSubView {
     @Override
     public void handleNsfwUpdate(boolean disabled) {
 
+    }
+
+    @OnClick(R.id.default_wrapper)
+    public void onDefaultWrapperClick(){
+        if(postItem != null){
+            Bundle bundle = new Bundle();
+            bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(postItem));
+            getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
+        }
     }
 }

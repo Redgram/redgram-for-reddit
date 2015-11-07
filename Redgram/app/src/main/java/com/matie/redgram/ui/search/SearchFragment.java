@@ -509,6 +509,11 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     }
 
     @Override
+    public void setDragable(View view) {
+        //no implementation
+    }
+
+    @Override
     public SlidingUpPanelLayout.PanelState getPanelState() {
         return ((MainActivity)getActivity()).getPanelState();
     }

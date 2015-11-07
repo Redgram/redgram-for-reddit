@@ -3,8 +3,10 @@
     android:id="@+id/slide_up_panel_layout"
     style="@style/Match"
     android:gravity="bottom"
-    sothree:umanoPanelHeight="48dp"
+    sothree:umanoPanelHeight="@dimen/panel_height"
     sothree:umanoShadowHeight="4dp"
+    sothree:umanoInitialState="hidden"
+    sothree:umanoOverlay="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sothree="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" xmlns:app="http://schemas.android.com/apk/res-auto">

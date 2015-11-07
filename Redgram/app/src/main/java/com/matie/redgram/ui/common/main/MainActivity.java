@@ -76,6 +76,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     Toolbar toolbar;
 
     BasePreviewFragment previewFragment;
+    Fragments currentPreviewFragment;
 
     @Inject
     App app;
@@ -162,13 +163,19 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 supportInvalidateOptionsMenu();
-                showPanel();
+
+                // TODO: 2015-11-06 get dimension height from resources
+//                float pixels = TypedValue.applyDimension(
+//                        TypedValue.COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
+//
+                setPanelHeight(48);
             }
 
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 supportInvalidateOptionsMenu();
-                hidePanel();
+
+                setPanelHeight(0);
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -177,10 +184,6 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     }
 
     private void setUpPanel() {
-        //make it overlay main content
-        slidingUpPanelLayout.setOverlayed(true);
-        //hide the panel
-        hidePanel();
         //fix the height of the panel to start below the status bar
         int statusBarHeight = 0;
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -355,11 +358,11 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
     @Override
     public void setPanelView(Fragments fragmentEnum, Bundle bundle) {
-        List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
         //show panel
         togglePanel();
         //load data
-        if(getSupportFragmentManager().getFragments().contains(previewFragment) && previewFragment != null){
+        if(getSupportFragmentManager().getFragments().contains(previewFragment) && previewFragment != null
+                && currentPreviewFragment != null && fragmentEnum == currentPreviewFragment){
             previewFragment.refreshPreview(bundle);
         }else{
 
@@ -369,7 +372,15 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.main_slide_up_panel, previewFragment, fragmentEnum.getFragment())
                     .commit();
+            //set currently loaded preview
+            currentPreviewFragment = fragmentEnum;
         }
+
+    }
+
+    @Override
+    public void setDragable(View view) {
+        slidingUpPanelLayout.setDragView(view);
     }
 
     @Override

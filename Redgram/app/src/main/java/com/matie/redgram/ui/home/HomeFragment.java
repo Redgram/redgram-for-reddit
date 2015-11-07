@@ -482,6 +482,11 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
     }
 
     @Override
+    public void setDragable(View view) {
+        //no implementation
+    }
+
+    @Override
     public SlidingUpPanelLayout.PanelState getPanelState() {
         return ((MainActivity)getActivity()).getPanelState();
     }

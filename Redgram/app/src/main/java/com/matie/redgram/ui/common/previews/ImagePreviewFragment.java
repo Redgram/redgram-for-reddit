@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
@@ -28,6 +29,8 @@ public class ImagePreviewFragment extends BasePreviewFragment {
 
     @InjectView(R.id.image_preview)
     SubsamplingScaleImageView imagePreview;
+    @InjectView(R.id.top_banner)
+    LinearLayout topBanner;
     @InjectView(R.id.top_banner_title)
     TextView topBannerTitle;
     @InjectView(R.id.close_fragment)
@@ -40,7 +43,7 @@ public class ImagePreviewFragment extends BasePreviewFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.image_preview_fragment, container, false);
+        View view = inflater.inflate(R.layout.preview_image_fragment, container, false);
         ButterKnife.inject(this, view);
 
         if(getArguments().containsKey(LOCAL_CACHE_KEY)){
@@ -55,6 +58,9 @@ public class ImagePreviewFragment extends BasePreviewFragment {
             postItem = new Gson().fromJson(data, PostItem.class);
             topBannerTitle.setText(postItem.getTitle());
         }
+
+        MainActivity mainActivity = (MainActivity)getContext();
+        mainActivity.setDragable(topBanner);
 
         return view;
     }

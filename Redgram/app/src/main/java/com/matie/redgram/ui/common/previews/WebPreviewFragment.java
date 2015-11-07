@@ -1,12 +1,16 @@
 package com.matie.redgram.ui.common.previews;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -25,8 +29,12 @@ public class WebPreviewFragment extends BasePreviewFragment{
 
     public static final String MAIN_DATA = "web_preview_data";
 
+    @InjectView(R.id.web_progress_bar)
+    ProgressBar progressBar;
     @InjectView(R.id.web_preview)
     WebView webView;
+    @InjectView(R.id.top_banner)
+    LinearLayout topBanner;
     @InjectView(R.id.top_banner_title)
     TextView topBannerTitle;
     @InjectView(R.id.close_fragment)
@@ -38,19 +46,26 @@ public class WebPreviewFragment extends BasePreviewFragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.webview_preview_fragment, container, false);
+        View view = inflater.inflate(R.layout.preview_web_fragment, container, false);
         ButterKnife.inject(this, view);
 
         //setup
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(getWebViewClient());
+        webView.setWebChromeClient(getWebChromeClient());
 
         if(getArguments().containsKey(MAIN_DATA)){
             String data = getArguments().getString(MAIN_DATA);
             postItem = new Gson().fromJson(data, PostItem.class);
+
             webView.loadUrl(postItem.getUrl());
+
             topBannerTitle.setText(postItem.getTitle());
         }
+
+        MainActivity mainActivity = (MainActivity)getContext();
+        mainActivity.setDragable(topBanner);
 
         return view;
     }
@@ -76,5 +91,35 @@ public class WebPreviewFragment extends BasePreviewFragment{
     public void OnCloseFragment(){
         MainActivity activity = (MainActivity)getContext();
         activity.hidePanel();
+    }
+
+    // TODO: 2015-11-06 create a separate if needed in future
+    private WebViewClient getWebViewClient() {
+        WebViewClient webViewClient = new WebViewClient(){
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                progressBar.setProgress(0);
+                progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                progressBar.setVisibility(View.GONE);
+            }
+        };
+        return webViewClient;
+    }
+
+    private WebChromeClient getWebChromeClient() {
+        WebChromeClient webChromeClient = new WebChromeClient(){
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                progressBar.setProgress(newProgress);
+                if(newProgress == 100){
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        };
+        return webChromeClient;
     }
 }
