@@ -109,7 +109,7 @@ public class HomePresenterImpl implements HomePresenter{
 //        mockData();
 
         homeWrapperSubscription = (Subscription)bindFragment(homeView.getFragment(), Observable
-                .zip(redditClient.getListing(filterChoice, params),
+                .zip(redditClient.getListing(filterChoice, params, null),
                         redditClient.getSubreddits(subredditFilterChoice, params), new Func2<RedditListing, RedditListing, HomeViewWrapper>() {
                             @Override
                             public HomeViewWrapper call(RedditListing listing, RedditListing subredditListing) {
@@ -183,7 +183,6 @@ public class HomePresenterImpl implements HomePresenter{
         hideLoadingEvent(REFRESH);
     }
 
-
     /**
      * List populated onCreate(View)
      */
@@ -213,22 +212,16 @@ public class HomePresenterImpl implements HomePresenter{
         return subredditNames;
     }
 
-    private void hideLoadingEvent(int loadingEvent){
-        if(loadingEvent == REFRESH)
-            homeView.hideLoading();
-        else if(loadingEvent == LOAD_MORE)
-            homeView.hideLoadMoreIndicator();
-    }
-
     private Subscription getListingSubscription(@Nullable String subreddit, @Nullable String filter, Map<String,String> params, int loadingEvent){
         Observable<RedditListing> targetObservable = null;
+
         if(subreddit != null){
             if(filter != null)
-                targetObservable = redditClient.getSubredditListing(subreddit,filter, params);
+                targetObservable = redditClient.getSubredditListing(subreddit,filter, params, ((loadingEvent == LOAD_MORE)? items : null));
             else
-                targetObservable = redditClient.getSubredditListing(subreddit, params);
+                targetObservable = redditClient.getSubredditListing(subreddit, params, ((loadingEvent == LOAD_MORE)? items : null) );
         }else{
-                targetObservable = redditClient.getListing(filter, params);
+                targetObservable = redditClient.getListing(filter, params, ((loadingEvent == LOAD_MORE)? items : null));
         }
 
         return buildSubscription(targetObservable, loadingEvent);
@@ -261,6 +254,13 @@ public class HomePresenterImpl implements HomePresenter{
                         loadMoreId = wrapper.getAfter();
                     }
                 });
+    }
+
+    private void hideLoadingEvent(int loadingEvent){
+        if(loadingEvent == REFRESH)
+            homeView.hideLoading();
+        else if(loadingEvent == LOAD_MORE)
+            homeView.hideLoadMoreIndicator();
     }
 
 }

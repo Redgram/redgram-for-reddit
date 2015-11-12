@@ -90,7 +90,7 @@ public class SearchPresenterImpl implements SearchPresenter {
     }
 
     private Subscription getSearchSubscription(String subreddit, Map<String, String> params, int loadingEvent) {
-        return (Subscription)bindFragment(searchView.getFragment(), redditClient.executeSearch(subreddit, params))
+        return (Subscription)bindFragment(searchView.getFragment(), redditClient.executeSearch(subreddit, params, ((loadingEvent == LOAD_MORE)? items : null)))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing>() {

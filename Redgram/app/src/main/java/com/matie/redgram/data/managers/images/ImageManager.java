@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
+import com.facebook.drawee.drawable.ProgressBarDrawable;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -18,52 +19,36 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
  */
 public class ImageManager {
 
-    private Context context;
-    private final GenericDraweeHierarchy genericDraweeHierarchy;
-
-    public ImageManager(Context context) {
-        this.context = context;
-        this.genericDraweeHierarchy = buildGenericDraweeHierarchy();
+    public static Builder newImageBuilder(Context context){
+        return new Builder(context);
     }
 
-    public GenericDraweeHierarchy getGenericDraweeHierarchy() {
-        return genericDraweeHierarchy;
-    }
+    public static class Builder{
 
-    //base builder
-    public PipelineDraweeControllerBuilder getControllerBuilder(SimpleDraweeView view, String imgUrl, @Nullable String thumbUrl){
-        PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder();
+        private PipelineDraweeControllerBuilder controllerBuilder;
+        private GenericDraweeHierarchy genericDraweeHierarchy;
+        private Context context;
 
-        //low res image
-        if(thumbUrl != null){
-            Uri thumbnailUri = Uri.parse(thumbUrl);
-            ImageRequest thumbnail = ImageRequestBuilder.newBuilderWithSource(thumbnailUri)
+        private Builder(Context context) {
+            this.context = context;
+            this.genericDraweeHierarchy = buildGenericDraweesHierarchy(context);
+            this.controllerBuilder = getControllerBuilderInstance();
+        }
+
+        private static GenericDraweeHierarchy buildGenericDraweesHierarchy(Context context) {
+            GenericDraweeHierarchyBuilder builder =
+                    new GenericDraweeHierarchyBuilder(context.getResources());
+            GenericDraweeHierarchy hierarchy = builder
+                    .setFadeDuration(300)
+                    .setActualImageFocusPoint(new PointF(0.5f, 0f))
+                    .setProgressBarImage(new ProgressBarDrawable())
                     .build();
-            builder.setLowResImageRequest(thumbnail);
+            return hierarchy;
         }
 
-        //main image
-        Uri uri = Uri.parse(imgUrl);
-        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
-                .build();
-        builder.setImageRequest(request);
-
-        if(view.hasController()){
-            builder.setOldController(view.getController());
+        private static PipelineDraweeControllerBuilder getControllerBuilderInstance(){
+            return Fresco.newDraweeControllerBuilder();
         }
 
-        return builder;
     }
-
-    private final GenericDraweeHierarchy buildGenericDraweeHierarchy() {
-        GenericDraweeHierarchyBuilder builder =
-                new GenericDraweeHierarchyBuilder(context.getResources());
-        GenericDraweeHierarchy hierarchy = builder
-                .setFadeDuration(300)
-                .setActualImageFocusPoint(new PointF(0.5f, 0f))
-                .build();
-        return hierarchy;
-    }
-
-
 }

@@ -16,6 +16,6 @@ public class ImageModule {
     @ActivityScope
     @Provides
     public ImageManager provideImageManager(App app){
-        return new ImageManager(app.getApplicationContext());
+        return new ImageManager();
     }
 }

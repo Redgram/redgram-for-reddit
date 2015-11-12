@@ -306,5 +306,23 @@ public class PostItem extends RedditObject {
             return false;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        boolean flag = false;
+
+        if(o instanceof PostItem){
+            PostItem item = (PostItem)o;
+            flag = this.id.equalsIgnoreCase(item.getId());
+        }
+
+        return flag;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 17 * hash + (this.id != null ? this.id.hashCode() : 0);
+        return hash;
+    }
 
 }

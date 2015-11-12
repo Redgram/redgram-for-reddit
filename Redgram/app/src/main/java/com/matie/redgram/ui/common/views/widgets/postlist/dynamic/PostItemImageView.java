@@ -96,7 +96,6 @@ public class PostItemImageView extends PostItemSubView{
         imageView.setHierarchy(getDraweeHierarchy(item));
         imageView.setController(getDraweeController(item));
 
-
         if(item.isAdult() && !isNsfwDisabled()){
             imageOverlay.setVisibility(VISIBLE);
         }else{
@@ -132,7 +131,7 @@ public class PostItemImageView extends PostItemSubView{
 
         // TODO: 2015-11-06 load based on user preference
         String itemUrl = item.getUrl();
-        itemUrl = itemUrl.substring(0,itemUrl.lastIndexOf('.')) + "l" + itemUrl.substring(itemUrl.lastIndexOf('.'));
+        itemUrl = itemUrl.substring(0,itemUrl.lastIndexOf('.')) + "m" + itemUrl.substring(itemUrl.lastIndexOf('.'));
 
         Uri uri = Uri.parse(itemUrl);
         imageUri = uri;
@@ -158,7 +157,6 @@ public class PostItemImageView extends PostItemSubView{
             @Override
             public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                 imageLoaded = true;
-//                getMainActivity().getApp().getToastHandler().showBackgroundToast(imageInfo.getQualityInfo()+"", Toast.LENGTH_LONG);
             }
 
         };

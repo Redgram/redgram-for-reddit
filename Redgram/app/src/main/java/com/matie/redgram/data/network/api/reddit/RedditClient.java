@@ -41,25 +41,25 @@ public class RedditClient extends RedditServiceBase {
         this.provider = getRestAdapter().create(RedditProviderBase.class);
     }
 
-    public Observable<RedditListing> getSubredditListing(String query, @Nullable Map<String, String> params) {
+    public Observable<RedditListing> getSubredditListing(String query, @Nullable Map<String, String> params, List<PostItem> postItems) {
 
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> subObservable
                 = provider.getSubreddit(query, params);
 
-        return getDefaultPostListObservable(subObservable);
+        return getDefaultPostListObservable(subObservable, postItems);
 
     }
 
-    public Observable<RedditListing> getSubredditListing(String query, @Nullable String filter, @Nullable Map<String, String> params) {
+    public Observable<RedditListing> getSubredditListing(String query, @Nullable String filter, @Nullable Map<String, String> params, List<PostItem> postItems) {
 
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> subObservable
                 = provider.getSubreddit(query, filter, params);
 
-        return getDefaultPostListObservable(subObservable);
+        return getDefaultPostListObservable(subObservable, postItems);
     }
 
 
-    public Observable<RedditListing> executeSearch(String subreddit, @Nullable Map<String, String> params) {
+    public Observable<RedditListing> executeSearch(String subreddit, @Nullable Map<String, String> params, List<PostItem> postItems) {
 
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> searchObservable = null;
 
@@ -71,17 +71,17 @@ public class RedditClient extends RedditServiceBase {
             searchObservable = provider.executeSearch(params);
         }
 
-        return getDefaultPostListObservable(searchObservable);
+        return getDefaultPostListObservable(searchObservable, postItems);
     }
 
-    public Observable<RedditListing> getListing(String front, @Nullable Map<String, String> params){
+    public Observable<RedditListing> getListing(String front, @Nullable Map<String, String> params, List<PostItem> postItems){
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> listingObservable = provider.getListing(front, params);
-        return getDefaultPostListObservable(listingObservable);
+        return getDefaultPostListObservable(listingObservable, postItems);
     }
 
-    private Observable<RedditListing> getDefaultPostListObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> listingObservable) {
+    private Observable<RedditListing> getDefaultPostListObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> listingObservable, List<PostItem> postItems) {
 
-        Observable<List<PostItem>> itemsObservable = getItemsObservable(listingObservable);
+        Observable<List<PostItem>> itemsObservable = getItemsObservable(listingObservable, postItems);
         Observable<Map<String,String>> fieldsObservable = getFieldsObservable(listingObservable);
 
         return Observable.zip(itemsObservable, fieldsObservable, new Func2<List<PostItem>, Map<String, String>, RedditListing>() {
@@ -97,16 +97,14 @@ public class RedditClient extends RedditServiceBase {
         });
     }
 
-    private Observable<List<PostItem>> getItemsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> observable){
+    private Observable<List<PostItem>> getItemsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> observable, @Nullable List<PostItem> postItems){
 
         return observable.flatMap(response -> Observable.from(response.getData().getChildren()))
                 .cast(RedditLink.class)
                 .map(link -> mapLinkToPostItem(link))
+                .filter(item -> (postItems != null ? filterExistingItems(postItems, item) : true))
                 .concatMap(postItem -> {
 
-//                    //todo: request API
-//                    Observable<PostItem> imgurObservable = Observable.just(postItem)
-//                            .filter(item -> item.getType() == PostItem.Type.IMGUR);
                     //todo: convert to MP4 and set new link
                     Observable<PostItem> mp4Observable = Observable.just(postItem)
                             .filter(item -> item.getType() == PostItem.Type.GIF
@@ -128,11 +126,30 @@ public class RedditClient extends RedditServiceBase {
                             .filter(item -> item.getType() == PostItem.Type.DEFAULT
                                     || item.getType() == PostItem.Type.IMGUR);
 
-                    //removed imgurObservable
                     return Observable.merge(imageObservable, mp4Observable, galleryObservable,
                             selfObservable, defaultObservable);
                 })
                 .toList();
+    }
+
+    /**
+     * This function replaces the old item in the list with the new one only if both items have the
+     * same id. If replaced, filter out the emitted item. If not, return true to include it.
+     *
+     * Note: equals method of PostItem is overriden to only return true if ID are the same.
+     * @param postItems
+     * @param item
+     * @return true if the list does not contain the emitted item
+     */
+    private Boolean filterExistingItems(List<PostItem> postItems, PostItem item) {
+        //if the postItems are passed, this means we are loading more objects
+        if(postItems.contains(item)){
+            int i = postItems.indexOf(item);
+            postItems.remove(i);
+            postItems.add(i, item);
+            return false;
+        }
+        return true;
     }
 
     public Observable<RedditListing> getSubreddits(String filter, @Nullable Map<String, String> params){
@@ -158,12 +175,6 @@ public class RedditClient extends RedditServiceBase {
                 return postItemWrapper;
             }
         });
-    }
-
-    private SubredditItem mapToSubredditItem(RedditSubreddit item) {
-        SubredditItem subredditItem = new SubredditItem();
-        subredditItem.setName(item.getDisplayName());
-        return subredditItem;
     }
 
     /**
@@ -212,6 +223,12 @@ public class RedditClient extends RedditServiceBase {
         item.setType(item.identifyType());
 
         return item;
+    }
+
+    private SubredditItem mapToSubredditItem(RedditSubreddit item) {
+        SubredditItem subredditItem = new SubredditItem();
+        subredditItem.setName(item.getDisplayName());
+        return subredditItem;
     }
 
 
