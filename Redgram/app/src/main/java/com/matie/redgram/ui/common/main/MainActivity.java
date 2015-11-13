@@ -15,12 +15,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
-import android.widget.Toast;
 
-import com.davemorrissey.labs.subscaleview.ImageSource;
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.images.ImageManager;
+import com.matie.redgram.data.managers.media.images.ImageManager;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
@@ -35,8 +32,6 @@ import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
 import com.matie.redgram.ui.search.SearchFragment;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 

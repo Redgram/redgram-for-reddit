@@ -1,11 +1,9 @@
 package com.matie.redgram.ui.common.main;
 
-import com.matie.redgram.data.managers.images.ImageManager;
-import com.matie.redgram.data.managers.images.ImageModule;
+import com.matie.redgram.data.managers.media.images.ImageManager;
+import com.matie.redgram.data.managers.media.images.ImageModule;
 import com.matie.redgram.ui.ActivityScope;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.base.BaseActivityComponent;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 
 import dagger.Component;

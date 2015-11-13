@@ -1,9 +1,8 @@
-package com.matie.redgram.data.managers.images;
+package com.matie.redgram.data.managers.media.images;
 
+import com.matie.redgram.data.managers.media.images.ImageManager;
 import com.matie.redgram.ui.ActivityScope;
 import com.matie.redgram.ui.App;
-
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
