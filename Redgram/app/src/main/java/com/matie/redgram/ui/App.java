@@ -6,7 +6,7 @@ import android.content.res.Resources;
 
 import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
-import com.matie.redgram.data.network.connection.ConnectionStatus;
+import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.ui.common.utils.ToastHandler;
 
 import javax.inject.Inject;
@@ -22,7 +22,7 @@ public class App extends Application {
     ToastHandler toastHandler;
 
     @Inject
-    ConnectionStatus connectionStatus;
+    ConnectionManager connectionManager;
     String connectionMsg;
 
     @Inject
@@ -38,8 +38,6 @@ public class App extends Application {
         super.onCreate();
         mResources = getResources();
         setupGraph();
-
-        connectionStatus.showConnectionStatus(true);
     }
 
     private void setupGraph() {
@@ -61,8 +59,8 @@ public class App extends Application {
         return (App) context.getApplicationContext();
     }
 
-    public ConnectionStatus getConnectionStatus() {
-        return connectionStatus;
+    public ConnectionManager getConnectionManager() {
+        return connectionManager;
     }
 
     public PreferenceManager getPreferenceManager() {

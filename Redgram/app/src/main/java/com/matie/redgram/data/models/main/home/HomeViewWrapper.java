@@ -11,6 +11,7 @@ import com.matie.redgram.data.models.main.reddit.RedditListing;
 public class HomeViewWrapper {
     private RedditListing redditListing;
     private RedditListing subreddits;
+    private Boolean isSubredditsCached;
 
     public RedditListing getRedditListing() {
         return redditListing;
@@ -26,5 +27,12 @@ public class HomeViewWrapper {
 
     public void setSubreddits(RedditListing subreddits) {
         this.subreddits = subreddits;
+    }
+
+    public Boolean getIsSubredditsCached() {
+        return isSubredditsCached;
+    }
+    public void setIsSubredditsCached(Boolean isSubredditsCached) {
+        this.isSubredditsCached = isSubredditsCached;
     }
 }

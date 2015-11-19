@@ -6,9 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.utils.DialogUtil;
-
-import javax.inject.Inject;
 
 /**
  * Created by matie on 09/06/15.
@@ -36,7 +33,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onResume();
 
         //onResume of any activity, show connection status
-        ((App)getApplication()).getConnectionStatus().showConnectionStatus(true);
+        ((App)getApplication()).getConnectionManager().showConnectionStatus(true);
     }
     protected abstract void setupComponent(AppComponent appComponent);
 

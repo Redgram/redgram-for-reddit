@@ -1,7 +1,9 @@
 package com.matie.redgram.data.network.api.reddit;
 
+import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
+import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.models.api.reddit.RedditSubreddit;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.api.reddit.RedditLink;
@@ -31,7 +33,6 @@ public class RedditClient extends RedditServiceBase {
 
     private final RedditProviderBase provider;
     private final App app;
-
 
     @Inject
     public RedditClient(App app) {
@@ -153,6 +154,7 @@ public class RedditClient extends RedditServiceBase {
     }
 
     public Observable<RedditListing> getSubreddits(String filter, @Nullable Map<String, String> params){
+
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> subredditsListingObservable
                 = provider.getSubredditsListing(filter, params);
 

@@ -1,21 +1,14 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.main.MainActivity;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 
 /**
  * Created by matie on 19/05/15.
@@ -44,11 +37,11 @@ public abstract class PostItemSubView extends RelativeLayout {
     public abstract void handleNsfwUpdate(boolean disabled);
 
     public boolean isNsfwDisabled(){
-        return postPreferences.getBoolean(PreferenceManager.NSFW_KEY, false);
+        return postPreferences.getBoolean(PreferenceManager.POSTS_NSFW_KEY, false);
     }
 
     public void disableNsfw(){
-        postPreferences.edit().putBoolean(PreferenceManager.NSFW_KEY, true).commit();
+        postPreferences.edit().putBoolean(PreferenceManager.POSTS_NSFW_KEY, true).commit();
         handleNsfwUpdate(true);
         // TODO: 09/10/15 notify data set changed
     }

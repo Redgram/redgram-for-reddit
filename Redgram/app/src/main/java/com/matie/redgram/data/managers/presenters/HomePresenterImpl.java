@@ -1,8 +1,11 @@
 package com.matie.redgram.data.managers.presenters;
 
+import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
+import com.google.gson.Gson;
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.models.main.home.HomeViewWrapper;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
@@ -24,6 +27,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func2;
+import rx.functions.Func3;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -38,6 +42,7 @@ public class HomePresenterImpl implements HomePresenter{
     final private HomeView homeView;
     final private PostRecyclerView homeRecyclerView;
     final private RedditClient redditClient;
+    final private PreferenceManager preferenceManager;
 
     private CompositeSubscription subscriptions;
     
@@ -60,6 +65,7 @@ public class HomePresenterImpl implements HomePresenter{
         this.homeView = homeView;
         this.homeRecyclerView = homeView.getRecyclerView();
         this.redditClient = app.getRedditClient();
+        this.preferenceManager = app.getPreferenceManager();
         this.items = new ArrayList<PostItem>();
         this.subredditItems = new ArrayList<SubredditItem>();
         this.loadMoreId = "";
@@ -106,19 +112,31 @@ public class HomePresenterImpl implements HomePresenter{
         String filterChoice = homeView.getContext().getResources().getString(R.string.default_home_filter).toLowerCase();
         String subredditFilterChoice = homeView.getContext().getResources().getString(R.string.default_subreddit_filter).toLowerCase();
 
-//        mockData();
+        //check if subreddits are cached
+        SharedPreferences sharedPreferences = preferenceManager
+                        .getSharedPreferences(PreferenceManager.SUBREDDIT_PREF);
+        Observable<RedditListing> redditListingObservable = null;
+        boolean isSubredditsCached = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null) != null;
+        if(isSubredditsCached){
+            String storedListingObject = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null);
+            RedditListing storedListing = new Gson().fromJson(storedListingObject, RedditListing.class);
+            redditListingObservable = Observable.just(storedListing);
+        }else{
+            redditListingObservable = redditClient.getSubreddits(subredditFilterChoice, params);
+        }
 
         homeWrapperSubscription = (Subscription)bindFragment(homeView.getFragment(), Observable
                 .zip(redditClient.getListing(filterChoice, params, null),
-                        redditClient.getSubreddits(subredditFilterChoice, params), new Func2<RedditListing, RedditListing, HomeViewWrapper>() {
+                        redditListingObservable, Observable.just(isSubredditsCached), new Func3<RedditListing, RedditListing, Boolean, HomeViewWrapper>() {
                             @Override
-                            public HomeViewWrapper call(RedditListing listing, RedditListing subredditListing) {
+                            public HomeViewWrapper call(RedditListing listing, RedditListing subredditListing, Boolean inStore) {
                                 HomeViewWrapper homeViewWrapper = new HomeViewWrapper();
                                 homeViewWrapper.setRedditListing(listing);
                                 homeViewWrapper.setSubreddits(subredditListing);
+                                homeViewWrapper.setIsSubredditsCached(inStore);
                                 return homeViewWrapper;
                             }
-                }))
+                        }))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<HomeViewWrapper>() {
@@ -148,7 +166,13 @@ public class HomePresenterImpl implements HomePresenter{
                         RedditListing subredditListing = homeViewWrapper.getSubreddits();
                         List<SubredditItem> subItems = (List<SubredditItem>) (List<?>) subredditListing.getItems();
                         subredditItems.addAll(subItems);
-                        //replace items in recycler view // TODO: 2015-10-27
+                        //add to preferences
+                        if(!homeViewWrapper.getIsSubredditsCached()){
+                            String gson = new Gson().toJson(subredditListing);
+                            preferenceManager.getSharedPreferences(PreferenceManager.SUBREDDIT_PREF)
+                                    .edit().putString(PreferenceManager.SUBREDDIT_LIST, gson)
+                                    .commit();
+                        }
                     }
                 });
     }

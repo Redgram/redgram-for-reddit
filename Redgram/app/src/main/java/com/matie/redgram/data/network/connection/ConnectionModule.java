@@ -15,7 +15,7 @@ import dagger.Provides;
 public class ConnectionModule {
     @Singleton
     @Provides
-    public ConnectionStatus provideConnectionStatus(App app, ToastHandler handler){
-        return new ConnectionStatus(app.getApplicationContext(), handler);
+    public ConnectionManager provideConnectionStatus(App app, ToastHandler handler){
+        return new ConnectionManager(app.getApplicationContext(), handler);
     }
 }

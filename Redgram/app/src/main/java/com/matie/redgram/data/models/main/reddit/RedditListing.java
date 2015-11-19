@@ -6,19 +6,21 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * This is class is used for final representation of a listing, and not for API return values.
+ *
  * Created by matie on 13/09/15.
  */
-public class RedditListing {
-    private List<? extends RedditObject> items;
+public class RedditListing<T> {
+    private List<T> items;
     private String modHash;
     private String after;
     private String before;
 
-    public List<? extends RedditObject> getItems() {
+    public List<T> getItems() {
         return items;
     }
 
-    public void setItems(List<? extends RedditObject> items) {
+    public void setItems(List<T> items) {
         this.items = items;
     }
 

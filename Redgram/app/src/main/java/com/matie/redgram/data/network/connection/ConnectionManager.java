@@ -16,7 +16,7 @@ import javax.inject.Inject;
 /**
  * Created by matie on 22/05/15.
  */
-public class ConnectionStatus {
+public class ConnectionManager {
 
     private Context mContext;
     private Resources res;
@@ -25,7 +25,7 @@ public class ConnectionStatus {
     private ToastHandler toastHandler;
 
     @Inject
-    public ConnectionStatus(Context context, ToastHandler handler){
+    public ConnectionManager(Context context, ToastHandler handler){
         mContext = context;
         res = mContext.getResources();
         toastHandler = handler;
@@ -47,10 +47,17 @@ public class ConnectionStatus {
         }
     }
 
+    public boolean isWifi(){
+        return netInfo.getType() == ConnectivityManager.TYPE_WIFI;
+    }
+    public boolean isMobile(){
+        return netInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+    }
+
     private boolean isNetworkActive() {
         cm = (ConnectivityManager)mContext.getSystemService(mContext.CONNECTIVITY_SERVICE);
         netInfo = cm.getActiveNetworkInfo();
-        return (netInfo != null && netInfo.isConnected());
+        return (netInfo != null && netInfo.isConnectedOrConnecting());
     }
 
     private boolean isPingable() {

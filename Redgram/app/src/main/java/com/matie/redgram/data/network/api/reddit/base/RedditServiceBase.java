@@ -6,7 +6,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.data.network.connection.ConnectionStatus;
+import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.utils.reddit.DateTimeDeserializer;
 import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
@@ -38,14 +38,14 @@ public class RedditServiceBase extends RedditBase {
 
     private final App app;
     private final Context mContext;
-    private final ConnectionStatus connectionStatus;
+    private final ConnectionManager connectionManager;
     private final RestAdapter.Builder adapterBuilder;
 
     @Inject
     public RedditServiceBase(App application) {
         app = application;
         mContext = app.getApplicationContext();
-        connectionStatus = app.getConnectionStatus();
+        connectionManager = app.getConnectionManager();
 
         //create a builder once that has all the common build components
         adapterBuilder = getAdapterBuilder();
@@ -72,9 +72,9 @@ public class RedditServiceBase extends RedditBase {
 
                 request.addHeader("Accept", "application/json");
 
-                if(!connectionStatus.isOnline()){
+                if(!connectionManager.isOnline()){
 
-                    connectionStatus.showConnectionStatus(false);
+                    connectionManager.showConnectionStatus(false);
 
                     request.addHeader("Cache-Control",
                             "public, only-if-cached, max-stale=" + MAX_STALE);
@@ -106,7 +106,7 @@ public class RedditServiceBase extends RedditBase {
             @Override
             public Response intercept(Chain chain) throws IOException {
 
-                boolean isOnline = connectionStatus.isOnline();
+                boolean isOnline = connectionManager.isOnline();
 
                 Response.Builder responseBuilder = chain.proceed(chain.request()).newBuilder();
                 if (isOnline) {
