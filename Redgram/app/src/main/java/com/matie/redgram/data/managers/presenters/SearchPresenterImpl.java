@@ -108,8 +108,7 @@ public class SearchPresenterImpl implements SearchPresenter {
 
                     @Override
                     public void onNext(RedditListing wrapper) {
-                        List<PostItem> postItems = (List<PostItem>) (List<?>) wrapper.getItems();
-                        items.addAll(postItems);
+                        items.addAll(wrapper.getItems());
                         searchRecyclerView.replaceWith(items);
                         loadMoreId = wrapper.getAfter();
                     }

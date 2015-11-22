@@ -1,5 +1,7 @@
 package com.matie.redgram.data.models.main.home;
 
+import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 
 /**
@@ -9,23 +11,23 @@ import com.matie.redgram.data.models.main.reddit.RedditListing;
  * Created by matie on 2015-10-27.
  */
 public class HomeViewWrapper {
-    private RedditListing redditListing;
-    private RedditListing subreddits;
+    private RedditListing<PostItem> redditListing;
+    private RedditListing<SubredditItem> subreddits;
     private Boolean isSubredditsCached;
 
-    public RedditListing getRedditListing() {
+    public RedditListing<PostItem> getRedditListing() {
         return redditListing;
     }
 
-    public void setRedditListing(RedditListing redditListing) {
+    public void setRedditListing(RedditListing<PostItem> redditListing) {
         this.redditListing = redditListing;
     }
 
-    public RedditListing getSubreddits() {
+    public RedditListing<SubredditItem> getSubreddits() {
         return subreddits;
     }
 
-    public void setSubreddits(RedditListing subreddits) {
+    public void setSubreddits(RedditListing<SubredditItem> subreddits) {
         this.subreddits = subreddits;
     }
 
