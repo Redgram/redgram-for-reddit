@@ -26,6 +26,7 @@ import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout;
 import com.matie.redgram.ui.common.utils.SlidingPanelControllerInterface;
+import com.matie.redgram.ui.common.utils.StringUtils;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.data.models.main.items.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
@@ -80,7 +81,6 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     @Inject
     ImageManager imageManager;
 
-
     private ActionBarDrawerToggle mDrawerToggle;
 
     private CharSequence mTitle;
@@ -96,7 +96,6 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
-
 
         mTitle = mDrawerTitle = getTitle();
 

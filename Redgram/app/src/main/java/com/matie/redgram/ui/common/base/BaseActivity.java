@@ -12,20 +12,11 @@ import com.matie.redgram.ui.AppComponent;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    BaseActivityComponent component;
-
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fresco.initialize(this);
 
         AppComponent appComponent = (AppComponent) App.get(this).component();
-//        component = DaggerBaseActivityComponent.builder()
-//                .appComponent(appComponent)
-//                .baseActivityModule(new BaseActivityModule(this))
-//                .build();
-//
-//        component.inject(this);
-
         setupComponent(appComponent);
     }
 

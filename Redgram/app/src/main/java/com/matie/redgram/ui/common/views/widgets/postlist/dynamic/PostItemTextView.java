@@ -27,7 +27,6 @@ public class PostItemTextView extends PostItemSubView {
     @InjectView(R.id.text_tag_view)
     PostItemTagView textTagView;
 
-
     final Resources res;
     MainActivity mainActivity;
     SharedPreferences sharedPreferences;

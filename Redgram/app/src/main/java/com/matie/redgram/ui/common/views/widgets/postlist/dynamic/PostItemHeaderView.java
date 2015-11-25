@@ -1,15 +1,21 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.text.Spannable;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.utils.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -44,21 +50,30 @@ public class PostItemHeaderView extends PostItemSubView {
 
         String score = item.getScore()+"";
 
-        String author="";
+        String author= item.getAuthor();
         if(item.distinguished() != null){
             if(item.distinguished().equals("moderator")){
-                author = item.getAuthor() + " [M]";
+                author = author + " [M]";
             }else if(item.distinguished().equals("admin")){
-                author = item.getAuthor() + " [A]";
+                author = author + " [A]";
             }
             //todo: special tag
-        }else{
-            author = item.getAuthor();
         }
+
+        final ForegroundColorSpan fcs = new ForegroundColorSpan(Color.BLUE);
+        final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
+
+        List<StringUtils.SpanContainer> containers = new ArrayList<StringUtils.SpanContainer>();
+        containers.add(StringUtils.newSpanContainer(fcs, Spannable.SPAN_INCLUSIVE_INCLUSIVE));
+
+        StringUtils.newSpannableBuilder(getContext())
+                .setTextView(headerUsernameView)
+                .appendList(author, containers)
+                .build();
 
         String subreddit = "/r/"+item.getSubreddit();
 
-        headerUsernameView.setText(author);
+//        headerUsernameView.setText(author);
         headerTimeSubredditView.setText("submitted " + item.getTime() + " hrs ago to " + subreddit);
     }
 
