@@ -32,7 +32,9 @@ public class ConnectionManager {
     }
 
     public boolean isOnline(){
-        return isNetworkActive() && isPingable();
+        return isNetworkActive();
+//                &&
+//                isPingable();
     }
 
     public void showConnectionStatus(boolean isMain){

@@ -3,13 +3,20 @@ package com.matie.redgram.ui.common.views.widgets.subreddit;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.SubredditItem;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 /**
  * Created by matie on 2015-10-25.
  */
 public class SubredditItemView extends RelativeLayout {
+    @InjectView(R.id.subreddit_text)
+    TextView subredditText;
 
     public SubredditItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -20,6 +27,11 @@ public class SubredditItemView extends RelativeLayout {
     }
 
     public void bindTo(SubredditItem subredditItem, int position) {
-
+        subredditText.setText(subredditItem.getName());
+    }
+    @Override
+    public void onFinishInflate(){
+        super.onFinishInflate();
+        ButterKnife.inject(this);
     }
 }

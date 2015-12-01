@@ -36,7 +36,7 @@ public class SubredditAdapter extends RecyclerView.Adapter<SubredditViewHolder> 
 
     @Override
     public SubredditViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        SubredditItemView itemView = (SubredditItemView)inflater.inflate(R.layout.post_item_view, parent, false);
+        SubredditItemView itemView = (SubredditItemView)inflater.inflate(R.layout.subreddit_item_view, parent, false);
         return new SubredditViewHolder(itemView);
     }
 

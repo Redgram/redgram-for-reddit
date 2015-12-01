@@ -36,6 +36,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
 import com.matie.redgram.ui.AppComponent;
+import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
@@ -141,7 +142,8 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     }
 
     @Override
-    protected void setupComponent(AppComponent appComponent) {
+    protected void setupComponent() {
+        AppComponent appComponent = ((BaseActivity)getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
         component = DaggerSearchComponent.builder()
                 .mainComponent(mainComponent)
@@ -149,7 +151,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                 .build();
 
         component.inject(this);
-
     }
 
     @Override

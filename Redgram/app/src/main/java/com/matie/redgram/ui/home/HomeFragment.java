@@ -28,6 +28,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
 import com.matie.redgram.ui.AppComponent;
+import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
@@ -115,7 +116,8 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
     }
 
     @Override
-    protected void setupComponent(AppComponent appComponent) {
+    protected void setupComponent() {
+        AppComponent appComponent = ((BaseActivity)getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
         component = DaggerHomeComponent.builder()
                 .mainComponent(mainComponent)
@@ -123,7 +125,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
                 .build();
 
         component.inject(this);
-
     }
     @Override
     protected void setupToolbar() {

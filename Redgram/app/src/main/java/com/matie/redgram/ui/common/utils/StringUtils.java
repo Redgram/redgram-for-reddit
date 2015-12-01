@@ -81,8 +81,9 @@ public class StringUtils {
             return sb;
         }
 
-        public void setBuilder(SpannableStringBuilder sb) {
+        public SpannableBuilder setBuilder(SpannableStringBuilder sb) {
             this.sb = sb;
+            return this;
         }
 
         //has to be set before calling build
@@ -144,7 +145,11 @@ public class StringUtils {
          * @return
          */
         public SpannableBuilder span(Object resource, int start, int end, int flag){
-            sb.setSpan(resource, start, end, flag);
+            if(start >= 0 && end <= sb.length() && start <= end){
+                sb.setSpan(resource, start, end, flag);
+            }else{
+                Log.d("StringUtil", "Check indexes passed to span");
+            }
             return this;
         }
 
@@ -159,10 +164,13 @@ public class StringUtils {
             return this;
         }
 
-        // TODO: 2015-11-25 let SpanContainer add start and end with the right error handling
         public SpannableBuilder spanRangeList(List<SpanContainer> spanContainers, int start, int end){
-            for(SpanContainer spanContainer : spanContainers){
-                span(spanContainer.getSpan(), start, end, spanContainer.getFlag());
+            if(start >= 0 && end <= sb.length() && start <= end){
+                for(SpanContainer spanContainer : spanContainers){
+                    span(spanContainer.getSpan(), start, end, spanContainer.getFlag());
+                }
+            }else{
+                Log.d("StringUtil", "Check indexes passed to spanRangeList");
             }
             return this;
         }
@@ -174,7 +182,6 @@ public class StringUtils {
                 Log.d("NullPointer", SpannableBuilder.class.getName() + "#build - text view is not set");
             }
         }
-
 
     }
 }

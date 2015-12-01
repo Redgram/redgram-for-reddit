@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.common.main;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
@@ -31,6 +32,7 @@ import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.data.models.main.items.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
 import com.matie.redgram.ui.search.SearchFragment;
+import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ import butterknife.OnItemClick;
 public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout.OnInsetsCallback,
         SlidingPanelControllerInterface, SlidingUpPanelLayout.PanelSlideListener {
 
+    private static final int SUBSCRIPTION_RESULT_CODE = 69;
     private int currentSelectedPosition = 0;
 
     static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
@@ -100,7 +103,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         mTitle = mDrawerTitle = getTitle();
 
         mDrawerLayout.setStatusBarBackgroundColor(
-                getResources().getColor(R.color.material_red900));
+                getResources().getColor(R.color.material_red600));
 
         if (savedInstanceState == null) {
           getSupportFragmentManager().beginTransaction().add(R.id.container,
@@ -145,9 +148,12 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         //menu items
         navigationItems.add(new DrawerItem(getString(R.string.fragment_home), R.drawable.ic_action_public, true));
         navigationItems.add(new DrawerItem(getString(R.string.fragment_search), R.drawable.ic_action_search, true));
-
+        navigationItems.add(new DrawerItem(getString(R.string.fragment_subreddits), R.drawable.ic_list ,true));
         //sub-menu items
-        navigationItems.add(new DrawerItem(getString(R.string.fragment_about), 0, false));
+
+        navigationItems.add(new DrawerItem(getString(R.string.fragment_settings), 0 ,false));
+        navigationItems.add(new DrawerItem(getString(R.string.fragment_about), 0 ,false));
+
 
         mNavigationDrawerListViewWrapper.replaceWith(navigationItems);
 
@@ -159,9 +165,6 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                 supportInvalidateOptionsMenu();
 
                 // TODO: 2015-11-06 get dimension height from resources
-//                float pixels = TypedValue.applyDimension(
-//                        TypedValue.COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
-//
                 setPanelHeight(48);
             }
 
@@ -234,6 +237,12 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         return super.onOptionsItemSelected(item);
     }
 
+    //// TODO: 2015-11-30 subreddits activity result - open home fragment with the returned result
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     public int getCurrentSelectedPosition() {
         return currentSelectedPosition;
     }
@@ -255,12 +264,17 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     private void selectItem(int position) {
 
         if (leftDrawerListView != null) {
-            leftDrawerListView.setItemChecked(position, true);
 
-            navigationItems.get(currentSelectedPosition).setSelected(false);
-            navigationItems.get(position).setSelected(true);
+            //none-activity views only
+            if(position != 2){
+                leftDrawerListView.setItemChecked(position, true);
 
-            currentSelectedPosition = position;
+                navigationItems.get(currentSelectedPosition).setSelected(false);
+                navigationItems.get(position).setSelected(true);
+
+                currentSelectedPosition = position;
+            }
+
         }
 
         if (scrimInsetsFrameLayout != null) {
@@ -289,6 +303,11 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                                     .instantiate(MainActivity.this, Fragments.SEARCH.getFragment()))
                             .commit();
                 }
+                break;
+            case 2:
+                Intent intent = new Intent(this, SubscriptionActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivityForResult(intent, SUBSCRIPTION_RESULT_CODE);
                 break;
         }
 

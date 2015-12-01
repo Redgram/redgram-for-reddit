@@ -16,11 +16,11 @@ public abstract class BaseFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         //all common tasks
-        setupComponent(((MainActivity) getActivity()).component());
+        setupComponent();
         setupToolbar();
     }
 
-    protected abstract void setupComponent(AppComponent component);
+    protected abstract void setupComponent();
 
     protected abstract void setupToolbar();
 

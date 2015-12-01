@@ -25,5 +25,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.subcription.SubscriptionActivity"
+            android:label="@string/fragment_subreddits" >
+         </activity>
     </application>
 </manifest>

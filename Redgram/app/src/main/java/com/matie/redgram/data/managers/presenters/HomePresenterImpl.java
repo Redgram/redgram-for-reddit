@@ -40,7 +40,6 @@ import static rx.android.app.AppObservable.bindFragment;
  */
 
 public class HomePresenterImpl implements HomePresenter{
-    final private App app;
     final private HomeView homeView;
     final private PostRecyclerView homeRecyclerView;
     final private RedditClient redditClient;
@@ -63,7 +62,6 @@ public class HomePresenterImpl implements HomePresenter{
      */
     @Inject
     public HomePresenterImpl(HomeView homeView, App app) {
-        this.app = app;
         this.homeView = homeView;
         this.homeRecyclerView = homeView.getRecyclerView();
         this.redditClient = app.getRedditClient();
@@ -111,6 +109,10 @@ public class HomePresenterImpl implements HomePresenter{
         homeView.showLoading();
 
         Map<String,String> params = new HashMap<String, String>();
+
+        Map<String,String> subparams = new HashMap<String, String>();
+        subparams.put("limit", "100");
+
         String filterChoice = homeView.getContext().getResources().getString(R.string.default_home_filter).toLowerCase();
         String subredditFilterChoice = homeView.getContext().getResources().getString(R.string.default_subreddit_filter).toLowerCase();
 
@@ -128,7 +130,7 @@ public class HomePresenterImpl implements HomePresenter{
             subredditsObservable = Observable.just(storedListing);
 
         }else{
-            subredditsObservable = redditClient.getSubreddits(subredditFilterChoice, params);
+            subredditsObservable = redditClient.getSubreddits(subredditFilterChoice, subparams);
         }
 
         homeWrapperSubscription = (Subscription)bindFragment(homeView.getFragment(), Observable

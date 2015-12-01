@@ -14,6 +14,7 @@ public class SubredditViewHolder extends RecyclerView.ViewHolder{
 
     public SubredditViewHolder(SubredditItemView subredditItemView) {
         super(subredditItemView);
+        this.subredditItemView = subredditItemView;
     }
 
     public SubredditItemView getSubredditItemView() {

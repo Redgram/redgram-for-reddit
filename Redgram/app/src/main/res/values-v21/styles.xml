@@ -2,7 +2,7 @@
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/material_red400</item>
-        <item name="colorPrimaryDark">@color/material_red900</item>
+        <item name="colorPrimaryDark">@color/material_red600</item>
         <item name="colorAccent">@color/material_red400</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
@@ -19,4 +19,5 @@
         <item name="android:contentInsetStart">@dimen/content_inset</item>
         <item name="android:elevation">4dp</item>
     </style>
+
 </resources>
