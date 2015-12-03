@@ -36,6 +36,7 @@ import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.nineoldandroids.view.ViewHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -113,6 +114,18 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
         setupRecyclerView();
 
         return view;
+    }
+
+    private void checkArgumentsAndUpdate() {
+        if(getArguments() != null && getArguments().containsKey(SubscriptionActivity.RESULT_SUBREDDIT_NAME)){
+            subredditChoice = getArguments().getString(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
+            homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
+            toolbarTitle.setText(subredditChoice);
+        } else{
+            homePresenter.getHomeViewWrapper();
+        }
+        // TODO: 2015-10-27 set the title after the data is retrieved
+        toolbarSubtitle.setText(filterChoice);
     }
 
     @Override
@@ -315,10 +328,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
 
-        homePresenter.getHomeViewWrapper();
-
-        // TODO: 2015-10-27 set the title after the data is retrieved
-        toolbarSubtitle.setText(filterChoice);
+        checkArgumentsAndUpdate();
     }
 
     @Override

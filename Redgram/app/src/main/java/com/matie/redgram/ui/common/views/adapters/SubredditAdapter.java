@@ -23,6 +23,7 @@ public class SubredditAdapter extends RecyclerView.Adapter<SubredditViewHolder> 
     private final LayoutInflater inflater;
 
     private List<SubredditItem> items = Collections.emptyList();
+    private SubredditViewHolder.SubredditViewHolderListener viewHolderListener;
 
     public SubredditAdapter(Context context) {
         this.context = context;
@@ -37,7 +38,15 @@ public class SubredditAdapter extends RecyclerView.Adapter<SubredditViewHolder> 
     @Override
     public SubredditViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         SubredditItemView itemView = (SubredditItemView)inflater.inflate(R.layout.subreddit_item_view, parent, false);
-        return new SubredditViewHolder(itemView);
+
+        SubredditViewHolder viewHolder;
+        if(viewHolderListener != null){
+            viewHolder = new SubredditViewHolder(itemView, viewHolderListener);
+        }else {
+            viewHolder = new SubredditViewHolder(itemView);
+        }
+
+        return viewHolder;
     }
 
     @Override
@@ -48,5 +57,9 @@ public class SubredditAdapter extends RecyclerView.Adapter<SubredditViewHolder> 
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void setViewHolderListener(SubredditViewHolder.SubredditViewHolderListener viewHolderListener) {
+        this.viewHolderListener = viewHolderListener;
     }
 }

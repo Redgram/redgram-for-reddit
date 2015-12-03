@@ -3,28 +3,35 @@ package com.matie.redgram.ui.subcription;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.SubscriptionPresenterImpl;
+import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.common.utils.ToastHandler;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView;
+import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditViewHolder;
 import com.matie.redgram.ui.subcription.views.SubscriptionView;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnItemClick;
 
 /**
  * Created by matie on 2015-11-26.
  */
-public class SubscriptionFragment extends BaseFragment implements SubscriptionView{
+public class SubscriptionFragment extends BaseFragment implements SubscriptionView, SubredditViewHolder.SubredditViewHolderListener{
 
     @InjectView(R.id.subreddit_recycler_view)
     SubredditRecyclerView subredditRecyclerView;
@@ -33,6 +40,10 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     SubscriptionPresenterImpl subscriptionPresenter;
 
     SubscriptionComponent component;
+
+    SubscriptionActivity activity;
+    ToastHandler toastHandler;
+
     Toolbar mToolbar;
     LayoutInflater mInflater;
 
@@ -42,8 +53,13 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
         View view = inflater.inflate(R.layout.fragment_sub, container, false);
         ButterKnife.inject(this, view);
 
+        activity = (SubscriptionActivity) getActivity();
+        toastHandler = activity.getApp().getToastHandler();
+
         mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
         mInflater = inflater;
+
+        subredditRecyclerView.setAdapterListener(this);
 
         return view;
     }
@@ -64,6 +80,7 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     protected void setupToolbar() {
 
     }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -117,5 +134,11 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     @Override
     public SubredditRecyclerView getRecyclerView() {
         return subredditRecyclerView;
+    }
+
+    @Override
+    public void onClick(String subredditName) {
+        toastHandler.showToast(subredditName, Toast.LENGTH_SHORT);
+        activity.closeActivityWithResult(subredditName);
     }
 }

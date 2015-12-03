@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.subcription;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,11 +14,14 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.matie.redgram.R;
+import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -27,12 +31,16 @@ import butterknife.InjectView;
  */
 public class SubscriptionActivity extends BaseActivity{
 
+    public static final String RESULT_SUBREDDIT_NAME = "result_subreddit_name";
     SubscriptionActivityComponent subscriptionActivityComponent;
 
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
     @InjectView(R.id.sub_linear_layout)
     LinearLayout linearLayout;
+
+    @Inject
+    App app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,5 +111,16 @@ public class SubscriptionActivity extends BaseActivity{
     @Override
     public AppComponent component() {
         return subscriptionActivityComponent;
+    }
+
+    public App getApp() {
+        return app;
+    }
+
+    public void closeActivityWithResult(String subredditName) {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra(RESULT_SUBREDDIT_NAME, subredditName);
+        setResult(RESULT_OK, resultIntent);
+        finish();
     }
 }

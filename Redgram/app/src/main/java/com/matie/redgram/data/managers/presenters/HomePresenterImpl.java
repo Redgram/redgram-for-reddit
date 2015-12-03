@@ -18,6 +18,8 @@ import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,7 +165,6 @@ public class HomePresenterImpl implements HomePresenter{
                     public void onNext(HomeViewWrapper homeViewWrapper) {
                         //dealing with the posts
                         RedditListing<PostItem> redditListing = homeViewWrapper.getRedditListing();
-//                        List<PostItem> postItems = (List<PostItem>) (List<?>) redditListing.getItems();
                         items.addAll(redditListing.getItems());
                         //todo: replaceWith should be in a new view interface method
                         homeRecyclerView.replaceWith(items);
@@ -172,8 +173,16 @@ public class HomePresenterImpl implements HomePresenter{
 
                         //dealing with the subreddits
                         RedditListing<SubredditItem> subredditListing = homeViewWrapper.getSubreddits();
-//                        List<SubredditItem> subItems = (List<SubredditItem>) (List<?>) subredditListing.getItems();
+
                         subredditItems.addAll(subredditListing.getItems());
+
+                        Collections.sort(subredditItems, new Comparator<SubredditItem>() {
+                            @Override
+                            public int compare(SubredditItem lhs, SubredditItem rhs) {
+                                return lhs.getName().compareToIgnoreCase(rhs.getName());
+                            }
+                        });
+
                         //add to preferences
                         if(!homeViewWrapper.getIsSubredditsCached()){
                             String gson = new Gson().toJson(subredditListing);
@@ -205,12 +214,30 @@ public class HomePresenterImpl implements HomePresenter{
         listingSubscription = getListingSubscription(subreddit, front, params, LOAD_MORE);
     }
 
+    // TODO: 2015-12-03 ENHANCE RE-USABILITY
     @Override
     public List<String> getSubreddits() {
         List<String> subredditNames = new ArrayList<String>();
-        for(SubredditItem item : subredditItems){
-            subredditNames.add(item.getName());
+        if(subredditItems != null && subredditItems.size() > 0){
+            for(SubredditItem item : subredditItems){
+                subredditNames.add(item.getName());
+            }
+        }else{
+            //check if subreddits are in shared preferences
+            SharedPreferences sharedPreferences = preferenceManager
+                    .getSharedPreferences(PreferenceManager.SUBREDDIT_PREF);
+            boolean isSubredditsCached = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null) != null;
+            if(isSubredditsCached){
+                String storedListingObject = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null);
+
+                Type listType = new TypeToken<RedditListing<SubredditItem>>(){}.getType();
+                RedditListing<SubredditItem> storedListing = new Gson().fromJson(storedListingObject, listType);
+                for(SubredditItem item : storedListing.getItems()){
+                    subredditNames.add(item.getName());
+                }
+            }
         }
+
         return subredditNames;
     }
 

@@ -34,4 +34,8 @@ public class SubredditItemView extends RelativeLayout {
         super.onFinishInflate();
         ButterKnife.inject(this);
     }
+
+    public String getSubredditName() {
+        return subredditText.getText().toString();
+    }
 }

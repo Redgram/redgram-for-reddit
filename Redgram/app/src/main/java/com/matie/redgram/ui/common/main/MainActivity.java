@@ -27,7 +27,6 @@ import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout;
 import com.matie.redgram.ui.common.utils.SlidingPanelControllerInterface;
-import com.matie.redgram.ui.common.utils.StringUtils;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.data.models.main.items.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
@@ -48,7 +47,7 @@ import butterknife.OnItemClick;
 public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout.OnInsetsCallback,
         SlidingPanelControllerInterface, SlidingUpPanelLayout.PanelSlideListener {
 
-    private static final int SUBSCRIPTION_RESULT_CODE = 69;
+    private static final int SUBSCRIPTION_REQUEST_CODE = 69;
     private int currentSelectedPosition = 0;
 
     static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
@@ -178,6 +177,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         selectItem(currentSelectedPosition);
+        closeDrawer();
     }
 
     private void setUpPanel() {
@@ -240,7 +240,31 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     //// TODO: 2015-11-30 subreddits activity result - open home fragment with the returned result
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == SUBSCRIPTION_REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                String subredditName = data.getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
+                if(!subredditName.isEmpty() || subredditName != null){
+                    openFragmentWithResult(subredditName);
+                }
+            }
+        }
+    }
+
+    private void openFragmentWithResult(String subredditName) {
+            HomeFragment homeFragment = (HomeFragment)Fragment
+                    .instantiate(MainActivity.this, Fragments.HOME.getFragment());
+
+            Bundle bundle = new Bundle();
+            bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
+            homeFragment.setArguments(bundle);
+
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, homeFragment)
+                    //important to avoid IllegalStateException
+                    .commitAllowingStateLoss();
+            //select home fragment - first item
+            selectItem(0);
     }
 
     public int getCurrentSelectedPosition() {
@@ -258,6 +282,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
             onNavigationDrawerItemSelected(position);
 
             selectItem(position);
+            closeDrawer();
         }
     }
 
@@ -276,7 +301,9 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
             }
 
         }
+    }
 
+    private void closeDrawer(){
         if (scrimInsetsFrameLayout != null) {
             mDrawerLayout.closeDrawer(scrimInsetsFrameLayout);
         }
@@ -307,7 +334,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
             case 2:
                 Intent intent = new Intent(this, SubscriptionActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivityForResult(intent, SUBSCRIPTION_RESULT_CODE);
+                startActivityForResult(intent, SUBSCRIPTION_REQUEST_CODE);
                 break;
         }
 

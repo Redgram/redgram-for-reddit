@@ -44,6 +44,10 @@ public class SubredditRecyclerView extends ObservableRecyclerView {
         subredditAdapter.replaceWith(items);
     }
 
+    public void setAdapterListener(SubredditViewHolder.SubredditViewHolderListener listener){
+        subredditAdapter.setViewHolderListener(listener);
+    }
+
     @Override
     public LayoutManager getLayoutManager() {
         return layoutManager;
