@@ -60,7 +60,7 @@ For collaborations, please view [this issue](https://github.com/Redgram/redgram-
 - UI touch gestures.
 - Checking Network Connection in the background.
 - Caching.
-- Integrating Dagger(2).
+- Dagger(2) Integration.
 
 ###License:
 
