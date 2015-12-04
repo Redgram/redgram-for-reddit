@@ -56,6 +56,7 @@ For collaborations, please view [this issue](https://github.com/Redgram/redgram-
 
 ###Enhancement Required:
 
+- Avoiding *Bitmap too large to fit* warnings.
 - Controlling network calls as state changes.
 - UI touch gestures.
 - Checking Network Connection in the background.
