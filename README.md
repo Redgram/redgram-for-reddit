@@ -40,7 +40,8 @@ For collaborations, please view [this issue](https://github.com/Redgram/redgram-
 - User Authentication (**dev-auth** branch - has to be merged with **dev** before starting).
 - String Builder Manager to highlight text (NSFW, username, GOLD, etc).
 	- Extend to manipulate mutable text (EditText) for submissions 
-- <del>Shared Preferences Manager:
+- Shared Preferences Manager:
+	- <del>Create a Manager Class.
 	- Requires a Setting Page for global configuration.
 	- Keep track of new preferences.
 - Implementing Videos (MP4 & Youtube).
