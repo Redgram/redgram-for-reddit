@@ -4,13 +4,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.matie.redgram.R;
@@ -18,8 +15,8 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
-import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -41,6 +38,7 @@ public class SubscriptionActivity extends BaseActivity{
 
     @Inject
     App app;
+    private SubscriptionDetailsFragment detailsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +76,10 @@ public class SubscriptionActivity extends BaseActivity{
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            onBackPressed();
+            //if no fragments in stack close activity
+            if(!getSupportFragmentManager().popBackStackImmediate()){
+                onBackPressed();
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -122,5 +123,19 @@ public class SubscriptionActivity extends BaseActivity{
         resultIntent.putExtra(RESULT_SUBREDDIT_NAME, subredditName);
         setResult(RESULT_OK, resultIntent);
         finish();
+    }
+
+    public void openDetailsFragment(Bundle bundle) {
+        //add and not replace
+        detailsFragment =
+                (SubscriptionDetailsFragment)Fragment
+                        .instantiate(SubscriptionActivity.this, Fragments.SUBREDDITS_DETAILS.getFragment());
+
+        detailsFragment.setArguments(bundle);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, detailsFragment)
+                //make sure to add to back stack to pop and return to original detailsFragment
+                .addToBackStack("sub_list")
+                .commit();
     }
 }

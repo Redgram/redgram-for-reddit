@@ -8,7 +8,7 @@ import com.matie.redgram.data.models.main.items.SubredditItem;
 /**
  * Created by matie on 2015-10-25.
  */
-public class SubredditViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+public class SubredditViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
 
     SubredditItemView subredditItemView;
     SubredditViewHolderListener listener;
@@ -19,6 +19,7 @@ public class SubredditViewHolder extends RecyclerView.ViewHolder implements View
         this.listener = listener;
 
         subredditItemView.setOnClickListener(this);
+        subredditItemView.setOnLongClickListener(this);
     }
 
     public SubredditViewHolder(SubredditItemView subredditItemView) {
@@ -41,7 +42,15 @@ public class SubredditViewHolder extends RecyclerView.ViewHolder implements View
         listener.onClick(itemView.getSubredditName());
     }
 
+    @Override
+    public boolean onLongClick(View v) {
+        SubredditItemView itemView = (SubredditItemView)v;
+        listener.onLongClick(itemView.getItem());
+        return true;
+    }
+
     public static interface SubredditViewHolderListener{
         public void onClick(String subredditName);
+        public void onLongClick(SubredditItem item);
     }
 }

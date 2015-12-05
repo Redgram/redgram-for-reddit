@@ -1,9 +1,7 @@
 package com.matie.redgram.data.network.api.reddit;
 
-import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
-import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.models.api.reddit.RedditSubreddit;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.api.reddit.RedditLink;
@@ -230,6 +228,18 @@ public class RedditClient extends RedditServiceBase {
     private SubredditItem mapToSubredditItem(RedditSubreddit item) {
         SubredditItem subredditItem = new SubredditItem();
         subredditItem.setName(item.getDisplayName());
+        // TODO: 2015-12-04 HTML DESCRIPTION
+        subredditItem.setAccountActive(item.getAccountsActive());
+        subredditItem.setDescription(item.getDescription());
+        subredditItem.setDescriptionHtml(item.getDescriptionHtml());
+        subredditItem.setSubscribersCount(item.getSubscribers());
+        subredditItem.setUrl(item.getUrl());
+        subredditItem.setAge(item.isOver18());
+        subredditItem.setHeaderImage(item.getHeaderImg());
+        subredditItem.setHeaderTitle(item.getHeaderTitle());
+        subredditItem.setPublicTraffic(item.isPublicTraffic());
+        subredditItem.setSubredditType(item.getSubredditType());
+        subredditItem.setSubmissionType(item.getSubmissionType());
         return subredditItem;
     }
 

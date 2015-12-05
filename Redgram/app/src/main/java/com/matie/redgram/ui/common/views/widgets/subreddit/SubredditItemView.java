@@ -18,6 +18,8 @@ public class SubredditItemView extends RelativeLayout {
     @InjectView(R.id.subreddit_text)
     TextView subredditText;
 
+    private SubredditItem item;
+
     public SubredditItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -27,6 +29,7 @@ public class SubredditItemView extends RelativeLayout {
     }
 
     public void bindTo(SubredditItem subredditItem, int position) {
+        item = subredditItem;
         subredditText.setText(subredditItem.getName());
     }
     @Override
@@ -37,5 +40,9 @@ public class SubredditItemView extends RelativeLayout {
 
     public String getSubredditName() {
         return subredditText.getText().toString();
+    }
+
+    public SubredditItem getItem() {
+        return item;
     }
 }

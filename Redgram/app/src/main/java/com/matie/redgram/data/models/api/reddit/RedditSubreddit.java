@@ -17,6 +17,7 @@ public class RedditSubreddit extends RedditObject {
     boolean public_traffic;
     long subscribers;
     String submission_type;
+    String subreddit_type;
     String title;
     String url;
     boolean user_is_banned;
@@ -64,8 +65,12 @@ public class RedditSubreddit extends RedditObject {
         return subscribers;
     }
 
-    public String getSubmission_type() {
+    public String getSubmissionType() {
         return submission_type;
+    }
+
+    public String getSubredditType() {
+        return subreddit_type;
     }
 
     public String getTitle() {

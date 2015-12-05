@@ -118,26 +118,17 @@ public class HomePresenterImpl implements HomePresenter{
         String filterChoice = homeView.getContext().getResources().getString(R.string.default_home_filter).toLowerCase();
         String subredditFilterChoice = homeView.getContext().getResources().getString(R.string.default_subreddit_filter).toLowerCase();
 
-        //check if subreddits are in shared preferences
-        SharedPreferences sharedPreferences = preferenceManager
-                        .getSharedPreferences(PreferenceManager.SUBREDDIT_PREF);
+        RedditListing<SubredditItem> storedListing = getSubredditsFromCache();
         Observable<RedditListing<SubredditItem>> subredditsObservable = null;
-        boolean isSubredditsCached = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null) != null;
-        if(isSubredditsCached){
-            String storedListingObject = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null);
-
-            Type listType = new TypeToken<RedditListing<SubredditItem>>(){}.getType();
-            RedditListing<SubredditItem> storedListing = new Gson().fromJson(storedListingObject, listType);
-
+        if(storedListing != null){
             subredditsObservable = Observable.just(storedListing);
-
         }else{
             subredditsObservable = redditClient.getSubreddits(subredditFilterChoice, subparams);
         }
 
         homeWrapperSubscription = (Subscription)bindFragment(homeView.getFragment(), Observable
                 .zip(redditClient.getListing(filterChoice, params, null),
-                        subredditsObservable, Observable.just(isSubredditsCached), new Func3<RedditListing<PostItem>, RedditListing<SubredditItem>, Boolean, HomeViewWrapper>() {
+                        subredditsObservable, Observable.just((storedListing != null) ? true : false), new Func3<RedditListing<PostItem>, RedditListing<SubredditItem>, Boolean, HomeViewWrapper>() {
                             @Override
                             public HomeViewWrapper call(RedditListing<PostItem> listing, RedditListing<SubredditItem> subredditListing, Boolean inStore) {
                                 HomeViewWrapper homeViewWrapper = new HomeViewWrapper();
@@ -218,20 +209,14 @@ public class HomePresenterImpl implements HomePresenter{
     @Override
     public List<String> getSubreddits() {
         List<String> subredditNames = new ArrayList<String>();
+
         if(subredditItems != null && subredditItems.size() > 0){
             for(SubredditItem item : subredditItems){
                 subredditNames.add(item.getName());
             }
         }else{
-            //check if subreddits are in shared preferences
-            SharedPreferences sharedPreferences = preferenceManager
-                    .getSharedPreferences(PreferenceManager.SUBREDDIT_PREF);
-            boolean isSubredditsCached = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null) != null;
-            if(isSubredditsCached){
-                String storedListingObject = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null);
-
-                Type listType = new TypeToken<RedditListing<SubredditItem>>(){}.getType();
-                RedditListing<SubredditItem> storedListing = new Gson().fromJson(storedListingObject, listType);
+            RedditListing<SubredditItem> storedListing = getSubredditsFromCache();
+            if(storedListing != null){
                 for(SubredditItem item : storedListing.getItems()){
                     subredditNames.add(item.getName());
                 }
@@ -284,11 +269,28 @@ public class HomePresenterImpl implements HomePresenter{
                 });
     }
 
+    private RedditListing<SubredditItem> getSubredditsFromCache(){
+        RedditListing<SubredditItem> storedListing = null;
+        //check if subreddits are in shared preferences
+        SharedPreferences sharedPreferences = preferenceManager
+                .getSharedPreferences(PreferenceManager.SUBREDDIT_PREF);
+        boolean isSubredditsCached = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null) != null;
+        if(isSubredditsCached) {
+            String storedListingObject = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null);
+
+            Type listType = new TypeToken<RedditListing<SubredditItem>>() {}.getType();
+            storedListing = new Gson().fromJson(storedListingObject, listType);
+        }
+        return storedListing;
+    }
+
     private void hideLoadingEvent(int loadingEvent){
         if(loadingEvent == REFRESH)
             homeView.hideLoading();
         else if(loadingEvent == LOAD_MORE)
             homeView.hideLoadMoreIndicator();
     }
+
+
 
 }

@@ -3,9 +3,7 @@ package com.matie.redgram.ui.subcription;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.Toolbar;
@@ -13,7 +11,7 @@ import android.widget.Toast;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.SubscriptionPresenterImpl;
-import com.matie.redgram.ui.App;
+import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
@@ -26,7 +24,6 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnItemClick;
 
 /**
  * Created by matie on 2015-11-26.
@@ -140,5 +137,14 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     public void onClick(String subredditName) {
         toastHandler.showToast(subredditName, Toast.LENGTH_SHORT);
         activity.closeActivityWithResult(subredditName);
+    }
+
+    @Override
+    public void onLongClick(SubredditItem item) {
+        Bundle bundle = new Bundle();
+        bundle.putString("name", item.getName());
+        bundle.putString("description", item.getDescription());
+        bundle.putString("subreddit_type", item.getSubredditType());
+        activity.openDetailsFragment(bundle);
     }
 }

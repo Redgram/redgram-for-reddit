@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.PointF;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -21,10 +22,13 @@ import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.main.MainActivity;
+import com.matie.redgram.ui.common.previews.WebPreviewFragment;
 import com.matie.redgram.ui.common.utils.ToastHandler;
 
 import butterknife.ButterKnife;
@@ -57,6 +61,7 @@ public class PostItemAnimatedView extends PostItemSubView {
     @InjectView(R.id.overlay)
     View overlay;
 
+    PostItem postItem;
 
     public PostItemAnimatedView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -68,6 +73,8 @@ public class PostItemAnimatedView extends PostItemSubView {
     }
     @Override
     public void setupView(PostItem item) {
+        postItem = item;
+
         postItemTextView.setupView(item);
 
         thumbnailView.setHierarchy(getDraweeHierarchy(item));
@@ -122,4 +129,14 @@ public class PostItemAnimatedView extends PostItemSubView {
             animatedOverlay.setVisibility(VISIBLE);
         }
     }
+
+    @OnClick({R.id.animated_overlay, R.id.overlay_image, R.id.overlay_text})
+    public void onGalleryClick(){
+        if(postItem != null){
+            Bundle bundle = new Bundle();
+            bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(postItem));
+            getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
+        }
+    }
+
 }

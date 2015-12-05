@@ -64,7 +64,7 @@ public class PostItemTextView extends PostItemSubView {
         }
 
         if(item.getType().equals(PostItem.Type.SELF)){
-            textTitleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, res.getDimension(R.dimen.text_size_xlarge));
+            textTitleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, res.getDimension(R.dimen.text_size_large));
         }
 
         if(item.getType().equals(PostItem.Type.DEFAULT)) {
