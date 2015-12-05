@@ -13,13 +13,13 @@ For collaborations, please view [this issue](https://github.com/Redgram/redgram-
 
 ###Latest:
 
+- Subreddits Activity.
 - Image Manager with builder for a single image.
 - Fixes an issue when loading more leads to duplicate posts by replacing existing ones with the newly added ones.
 - Loads the user subreddits once. They can be accessed by clicking on the title of the home view.
 - Implements Sliding Up Panel for all dynamic views.
 	- Implemented to view images from cache and loading webpages.
 	- Created a base class for fragments to implement panel control methods.
-- Various UI improvements.
 
 ###Installation:
 
@@ -31,29 +31,37 @@ For collaborations, please view [this issue](https://github.com/Redgram/redgram-
 
 ###Todo:
 
-- Follow the Program to Interface approach. [Read More](http://stackoverflow.com/questions/383947/what-does-it-mean-to-program-to-an-interface).
-- User Authentication (needs its own branch).
-- String Builder Manager to highlight text in post header (NSFW, username, GOLD, etc).
-- Multiple Shared Preferences:
-	- Mostly for configuring UI.
-	- Requires a Setting Page.
+- **Always** - Follow the Program to Interface approach. [Read More](http://stackoverflow.com/questions/383947/what-does-it-mean-to-program-to-an-interface).
+
+- Add the ability to add/delete new Subreddits to default ones in the Subreddits Activity.
+	- If the user is authenticated, subscribe/unsubscribe
+		- Make it possible to add/delete subreddits without the need to use the API.
+	- Click subreddit to view infromation on it (requires new fragment [SubredditDetailsFragment])
+- User Authentication (**dev-auth** branch - has to be merged with **dev** before starting).
+- String Builder Manager to highlight text (NSFW, username, GOLD, etc).
+	- Extend to manipulate mutable text (EditText) for submissions 
+- Shared Preferences Manager:
+	- <del>Create a Manager Class.
+	- Requires a Setting Page for global configuration.
+	- Keep track of new preferences.
 - Implementing Videos (MP4 & Youtube).
 - GFYCAT API.
+	- **Open with WebView for now** 
 - IMGUR API:
 	- Implementing IMGUR images.
 	- Implementing IMGUR GALLERIES & ALBUMES.
+	-  **Open with WebView for now** 
 - Posts options such as view user, view subreddit, hide, share, open with browser, etc.
 - Comments section (needs comments presenter like search and home views).
 
-Earlier this summer:
+###Enhancement Required:
 
-- <del>Fix minor issues with search (mostly UI)
-- <del>Create XML Layouts for the different list items.
-- <del>Implement advanced search.
-- <del>Implement front page with filters for Home fragment.
-- <del>Implement a reliable Search functionality.
-- <del>Cache doesn't seem to work. Investigate.
-- <del>Learn/Integrate Dagger(2).
+- Avoiding *Bitmap too large to fit* warnings.
+- Controlling network calls as state changes.
+- UI touch gestures.
+- Checking Network Connection in the background.
+- Caching.
+- Dagger(2) Integration.
 
 ###License:
 
