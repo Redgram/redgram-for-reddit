@@ -1,7 +1,7 @@
 package com.matie.redgram.data.network.connection;
 
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.utils.ToastHandler;
+import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
 import javax.inject.Singleton;
 

@@ -110,4 +110,8 @@ public class SubredditItem extends RedditObject{
     public void setDescriptionHtml(String descriptionHtml) {
         this.descriptionHtml = descriptionHtml;
     }
+
+    public String getDescriptionHtml() {
+        return descriptionHtml;
+    }
 }

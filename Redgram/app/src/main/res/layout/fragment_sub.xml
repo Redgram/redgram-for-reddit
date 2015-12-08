@@ -2,6 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <TextView
+        style="@style/MatchWidth"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/default_small_padding"
+        android:text="@string/long_click_notice"
+        android:background="@color/material_blue50"/>
 
     <include android:id="@+id/subreddit_recycler_view"
         layout="@layout/subreddit_recycler_view"/>

@@ -7,7 +7,7 @@ import android.content.res.Resources;
 import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.data.network.connection.ConnectionManager;
-import com.matie.redgram.ui.common.utils.ToastHandler;
+import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
 import javax.inject.Inject;
 

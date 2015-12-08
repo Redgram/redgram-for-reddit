@@ -1,8 +1,5 @@
 package com.matie.redgram.ui.home.views;
 
-import com.matie.redgram.ui.common.base.Fragments;
-import com.matie.redgram.ui.common.main.MainActivity;
-import com.matie.redgram.ui.common.utils.DialogUtil;
 import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 

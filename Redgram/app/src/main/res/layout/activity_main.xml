@@ -52,7 +52,7 @@
             <!-- The drawer is given a fixed width in dp and extends the full height of
                  the container. -->
 
-            <com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout
+            <com.matie.redgram.ui.common.utils.display.ScrimInsetsFrameLayout
                 android:id="@+id/scrimInsetsFrameLayout"
                 android:layout_width="@dimen/navigation_drawer_width"
                 android:layout_height="match_parent"
@@ -119,7 +119,7 @@
 
                 </LinearLayout>
 
-            </com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout>
+            </com.matie.redgram.ui.common.utils.display.ScrimInsetsFrameLayout>
 
 
         </android.support.v4.widget.DrawerLayout>

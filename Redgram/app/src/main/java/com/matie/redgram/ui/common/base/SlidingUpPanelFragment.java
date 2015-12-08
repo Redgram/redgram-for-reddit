@@ -1,6 +1,6 @@
 package com.matie.redgram.ui.common.base;
 
-import com.matie.redgram.ui.common.utils.SlidingPanelControllerInterface;
+import com.matie.redgram.ui.common.utils.display.SlidingPanelControllerInterface;
 
 /**
  * Created by matie on 2015-11-01.

@@ -1,13 +1,7 @@
-package com.matie.redgram.ui.common.utils;
+package com.matie.redgram.ui.common.utils.widgets;
 
 import android.content.Context;
-import android.util.Log;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
-
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.matie.redgram.R;
 
 import javax.inject.Inject;
 

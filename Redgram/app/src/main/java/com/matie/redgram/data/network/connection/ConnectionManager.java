@@ -7,7 +7,7 @@ import android.net.NetworkInfo;
 import android.widget.Toast;
 
 import com.matie.redgram.R;
-import com.matie.redgram.ui.common.utils.ToastHandler;
+import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
 import java.io.IOException;
 

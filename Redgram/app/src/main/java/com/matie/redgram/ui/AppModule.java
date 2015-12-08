@@ -1,6 +1,6 @@
 package com.matie.redgram.ui;
 
-import com.matie.redgram.ui.common.utils.ToastHandler;
+import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
 import javax.inject.Singleton;
 

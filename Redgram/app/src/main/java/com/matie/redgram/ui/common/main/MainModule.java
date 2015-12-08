@@ -2,12 +2,8 @@ package com.matie.redgram.ui.common.main;
 
 import android.app.Activity;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.matie.redgram.ui.ActivityScope;
-import com.matie.redgram.ui.common.utils.DialogUtil;
-import com.matie.redgram.ui.common.utils.StringUtils;
-
-import javax.inject.Singleton;
+import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 
 import dagger.Module;
 import dagger.Provides;

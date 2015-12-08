@@ -3,12 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/sub_scroll_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/material_white">
 
     <LinearLayout android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/default_padding"
-        android:background="@color/material_white">
+        android:weightSum="1">
 
         <TextView
             android:id="@+id/subreddit_name"
@@ -19,6 +20,34 @@
             android:text="SubredditName"
             android:layout_marginBottom="@dimen/default_vertical_margin"/>
 
+        <TextView
+            style="@style/Wrap"
+            android:text="Subreddit Type"
+            />
+        <TextView
+            android:id="@+id/subreddit_type"
+            style="@style/Wrap"
+            android:textStyle="bold"
+            android:text="Public"
+            android:layout_marginBottom="@dimen/default_vertical_margin"
+            />
+
+        <TextView
+            style="@style/Wrap"
+            android:text="Submission Type"
+            />
+        <TextView
+            android:id="@+id/submission_type"
+            style="@style/Wrap"
+            android:textStyle="bold"
+            android:text="All"
+            android:layout_marginBottom="@dimen/default_vertical_margin"
+            />
+
+        <TextView
+            style="@style/Wrap"
+            android:text="Description"
+            />
         <TextView
             android:id="@+id/subreddit_desc"
             style="@style/Wrap"

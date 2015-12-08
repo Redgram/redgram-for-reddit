@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.utils;
+package com.matie.redgram.ui.common.utils.display;
 
 /*
 * Copyright 2014 Google Inc.

@@ -15,7 +15,7 @@ import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
-import com.matie.redgram.ui.common.utils.ToastHandler;
+import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditViewHolder;
 import com.matie.redgram.ui.subcription.views.SubscriptionView;
@@ -143,8 +143,9 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     public void onLongClick(SubredditItem item) {
         Bundle bundle = new Bundle();
         bundle.putString("name", item.getName());
-        bundle.putString("description", item.getDescription());
+        bundle.putString("description", item.getDescriptionHtml());
         bundle.putString("subreddit_type", item.getSubredditType());
+        bundle.putString("submission_type", item.getSubmissionType());
         activity.openDetailsFragment(bundle);
     }
 }

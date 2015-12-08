@@ -21,8 +21,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.davemorrissey.labs.subscaleview.ImageSource;
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
@@ -33,15 +31,13 @@ import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
-import com.matie.redgram.ui.common.utils.DialogUtil;
+import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.nineoldandroids.view.ViewHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.io.File;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

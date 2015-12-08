@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.utils;
+package com.matie.redgram.ui.common.utils.text;
 
 import android.content.Context;
 import android.os.Build;

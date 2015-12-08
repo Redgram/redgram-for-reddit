@@ -2,6 +2,6 @@
 <com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clickable="true">
+    android:background="@color/white">
 
 </com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView>

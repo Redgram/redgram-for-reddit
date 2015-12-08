@@ -4,7 +4,7 @@ import com.matie.redgram.data.managers.media.images.ImageManager;
 import com.matie.redgram.data.managers.media.images.ImageModule;
 import com.matie.redgram.ui.ActivityScope;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.utils.DialogUtil;
+import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 
 import dagger.Component;
 

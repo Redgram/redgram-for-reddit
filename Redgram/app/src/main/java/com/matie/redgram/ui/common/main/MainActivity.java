@@ -3,11 +3,13 @@ package com.matie.redgram.ui.common.main;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,9 +26,9 @@ import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
-import com.matie.redgram.ui.common.utils.DialogUtil;
-import com.matie.redgram.ui.common.utils.ScrimInsetsFrameLayout;
-import com.matie.redgram.ui.common.utils.SlidingPanelControllerInterface;
+import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.utils.display.ScrimInsetsFrameLayout;
+import com.matie.redgram.ui.common.utils.display.SlidingPanelControllerInterface;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.data.models.main.items.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
@@ -36,6 +38,8 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -150,8 +154,8 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         navigationItems.add(new DrawerItem(getString(R.string.fragment_subreddits), R.drawable.ic_list ,true));
         //sub-menu items
 
-        navigationItems.add(new DrawerItem(getString(R.string.fragment_settings), 0 ,false));
-        navigationItems.add(new DrawerItem(getString(R.string.fragment_about), 0 ,false));
+        navigationItems.add(new DrawerItem(getString(R.string.fragment_settings), 0, false));
+        navigationItems.add(new DrawerItem(getString(R.string.fragment_about), 0, false));
 
 
         mNavigationDrawerListViewWrapper.replaceWith(navigationItems);
@@ -176,8 +180,28 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        selectItem(currentSelectedPosition);
+        //if nothing in intent, open home fragment
+        if(!checkIntentStatus()){
+            selectItem(currentSelectedPosition);
+        }
         closeDrawer();
+    }
+
+    private boolean checkIntentStatus(){
+        Uri data = getIntent().getData();
+        if(data != null){
+            Log.d("INTENT_DATA", data.toString());
+            if(data.getPath().contains("/r/")){
+                //open subreddit
+                String path = data.getPath();
+                String subredditName = path.substring(path.lastIndexOf('/')+1, path.length());
+                openFragmentWithResult(subredditName);
+            }else if(data.getPath().contains("/u/")){
+                //open user
+            }
+            return true;
+        }
+        return false;
     }
 
     private void setUpPanel() {
@@ -291,7 +315,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         if (leftDrawerListView != null) {
 
             //none-activity views only
-            if(position != 2){
+            if(position < 2){
                 leftDrawerListView.setItemChecked(position, true);
 
                 navigationItems.get(currentSelectedPosition).setSelected(false);

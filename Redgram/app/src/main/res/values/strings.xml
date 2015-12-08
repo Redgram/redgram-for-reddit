@@ -54,4 +54,5 @@
     <!--always lower case them with API-->
     <string name="default_home_filter">Hot</string>
     <string name="default_subreddit_filter">Default</string>
+    <string name="long_click_notice">Hold subreddit to view details</string>
 </resources>

@@ -3,6 +3,10 @@ package com.matie.redgram.ui.subcription;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Html;
+import android.text.Spanned;
+import android.text.SpannedString;
+import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +33,10 @@ public class SubscriptionDetailsFragment extends BaseFragment {
 
     @InjectView(R.id.subreddit_name)
     TextView subredditName;
-
+    @InjectView(R.id.subreddit_type)
+    TextView subredditType;
+    @InjectView(R.id.submission_type)
+    TextView submissionType;
     @InjectView(R.id.subreddit_desc)
     TextView subredditDesc;
 
@@ -40,16 +47,18 @@ public class SubscriptionDetailsFragment extends BaseFragment {
         ButterKnife.inject(this, view);
 
         if(getArguments() != null){
-            String name = getArguments().getString("name");
-            subredditName.setText(name + " - " + getArguments().getString("subreddit_type"));
-            subredditDesc.setText(getArguments().getString("description"));
+            subredditName.setText(getArguments().getString("name"));
+            subredditType.setText(getArguments().getString("subreddit_type"));
+            submissionType.setText(getArguments().getString("submission_type"));
 
-//            // TODO: 2015-12-04 use proper REGEX
-//            String str = getArguments().getString("description");
-//            Pattern pattern = Pattern.compile("&lt;!-- SC_OFF --&gt;");
-//            String[] result = pattern.split(str);
-//            subredditDesc.setText(Html.fromHtml(result[1]));
-//            subredditDesc.setText(Html.fromHtml("<h2>Title</h2><br><p>Description here</p>"));
+            //do the same for PostItemText Content
+            String desc = getArguments().getString("description");
+            desc = desc.replaceAll("href=\"(/[ru]/[a-zA-Z0-9]+)\"", "href=\"com.matie.redgram://$1\"");
+
+            Spanned sp = Html.fromHtml(Html.fromHtml((String) desc).toString());
+            subredditDesc.setText(sp);
+            subredditDesc.setMovementMethod(LinkMovementMethod.getInstance());
+
         }
 
         return view;

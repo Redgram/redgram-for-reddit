@@ -1,6 +1,5 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.PointF;
 import android.net.Uri;
@@ -10,7 +9,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,11 +23,9 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.previews.WebPreviewFragment;
-import com.matie.redgram.ui.common.utils.ToastHandler;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
