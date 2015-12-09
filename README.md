@@ -37,7 +37,7 @@ For collaborations, please view [this issue](https://github.com/Redgram/redgram-
 	- If the user is authenticated, subscribe/unsubscribe
 		- Make it possible to add/delete subreddits without the need to use the API.
 	- <del>Hold click subreddit to view infromation on it (requires new fragment [SubredditDetailsFragment])
-		- Ability to update information viewed in SubredditDetailsFragment
+	- Ability to update information viewed in SubredditDetailsFragment
 - User Authentication (**dev-auth** branch - has to be merged with **dev** before starting).
 - String Builder Manager to highlight text (NSFW, username, GOLD, etc).
 	- Extend to manipulate mutable text (EditText) for submissions 
