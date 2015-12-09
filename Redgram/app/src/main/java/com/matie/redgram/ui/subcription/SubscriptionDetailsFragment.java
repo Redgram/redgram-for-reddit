@@ -1,24 +1,21 @@
 package com.matie.redgram.ui.subcription;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.Html;
 import android.text.Spanned;
-import android.text.SpannedString;
-import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.ui.common.base.BaseFragment;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.matie.redgram.ui.common.utils.text.StringFormatter;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -38,7 +35,7 @@ public class SubscriptionDetailsFragment extends BaseFragment {
     @InjectView(R.id.submission_type)
     TextView submissionType;
     @InjectView(R.id.subreddit_desc)
-    TextView subredditDesc;
+    WebView subredditDesc;
 
     @Nullable
     @Override
@@ -47,21 +44,43 @@ public class SubscriptionDetailsFragment extends BaseFragment {
         ButterKnife.inject(this, view);
 
         if(getArguments() != null){
-            subredditName.setText(getArguments().getString("name"));
-            subredditType.setText(getArguments().getString("subreddit_type"));
-            submissionType.setText(getArguments().getString("submission_type"));
-
-            //do the same for PostItemText Content
-            String desc = getArguments().getString("description");
-            desc = desc.replaceAll("href=\"(/[ru]/[a-zA-Z0-9]+)\"", "href=\"com.matie.redgram://$1\"");
-
-            Spanned sp = Html.fromHtml(Html.fromHtml((String) desc).toString());
-            subredditDesc.setText(sp);
-            subredditDesc.setMovementMethod(LinkMovementMethod.getInstance());
-
+            setupDetails();
+            setupWebViewSettings();
+//            String temp = sp.toString();
+//            sp = Html.fromHtml(temp);
+//            subredditDesc.setText(sp);
+//            subredditDesc.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
         return view;
+    }
+
+    private void setupWebViewSettings() {
+        final WebSettings webSettings = subredditDesc.getSettings();
+        Resources res = getResources();
+        float fontSize = res.getDimension(R.dimen.web_text);
+        webSettings.setDefaultFontSize((int) fontSize);
+
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webSettings.setAppCacheEnabled(false);
+        webSettings.setBlockNetworkImage(true);
+        webSettings.setLoadsImagesAutomatically(true);
+        webSettings.setGeolocationEnabled(false);
+        webSettings.setNeedInitialFocus(false);
+        webSettings.setSaveFormData(false);
+    }
+
+    private void setupDetails() {
+        String name = getArguments().getString("name");
+        subredditName.setText(name);
+        subredditType.setText(getArguments().getString("subreddit_type"));
+        submissionType.setText(getArguments().getString("submission_type"));
+
+        //do the same for PostItemText Content if needed...otherwise view
+        String desc = getArguments().getString("description");
+        desc = StringFormatter.prependRedditLinks(desc);
+        Spanned sp = StringFormatter.formatFromHtml(desc);
+        subredditDesc.loadData(sp.toString(), "text/html", "utf-8");
     }
 
     @Override

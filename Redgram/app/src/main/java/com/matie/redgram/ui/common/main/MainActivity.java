@@ -108,6 +108,19 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         mDrawerLayout.setStatusBarBackgroundColor(
                 getResources().getColor(R.color.material_red600));
 
+        // Possible work around for market launches. See http://code.google.com/p/android/issues/detail?id=2373
+        // for more details. Essentially, the market launches the main activity on top of other activities.
+        // we never want this to happen. Instead, we check if we are the root and if not, we finish.
+        if (!isTaskRoot()) {
+            final Intent intent = getIntent();
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(intent.getAction())) {
+                Log.w("LAUNCH_LOG", "Main Activity is not the root.  Finishing Main Activity instead of launching.");
+                finish();
+                return;
+            }
+        }
+
+
         if (savedInstanceState == null) {
           getSupportFragmentManager().beginTransaction().add(R.id.container,
           Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment())).commit();
@@ -181,14 +194,12 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         //if nothing in intent, open home fragment
-        if(!checkIntentStatus()){
-            selectItem(currentSelectedPosition);
-        }
+        selectItem(currentSelectedPosition);
         closeDrawer();
     }
 
-    private boolean checkIntentStatus(){
-        Uri data = getIntent().getData();
+    private boolean checkIntentStatus(Intent intent){
+        Uri data = intent.getData();
         if(data != null){
             Log.d("INTENT_DATA", data.toString());
             if(data.getPath().contains("/r/")){
@@ -270,8 +281,15 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                 if(!subredditName.isEmpty() || subredditName != null){
                     openFragmentWithResult(subredditName);
                 }
+
             }
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        checkIntentStatus(intent);
     }
 
     private void openFragmentWithResult(String subredditName) {

@@ -48,7 +48,7 @@
             style="@style/Wrap"
             android:text="Description"
             />
-        <TextView
+        <WebView
             android:id="@+id/subreddit_desc"
             style="@style/Wrap"
             android:textSize="@dimen/text_size_small"

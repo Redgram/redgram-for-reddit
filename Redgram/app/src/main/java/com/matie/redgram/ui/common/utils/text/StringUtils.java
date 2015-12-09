@@ -2,6 +2,7 @@ package com.matie.redgram.ui.common.utils.text;
 
 import android.content.Context;
 import android.os.Build;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -11,9 +12,12 @@ import android.widget.TextView;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * Created by matie on 2015-11-22.
+ *
+ * Responsible for all text decorations
  */
 public class StringUtils {
 

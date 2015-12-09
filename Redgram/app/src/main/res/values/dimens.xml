@@ -26,6 +26,7 @@
     <dimen name="circle_height">240dp</dimen>
 
     <!-- Fonts' sizes -->
+    <dimen name="web_text">3sp</dimen>
     <dimen name="text_size_micro">12sp</dimen>
     <dimen name="text_size_small">14sp</dimen>
     <dimen name="text_size_medium">18sp</dimen>
