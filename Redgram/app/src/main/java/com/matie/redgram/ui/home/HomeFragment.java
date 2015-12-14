@@ -109,6 +109,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
         setupListeners();
         setupRecyclerView();
 
+
         return view;
     }
 

@@ -100,6 +100,7 @@ public class PostItemImageView extends PostItemSubView{
         }
     }
 
+
     private ControllerListener<? super ImageInfo> getControllerListener() {
         ControllerListener controllerListener = new BaseControllerListener<ImageInfo>(){
 
@@ -119,7 +120,19 @@ public class PostItemImageView extends PostItemSubView{
 
     @OnClick(R.id.image_view)
     public void onImageClick(){
+        handleMainClickEvent();
+    }
 
+    private void handleOverlayClickEvent(){
+        if(imageOverlay.getVisibility() == VISIBLE){
+            if(!isNsfwDisabled()){
+                callNsfwDialog();
+            }
+        }
+    }
+
+    @Override
+    public void handleMainClickEvent() {
         if(imageLoaded){
 
             CacheKey cacheKey = DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(ImageRequest.fromUri(Uri.parse(imageUrl)));
@@ -142,18 +155,6 @@ public class PostItemImageView extends PostItemSubView{
 
             }
 
-        }
-    }
-
-    private void handleOverlayClickEvent(){
-        if(imageOverlay.getVisibility() == GONE){
-            if(getContext() instanceof MainActivity){
-                ((MainActivity) getContext()).getApp().getToastHandler().showToast("NSFW Disabled", Toast.LENGTH_LONG);
-            }
-        }else if(imageOverlay.getVisibility() == VISIBLE){
-            if(!isNsfwDisabled()){
-                callNsfwDialog();
-            }
         }
     }
 

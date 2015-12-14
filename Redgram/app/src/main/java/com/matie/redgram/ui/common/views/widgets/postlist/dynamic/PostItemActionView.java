@@ -51,4 +51,9 @@ public class PostItemActionView extends PostItemSubView {
     public void handleNsfwUpdate(boolean disabled) {
 
     }
+
+    @Override
+    public void handleMainClickEvent() {
+
+    }
 }

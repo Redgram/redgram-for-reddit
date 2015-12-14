@@ -17,8 +17,23 @@
             android:textSize="@dimen/text_size_xlarge"
             android:textStyle="bold"
             android:textColor="@color/material_blue_grey_900"
-            android:text="SubredditName"
-            android:layout_marginBottom="@dimen/default_vertical_margin"/>
+            android:text="SubredditName" />
+        <TextView
+            android:id="@+id/subscribersCount"
+            style="@style/Wrap"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_micro"
+            android:text="120567 Subscribers"
+            />
+        <TextView
+            android:id="@+id/accountActive"
+            style="@style/Wrap"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_micro"
+            android:text="356 online"
+            android:textColor="@color/material_green500"
+            android:layout_marginBottom="@dimen/default_vertical_margin"
+            />
 
         <TextView
             style="@style/Wrap"

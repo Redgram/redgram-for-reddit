@@ -103,35 +103,24 @@ public class PostItemAnimatedView extends PostItemSubView {
         return controller;
     }
 
-    @OnClick(R.id.overlay_image)
-    public void onClick(){
-        handlePlayClickEvent();
-    }
-
-    private void handlePlayClickEvent() {
-        if(animatedOverlay.getVisibility() == GONE){
-            // TODO: 2015-10-20 handle media
-            if(getContext() instanceof MainActivity){
-                ((MainActivity) getContext()).getApp().getToastHandler().showToast("NSFW diabled", Toast.LENGTH_SHORT);
-            }
-        }
+    @Override
+    public void handleNsfwUpdate(boolean disabled) {
+        handleMainClickEvent();
     }
 
     @Override
-    public void handleNsfwUpdate(boolean disabled) {
-        if(disabled){
-            animatedOverlay.setVisibility(GONE);
-        }else{
-            animatedOverlay.setVisibility(VISIBLE);
-        }
+    public void handleMainClickEvent() {
+        Bundle bundle = new Bundle();
+        bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(postItem));
+        getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
     }
 
     @OnClick({R.id.animated_overlay, R.id.overlay_image, R.id.overlay_text})
     public void onGalleryClick(){
-        if(postItem != null){
-            Bundle bundle = new Bundle();
-            bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(postItem));
-            getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
+        if(postItem != null && isNsfwDisabled()){
+            handleMainClickEvent();
+        }else{
+            callNsfwDialog();
         }
     }
 

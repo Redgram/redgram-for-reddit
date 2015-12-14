@@ -120,19 +120,22 @@ public class PostItemGalleryView extends PostItemSubView {
 
     @Override
     public void handleNsfwUpdate(boolean disabled) {
-        if(disabled){
-            galleryOverlay.setVisibility(GONE);
-        }else{
-            galleryOverlay.setVisibility(VISIBLE);
-        }
+        handleMainClickEvent();
+    }
+
+    @Override
+    public void handleMainClickEvent() {
+        Bundle bundle = new Bundle();
+        bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(postItem));
+        getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
     }
 
     @OnClick({R.id.gallery_overlay, R.id.overlay_image, R.id.overlay_text})
     public void onGalleryClick(){
-        if(postItem != null){
-            Bundle bundle = new Bundle();
-            bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(postItem));
-            getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
+        if(postItem != null && isNsfwDisabled()){
+            handleMainClickEvent();
+        }else{
+            callNsfwDialog();
         }
     }
 }

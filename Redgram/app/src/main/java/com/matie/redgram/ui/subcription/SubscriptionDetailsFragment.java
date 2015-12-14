@@ -3,6 +3,7 @@ package com.matie.redgram.ui.subcription;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -30,6 +32,11 @@ public class SubscriptionDetailsFragment extends BaseFragment {
 
     @InjectView(R.id.subreddit_name)
     TextView subredditName;
+    @InjectView(R.id.subscribersCount)
+    TextView subscribersCount;
+    @InjectView(R.id.accountActive)
+    TextView accountsActive;
+
     @InjectView(R.id.subreddit_type)
     TextView subredditType;
     @InjectView(R.id.submission_type)
@@ -37,11 +44,16 @@ public class SubscriptionDetailsFragment extends BaseFragment {
     @InjectView(R.id.subreddit_desc)
     WebView subredditDesc;
 
+    Toolbar mToolbar;
+    FrameLayout frameLayout;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sub_detail, container, false);
         ButterKnife.inject(this, view);
+
+        mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
 
         if(getArguments() != null){
             setupDetails();
@@ -73,6 +85,9 @@ public class SubscriptionDetailsFragment extends BaseFragment {
     private void setupDetails() {
         String name = getArguments().getString("name");
         subredditName.setText(name);
+        subscribersCount.setText(getArguments().getLong("subscribers_count")+ " subscribers");
+        accountsActive.setText(getArguments().getInt("accounts_active") + " online");
+
         subredditType.setText(getArguments().getString("subreddit_type"));
         submissionType.setText(getArguments().getString("submission_type"));
 
@@ -90,7 +105,9 @@ public class SubscriptionDetailsFragment extends BaseFragment {
 
     @Override
     protected void setupToolbar() {
-        //no implementation needed
+        //no implementation needed, clear only
+        frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
+        frameLayout.removeAllViews();
     }
 
     @Override

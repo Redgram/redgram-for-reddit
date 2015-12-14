@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.Toolbar;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.matie.redgram.R;
@@ -44,6 +47,9 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     Toolbar mToolbar;
     LayoutInflater mInflater;
 
+    FrameLayout frameLayout;
+    ImageView subRefresh;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -75,14 +81,37 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
 
     @Override
     protected void setupToolbar() {
+        //add refresh
+        //setting up toolbar
+        frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
+        frameLayout.removeAllViews();
 
+        RelativeLayout rl = (RelativeLayout) mInflater.inflate(R.layout.fragment_sub_toolbar, frameLayout, false);
+        frameLayout.addView(rl);
+
+        subRefresh = (ImageView)rl.findViewById(R.id.sub_refresh);
+
+        setupRefresh();
+    }
+
+    private void setupRefresh() {
+        subRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(subredditRecyclerView.getVisibility() == View.VISIBLE){
+                    //force load from network
+                    // TODO: 2015-12-10 only call network call a minute after the last call was made
+                    subscriptionPresenter.getSubreddits(true);
+                }
+            }
+        });
     }
 
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        subscriptionPresenter.getSubreddits();
+        subscriptionPresenter.getSubreddits(false);
     }
 
     @Override
@@ -110,17 +139,18 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
 
     @Override
     public void showLoading() {
-        //// TODO: 2015-11-30  
+        //// TODO: 2015-11-30
+        subredditRecyclerView.setVisibility(View.GONE);
     }
 
     @Override
     public void hideLoading() {
-        //// TODO: 2015-11-30  
+        //// TODO: 2015-11-30
+        subredditRecyclerView.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void showInfoMessage() {
-        
     }
 
     @Override
@@ -146,6 +176,8 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
         bundle.putString("description", item.getDescriptionHtml());
         bundle.putString("subreddit_type", item.getSubredditType());
         bundle.putString("submission_type", item.getSubmissionType());
+        bundle.putLong("subscribers_count", item.getSubscribersCount());
+        bundle.putInt("accounts_active", item.getAccountActive());
         activity.openDetailsFragment(bundle);
     }
 }

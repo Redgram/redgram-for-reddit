@@ -48,4 +48,9 @@ public class PostItemTagView extends PostItemSubView {
 
     }
 
+    @Override
+    public void handleMainClickEvent() {
+
+    }
+
 }

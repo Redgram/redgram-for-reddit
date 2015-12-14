@@ -9,5 +9,5 @@ public interface SubscriptionPresenter {
     public void registerForEvents();
     public void unregisterForEvents();
 
-    public void getSubreddits();
+    public void getSubreddits(boolean forceNetwork);
 }

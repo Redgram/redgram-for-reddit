@@ -91,15 +91,22 @@ public class PostItemDefaultView extends PostItemSubView {
 
     @Override
     public void handleNsfwUpdate(boolean disabled) {
+        handleMainClickEvent();
+    }
 
+    @Override
+    public void handleMainClickEvent() {
+        Bundle bundle = new Bundle();
+        bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(postItem));
+        getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
     }
 
     @OnClick(R.id.default_wrapper)
     public void onDefaultWrapperClick(){
-        if(postItem != null){
-            Bundle bundle = new Bundle();
-            bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(postItem));
-            getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
+        if(postItem != null && isNsfwDisabled()){
+            handleMainClickEvent();
+        }else{
+            callNsfwDialog();
         }
     }
 }

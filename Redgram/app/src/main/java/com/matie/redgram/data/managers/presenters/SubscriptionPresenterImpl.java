@@ -74,7 +74,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
     }
 
     @Override
-    public void getSubreddits() {
+    public void getSubreddits(boolean forceNetwork) {
         subredditItems.clear();
         subscriptionView.showLoading();
 
@@ -88,7 +88,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
                 .getSharedPreferences(PreferenceManager.SUBREDDIT_PREF);
         Observable<RedditListing<SubredditItem>> subredditsObservable = null;
         boolean isSubredditsCached = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null) != null;
-        if(isSubredditsCached){
+        if(isSubredditsCached && !forceNetwork){
             String storedListingObject = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null);
 
             Type listType = new TypeToken<RedditListing<SubredditItem>>(){}.getType();

@@ -35,6 +35,7 @@ public abstract class PostItemSubView extends RelativeLayout {
 
     public abstract void setupView(PostItem item);
     public abstract void handleNsfwUpdate(boolean disabled);
+    public abstract void handleMainClickEvent();
 
     public boolean isNsfwDisabled(){
         return postPreferences.getBoolean(PreferenceManager.POSTS_NSFW_KEY, false);

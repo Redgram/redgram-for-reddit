@@ -7,6 +7,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -175,6 +176,13 @@ public class StringUtils {
                 }
             }else{
                 Log.d("StringUtil", "Check indexes passed to spanRangeList");
+            }
+            return this;
+        }
+
+        public SpannableBuilder clickable() {
+            if(textView != null){
+                textView.setMovementMethod(LinkMovementMethod.getInstance());
             }
             return this;
         }

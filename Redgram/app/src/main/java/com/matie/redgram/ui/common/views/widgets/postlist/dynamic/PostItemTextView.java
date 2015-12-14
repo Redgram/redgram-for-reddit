@@ -82,6 +82,11 @@ public class PostItemTextView extends PostItemSubView {
         }
     }
 
+    @Override
+    public void handleMainClickEvent() {
+        //opens comments section because it exists in all views
+    }
+
     @OnClick(R.id.text_content_view)
     public void onClick(){
         if(textContentView.getText().equals(res.getString(R.string.nsfw_material))){

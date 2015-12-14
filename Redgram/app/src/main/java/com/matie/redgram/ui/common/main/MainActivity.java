@@ -292,7 +292,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         checkIntentStatus(intent);
     }
 
-    private void openFragmentWithResult(String subredditName) {
+    public void openFragmentWithResult(String subredditName) {
             HomeFragment homeFragment = (HomeFragment)Fragment
                     .instantiate(MainActivity.this, Fragments.HOME.getFragment());
 
@@ -307,6 +307,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                     .commitAllowingStateLoss();
             //select home fragment - first item
             selectItem(0);
+
     }
 
     public int getCurrentSelectedPosition() {
