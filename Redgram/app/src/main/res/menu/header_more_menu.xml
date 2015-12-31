@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/view_profile" android:title="@string/action_profile" android:orderInCategory="100"/>
+    <item android:id="@+id/view_subreddit" android:title="@string/action_sub" android:orderInCategory="100"/>
+    <item android:id="@+id/open_browser" android:title="@string/action_browser" android:orderInCategory="100"/>
+    <item android:id="@+id/copy_link" android:title="@string/action_copy" android:orderInCategory="100"/>
+    <item android:id="@+id/report" android:title="@string/action_report" android:orderInCategory="100"/>
+</menu>

@@ -51,6 +51,7 @@ public class WebPreviewFragment extends BasePreviewFragment{
 
         //setup
         webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setDisplayZoomControls(false);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(getWebViewClient());
         webView.setWebChromeClient(getWebChromeClient());

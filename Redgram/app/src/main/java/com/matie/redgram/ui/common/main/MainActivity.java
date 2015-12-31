@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,6 +30,8 @@ import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.display.ScrimInsetsFrameLayout;
 import com.matie.redgram.ui.common.utils.display.SlidingPanelControllerInterface;
+import com.matie.redgram.ui.common.views.adapters.MainSectionsAdapter;
+import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.data.models.main.items.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
@@ -76,6 +79,10 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
+
+//    @InjectView(R.id.container)
+//    ViewPager viewPager;
+//    MainSectionsAdapter pagerAdapter;
 
     BasePreviewFragment previewFragment;
     Fragments currentPreviewFragment;
@@ -130,6 +137,10 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
         setup();
         setUpPanel();
+
+//        pagerAdapter = new MainSectionsAdapter(getSupportFragmentManager());
+//        viewPager.setAdapter(pagerAdapter);
+
     }
 
 

@@ -26,7 +26,13 @@
             <RelativeLayout
                 android:id="@+id/container_layout"
                 style="@style/Match">
+
                 <!--Main Content-->
+                <!--<android.support.v4.view.ViewPager-->
+                    <!--android:id="@+id/container"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"/>-->
+                    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
                 <FrameLayout android:id="@+id/container" style="@style/Match"/>
 
                 <!--ActionBar Location-->
@@ -38,9 +44,7 @@
                         style="@style/Match"
                         android:id="@+id/toolbar_child_view"></FrameLayout>
 
-
                 </android.support.v7.widget.Toolbar>
-
 
             </RelativeLayout>
 

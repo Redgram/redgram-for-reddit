@@ -5,6 +5,11 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
+    <string name="action_browser">Open in Browser</string>
+    <string name="action_copy">Copy Link</string>
+    <string name="action_profile">Visit Profile</string>
+    <string name="action_sub">Visit Subreddit</string>
+    <string name="action_report">Report</string>
     <string name="user_name">atioxx</string>
     <string name="user_email">atiyaleb@gmail.com</string>
     <string name="fragment_home">Home</string>
@@ -51,8 +56,16 @@
         <item>All</item>
     </string-array>
 
+    <string-array name="shareOptions">
+        <item>Link</item>
+        <item>Comments</item>
+    </string-array>
+
     <!--always lower case them with API-->
     <string name="default_home_filter">Hot</string>
     <string name="default_subreddit_filter">Default</string>
     <string name="long_click_notice">Hold subreddit to view details</string>
+
+    <string name="send_to">Share on..</string>
+
 </resources>

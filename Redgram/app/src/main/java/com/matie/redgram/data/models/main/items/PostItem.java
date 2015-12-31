@@ -35,6 +35,7 @@ public class PostItem extends RedditObject {
     private String author;
     private int time;
     private String url;
+    private String permalink;
     private String thumbnail;
     private String title;
     private String domain;
@@ -183,6 +184,14 @@ public class PostItem extends RedditObject {
 
     public void setNumComments(int numComments) {
         this.numComments = numComments;
+    }
+
+    public String getPermalink() {
+        return permalink;
+    }
+
+    public void setPermalink(String permalink) {
+        this.permalink = permalink;
     }
 
     public Type identifyType() {

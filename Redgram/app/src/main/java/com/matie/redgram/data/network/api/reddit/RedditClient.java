@@ -208,6 +208,7 @@ public class RedditClient extends RedditServiceBase {
         item.setAuthor(link.getAuthor());
         item.setTime(link.getCreatedUtc().getHourOfDay());
         item.setUrl(link.getUrl());
+        item.setPermalink(link.getPermalink());
         item.setThumbnail(link.getThumbnail());
         item.setTitle(link.getTitle());
         item.setDomain(link.getDomain());

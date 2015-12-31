@@ -1,8 +1,8 @@
 package com.matie.redgram.ui.common.utils.text;
 
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.style.ClickableSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -11,10 +11,12 @@ import android.widget.TextView;
  */
 public class CustomClickable extends ClickableSpan {
 
-    private CustomClickableListener clickableListener;
+    private CustomSpanListener clickableListener;
+    private boolean underlineText;
 
-    public CustomClickable(CustomClickableListener clickableListener) {
+    public CustomClickable(CustomSpanListener clickableListener, boolean underlineText) {
         this.clickableListener = clickableListener;
+        this.underlineText = underlineText;
     }
 
     @Override
@@ -29,5 +31,10 @@ public class CustomClickable extends ClickableSpan {
                 clickableListener.onClickableEvent(s.subSequence(start, end));
             }
         }
+    }
+
+    @Override
+    public void updateDrawState(TextPaint ds) {
+        ds.setUnderlineText(underlineText);
     }
 }
