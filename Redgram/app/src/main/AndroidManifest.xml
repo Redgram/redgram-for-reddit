@@ -2,11 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.matie.redgram" >
 
-    <receiver android:name=".NetworkStateReceiver">
+    <receiver android:name=".NetworkStateReceiver" >
         <intent-filter>
             <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
         </intent-filter>
     </receiver>
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -19,22 +20,29 @@
         <activity
             android:name=".ui.common.main.MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <category android:name="android.intent.category.BROWSABLE" />
-                <action android:name="android.intent.action.VIEW" />
-                <data android:scheme="com.matie.redgram" />
 
+                <action android:name="android.intent.action.VIEW" />
+
+                <data android:scheme="com.matie.redgram" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.subcription.SubscriptionActivity"
             android:label="@string/fragment_subreddits"
-            android:noHistory="true">
+            android:noHistory="true" >
+        </activity>
+        <activity
+            android:name=".ui.comments.views.CommentsActivity"
+            android:label="@string/title_activity_comments"
+            android:theme="@style/AppTheme.Slider" >
         </activity>
     </application>
+
 </manifest>

@@ -223,6 +223,12 @@
     <style name="MainActivityLinearDrawerHeaderImage"></style>
     <style name="MainActivityLinearDrawerHeaderUsername"></style>
     <style name="MainActivityLinearDrawerHeaderUserInfo"></style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme.Slider" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
     <!--HOME FRAGMENT-->
 
     <!--HOME TOOLBAR-->

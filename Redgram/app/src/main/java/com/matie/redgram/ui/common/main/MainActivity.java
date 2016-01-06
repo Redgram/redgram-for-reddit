@@ -6,7 +6,6 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
@@ -30,8 +31,6 @@ import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.display.ScrimInsetsFrameLayout;
 import com.matie.redgram.ui.common.utils.display.SlidingPanelControllerInterface;
-import com.matie.redgram.ui.common.views.adapters.MainSectionsAdapter;
-import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.data.models.main.items.DrawerItem;
 import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
@@ -41,8 +40,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -82,7 +79,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
 //    @InjectView(R.id.container)
 //    ViewPager viewPager;
-//    MainSectionsAdapter pagerAdapter;
+//    CommentsPagerAdapter pagerAdapter;
 
     BasePreviewFragment previewFragment;
     Fragments currentPreviewFragment;
@@ -104,6 +101,9 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
     private MainComponent mainComponent;
 
+    private Window window;
+    private boolean isDrawerOpen = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +114,14 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
         mDrawerLayout.setStatusBarBackgroundColor(
                 getResources().getColor(R.color.material_red600));
+
+        //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(getResources().getColor(R.color.material_red600));
+        }
 
         // Possible work around for market launches. See http://code.google.com/p/android/issues/detail?id=2373
         // for more details. Essentially, the market launches the main activity on top of other activities.
@@ -137,10 +145,6 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
         setup();
         setUpPanel();
-
-//        pagerAdapter = new MainSectionsAdapter(getSupportFragmentManager());
-//        viewPager.setAdapter(pagerAdapter);
-
     }
 
 
@@ -192,16 +196,38 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                 supportInvalidateOptionsMenu();
 
                 // TODO: 2015-11-06 get dimension height from resources
-                setPanelHeight(48);
+                isDrawerOpen = false;
             }
 
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 supportInvalidateOptionsMenu();
 
-                setPanelHeight(0);
+                isDrawerOpen = true;
             }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                if (newState == DrawerLayout.STATE_SETTLING) {
+                    if (!isDrawerOpen) {
+                        setPanelHeight(0);
+                        // starts opening
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
+                            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                        }
+                    } else {
+                        // closing drawer
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
+                            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                        }
+                        setPanelHeight(48);
+                    }
+                    supportInvalidateOptionsMenu();
+                }
+            }
+
         };
+
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         //if nothing in intent, open home fragment

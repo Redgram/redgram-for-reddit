@@ -2,6 +2,7 @@ package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.comments.views.CommentsActivity;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.previews.WebPreviewFragment;
 import com.matie.redgram.ui.common.utils.text.CustomClickable;
@@ -93,9 +95,9 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
 
         if(eventCode == COMMENTS_EVENT){
             // TODO: 2015-12-26 open comments activity
-            Bundle bundle = new Bundle();
-            bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(item));
-            getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
+            Intent intent = new Intent(getMainActivity(), CommentsActivity.class);
+            getMainActivity().startActivity(intent);
+            getMainActivity().overridePendingTransition(R.anim.enter, R.anim.exit);
             return;
         }
 

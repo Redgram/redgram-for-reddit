@@ -67,5 +67,7 @@
     <string name="long_click_notice">Hold subreddit to view details</string>
 
     <string name="send_to">Share on..</string>
+    <string name="title_activity_comments">Comments</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 
 </resources>

@@ -81,13 +81,12 @@
                         android:paddingBottom="@dimen/default_small_padding">
 
                         <ImageView
+                            style="@style/Wrap"
                             android:id="@+id/drawerUserImage"
-                            android:layout_width="@dimen/navigation_drawer_header_image_view_size"
-                            android:layout_height="@dimen/navigation_drawer_header_image_view_size"
                             android:layout_alignParentLeft="true"
                             android:layout_marginTop="40dp"
                             android:contentDescription="@string/app_name"
-                            android:src="@drawable/my_photo_for_drawer"
+                            android:src="@drawable/ic_launcher"
                             android:layout_marginRight="@dimen/default_horizontal_margin"
                             android:layout_marginLeft="@dimen/default_horizontal_margin"/>
 
@@ -105,7 +104,7 @@
                             android:layout_marginLeft="@dimen/default_horizontal_margin"/>
 
                         <TextView
-                            android:id="@+id/drawerUserEmail"
+                            android:id="@+id/drawerAccountCount"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_alignLeft="@id/drawerUserName"

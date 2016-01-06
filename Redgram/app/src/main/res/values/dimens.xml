@@ -48,5 +48,7 @@
 
     <dimen name="action_icon_margin">12dp</dimen>
     <dimen name="content_inset">72dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
 
 </resources>
