@@ -119,6 +119,10 @@ public class ImageManager {
             }catch (NullPointerException e){
                 Log.d("ImageManager", "Image view not found");
             }
+        }
+
+        // TODO: 2016-01-07 image manager should be able to fetch to/from cache in the builder
+        public void preFetchToDiskCache(){
 
         }
     }

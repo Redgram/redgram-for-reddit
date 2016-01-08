@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.comments.views.CommentsActivity;
 import com.matie.redgram.ui.common.main.MainActivity;
 
 import butterknife.ButterKnife;
@@ -26,8 +27,6 @@ import butterknife.OnClick;
  * Created by matie on 2015-11-04.
  */
 public class WebPreviewFragment extends BasePreviewFragment{
-
-    public static final String MAIN_DATA = "web_preview_data";
 
     @InjectView(R.id.web_progress_bar)
     ProgressBar progressBar;
@@ -56,17 +55,23 @@ public class WebPreviewFragment extends BasePreviewFragment{
         webView.setWebViewClient(getWebViewClient());
         webView.setWebChromeClient(getWebChromeClient());
 
-        if(getArguments().containsKey(MAIN_DATA)){
-            String data = getArguments().getString(MAIN_DATA);
+        if(getContext() instanceof MainActivity){
+            MainActivity mainActivity = (MainActivity)getContext();
+            mainActivity.setDragable(topBanner);
+        }
+
+        if(getContext() instanceof CommentsActivity){
+            topBanner.setVisibility(View.GONE);
+        }
+
+        if(getArguments().containsKey(getMainKey())){
+            String data = getArguments().getString(getMainKey());
             postItem = new Gson().fromJson(data, PostItem.class);
 
             webView.loadUrl(postItem.getUrl());
 
             topBannerTitle.setText(postItem.getTitle());
         }
-
-        MainActivity mainActivity = (MainActivity)getContext();
-        mainActivity.setDragable(topBanner);
 
         return view;
     }
@@ -77,8 +82,8 @@ public class WebPreviewFragment extends BasePreviewFragment{
 
     @Override
     public void refreshPreview(Bundle bundle) {
-        if(bundle.containsKey(MAIN_DATA)){
-            String data = bundle.getString(MAIN_DATA);
+        if(bundle.containsKey(getMainKey())){
+            String data = bundle.getString(getMainKey());
             postItem = new Gson().fromJson(data, PostItem.class);
             //update if not equal to current URL
             if(!postItem.getUrl().equalsIgnoreCase(webView.getUrl()))

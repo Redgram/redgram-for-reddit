@@ -146,9 +146,9 @@ public class PostItemImageView extends PostItemSubView{
 
                     Bundle bundle = new Bundle();
 
-                    bundle.putString(ImagePreviewFragment.LOCAL_CACHE_KEY, localFile.getPath());
+                    bundle.putString(getResources().getString(R.string.local_cache_key), localFile.getPath());
 
-                    bundle.putString(ImagePreviewFragment.MAIN_DATA, new Gson().toJson(postItem));
+                    bundle.putString(getResources().getString(R.string.main_data_key), new Gson().toJson(postItem));
 
                     getMainActivity().setPanelView(Fragments.IMAGE_PREVIEW, bundle);
                 }

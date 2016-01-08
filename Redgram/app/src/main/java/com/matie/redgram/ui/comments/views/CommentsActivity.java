@@ -20,14 +20,19 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.matie.redgram.R;
+import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.comments.views.adapters.CommentsPagerAdapter;
 import com.matie.redgram.ui.common.base.BaseActivity;
+import com.matie.redgram.ui.common.previews.BasePreviewFragment;
+import com.matie.redgram.ui.common.previews.ImagePreviewFragment;
+import com.matie.redgram.ui.common.previews.WebPreviewFragment;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 
-public class CommentsActivity extends BaseActivity {
+public class CommentsActivity extends BaseActivity implements CommentsPagerAdapter.CommentsPreviewDetector {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -44,13 +49,20 @@ public class CommentsActivity extends BaseActivity {
      */
     private ViewPager mViewPager;
     private int viewPagerPosition = 0;
+    private PostItem postItem;
 
     private SlidrInterface mSlidrInterface;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
+
+        if(getIntent() != null){
+            String key = getResources().getString(R.string.main_data_key);
+            postItem = new Gson().fromJson(getIntent().getStringExtra(key), PostItem.class);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -62,10 +74,11 @@ public class CommentsActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setShowHideAnimationEnabled(true);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        commentsPagerAdapter = new CommentsPagerAdapter(getSupportFragmentManager());
+        commentsPagerAdapter = new CommentsPagerAdapter(getSupportFragmentManager(), this);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -80,8 +93,10 @@ public class CommentsActivity extends BaseActivity {
             public void onPageSelected(int position) {
                 if(position > 0){
                     mSlidrInterface.lock();
+                    getSupportActionBar().hide();
                 }else{
                     mSlidrInterface.unlock();
+                    getSupportActionBar().show();
                 }
             }
 
@@ -148,4 +163,46 @@ public class CommentsActivity extends BaseActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public BasePreviewFragment providePreviewFragment() {
+        if(isWebPreview(postItem)){
+            return new WebPreviewFragment();
+        }
+        if(isImagePreview(postItem)){
+            return new ImagePreviewFragment();
+        }
+        return new WebPreviewFragment();
+    }
+
+    @Override
+    public Bundle provideFragmentBundle() {
+        //add extra by identifying the type of the post
+        Bundle bundle = new Bundle();
+        bundle.putString(getResources().getString(R.string.main_data_key), new Gson().toJson(postItem));
+        return bundle;
+    }
+
+    private boolean isImagePreview(PostItem postItem) {
+        PostItem.Type type = postItem.getType();
+        if(type == PostItem.Type.IMAGE)
+            return true;
+        else
+            return false;
+    }
+
+    // TODO: 2016-01-06 For now, provide only WebPreview for anything that is NOT an image
+    private boolean isWebPreview(PostItem postItem) {
+        PostItem.Type type = postItem.getType();
+        if(type != PostItem.Type.IMAGE)
+            return true;
+        else
+            return false;
+    }
+
+    private void setToolbarTitle(int position){
+        CharSequence title = commentsPagerAdapter.getPageTitle(position);
+        getSupportActionBar().setTitle(title);
+    }
+
 }

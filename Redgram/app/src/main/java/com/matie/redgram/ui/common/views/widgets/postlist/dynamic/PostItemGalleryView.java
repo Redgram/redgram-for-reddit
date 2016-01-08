@@ -126,7 +126,8 @@ public class PostItemGalleryView extends PostItemSubView {
     @Override
     public void handleMainClickEvent() {
         Bundle bundle = new Bundle();
-        bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(postItem));
+        String key = getResources().getString(R.string.main_data_key);
+        bundle.putString(key, new Gson().toJson(postItem));
         getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
     }
 

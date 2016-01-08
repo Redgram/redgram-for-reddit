@@ -4,30 +4,29 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
+import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.comments.views.CommentsFragment;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
+import com.matie.redgram.ui.common.previews.CommentsPreviewFragment;
 import com.matie.redgram.ui.common.previews.PostPreviewFragment;
 import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
-import com.matie.redgram.ui.home.HomeFragment;
-import com.matie.redgram.ui.subcription.SubscriptionDetailsFragment;
 
 /**
- * Created by matie on 2015-12-21.
+ * Created by matie on 2016-01-07.
  */
-public class CommentsPagerAdapter extends SectionsPagerAdapter {
+public class CommentsVerticalAdapter extends SectionsPagerAdapter {
 
     /**
      * The fragment argument representing the section number for this
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private CommentsPreviewDetector previewDetector;
+    private Bundle bundle;
 
 
-    public CommentsPagerAdapter(FragmentManager fm, CommentsPreviewDetector detector) {
+    public CommentsVerticalAdapter(FragmentManager fm, Bundle bundle) {
         super(fm);
-        previewDetector = detector;
+        this.bundle = bundle;
     }
 
 
@@ -41,13 +40,13 @@ public class CommentsPagerAdapter extends SectionsPagerAdapter {
     protected Fragment getFragmentByPosition(int position) {
         switch (position){
             case 1:
-                CommentsFragment commentsFragment = new CommentsFragment();
-                commentsFragment.setArguments(previewDetector.provideFragmentBundle());
-                return commentsFragment;
+                PostPreviewFragment postPreviewFragment = new PostPreviewFragment();
+                postPreviewFragment.setArguments(bundle);
+                return postPreviewFragment;
             case 2:
-                BasePreviewFragment fragment = previewDetector.providePreviewFragment();
-                fragment.setArguments(previewDetector.provideFragmentBundle());
-                return fragment;
+                CommentsPreviewFragment commentsPreviewFragment = new CommentsPreviewFragment();
+                commentsPreviewFragment.setArguments(bundle);
+                return commentsPreviewFragment;
         }
         return null;
     }
@@ -56,15 +55,12 @@ public class CommentsPagerAdapter extends SectionsPagerAdapter {
     protected CharSequence getFragmentTitle(int position) {
         switch (position) {
             case 0:
-                return "Comments";
+                return "Post";
             case 1:
-                return "Preview";
+                return "Comments";
         }
         return null;
     }
 
-    public interface CommentsPreviewDetector{
-        public BasePreviewFragment providePreviewFragment();
-        public Bundle provideFragmentBundle();
-    }
 }
+

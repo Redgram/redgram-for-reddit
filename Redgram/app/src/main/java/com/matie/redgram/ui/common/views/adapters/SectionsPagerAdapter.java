@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.common.views.adapters;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -15,6 +16,7 @@ public abstract class SectionsPagerAdapter extends FragmentPagerAdapter {
         super(fm);
         this.fm = fm;
     }
+
 
     protected abstract int getPagerCount();
     protected abstract Fragment getFragmentByPosition(int position);

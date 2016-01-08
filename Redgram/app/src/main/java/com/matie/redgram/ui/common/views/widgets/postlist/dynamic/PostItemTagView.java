@@ -88,7 +88,8 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
     public void handleMainClickEvent() {
         if(eventCode == WEB_EVENT){
             Bundle bundle = new Bundle();
-            bundle.putString(WebPreviewFragment.MAIN_DATA, new Gson().toJson(item));
+            String key = getResources().getString(R.string.main_data_key);
+            bundle.putString(key, new Gson().toJson(item));
             getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
             return;
         }
@@ -96,8 +97,11 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
         if(eventCode == COMMENTS_EVENT){
             // TODO: 2015-12-26 open comments activity
             Intent intent = new Intent(getMainActivity(), CommentsActivity.class);
-            getMainActivity().startActivity(intent);
-            getMainActivity().overridePendingTransition(R.anim.enter, R.anim.exit);
+
+            String key = getResources().getString(R.string.main_data_key);
+            intent.putExtra(key, new Gson().toJson(item));
+            getMainActivity().openIntent(intent, R.anim.enter, R.anim.exit);
+
             return;
         }
 

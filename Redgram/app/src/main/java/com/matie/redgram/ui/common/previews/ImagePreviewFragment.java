@@ -1,6 +1,11 @@
 package com.matie.redgram.ui.common.previews;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +15,29 @@ import android.widget.TextView;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.facebook.binaryresource.BinaryResource;
+import com.facebook.binaryresource.FileBinaryResource;
+import com.facebook.cache.common.CacheKey;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.BaseDataSubscriber;
+import com.facebook.datasource.DataSource;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory;
+import com.facebook.imagepipeline.core.ImagePipelineFactory;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.memory.PooledByteBuffer;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.media.images.ImageManager;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.comments.views.CommentsActivity;
+import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.main.MainActivity;
+
+import java.io.File;
+import java.util.concurrent.Executor;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -24,8 +48,6 @@ import butterknife.OnClick;
  */
 public class ImagePreviewFragment extends BasePreviewFragment {
 
-    public static final String LOCAL_CACHE_KEY = "image_preview_bundle";
-    public static final String MAIN_DATA = "image_preview_data";
 
     @InjectView(R.id.image_preview)
     SubsamplingScaleImageView imagePreview;
@@ -39,6 +61,7 @@ public class ImagePreviewFragment extends BasePreviewFragment {
     String filePath = "";
     PostItem postItem;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -46,23 +69,55 @@ public class ImagePreviewFragment extends BasePreviewFragment {
         View view = inflater.inflate(R.layout.preview_image_fragment, container, false);
         ButterKnife.inject(this, view);
 
-        if(getArguments().containsKey(LOCAL_CACHE_KEY)){
-            String path = getArguments().getString(LOCAL_CACHE_KEY);
-            imagePreview.setImage(ImageSource.uri(path));
-            imagePreview.setVisibility(View.VISIBLE);
-            filePath = path;
-        }
-
-        if(getArguments().containsKey(MAIN_DATA)){
-            String data = getArguments().getString(MAIN_DATA);
+        if(getArguments().containsKey(getMainKey())){
+            String data = getArguments().getString(getMainKey());
             postItem = new Gson().fromJson(data, PostItem.class);
             topBannerTitle.setText(postItem.getTitle());
         }
 
-        MainActivity mainActivity = (MainActivity)getContext();
-        mainActivity.setDragable(topBanner);
+        if(getArguments().containsKey(getLocalCacheKey())){
+            String path = getArguments().getString(getLocalCacheKey());
+            imagePreview.setImage(ImageSource.uri(path));
+            imagePreview.setVisibility(View.VISIBLE);
+            filePath = path;
+        }else{
+            preFetchToDiskCacheAndDisplay();
+        }
+
+        if(getContext() instanceof MainActivity){
+            MainActivity mainActivity = (MainActivity)getContext();
+            mainActivity.setDragable(topBanner);
+        }
+
+        if(getContext() instanceof CommentsActivity){
+            topBanner.setVisibility(View.GONE);
+        }
 
         return view;
+    }
+
+    private void preFetchToDiskCacheAndDisplay() {
+        Uri uri = Uri.parse(postItem.getUrl());
+        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
+                .build();
+        DataSource<Void> dataSource
+                = Fresco.getImagePipeline().prefetchToDiskCache(request, getContext());
+        dataSource.subscribe(new BaseDataSubscriber<Void>() {
+            @Override
+            protected void onNewResultImpl(DataSource<Void> dataSource) {
+                displayCachedImageFromBackgroundThread(request);
+            }
+
+            @Override
+            protected void onFailureImpl(DataSource<Void> dataSource) {
+
+            }
+        }, new Executor() {
+            @Override
+            public void execute(Runnable command) {
+                command.run();
+            }
+        });
     }
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
@@ -72,9 +127,9 @@ public class ImagePreviewFragment extends BasePreviewFragment {
     @Override
     public void refreshPreview(Bundle bundle) {
 
-        if(bundle.containsKey(LOCAL_CACHE_KEY)){
+        if(bundle.containsKey(getLocalCacheKey())){
 
-            String path = bundle.getString(LOCAL_CACHE_KEY);
+            String path = bundle.getString(getLocalCacheKey());
             if(!path.equalsIgnoreCase(filePath)){
                 ImageSource imageSource = ImageSource.uri(path);
                 imagePreview.setImage(imageSource);
@@ -83,8 +138,8 @@ public class ImagePreviewFragment extends BasePreviewFragment {
 
         }
 
-        if(bundle.containsKey(MAIN_DATA)){
-            String data = bundle.getString(MAIN_DATA);
+        if(bundle.containsKey(getMainKey())){
+            String data = bundle.getString(getMainKey());
             postItem = new Gson().fromJson(data, PostItem.class);
             if(!topBannerTitle.getText().toString().equalsIgnoreCase(postItem.getTitle()))
                 topBannerTitle.setText(postItem.getTitle());
@@ -103,4 +158,26 @@ public class ImagePreviewFragment extends BasePreviewFragment {
         MainActivity activity = (MainActivity)getContext();
         activity.hidePanel();
     }
+
+    private void displayCachedImageFromBackgroundThread(ImageRequest request){
+        CacheKey cacheKey = DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(ImageRequest.fromUri(request.getSourceUri()));
+
+        if(cacheKey != null){
+            BinaryResource resource = ImagePipelineFactory.getInstance().getMainDiskStorageCache().getResource(cacheKey);
+            if(resource != null){
+                File localFile = ((FileBinaryResource) resource).getFile();
+                if(localFile != null){
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            imagePreview.setImage(ImageSource.uri(localFile.getPath()));
+                        }
+                    });
+                }
+            }
+
+        }
+    }
+
 }

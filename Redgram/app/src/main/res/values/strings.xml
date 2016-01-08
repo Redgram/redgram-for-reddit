@@ -70,4 +70,8 @@
     <string name="title_activity_comments">Comments</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
+    <!--preview fragment keys-->
+    <string name="local_cache_key">local_cache_key</string>
+    <string name="main_data_key">main_data_key</string>
+
 </resources>
