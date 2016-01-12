@@ -54,12 +54,6 @@ public class CommentsPagerAdapter extends SectionsPagerAdapter {
 
     @Override
     protected CharSequence getFragmentTitle(int position) {
-        switch (position) {
-            case 0:
-                return "Comments";
-            case 1:
-                return "Preview";
-        }
         return null;
     }
 

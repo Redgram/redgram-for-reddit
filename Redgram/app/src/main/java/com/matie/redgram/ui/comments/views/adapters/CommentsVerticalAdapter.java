@@ -4,9 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.comments.views.CommentsFragment;
-import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.previews.CommentsPreviewFragment;
 import com.matie.redgram.ui.common.previews.PostPreviewFragment;
 import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
@@ -16,28 +13,46 @@ import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
  */
 public class CommentsVerticalAdapter extends SectionsPagerAdapter {
 
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    private static final String ARG_SECTION_NUMBER = "section_number";
     private Bundle bundle;
+    private boolean isSelf;
 
 
-    public CommentsVerticalAdapter(FragmentManager fm, Bundle bundle) {
+    public CommentsVerticalAdapter(FragmentManager fm, Bundle bundle, boolean isSelf) {
         super(fm);
         this.bundle = bundle;
+        this.isSelf = isSelf;
     }
-
 
     @Override
     protected int getPagerCount() {
-        //return 2
-        return 2;
+        //return 2 is not a text
+        if(isSelf)
+            return 2;
+        else
+            return 1;
     }
 
     @Override
     protected Fragment getFragmentByPosition(int position) {
+        if(isSelf){
+            return getFragment(position);
+        }else{
+            CommentsPreviewFragment commentsPreviewFragment = new CommentsPreviewFragment();
+            commentsPreviewFragment.setArguments(bundle);
+            return commentsPreviewFragment;
+        }
+    }
+
+    @Override
+    protected CharSequence getFragmentTitle(int position) {
+        if(isSelf){
+            return getTitle(position);
+        }else{
+            return "Comments";
+        }
+    }
+
+    private Fragment getFragment(int position){
         switch (position){
             case 1:
                 PostPreviewFragment postPreviewFragment = new PostPreviewFragment();
@@ -51,8 +66,7 @@ public class CommentsVerticalAdapter extends SectionsPagerAdapter {
         return null;
     }
 
-    @Override
-    protected CharSequence getFragmentTitle(int position) {
+    private CharSequence getTitle(int position){
         switch (position) {
             case 0:
                 return "Post";

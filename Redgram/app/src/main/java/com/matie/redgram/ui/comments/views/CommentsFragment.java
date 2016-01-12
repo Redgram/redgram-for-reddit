@@ -1,10 +1,14 @@
 package com.matie.redgram.ui.comments.views;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
+import android.widget.TabHost;
 
 import com.google.gson.Gson;
 import com.matie.redgram.R;
@@ -34,26 +38,12 @@ public class CommentsFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_comments, container, false);
         ButterKnife.inject(this, view);
 
-        commentsVerticalAdapter = new CommentsVerticalAdapter(getFragmentManager(), getArguments());
+        String json = getArguments().getString(getResources().getString(R.string.main_data_key));
+        boolean isText = ((new Gson().fromJson(json, PostItem.class)).getType() == PostItem.Type.SELF) ? true : false;
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager.setAdapter(commentsVerticalAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        commentsVerticalAdapter = new CommentsVerticalAdapter(getFragmentManager(), getArguments(), isText);
 
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                setToolbarTitle(position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
+        setUpViewPager();
 
         return view;
     }
@@ -76,4 +66,26 @@ public class CommentsFragment extends BaseFragment {
         CharSequence title = commentsVerticalAdapter.getPageTitle(position);
         ((BaseActivity)getContext()).getSupportActionBar().setTitle(title);
     }
+
+    private void setUpViewPager() {
+        // Set up the ViewPager with the sections adapter.
+        mViewPager.setAdapter(commentsVerticalAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                setToolbarTitle(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+    }
+
 }
