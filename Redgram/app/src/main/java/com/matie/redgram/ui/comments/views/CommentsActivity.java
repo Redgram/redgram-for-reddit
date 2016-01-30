@@ -1,39 +1,32 @@
 package com.matie.redgram.ui.comments.views;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
-import android.graphics.Color;
+
+import android.content.Context;
 import android.os.Build;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
-import android.view.ViewPropertyAnimator;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.media.images.ImageManager;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.comments.views.adapters.CommentsPagerAdapter;
@@ -41,21 +34,15 @@ import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.previews.ImagePreviewFragment;
 import com.matie.redgram.ui.common.previews.WebPreviewFragment;
-import com.matie.redgram.ui.common.utils.display.reveal.AnimatorPath;
-import com.matie.redgram.ui.common.utils.display.reveal.PathEvaluator;
-import com.matie.redgram.ui.common.utils.display.reveal.PathPoint;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 
-public class CommentsActivity extends BaseActivity implements CommentsPagerAdapter.CommentsPreviewDetector {
-
-    public final static float SCALE_FACTOR      = 13f;
-    public final static int ANIMATION_DURATION  = 300;
-    public final static int MINIMUN_X_DISTANCE  = 380;
+public class CommentsActivity extends BaseActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -67,26 +54,24 @@ public class CommentsActivity extends BaseActivity implements CommentsPagerAdapt
      */
     private CommentsPagerAdapter commentsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
+    @InjectView(R.id.app_bar)
+    AppBarLayout appBarLayout;
+    @InjectView(R.id.toolbar_layout)
+    CollapsingToolbarLayout collapsingToolbarLayout;
     @InjectView(R.id.container)
     ViewPager mViewPager;
-    @InjectView(R.id.tabs)
-    TabLayout mTabLayout;
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
-    @InjectView(R.id.fabContainer)
-    FrameLayout fabContainer;
-    @InjectView(R.id.fabActionContainer)
-    LinearLayout fabActionContainer;
-    @InjectView(R.id.fab)
-    ImageButton mFab;
+    @InjectView(R.id.commentsFab)
+    FloatingActionButton commentsFab;
+    @InjectView(R.id.image)
+    SimpleDraweeView imageView;
+    @InjectView(R.id.title)
+    TextView title;
 
     private PostItem postItem;
+    private boolean isSelf;
     private SlidrInterface mSlidrInterface;
-    private boolean mRevealFlag;
-    private float mFabSize;
 
 
     @Override
@@ -98,26 +83,50 @@ public class CommentsActivity extends BaseActivity implements CommentsPagerAdapt
         if(getIntent() != null){
             String key = getResources().getString(R.string.main_data_key);
             postItem = new Gson().fromJson(getIntent().getStringExtra(key), PostItem.class);
+            isSelf = (postItem.getType() == PostItem.Type.SELF) ? true : false;
+            title.setText(postItem.getTitle());
         }
 
+        //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(getResources().getColor(R.color.material_red600));}
+            window.setStatusBarColor(getResources().getColor(R.color.material_red600));
+        }
 
+        setupToolbar();
+        setupViewPager();
+        setupToolbarImage();
+        setToolbarTitle(0);
+
+//        resolveAppBarHeight();
+        mSlidrInterface = Slidr.attach(this);
+    }
+
+    private void setupToolbarImage() {
+        ImageManager.SingleImageBuilder builder = ImageManager.newImageBuilder(this)
+                .setImageView(imageView)
+                .includeOldController();
+
+        if(!postItem.getThumbnail().isEmpty() && postItem.getThumbnail().length() > 0 && !isSelf){
+            builder.setThumbnail(postItem.getThumbnail());
+        }else{
+            builder.setImageFromRes(R.drawable.reddit_nf_cropped, false);
+        }
+
+        builder.build();
+    }
+
+    private void setupToolbar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setShowHideAnimationEnabled(true);
+    }
 
-//        fabActionContainer.setVisibility(View.GONE);
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        commentsPagerAdapter = new CommentsPagerAdapter(getSupportFragmentManager(), this);
-
-        // Set up the ViewPager with the sections adapter.
+    private void setupViewPager() {
+        commentsPagerAdapter = new CommentsPagerAdapter(getSupportFragmentManager(), provideFragmentBundle(), isSelf);
         mViewPager.setAdapter(commentsPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -128,12 +137,13 @@ public class CommentsActivity extends BaseActivity implements CommentsPagerAdapt
             @Override
             public void onPageSelected(int position) {
                 if (position > 0) {
+                    appBarLayout.setExpanded(false, true);
                     mSlidrInterface.lock();
-                    getSupportActionBar().hide();
                 } else {
+                    appBarLayout.setExpanded(true, true);
                     mSlidrInterface.unlock();
-                    getSupportActionBar().show();
                 }
+                setToolbarTitle(position);
             }
 
             @Override
@@ -141,13 +151,8 @@ public class CommentsActivity extends BaseActivity implements CommentsPagerAdapt
 
             }
         });
-
-        mTabLayout.setupWithViewPager(mViewPager);
-
-        mFabSize = getResources().getDimensionPixelSize(R.dimen.fab_size);
-
-        mSlidrInterface = Slidr.attach(this);
     }
+
 
     @Override
     protected void setupComponent(AppComponent appComponent) {
@@ -169,8 +174,12 @@ public class CommentsActivity extends BaseActivity implements CommentsPagerAdapt
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+        if(isSelf && mViewPager.getCurrentItem() > 0){
+            mViewPager.setCurrentItem(0, true);
+        }else{
+            super.onBackPressed();
+            overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+        }
     }
 
     @Override
@@ -195,7 +204,6 @@ public class CommentsActivity extends BaseActivity implements CommentsPagerAdapt
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
     public BasePreviewFragment providePreviewFragment() {
         if(isWebPreview(postItem)){
             return new WebPreviewFragment();
@@ -206,8 +214,7 @@ public class CommentsActivity extends BaseActivity implements CommentsPagerAdapt
         return new WebPreviewFragment();
     }
 
-    @Override
-    public Bundle provideFragmentBundle() {
+    private Bundle provideFragmentBundle() {
         //add extra by identifying the type of the post
         Bundle bundle = new Bundle();
         bundle.putString(getResources().getString(R.string.main_data_key), new Gson().toJson(postItem));
@@ -231,155 +238,63 @@ public class CommentsActivity extends BaseActivity implements CommentsPagerAdapt
             return false;
     }
 
-    private void setToolbarTitle(int position){
-        CharSequence title = commentsPagerAdapter.getPageTitle(position);
-        getSupportActionBar().setTitle(title);
+    private void setToolbarTitle(int position) {
+        getSupportActionBar().setTitle(commentsPagerAdapter.getPageTitle(position));
     }
 
-
-    private void onFabClicked() {
-
-        final float startX = mFab.getX();
-
-        AnimatorPath path = new AnimatorPath();
-        path.moveTo(0, 0);
-        path.lineTo(-450, 0);
-
-        final ObjectAnimator anim = ObjectAnimator.ofObject(this, "fabLoc",
-                new PathEvaluator(), path.getPoints().toArray());
-
-        anim.setInterpolator(new AccelerateInterpolator());
-        anim.setDuration(ANIMATION_DURATION);
-        anim.start();
-
-        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                if (Math.abs(startX - mFab.getX()) > 300) {
-                    mFab.setImageResource(R.color.transparent);
-                }
-                if (Math.abs(startX - mFab.getX()) > MINIMUN_X_DISTANCE) {
-                    if (!mRevealFlag) {
-
-                        mFab.animate()
-                                .scaleXBy(SCALE_FACTOR)
-                                .scaleYBy(SCALE_FACTOR)
-                                .setListener(mEndRevealListener)
-                                .setDuration(ANIMATION_DURATION);
-
-                        mRevealFlag = true;
-                    }
-                }
-            }
-        });
+    @OnClick(R.id.commentsFab)
+    public void onCommentsClick(){
+        onCommentsFabClicked(false);
     }
 
-    private AnimatorListenerAdapter mEndRevealListener = new AnimatorListenerAdapter() {
+    @OnLongClick(R.id.commentsFab)
+    public boolean onCommentsLongClick(){
+        onCommentsFabClicked(true);
+        return true;
+    }
 
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            super.onAnimationEnd(animation);
-
-            mFab.setVisibility(View.INVISIBLE);
-            fabContainer.setBackgroundColor(getResources()
-                    .getColor(R.color.material_red400));
-
-            for (int i = 0; i < fabActionContainer.getChildCount(); i++) {
-                View v = fabActionContainer.getChildAt(i);
-                ViewPropertyAnimator animator = v.animate()
-                        .scaleX(1).scaleY(1)
-                        .setDuration(ANIMATION_DURATION);
-
-                animator.setStartDelay(i * 50);
-                animator.start();
-            }
+    private void onCommentsFabClicked(boolean longClick) {
+        if(longClick){
+            onCommentsLongClicked();
+        }else{
+            onCommentsClicked();
         }
-    };
 
-    /**
-     * We need this setter to translate between the information the animator
-     * produces (a new "PathPoint" describing the current animated location)
-     * and the information that the button requires (an xy location). The
-     * setter will be called by the ObjectAnimator given the 'fabLoc'
-     * property string.
-     */
-    public void setFabLoc(PathPoint newLoc) {
-        mFab.setTranslationX(newLoc.mX);
-
-        if (mRevealFlag)
-            mFab.setTranslationY(newLoc.mY - (mFabSize / 2));
-        else
-            mFab.setTranslationY(newLoc.mY);
     }
 
-    private void hideContainer() {
-        final float startX = mFab.getX();
-
-        AnimatorPath path = new AnimatorPath();
-        path.moveTo(-450, 0);
-        path.lineTo(0, 0);
-
-        final ObjectAnimator anim = ObjectAnimator.ofObject(this, "fabLoc",
-                new PathEvaluator(), path.getPoints().toArray());
-
-        anim.setInterpolator(new DecelerateInterpolator());
-        anim.setDuration(ANIMATION_DURATION);
-        anim.start();
-
-        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                if (Math.abs(startX - mFab.getX()) > 300) {
-                    mFab.setImageResource(R.drawable.ic_action_clear);
-                }
-                if (Math.abs(startX - mFab.getX()) < MINIMUN_X_DISTANCE) {
-                    if (mRevealFlag) {
-
-                        mFab.animate()
-                                .scaleXBy(-SCALE_FACTOR)
-                                .scaleYBy(-SCALE_FACTOR)
-                                .setListener(mStartHideListener)
-                                .setDuration(ANIMATION_DURATION);
-
-                        mRevealFlag = false;
-                    }
-                }
-            }
-        });
+    private void onCommentsLongClicked() {
+        // TODO: 2016-01-27 list logged in user comments in the thread if any, if user already in comments, skip scrolling
     }
 
-    private AnimatorListenerAdapter mStartHideListener = new AnimatorListenerAdapter() {
-        @Override
-        public void onAnimationStart(Animator animation) {
-            super.onAnimationStart(animation);
-
-            for (int i = 0; i < fabActionContainer.getChildCount(); i++) {
-                View v = fabActionContainer.getChildAt(i);
-                ViewPropertyAnimator animator = v.animate()
-                        .scaleX(0).scaleY(0)
-                        .setDuration(ANIMATION_DURATION/2);
-
-                animator.setStartDelay(ANIMATION_DURATION/4);
-                animator.start();
+    private void onCommentsClicked() {
+        if(isSelf){
+            //if already in comments section, could never happen since it is collapsed automatically
+            if(mViewPager.getCurrentItem() == 1){
+                // TODO: 2016-01-27 focus on comments edit box
+            }else{
+                //go to comments
+                mViewPager.setCurrentItem(1, true);
             }
 
-            fabContainer.setBackgroundColor(getResources()
-                    .getColor(R.color.transparent));
-            mFab.setVisibility(View.VISIBLE);
-
+        }else{
+            //focus on edit text
         }
-    };
-
-    @OnClick(R.id.toolbar)
-    public void onContainerClick(){
-        hideContainer();
     }
 
-    @OnClick(R.id.fab)
-    public void onFabClick(){
-        onFabClicked();
-    }
-
+//    private void resolveAppBarHeight() {
+//        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+//        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+//
+//        int titleHeight = getTextViewHeight(title, (int)dpWidth);
+//
+//        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams)appBarLayout.getLayoutParams();
+//        lp.height += (int)titleHeight;
+//    }
+//
+//    public static int getTextViewHeight(TextView textView , int deviceWidth) {
+//        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(deviceWidth, View.MeasureSpec.AT_MOST);
+//        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+//        textView.measure(widthMeasureSpec, heightMeasureSpec);
+//        return textView.getMeasuredHeight();
+//    }
 }

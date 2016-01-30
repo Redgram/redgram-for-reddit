@@ -18,4 +18,6 @@ public abstract class BasePreviewFragment extends Fragment {
     public String getLocalCacheKey(){
         return getResources().getString(R.string.local_cache_key);
     }
+
+
 }

@@ -17,6 +17,7 @@ import butterknife.InjectView;
  * Created by matie on 2016-01-07.
  */
 public class CommentsPreviewFragment extends BasePreviewFragment {
+
     @InjectView(R.id.title)
     TextView titleView;
 
@@ -29,7 +30,7 @@ public class CommentsPreviewFragment extends BasePreviewFragment {
 
         String json = getArguments().getString(getMainKey());
         String title = (new Gson().fromJson(json, PostItem.class)).getTitle();
-        titleView.setText(title + " ----- COMMENTS");
+        titleView.setText(title);
 
         return view;
     }
@@ -42,4 +43,5 @@ public class CommentsPreviewFragment extends BasePreviewFragment {
     public void refreshPreview(Bundle bundle) {
 
     }
+
 }

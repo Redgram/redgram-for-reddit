@@ -1,15 +1,20 @@
 package com.matie.redgram.ui.comments.views.widgets.viewpager;
 
 import android.content.Context;
+import android.support.v4.view.NestedScrollingChild;
+import android.support.v4.view.ScrollingView;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ScrollView;
 
 /**
  * Created by matie on 2016-01-06.
  */
 public class VerticalViewPager extends ViewPager {
+    private boolean pagingEnabled;
+
     public VerticalViewPager(Context context) {
         super(context);
         init();
@@ -21,6 +26,7 @@ public class VerticalViewPager extends ViewPager {
     }
 
     private void init() {
+        pagingEnabled = false;
         // The majority of the magic happens here
         setPageTransformer(true, new VerticalPageTransformer());
         // The easiest way to get rid of the overscroll drawing that happens on the left and right
@@ -74,6 +80,14 @@ public class VerticalViewPager extends ViewPager {
     }
 
     @Override
+    protected boolean canScroll(View v, boolean checkV, int dx, int x, int y) {
+        if(v != this && v instanceof ScrollView){
+            return false;
+        }
+        return super.canScroll(v, checkV, dx, x, y);
+    }
+
+    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev){
         boolean intercepted = super.onInterceptTouchEvent(swapXY(ev));
         swapXY(ev); // return touch coordinates to original reference frame for any child views
@@ -83,6 +97,10 @@ public class VerticalViewPager extends ViewPager {
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         return super.onTouchEvent(swapXY(ev));
+    }
+
+    public void setPagingEnabled(boolean enabled) {
+        pagingEnabled = enabled;
     }
 
 }

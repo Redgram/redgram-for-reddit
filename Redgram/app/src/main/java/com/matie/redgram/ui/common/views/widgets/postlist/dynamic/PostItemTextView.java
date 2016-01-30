@@ -27,6 +27,8 @@ public class PostItemTextView extends PostItemSubView {
     @InjectView(R.id.text_tag_view)
     PostItemTagView textTagView;
 
+    PostItem postItem;
+
     final Resources res;
     MainActivity mainActivity;
     SharedPreferences sharedPreferences;
@@ -46,6 +48,8 @@ public class PostItemTextView extends PostItemSubView {
 
     @Override
     public void setupView(PostItem item) {
+        postItem = item;
+
         textTagView.setupView(item);
 
         textTitleView.setText(item.getTitle());
@@ -87,15 +91,20 @@ public class PostItemTextView extends PostItemSubView {
         //opens comments section because it exists in all views
     }
 
+    @OnClick(R.id.text_title_view)
+    public void onTitleClick(){
+        loadComments(postItem);
+    }
+
     @OnClick(R.id.text_content_view)
-    public void onClick(){
+    public void onContentClick(){
         if(textContentView.getText().equals(res.getString(R.string.nsfw_material))){
             // TODO: 09/10/15 Formatted view of content
             if(!isNsfwDisabled()){
                 callNsfwDialog();
             }
         }else{
-
+            loadComments(postItem);
         }
     }
 

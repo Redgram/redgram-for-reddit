@@ -1,6 +1,8 @@
 package com.matie.redgram.ui.common.utils.display.reveal;
 
 
+import android.graphics.Path;
+
 /**
  *  Created by matie on 2016-01-10.
  *

@@ -74,4 +74,5 @@ dependencies {
     compile 'com.google.dagger:dagger:2.0.1'
     compile 'com.android.support:design:23.1.0'
     compile 'com.r0adkll:slidableactivity:2.0.4'
+
 }

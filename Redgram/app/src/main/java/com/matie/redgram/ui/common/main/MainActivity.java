@@ -77,10 +77,6 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
 
-//    @InjectView(R.id.container)
-//    ViewPager viewPager;
-//    CommentsPagerAdapter pagerAdapter;
-
     BasePreviewFragment previewFragment;
     Fragments currentPreviewFragment;
 
@@ -117,11 +113,12 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
         //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window = getWindow();
+            Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(getResources().getColor(R.color.material_red600));
         }
+
 
         // Possible work around for market launches. See http://code.google.com/p/android/issues/detail?id=2373
         // for more details. Essentially, the market launches the main activity on top of other activities.

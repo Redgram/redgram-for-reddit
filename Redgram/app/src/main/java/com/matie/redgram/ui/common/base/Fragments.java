@@ -2,7 +2,7 @@ package com.matie.redgram.ui.common.base;
 
 import android.support.v4.app.Fragment;
 
-import com.matie.redgram.ui.comments.views.CommentsFragment;
+import com.matie.redgram.ui.common.previews.CommentsPreviewFragment;
 import com.matie.redgram.ui.common.previews.ImagePreviewFragment;
 import com.matie.redgram.ui.common.previews.PostPreviewFragment;
 import com.matie.redgram.ui.common.previews.WebPreviewFragment;
@@ -20,8 +20,7 @@ public enum Fragments {
 
     SUBREDDITS_DETAILS(SubscriptionDetailsFragment.class),
 
-    COMMENTS(CommentsFragment.class),
-
+    COMMENTS_PREVIEW(CommentsPreviewFragment.class),
     POST_PREVIEW(PostPreviewFragment.class) ,IMAGE_PREVIEW(ImagePreviewFragment.class), WEB_PREVIEW(WebPreviewFragment.class);
 
     final Class<? extends Fragment> fragment;

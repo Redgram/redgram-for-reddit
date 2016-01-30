@@ -2,10 +2,10 @@ package com.matie.redgram.data.managers.media.images;
 
 import android.content.Context;
 import android.graphics.PointF;
-import android.media.Image;
 import android.net.Uri;
 import android.util.Log;
 
+import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.controller.ControllerListener;
@@ -84,21 +84,50 @@ public class ImageManager {
 
         public SingleImageBuilder setThumbnail(String url){
             Uri thumbnailUri = Uri.parse(url);
-            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(thumbnailUri)
-                    .build();
+            ImageRequest request = getRequest(thumbnailUri, false);
             lowResImageRequest = request;
             controllerBuilder.setImageRequest(request);
             return this;
         }
+
         public SingleImageBuilder setImage(String url, boolean progressive){
             Uri uri = Uri.parse(url);
-            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
-                    .setProgressiveRenderingEnabled(progressive)
-                    .build();
+            ImageRequest request = getRequest(uri, progressive);
             mainImageRequest = request;
             controllerBuilder.setLowResImageRequest(request);
             return this;
         }
+
+        public SingleImageBuilder setImageFromRes(int resId, boolean progressive){
+            Uri uri = new Uri.Builder()
+                    .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
+                    .path(String.valueOf(resId))
+                    .build();
+            ImageRequest request = getRequest(uri, progressive);
+            mainImageRequest = request;
+            controllerBuilder.setLowResImageRequest(request);
+            return this;
+        }
+
+
+        public SingleImageBuilder setImageFromAsset(int assetId, boolean progressive){
+            Uri uri = new Uri.Builder()
+                    .scheme(UriUtil.LOCAL_ASSET_SCHEME) // "asset"
+                    .path(String.valueOf(assetId))
+                    .build();
+            ImageRequest request = getRequest(uri, progressive);
+            mainImageRequest = request;
+            controllerBuilder.setLowResImageRequest(request);
+            return this;
+        }
+
+        private ImageRequest getRequest(Uri uri, boolean progressive) {
+            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
+                    .setProgressiveRenderingEnabled(progressive)
+                    .build();
+            return request;
+        }
+
         public SingleImageBuilder includeOldController(){
             try {
                 controllerBuilder.setOldController(imageView.getController());

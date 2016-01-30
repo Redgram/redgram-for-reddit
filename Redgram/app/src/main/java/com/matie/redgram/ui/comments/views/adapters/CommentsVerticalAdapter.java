@@ -9,13 +9,14 @@ import com.matie.redgram.ui.common.previews.PostPreviewFragment;
 import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
 
 /**
+ * Not used but kept for personal reference
+ *
  * Created by matie on 2016-01-07.
  */
 public class CommentsVerticalAdapter extends SectionsPagerAdapter {
 
     private Bundle bundle;
     private boolean isSelf;
-
 
     public CommentsVerticalAdapter(FragmentManager fm, Bundle bundle, boolean isSelf) {
         super(fm);
@@ -34,22 +35,18 @@ public class CommentsVerticalAdapter extends SectionsPagerAdapter {
 
     @Override
     protected Fragment getFragmentByPosition(int position) {
-        if(isSelf){
-            return getFragment(position);
-        }else{
-            CommentsPreviewFragment commentsPreviewFragment = new CommentsPreviewFragment();
-            commentsPreviewFragment.setArguments(bundle);
-            return commentsPreviewFragment;
+        if(!isSelf) {
+            position += 1;
         }
+        return getFragment(position);
     }
 
     @Override
     protected CharSequence getFragmentTitle(int position) {
-        if(isSelf){
-            return getTitle(position);
-        }else{
-            return "Comments";
+        if(!isSelf) {
+            position += 1;
         }
+        return getTitle(position);
     }
 
     private Fragment getFragment(int position){

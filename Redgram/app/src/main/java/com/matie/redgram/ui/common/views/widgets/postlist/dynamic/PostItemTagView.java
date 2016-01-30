@@ -95,13 +95,7 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
         }
 
         if(eventCode == COMMENTS_EVENT){
-            // TODO: 2015-12-26 open comments activity
-            Intent intent = new Intent(getMainActivity(), CommentsActivity.class);
-
-            String key = getResources().getString(R.string.main_data_key);
-            intent.putExtra(key, new Gson().toJson(item));
-            getMainActivity().openIntent(intent, R.anim.enter, R.anim.exit);
-
+            loadComments(item);
             return;
         }
 

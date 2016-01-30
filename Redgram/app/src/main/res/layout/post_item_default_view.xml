@@ -13,8 +13,8 @@
             fresco:actualImageScaleType="focusCrop"
             fresco:placeholderImage="@color/ripple_material_light"
             fresco:placeholderImageScaleType="fitCenter"
-            fresco:failureImage="@drawable/ic_action_error"
-            fresco:failureImageScaleType="centerInside" />
+            fresco:failureImage="@drawable/ic_launcher"
+            fresco:failureImageScaleType="centerCrop" />
 
         <LinearLayout
             android:id="@+id/info_wrapper"
