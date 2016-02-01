@@ -24,9 +24,7 @@ public class RedditComment extends RedditSubmission {
     private int num_reports;
     private String parent_id;
     private boolean saved;
-    private int score;
     private boolean score_hidden;
-    private String subreddit;
     private String subreddit_id;
     private String distinguished;
     private List<RedditObject> replies;
