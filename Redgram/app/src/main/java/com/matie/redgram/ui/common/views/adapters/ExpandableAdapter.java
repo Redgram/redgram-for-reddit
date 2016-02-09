@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.common.views.adapters;
 
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
@@ -12,8 +13,12 @@ import java.util.List;
  */
 public abstract class ExpandableAdapter<G extends RecyclerView.ViewHolder, C extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements ExpandableItemAdapter<G, C> {
+
+    Resources mResources;
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        mResources = parent.getContext().getResources();
         return null;
     }
 
@@ -31,9 +36,7 @@ public abstract class ExpandableAdapter<G extends RecyclerView.ViewHolder, C ext
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List<Object> payloads) {}
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-    }
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {}
 
     @Override
     public int getItemCount() {
@@ -59,5 +62,9 @@ public abstract class ExpandableAdapter<G extends RecyclerView.ViewHolder, C ext
     @Override
     public boolean onHookGroupExpand(int groupPosition, boolean fromUser) {
         return true;
+    }
+
+    public Resources getResources() {
+        return mResources;
     }
 }

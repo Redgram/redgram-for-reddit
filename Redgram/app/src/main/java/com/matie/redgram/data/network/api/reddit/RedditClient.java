@@ -1,12 +1,19 @@
 package com.matie.redgram.data.network.api.reddit;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.matie.redgram.data.models.api.reddit.RedditComment;
+import com.matie.redgram.data.models.api.reddit.RedditMore;
 import com.matie.redgram.data.models.api.reddit.RedditSubreddit;
+import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.api.reddit.RedditLink;
 import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.main.items.SubredditItem;
+import com.matie.redgram.data.models.main.items.comment.CommentItem;
+import com.matie.redgram.data.models.main.items.comment.CommentMoreItem;
+import com.matie.redgram.data.models.main.items.comment.CommentWrapper;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.base.RedditProviderBase;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
@@ -62,8 +69,10 @@ public class RedditClient extends RedditServiceBase {
 
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> searchObservable = null;
 
-        if(!subreddit.isEmpty() && subreddit != null){
-            params.put("restrict_sr", "true");
+        if(!subreddit.isEmpty()){
+            if (params != null) {
+                params.put("restrict_sr", "true");
+            }
             searchObservable = provider.executeSearch(subreddit, params);
         }else{
             //at least have a "q" param set
@@ -100,7 +109,7 @@ public class RedditClient extends RedditServiceBase {
 
         return observable.flatMap(response -> Observable.from(response.getData().getChildren()))
                 .cast(RedditLink.class)
-                .map(link -> mapLinkToPostItem(link))
+                .map(this::mapLinkToPostItem)
                 .filter(item -> (postItems != null ? filterExistingItems(postItems, item) : true))
                 .concatMap(postItem -> {
 
@@ -177,6 +186,55 @@ public class RedditClient extends RedditServiceBase {
         });
     }
 
+    public Observable<CommentWrapper> getCommentsByArticle(String article, @Nullable Map<String, String> params){
+
+        Observable<List<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>>>
+                commentsWrapper = provider.getCommentsByArticle(article, params);
+
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> listings =
+                commentsWrapper.flatMapIterable(redditResponses -> redditResponses);
+
+        Observable<PostItem>
+                postObservable = listings
+                                    .first()
+                                    .flatMap(data -> Observable.from(data.getData().getChildren()))
+                                    .cast(RedditLink.class)
+                                    .map(postData -> mapLinkToPostItem(postData));
+
+        Observable<List<CommentBaseItem>>
+                redditCommentObjects = listings
+                                        .last()
+                                        .flatMap(data -> Observable.from(data.getData().getChildren()))
+                                        .concatMap(comment -> {
+
+                                            CommentBaseItem baseItem = null;
+
+                                            if (comment instanceof RedditComment) {
+                                                baseItem = mapCommentToCommentItem((RedditComment) comment);
+                                            } else if (comment instanceof RedditMore) {
+                                                baseItem = mapCommentToCommentMoreItem((RedditMore) comment);
+                                            }
+
+                                            return Observable.just(baseItem);
+
+                                        })
+                                        .filter(finalItem -> (finalItem != null))
+                                        .toList();
+
+
+        return Observable.zip(postObservable, redditCommentObjects, new Func2<PostItem, List<CommentBaseItem>, CommentWrapper>() {
+            @Override
+            public CommentWrapper call(PostItem item, List<CommentBaseItem> commentBaseItems) {
+                CommentWrapper commentWrapper = new CommentWrapper();
+                commentWrapper.setPostItem(item);
+                commentWrapper.setCommentItems(commentBaseItems);
+                return commentWrapper;
+            }
+        });
+
+    }
+
+
     /**
      * Maps attributes that belong to listings only. BEFORE AFTER AND MODHASH.
      * @param responseObservable
@@ -197,9 +255,37 @@ public class RedditClient extends RedditServiceBase {
         return map;
     }
 
+    private CommentItem mapCommentToCommentItem(RedditComment commentData) {
+        CommentItem item = new CommentItem();
+
+        item.setCommentType(CommentBaseItem.CommentType.REGULAR);
+        item.setId(commentData.getId());
+        item.setLinkId(commentData.getLinkId());
+        item.setAuthor(commentData.getAuthor());
+        item.setBody(commentData.getBody());
+        item.setBodyHtml(commentData.getBody_html());
+        item.setParentId(commentData.getParentId());
+        item.setSubredditId(commentData.getSubredditId());
+
+        return item;
+    }
+
+    private CommentMoreItem mapCommentToCommentMoreItem(RedditMore commentData) {
+        CommentMoreItem item = new CommentMoreItem();
+
+        item.setCommentType(CommentBaseItem.CommentType.MORE);
+        item.setId(commentData.getId());
+        item.setCount(commentData.getCount());
+        item.setName(commentData.getName());
+        item.setParentId(commentData.getParentId());
+        item.setChildren(commentData.getChildren());
+
+        return item;
+    }
+
+
     // TODO: 22/09/15 move to a builder class
     private PostItem mapLinkToPostItem(RedditLink link){
-
         PostItem item = new PostItem();
 
         item.setId(link.getId());

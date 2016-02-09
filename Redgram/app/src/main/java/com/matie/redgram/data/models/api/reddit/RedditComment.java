@@ -9,33 +9,28 @@ import java.util.List;
  */
 public class RedditComment extends RedditSubmission {
     private String approved_by;
-    private String author;
     private String author_flair_css_class;
-    private String author_flair_text;
-    private String banned_by;
     private String body;
     private String body_html;
     private boolean edited;
-    private int gilded;
     private boolean likes;
+    private String link_id;
     private String link_author;
     private String link_title;
     private String link_url;
     private int num_reports;
     private String parent_id;
-    private boolean saved;
     private boolean score_hidden;
     private String subreddit_id;
     private String distinguished;
     private List<RedditObject> replies;
 
-    public String getApproved_by() {
-        return approved_by;
+    public String getLinkId() {
+        return link_id;
     }
 
-    @Override
-    public String getAuthor() {
-        return author;
+    public String getApproved_by() {
+        return approved_by;
     }
 
     public String getAuthor_flair_css_class() {
@@ -87,7 +82,7 @@ public class RedditComment extends RedditSubmission {
         return num_reports;
     }
 
-    public String getParent_id() {
+    public String getParentId() {
         return parent_id;
     }
 
@@ -110,7 +105,7 @@ public class RedditComment extends RedditSubmission {
         return subreddit;
     }
 
-    public String getSubreddit_id() {
+    public String getSubredditId() {
         return subreddit_id;
     }
 

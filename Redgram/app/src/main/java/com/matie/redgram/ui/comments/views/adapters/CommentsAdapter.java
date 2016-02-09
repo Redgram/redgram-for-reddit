@@ -1,76 +1,75 @@
 package com.matie.redgram.ui.comments.views.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.h6ah4i.android.widget.advrecyclerview.expandable.ExpandableItemAdapter;
+import com.matie.redgram.R;
+import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
+import com.matie.redgram.ui.comments.views.widgets.comment.CommentItemView;
 import com.matie.redgram.ui.comments.views.widgets.comment.CommentViewHolder;
-import com.matie.redgram.ui.common.views.adapters.ExpandableAdapter;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by matie on 2016-01-31.
  */
-public class CommentsAdapter extends ExpandableAdapter<CommentViewHolder, CommentViewHolder> {
+public class CommentsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private List<CommentBaseItem> commentItems = Collections.emptyList();
 
     public CommentsAdapter() {
 
-    }
 
-
-    @Override
-    public int getGroupCount() {
-        return 0;
     }
 
     @Override
-    public int getChildCount(int groupPosition) {
-        return 0;
-    }
-
-    @Override
-    public long getGroupId(int groupPosition) {
-        return 0;
-    }
-
-    @Override
-    public long getChildId(int groupPosition, int childPosition) {
-        return 0;
-    }
-
-    @Override
-    public int getGroupItemViewType(int groupPosition) {
-        return 0;
-    }
-
-    @Override
-    public int getChildItemViewType(int groupPosition, int childPosition) {
-        return 0;
-    }
-
-    @Override
-    public CommentViewHolder onCreateGroupViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return null;
     }
 
     @Override
-    public CommentViewHolder onCreateChildViewHolder(ViewGroup parent, int viewType) {
-        return null;
-    }
-
-    @Override
-    public void onBindGroupViewHolder(CommentViewHolder holder, int groupPosition, int viewType) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
     }
 
     @Override
-    public void onBindChildViewHolder(CommentViewHolder holder, int groupPosition, int childPosition, int viewType) {
-
+    public int getItemCount() {
+        return 0;
     }
 
-    @Override
-    public boolean onCheckCanExpandOrCollapseGroup(CommentViewHolder holder, int groupPosition, int x, int y, boolean expand) {
-        return false;
+    public void replaceWith(List<CommentBaseItem> items){
+        commentItems = new ArrayList<>(items);
+        notifyDataSetChanged();
     }
+
+    private CommentViewHolder getCommonViewHolder(ViewGroup parent) {
+        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        final CommentItemView v = (CommentItemView)inflater.inflate(R.layout.comment_item_view, parent, false);
+        return new CommentViewHolder(v);
+    }
+
+    /**
+     * Root set would be the items in this adapter.
+     *
+     * @param items A set of items to search through
+     * @param id The target comment id
+     * @return
+//     */
+//    public CommentBaseItem getItemById(List<CommentBaseItem> items, String id) {
+//
+//        for(CommentBaseItem item : items){
+//            if(id.equalsIgnoreCase(item.getId())){
+//                return item;
+//            }else{
+//                return getItemById(item.getReplies(), id);
+//            }
+//        }
+//        //returns null if not found
+//        return null;
+//    }
+
+
 }

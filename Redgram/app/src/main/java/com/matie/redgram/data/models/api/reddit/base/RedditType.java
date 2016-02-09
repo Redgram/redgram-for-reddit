@@ -3,6 +3,7 @@ package com.matie.redgram.data.models.api.reddit.base;
 import com.matie.redgram.data.models.api.reddit.RedditComment;
 import com.matie.redgram.data.models.api.reddit.RedditLink;
 import com.matie.redgram.data.models.api.reddit.RedditListing;
+import com.matie.redgram.data.models.api.reddit.RedditMore;
 import com.matie.redgram.data.models.api.reddit.RedditSubreddit;
 
 /**
@@ -11,10 +12,10 @@ import com.matie.redgram.data.models.api.reddit.RedditSubreddit;
 public enum RedditType {
 
     Listing(RedditListing.class),
+    more(RedditMore.class),
     t1(RedditComment.class),
     t3(RedditLink.class),
     t5(RedditSubreddit.class);
-
 
     private final Class mClass;
 

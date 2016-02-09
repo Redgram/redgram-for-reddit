@@ -2,6 +2,7 @@ package com.matie.redgram.data.managers.presenters;
 
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -10,6 +11,7 @@ import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.models.main.home.HomeViewWrapper;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
+import com.matie.redgram.data.models.main.items.comment.CommentWrapper;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
@@ -292,5 +294,27 @@ public class HomePresenterImpl implements HomePresenter{
     }
 
 
+    public Subscription loadSample() {
+        return (Subscription)bindFragment(homeView.getFragment(), redditClient.getCommentsByArticle(items.get(0).getId(), null))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<CommentWrapper>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.d("COMMENTS_COMPLETE", "done");
+                    }
 
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("COMMENTS_ERROR", "error");
+                    }
+
+                    @Override
+                    public void onNext(CommentWrapper wrapper) {
+                        Log.d("COMMENTS_ID", items.get(0).getId());
+                        Log.d("COMMENTS_NEXT", wrapper.getPostItem().getId());
+                        Log.d("COMMENTS_NEXT_LIST", wrapper.getCommentItems().toString());
+                    }
+                });
+    }
 }

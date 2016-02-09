@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.matie.redgram.ui.comments.views.widgets.comment.CommentItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/comment_item_view"
+    card_view:cardBackgroundColor="@color/material_white">
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/comment_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="some text"
+            android:layout_gravity="top"/>
+        <com.matie.redgram.ui.common.views.widgets.ExpandableIndicator
+            android:id="@+id/indicator"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="right"/>
+    </FrameLayout>
+
+</com.matie.redgram.ui.comments.views.widgets.comment.CommentItemView>

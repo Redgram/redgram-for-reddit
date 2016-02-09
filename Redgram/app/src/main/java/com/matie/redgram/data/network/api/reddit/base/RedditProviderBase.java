@@ -3,6 +3,7 @@ package com.matie.redgram.data.network.api.reddit.base;
 import com.matie.redgram.data.models.api.reddit.RedditListing;
 import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 
+import java.util.List;
 import java.util.Map;
 
 import retrofit.http.GET;
@@ -18,6 +19,8 @@ public interface RedditProviderBase {
     static final String SUBREDDIT = "/r/{subreddit}"; //only used in case of requesting specific subreddits
     static final String SUBREDDITS = "/subreddits"; //only used in case of requesting specific subreddits
     static final String SEARCH = "/search";
+    static final String COMMENTS = "/comments";
+    static final String ARTICLE = "/{article}";
 
     //Available filters: hot, new, rising, (top, controversial, can be mixed with TIME)
     static final String FILTER = "/{filter}";
@@ -93,4 +96,13 @@ public interface RedditProviderBase {
     Observable<RedditResponse<RedditListing>> executeSearch(
             @Path("subreddit") String subreddit, @QueryMap Map<String, String> params);
 
+    /**
+     * get comments by link id (article)
+     * @param article The link ID
+     * @param params
+     * @return a array of 2 listings: the link and its comments
+     */
+    @GET(COMMENTS+ARTICLE+JSON)
+    Observable<List<RedditResponse<RedditListing>>> getCommentsByArticle(
+            @Path("article") String article, @QueryMap Map<String, String> params);
 }

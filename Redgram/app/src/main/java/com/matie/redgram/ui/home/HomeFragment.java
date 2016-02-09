@@ -379,6 +379,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
     public void hideLoading() {
         homeSwipeContainer.setRefreshing(false);
         homeRecyclerView.setVisibility(View.VISIBLE);
+        homePresenter.loadSample();
     }
 
     @Override
