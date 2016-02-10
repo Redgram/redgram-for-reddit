@@ -1,11 +1,11 @@
 package com.matie.redgram.data.network.api.reddit;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.matie.redgram.data.models.api.reddit.RedditComment;
 import com.matie.redgram.data.models.api.reddit.RedditMore;
 import com.matie.redgram.data.models.api.reddit.RedditSubreddit;
+import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.api.reddit.RedditLink;
@@ -13,12 +13,13 @@ import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.items.comment.CommentItem;
 import com.matie.redgram.data.models.main.items.comment.CommentMoreItem;
-import com.matie.redgram.data.models.main.items.comment.CommentWrapper;
+import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.base.RedditProviderBase;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
 import com.matie.redgram.ui.App;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -186,7 +187,7 @@ public class RedditClient extends RedditServiceBase {
         });
     }
 
-    public Observable<CommentWrapper> getCommentsByArticle(String article, @Nullable Map<String, String> params){
+    public Observable<CommentsWrapper> getCommentsByArticle(String article, @Nullable Map<String, String> params){
 
         Observable<List<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>>>
                 commentsWrapper = provider.getCommentsByArticle(article, params);
@@ -196,14 +197,14 @@ public class RedditClient extends RedditServiceBase {
 
         Observable<PostItem>
                 postObservable = listings
-                                    .first()
+                                    .first() //first listing is the post
                                     .flatMap(data -> Observable.from(data.getData().getChildren()))
                                     .cast(RedditLink.class)
                                     .map(postData -> mapLinkToPostItem(postData));
 
         Observable<List<CommentBaseItem>>
                 redditCommentObjects = listings
-                                        .last()
+                                        .last() //second listing are the comments
                                         .flatMap(data -> Observable.from(data.getData().getChildren()))
                                         .concatMap(comment -> {
 
@@ -222,13 +223,13 @@ public class RedditClient extends RedditServiceBase {
                                         .toList();
 
 
-        return Observable.zip(postObservable, redditCommentObjects, new Func2<PostItem, List<CommentBaseItem>, CommentWrapper>() {
+        return Observable.zip(postObservable, redditCommentObjects, new Func2<PostItem, List<CommentBaseItem>, CommentsWrapper>() {
             @Override
-            public CommentWrapper call(PostItem item, List<CommentBaseItem> commentBaseItems) {
-                CommentWrapper commentWrapper = new CommentWrapper();
-                commentWrapper.setPostItem(item);
-                commentWrapper.setCommentItems(commentBaseItems);
-                return commentWrapper;
+            public CommentsWrapper call(PostItem item, List<CommentBaseItem> commentBaseItems) {
+                CommentsWrapper commentsWrapper = new CommentsWrapper();
+                commentsWrapper.setPostItem(item);
+                commentsWrapper.setCommentItems(commentBaseItems);
+                return commentsWrapper;
             }
         });
 
@@ -266,6 +267,22 @@ public class RedditClient extends RedditServiceBase {
         item.setBodyHtml(commentData.getBody_html());
         item.setParentId(commentData.getParentId());
         item.setSubredditId(commentData.getSubredditId());
+
+        List<CommentBaseItem> replies = new ArrayList<>();
+        if(commentData.getReplies() instanceof com.matie.redgram.data.models.api.reddit.RedditListing) {
+            com.matie.redgram.data.models.api.reddit.RedditListing listing =
+                    (com.matie.redgram.data.models.api.reddit.RedditListing) commentData.getReplies();
+            for (RedditObject object : listing.getChildren()) {
+                if (object instanceof RedditComment) {
+                    CommentItem commentItem = mapCommentToCommentItem((RedditComment)object);
+                    replies.add(commentItem);
+                }else if(object instanceof RedditMore){
+                    CommentMoreItem moreItem = mapCommentToCommentMoreItem((RedditMore)object);
+                    replies.add(moreItem);
+                }
+            }
+        }
+        item.setReplies(replies);
 
         return item;
     }

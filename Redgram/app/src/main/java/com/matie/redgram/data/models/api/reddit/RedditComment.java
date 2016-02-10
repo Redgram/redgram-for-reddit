@@ -23,7 +23,7 @@ public class RedditComment extends RedditSubmission {
     private boolean score_hidden;
     private String subreddit_id;
     private String distinguished;
-    private List<RedditObject> replies;
+    private RedditObject replies;
 
     public String getLinkId() {
         return link_id;
@@ -113,7 +113,7 @@ public class RedditComment extends RedditSubmission {
         return distinguished;
     }
 
-    public List<RedditObject> getReplies() {
+    public RedditObject getReplies() {
         return replies;
     }
 }

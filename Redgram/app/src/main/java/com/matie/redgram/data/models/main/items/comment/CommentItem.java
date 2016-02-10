@@ -1,5 +1,7 @@
 package com.matie.redgram.data.models.main.items.comment;
 
+import com.matie.redgram.data.models.main.reddit.RedditListing;
+
 import java.util.List;
 
 /**

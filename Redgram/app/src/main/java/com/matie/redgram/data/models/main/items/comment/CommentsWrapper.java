@@ -7,16 +7,16 @@ import java.util.List;
 /**
  * Created by matie on 2016-02-08.
  */
-public class CommentWrapper {
-    private List<? extends CommentBaseItem> commentItem;
+public class CommentsWrapper {
+    private List<? extends CommentBaseItem> commentItems;
     private PostItem postItem;
 
     public List<? extends CommentBaseItem> getCommentItems() {
-        return commentItem;
+        return commentItems;
     }
 
     public void setCommentItems(List<? extends CommentBaseItem> commentItem) {
-        this.commentItem = commentItem;
+        this.commentItems = commentItem;
     }
 
     public PostItem getPostItem() {

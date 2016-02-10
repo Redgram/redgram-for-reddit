@@ -11,7 +11,7 @@ import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.models.main.home.HomeViewWrapper;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
-import com.matie.redgram.data.models.main.items.comment.CommentWrapper;
+import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
@@ -32,7 +32,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func2;
 import rx.functions.Func3;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -298,7 +297,7 @@ public class HomePresenterImpl implements HomePresenter{
         return (Subscription)bindFragment(homeView.getFragment(), redditClient.getCommentsByArticle(items.get(0).getId(), null))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<CommentWrapper>() {
+                .subscribe(new Subscriber<CommentsWrapper>() {
                     @Override
                     public void onCompleted() {
                         Log.d("COMMENTS_COMPLETE", "done");
@@ -310,7 +309,7 @@ public class HomePresenterImpl implements HomePresenter{
                     }
 
                     @Override
-                    public void onNext(CommentWrapper wrapper) {
+                    public void onNext(CommentsWrapper wrapper) {
                         Log.d("COMMENTS_ID", items.get(0).getId());
                         Log.d("COMMENTS_NEXT", wrapper.getPostItem().getId());
                         Log.d("COMMENTS_NEXT_LIST", wrapper.getCommentItems().toString());

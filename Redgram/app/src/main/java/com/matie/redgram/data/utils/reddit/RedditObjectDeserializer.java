@@ -24,7 +24,8 @@ public class RedditObjectDeserializer implements JsonDeserializer<RedditObject> 
         }
         try{
             RedditObjectWrapper wrapper = new Gson().fromJson(json, RedditObjectWrapper.class);
-            return context.deserialize(wrapper.getData(), wrapper.getKind().getDerivedClass());
+            RedditObject redditObject = context.deserialize(wrapper.getData(), wrapper.getKind().getDerivedClass());
+            return redditObject;
         }catch (JsonParseException e){
             Log.e(TAG, "Failed to deserialized", e);
             return null;
