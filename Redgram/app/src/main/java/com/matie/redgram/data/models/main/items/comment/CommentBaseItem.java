@@ -17,6 +17,7 @@ public class CommentBaseItem extends RedditObject {
     private String id;
     private String parentId;
     private CommentType commentType;
+    private int level;
 
     public String getId() {
         return id;
@@ -40,5 +41,13 @@ public class CommentBaseItem extends RedditObject {
 
     public void setCommentType(CommentType commentType) {
         this.commentType = commentType;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }

@@ -208,16 +208,15 @@ public class RedditClient extends RedditServiceBase {
                                         .flatMap(data -> Observable.from(data.getData().getChildren()))
                                         .concatMap(comment -> {
 
-                                            CommentBaseItem baseItem = null;
+                                            List<CommentBaseItem> comments = new ArrayList<CommentBaseItem>();
 
                                             if (comment instanceof RedditComment) {
-                                                baseItem = mapCommentToCommentItem((RedditComment) comment);
+                                                mapCommentToCommentItem((RedditComment) comment, 0, comments);
                                             } else if (comment instanceof RedditMore) {
-                                                baseItem = mapCommentToCommentMoreItem((RedditMore) comment);
+                                                mapCommentToCommentMoreItem((RedditMore) comment, 0, comments);
                                             }
 
-                                            return Observable.just(baseItem);
-
+                                            return Observable.from(comments);
                                         })
                                         .filter(finalItem -> (finalItem != null))
                                         .toList();
@@ -234,7 +233,6 @@ public class RedditClient extends RedditServiceBase {
         });
 
     }
-
 
     /**
      * Maps attributes that belong to listings only. BEFORE AFTER AND MODHASH.
@@ -256,7 +254,7 @@ public class RedditClient extends RedditServiceBase {
         return map;
     }
 
-    private CommentItem mapCommentToCommentItem(RedditComment commentData) {
+    private void mapCommentToCommentItem(RedditComment commentData, int level, List<CommentBaseItem> comments) {
         CommentItem item = new CommentItem();
 
         item.setCommentType(CommentBaseItem.CommentType.REGULAR);
@@ -267,27 +265,25 @@ public class RedditClient extends RedditServiceBase {
         item.setBodyHtml(commentData.getBody_html());
         item.setParentId(commentData.getParentId());
         item.setSubredditId(commentData.getSubredditId());
+        item.setLevel(level);
 
-        List<CommentBaseItem> replies = new ArrayList<>();
+        comments.add(item);
+        level += 1;
+
         if(commentData.getReplies() instanceof com.matie.redgram.data.models.api.reddit.RedditListing) {
             com.matie.redgram.data.models.api.reddit.RedditListing listing =
                     (com.matie.redgram.data.models.api.reddit.RedditListing) commentData.getReplies();
             for (RedditObject object : listing.getChildren()) {
                 if (object instanceof RedditComment) {
-                    CommentItem commentItem = mapCommentToCommentItem((RedditComment)object);
-                    replies.add(commentItem);
+                    mapCommentToCommentItem((RedditComment)object, level, comments);
                 }else if(object instanceof RedditMore){
-                    CommentMoreItem moreItem = mapCommentToCommentMoreItem((RedditMore)object);
-                    replies.add(moreItem);
+                    mapCommentToCommentMoreItem((RedditMore)object, level, comments);
                 }
             }
         }
-        item.setReplies(replies);
-
-        return item;
     }
 
-    private CommentMoreItem mapCommentToCommentMoreItem(RedditMore commentData) {
+    private void mapCommentToCommentMoreItem(RedditMore commentData, int level, List<CommentBaseItem> comments) {
         CommentMoreItem item = new CommentMoreItem();
 
         item.setCommentType(CommentBaseItem.CommentType.MORE);
@@ -296,8 +292,9 @@ public class RedditClient extends RedditServiceBase {
         item.setName(commentData.getName());
         item.setParentId(commentData.getParentId());
         item.setChildren(commentData.getChildren());
+        item.setLevel(level);
 
-        return item;
+        comments.add(item);
     }
 
 
