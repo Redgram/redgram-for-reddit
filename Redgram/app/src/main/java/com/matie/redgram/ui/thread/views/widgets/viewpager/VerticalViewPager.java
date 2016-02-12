@@ -1,8 +1,6 @@
-package com.matie.redgram.ui.comments.views.widgets.viewpager;
+package com.matie.redgram.ui.thread.views.widgets.viewpager;
 
 import android.content.Context;
-import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.ScrollingView;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -10,6 +8,9 @@ import android.view.View;
 import android.widget.ScrollView;
 
 /**
+ *
+ * KEPT FOR REFERENCE
+ *
  * Created by matie on 2016-01-06.
  */
 public class VerticalViewPager extends ViewPager {

@@ -1,11 +1,9 @@
 package com.matie.redgram.ui.common.previews;
 
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,22 +16,17 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.binaryresource.FileBinaryResource;
 import com.facebook.cache.common.CacheKey;
-import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
-import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
-import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.media.images.ImageManager;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.comments.views.CommentsActivity;
-import com.matie.redgram.ui.common.base.Fragments;
+import com.matie.redgram.ui.thread.views.CommentsActivity;
 import com.matie.redgram.ui.common.main.MainActivity;
 
 import java.io.File;
@@ -86,7 +79,7 @@ public class ImagePreviewFragment extends BasePreviewFragment {
 
         if(getContext() instanceof MainActivity){
             MainActivity mainActivity = (MainActivity)getContext();
-            mainActivity.setDragable(topBanner);
+            mainActivity.setDraggable(topBanner);
         }
 
         if(getContext() instanceof CommentsActivity){
@@ -122,6 +115,16 @@ public class ImagePreviewFragment extends BasePreviewFragment {
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    protected void setupComponent() {
+
+    }
+
+    @Override
+    protected void setupToolbar() {
+
     }
 
     @Override

@@ -509,7 +509,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     }
 
     @Override
-    public void setDragable(View view) {
+    public void setDraggable(View view) {
         //no implementation
     }
 

@@ -8,14 +8,14 @@ import java.util.List;
  * Created by matie on 2016-02-08.
  */
 public class CommentsWrapper {
-    private List<? extends CommentBaseItem> commentItems;
+    private List<CommentBaseItem> commentItems;
     private PostItem postItem;
 
-    public List<? extends CommentBaseItem> getCommentItems() {
+    public List<CommentBaseItem> getCommentItems() {
         return commentItems;
     }
 
-    public void setCommentItems(List<? extends CommentBaseItem> commentItem) {
+    public void setCommentItems(List<CommentBaseItem> commentItem) {
         this.commentItems = commentItem;
     }
 

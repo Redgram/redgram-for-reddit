@@ -4,11 +4,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.matie.redgram.R;
+import com.matie.redgram.ui.common.base.BaseFragment;
 
 /**
  * Created by matie on 2015-11-03.
  */
-public abstract class BasePreviewFragment extends Fragment {
+public abstract class BasePreviewFragment extends BaseFragment {
     public abstract void refreshPreview(Bundle bundle);
 
     public String getMainKey(){

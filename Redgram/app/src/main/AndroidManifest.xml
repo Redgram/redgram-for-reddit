@@ -39,7 +39,7 @@
             android:noHistory="true" >
         </activity>
         <activity
-            android:name=".ui.comments.views.CommentsActivity"
+            android:name=".ui.thread.views.CommentsActivity"
             android:label="@string/title_activity_comments"
             android:theme="@style/AppTheme.Slider" >
         </activity>

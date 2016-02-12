@@ -496,7 +496,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     }
 
     @Override
-    public void setDragable(View view) {
+    public void setDraggable(View view) {
         slidingUpPanelLayout.setDragView(view);
     }
 

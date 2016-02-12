@@ -1,11 +1,9 @@
-package com.matie.redgram.ui.comments.views.widgets.comment;
+package com.matie.redgram.ui.thread.views.widgets.comment;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.h6ah4i.android.widget.advrecyclerview.expandable.ExpandableItemViewHolder;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.annotation.ExpandableItemStateFlags;
 import com.matie.redgram.R;
 import com.matie.redgram.ui.common.views.widgets.ExpandableIndicator;

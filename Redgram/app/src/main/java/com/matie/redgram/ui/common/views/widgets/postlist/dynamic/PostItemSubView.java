@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.preferences.PreferenceManager;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.comments.views.CommentsActivity;
+import com.matie.redgram.ui.thread.views.CommentsActivity;
 import com.matie.redgram.ui.common.main.MainActivity;
 
 /**

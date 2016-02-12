@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
  * Created by matie on 12/04/15.
  */
 public interface BaseContextView extends BaseView {
-    public Context getContext();
-    public Fragment getFragment();
+     Context getContext();
+     Activity getActivity();
+     Fragment getFragment();
 }

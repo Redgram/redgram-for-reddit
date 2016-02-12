@@ -2,6 +2,7 @@ package com.matie.redgram.ui.common.previews;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.thread.views.PostView;
 import com.matie.redgram.ui.common.base.BaseActivity;
 
 import butterknife.ButterKnife;
@@ -20,9 +22,10 @@ import butterknife.InjectView;
 /**
  * Created by matie on 2016-01-06.
  */
-public class PostPreviewFragment extends BasePreviewFragment {
+public class PostPreviewFragment extends BasePreviewFragment implements PostView{
 
     Activity activity;
+    PostItem postItem;
 
     @InjectView(R.id.content)
     TextView mContent;
@@ -35,7 +38,9 @@ public class PostPreviewFragment extends BasePreviewFragment {
         ButterKnife.inject(this, view);
 
         String json = getArguments().getString(getMainKey());
-        String content = (new Gson().fromJson(json, PostItem.class)).getText();
+        postItem = new Gson().fromJson(json, PostItem.class);
+        String content = postItem.getText();
+
         if(content.length() > 0){
             mContent.setText(content);
         }else{
@@ -48,18 +53,39 @@ public class PostPreviewFragment extends BasePreviewFragment {
         return view;
     }
 
-
-
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         this.activity = (BaseActivity)getActivity();
     }
 
+    @Override
+    protected void setupComponent() {
+
+    }
 
     @Override
-    public void refreshPreview(Bundle bundle) {
+    protected void setupToolbar() {
 
     }
 
 
+    @Override
+    public void refreshPreview(Bundle bundle) {
+        return;
+    }
+
+
+    @Override
+    public Fragment getFragment() {
+        return this;
+    }
+
+    public void refreshPost(PostItem postItem) {
+        setPostItem(postItem);
+        //refresh view - regex, formatting, etc - if changed prompt user to update with remember choice??
+    }
+
+    public void setPostItem(PostItem postItem) {
+        this.postItem = postItem;
+    }
 }

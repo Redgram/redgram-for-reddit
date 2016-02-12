@@ -1,8 +1,6 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,10 +14,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.comments.views.CommentsActivity;
 import com.matie.redgram.ui.common.base.Fragments;
-import com.matie.redgram.ui.common.previews.WebPreviewFragment;
 import com.matie.redgram.ui.common.utils.text.CustomClickable;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 import com.matie.redgram.ui.common.utils.text.StringUtils;

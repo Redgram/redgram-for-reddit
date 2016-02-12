@@ -1,24 +1,23 @@
-package com.matie.redgram.ui.comments.views;
+package com.matie.redgram.ui.thread.views;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 
 
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -27,9 +26,14 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.media.images.ImageManager;
+import com.matie.redgram.data.managers.presenters.ThreadPresenterImpl;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.comments.views.adapters.CommentsPagerAdapter;
+import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.thread.components.DaggerThreadComponent;
+import com.matie.redgram.ui.thread.components.ThreadComponent;
+import com.matie.redgram.ui.thread.modules.ThreadModule;
+import com.matie.redgram.ui.thread.views.adapters.CommentsPagerAdapter;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.previews.ImagePreviewFragment;
@@ -37,12 +41,16 @@ import com.matie.redgram.ui.common.previews.WebPreviewFragment;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 
+import java.util.HashMap;
+
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
-public class CommentsActivity extends BaseActivity {
+public class CommentsActivity extends BaseActivity implements ThreadView{
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -73,6 +81,13 @@ public class CommentsActivity extends BaseActivity {
     private boolean isSelf;
     private SlidrInterface mSlidrInterface;
 
+    //dagger
+    ThreadComponent threadComponent;
+
+    @Inject
+    ThreadPresenterImpl threadPresenter;
+    @Inject
+    DialogUtil dialogUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +117,32 @@ public class CommentsActivity extends BaseActivity {
 
 //        resolveAppBarHeight();
         mSlidrInterface = Slidr.attach(this);
+
+        threadPresenter.getThread(postItem.getId());
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        threadPresenter.registerForEvents();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        threadPresenter.unregisterForEvents();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ButterKnife.reset(this);
     }
 
     private void setupToolbarImage() {
@@ -156,12 +197,16 @@ public class CommentsActivity extends BaseActivity {
 
     @Override
     protected void setupComponent(AppComponent appComponent) {
-
+        threadComponent = DaggerThreadComponent.builder()
+                .appComponent(appComponent)
+                .threadModule(new ThreadModule(this, this))
+                .build();
+        threadComponent.inject(this);
     }
 
     @Override
     public AppComponent component() {
-        return null;
+        return threadComponent;
     }
 
 
@@ -281,20 +326,54 @@ public class CommentsActivity extends BaseActivity {
         }
     }
 
-//    private void resolveAppBarHeight() {
-//        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-//        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-//
-//        int titleHeight = getTextViewHeight(title, (int)dpWidth);
-//
-//        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams)appBarLayout.getLayoutParams();
-//        lp.height += (int)titleHeight;
-//    }
-//
-//    public static int getTextViewHeight(TextView textView , int deviceWidth) {
-//        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(deviceWidth, View.MeasureSpec.AT_MOST);
-//        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-//        textView.measure(widthMeasureSpec, heightMeasureSpec);
-//        return textView.getMeasuredHeight();
-//    }
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void showInfoMessage() {
+
+    }
+
+    @Override
+    public void showErrorMessage(String error) {
+        dialogUtil.build().title("Error Message").content(error).show();
+    }
+
+    @Override
+    public void toggleVote(@Nullable int direction) {
+
+    }
+
+    @Override
+    public void commentIndicator(boolean commentExists) {
+
+    }
+
+    @Override
+    public CommentsPagerAdapter getAdapter() {
+        return commentsPagerAdapter;
+    }
+
+    @Override
+    public Context getContext() {
+        return this.getApplicationContext();
+    }
+
+    @Override
+    public Activity getActivity() {
+        return this;
+    }
+
+    @Override
+    public Fragment getFragment() {
+        return null;
+    }
+
 }

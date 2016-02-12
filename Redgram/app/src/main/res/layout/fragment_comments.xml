@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.ui.comments.views.widgets.viewpager.VerticalViewPager
+<com.matie.redgram.ui.thread.views.widgets.viewpager.VerticalViewPager
     android:id="@+id/vertical_container"
     style="@style/Match"
     xmlns:android="http://schemas.android.com/apk/res/android">
-</com.matie.redgram.ui.comments.views.widgets.viewpager.VerticalViewPager>
+</com.matie.redgram.ui.thread.views.widgets.viewpager.VerticalViewPager>
 
 

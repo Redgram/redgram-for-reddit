@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.comments.views.adapters;
+package com.matie.redgram.ui.thread.views.adapters;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +15,9 @@ public class CommentsPagerAdapter extends SectionsPagerAdapter {
 
     private Bundle bundle;
     private boolean isSelf;
+
+    private PostPreviewFragment postPreviewFragment;
+    private CommentsPreviewFragment commentsPreviewFragment;
 
     public CommentsPagerAdapter(FragmentManager fm, Bundle bundle, boolean isSelf) {
         super(fm);
@@ -50,11 +53,11 @@ public class CommentsPagerAdapter extends SectionsPagerAdapter {
     private Fragment getFragment(int position){
         switch (position){
             case 1:
-                PostPreviewFragment postPreviewFragment = new PostPreviewFragment();
+                postPreviewFragment = new PostPreviewFragment();
                 postPreviewFragment.setArguments(bundle);
                 return postPreviewFragment;
             case 2:
-                CommentsPreviewFragment commentsPreviewFragment = new CommentsPreviewFragment();
+                commentsPreviewFragment = new CommentsPreviewFragment();
                 commentsPreviewFragment.setArguments(bundle);
                 return commentsPreviewFragment;
         }
@@ -71,4 +74,11 @@ public class CommentsPagerAdapter extends SectionsPagerAdapter {
         return null;
     }
 
+    public PostPreviewFragment getPostPreviewFragment() {
+        return postPreviewFragment;
+    }
+
+    public CommentsPreviewFragment getCommentsPreviewFragment() {
+        return commentsPreviewFragment;
+    }
 }

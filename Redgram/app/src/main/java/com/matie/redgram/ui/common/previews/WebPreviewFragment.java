@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.comments.views.CommentsActivity;
+import com.matie.redgram.ui.thread.views.CommentsActivity;
 import com.matie.redgram.ui.common.main.MainActivity;
 
 import butterknife.ButterKnife;
@@ -57,7 +57,7 @@ public class WebPreviewFragment extends BasePreviewFragment{
 
         if(getContext() instanceof MainActivity){
             MainActivity mainActivity = (MainActivity)getContext();
-            mainActivity.setDragable(topBanner);
+            mainActivity.setDraggable(topBanner);
         }
 
         if(getContext() instanceof CommentsActivity){
@@ -78,6 +78,16 @@ public class WebPreviewFragment extends BasePreviewFragment{
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    protected void setupComponent() {
+
+    }
+
+    @Override
+    protected void setupToolbar() {
+
     }
 
     @Override

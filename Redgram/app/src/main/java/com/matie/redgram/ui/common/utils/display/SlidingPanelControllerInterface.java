@@ -41,7 +41,7 @@ public interface SlidingPanelControllerInterface {
      * Sets the dragable
      * @param view
      */
-    public void setDragable(View view);
+    public void setDraggable(View view);
 
 
     /**

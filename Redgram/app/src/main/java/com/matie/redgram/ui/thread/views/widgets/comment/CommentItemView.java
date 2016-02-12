@@ -1,11 +1,8 @@
-package com.matie.redgram.ui.comments.views.widgets.comment;
+package com.matie.redgram.ui.thread.views.widgets.comment;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
-import android.view.View;
-
-import java.util.List;
 
 /**
  * Created by matie on 2016-01-30.
