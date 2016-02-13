@@ -2,6 +2,8 @@ package com.matie.redgram.ui.common.previews;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,7 @@ import com.matie.redgram.ui.thread.components.ThreadComponent;
 import com.matie.redgram.ui.thread.modules.CommentsModule;
 import com.matie.redgram.ui.thread.views.CommentsActivity;
 import com.matie.redgram.ui.thread.views.CommentsView;
+import com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView;
 
 import java.util.List;
 
@@ -34,8 +37,8 @@ import butterknife.InjectView;
  */
 public class CommentsPreviewFragment extends BasePreviewFragment implements CommentsView{
 
-    @InjectView(R.id.title)
-    TextView titleView;
+    @InjectView(R.id.comment_recycler_view)
+    CommentRecyclerView commentRecyclerView;
 
     CommentsComponent component;
 
@@ -54,8 +57,8 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
         ButterKnife.inject(this, view);
 
         String json = getArguments().getString(getMainKey());
-        String title = (new Gson().fromJson(json, PostItem.class)).getTitle();
-        titleView.setText(title);
+//        String title = (new Gson().fromJson(json, PostItem.class)).getTitle();
+//        titleView.setText(title);
 
         return view;
     }
@@ -86,9 +89,17 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
         return;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+    }
+
+
     public void refreshComments(List<CommentBaseItem> items){
         setComments(items);
         //refresh adapter
+        commentRecyclerView.replaceWith(commentItems);
     }
 
     public void setComments(List<CommentBaseItem> items){

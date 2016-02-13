@@ -1,6 +1,7 @@
 package com.matie.redgram.ui.thread.views;
 
 import com.matie.redgram.ui.common.views.BaseContextView;
+import com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView;
 
 /**
  * Created by matie on 2016-01-04.

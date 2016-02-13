@@ -73,6 +73,7 @@ public class ThreadPresenterImpl implements ThreadPresenter {
 
     @Override
     public void getThread(String id) {
+        threadView.showLoading();
         threadSubscription = (Subscription)bindActivity(threadView.getActivity(), redditClient.getCommentsByArticle(id, null))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

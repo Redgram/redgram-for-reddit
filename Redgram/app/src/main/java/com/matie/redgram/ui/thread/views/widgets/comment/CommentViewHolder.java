@@ -17,27 +17,22 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     private int flags;
 
     //main parent view
-    private CommentItemView commentItemView;
+    private CommentBaseItemView commentBaseItemView;
     //child view
     private FrameLayout container;
-    private ExpandableIndicator expandableIndicator;
-    private TextView content;
 
-
-    public CommentViewHolder(CommentItemView itemView) {
+    public CommentViewHolder(CommentBaseItemView itemView) {
         super(itemView);
-        this.commentItemView = itemView;
+        this.commentBaseItemView = itemView;
         this.container = (FrameLayout)itemView.findViewById(R.id.container);
-        this.expandableIndicator = (ExpandableIndicator)itemView.findViewById(R.id.indicator);
-        this.content = (TextView)itemView.findViewById(R.id.comment_text);
     }
 
-    public CommentItemView getCommentItemView() {
-        return commentItemView;
+    public CommentBaseItemView getCommentItemView() {
+        return commentBaseItemView;
     }
 
-    public void setCommentItemView(CommentItemView commentItemView) {
-        this.commentItemView = commentItemView;
+    public void setCommentItemView(CommentBaseItemView commentBaseItemView) {
+        this.commentBaseItemView = commentBaseItemView;
     }
 
     public FrameLayout getContainer() {
@@ -46,14 +41,6 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
 
     public void setContainer(FrameLayout container) {
         this.container = container;
-    }
-
-    public ExpandableIndicator getExpandableIndicator() {
-        return expandableIndicator;
-    }
-
-    public TextView getContent() {
-        return content;
     }
 
 }

@@ -9,6 +9,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 
 
@@ -76,6 +77,8 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     SimpleDraweeView imageView;
     @InjectView(R.id.title)
     TextView title;
+    @InjectView(R.id.comments_swipe_container)
+    SwipeRefreshLayout commentsSwipeContainer;
 
     private PostItem postItem;
     private boolean isSelf;
@@ -95,7 +98,7 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
         setContentView(R.layout.activity_comments);
         ButterKnife.inject(this);
 
-        if(getIntent() != null){
+        if (getIntent() != null) {
             String key = getResources().getString(R.string.main_data_key);
             postItem = new Gson().fromJson(getIntent().getStringExtra(key), PostItem.class);
             isSelf = (postItem.getType() == PostItem.Type.SELF) ? true : false;
@@ -114,13 +117,12 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
         setupViewPager();
         setupToolbarImage();
         setToolbarTitle(0);
+        setUpSwipeLayout();
 
 //        resolveAppBarHeight();
         mSlidrInterface = Slidr.attach(this);
-
         threadPresenter.getThread(postItem.getId());
     }
-
 
     @Override
     protected void onStart() {
@@ -193,6 +195,15 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
             }
         });
     }
+
+    private void setUpSwipeLayout() {
+        commentsSwipeContainer.setEnabled(false);
+        commentsSwipeContainer.setColorSchemeResources(android.R.color.holo_green_dark,
+                android.R.color.holo_red_dark,
+                android.R.color.holo_blue_dark,
+                android.R.color.holo_orange_dark);
+    }
+
 
 
     @Override
@@ -328,12 +339,17 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
 
     @Override
     public void showLoading() {
-
+        commentsSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                commentsSwipeContainer.setRefreshing(true);
+            }
+        });
     }
 
     @Override
     public void hideLoading() {
-
+        commentsSwipeContainer.setRefreshing(false);
     }
 
     @Override

@@ -13,19 +13,27 @@ import butterknife.ButterKnife;
 /**
  * Created by matie on 2016-02-12.
  */
-public abstract class CommentItemView extends RelativeLayout {
-    public CommentItemView(Context context) {
+public class CommentMoreItemView extends CommentItemView {
+    public CommentMoreItemView(Context context) {
         super(context);
     }
 
-    public CommentItemView(Context context, AttributeSet attrs) {
+    public CommentMoreItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public CommentItemView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CommentMoreItemView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    protected abstract void setUpView(CommentBaseItem item);
+    @Override
+    protected void setUpView(CommentBaseItem item) {
 
+    }
+
+    @Override
+    public void onFinishInflate(){
+        super.onFinishInflate();
+        ButterKnife.inject(this);
+    }
 }
