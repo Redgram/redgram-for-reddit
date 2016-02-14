@@ -3,12 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/material_blue300">
+    android:background="@color/material_yellow50">
 
     <TextView
+        android:id="@+id/more_body"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:text="MORE"/>
+        android:layout_height="50dp"
+        android:textStyle="italic|bold"
+        android:padding="@dimen/default_padding"
+        android:text="@string/load_more"/>
 
 </com.matie.redgram.ui.thread.views.widgets.comment.CommentMoreItemView>

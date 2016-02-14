@@ -1,6 +1,7 @@
 package com.matie.redgram.ui.thread.views.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,10 @@ import com.matie.redgram.ui.thread.views.widgets.comment.CommentViewHolder;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.zip.Inflater;
 
 /**
@@ -27,6 +31,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     private final LayoutInflater inflater;
     private List<CommentBaseItem> commentItems = Collections.emptyList();
+    private Map<Integer, Integer> colorMap = new HashMap<>();
 
     public CommentsAdapter(Context context) {
         this.inflater = LayoutInflater.from(context);
@@ -50,7 +55,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     @Override
     public void onBindViewHolder(CommentViewHolder holder, int position) {
-        holder.getCommentItemView().setUp(getItem(position));
+        holder.getCommentItemView().setUp(getItem(position), position, getLevelToColorMap());
     }
 
     private View getCommentView(int viewType, View dynamicView, FrameLayout container) {
@@ -84,12 +89,12 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        int id = 0; //default
+        int id = TYPE_REGULAR; //default
         if(getItem(position).getCommentType() == CommentBaseItem.CommentType.REGULAR){
             return id;
         }
         if(getItem(position).getCommentType() == CommentBaseItem.CommentType.MORE){
-            id = 1;
+            id = TYPE_MORE;
             return id;
         }
         return id;
@@ -107,4 +112,26 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     public LayoutInflater getInflater() {
         return inflater;
     }
+
+    protected int getMaxLevel(){
+        int max = 0;
+        for(CommentBaseItem item : commentItems){
+            if(item.getLevel() > max){
+                max = item.getLevel();
+            }
+        }
+        return max;
+    }
+
+    protected Map<Integer, Integer> getLevelToColorMap(){
+        if(colorMap.isEmpty()){
+            for (int i = 1; i <= getMaxLevel(); i++){
+                Random rnd = new Random();
+                int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+                colorMap.put(i, color);
+            }
+        }
+        return colorMap;
+    }
+
 }

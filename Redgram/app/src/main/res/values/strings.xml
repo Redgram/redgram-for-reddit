@@ -164,5 +164,6 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="no_text">no text provided, swipe left for comments</string>
+    <string name="load_more">Load More</string>
 
 </resources>

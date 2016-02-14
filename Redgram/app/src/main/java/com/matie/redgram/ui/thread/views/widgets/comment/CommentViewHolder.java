@@ -1,6 +1,7 @@
 package com.matie.redgram.ui.thread.views.widgets.comment;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -20,11 +21,13 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
     private CommentBaseItemView commentBaseItemView;
     //child view
     private FrameLayout container;
+    private View levelView;
 
     public CommentViewHolder(CommentBaseItemView itemView) {
         super(itemView);
         this.commentBaseItemView = itemView;
         this.container = (FrameLayout)itemView.findViewById(R.id.container);
+        this.levelView = (View)itemView.findViewById(R.id.level_view);
     }
 
     public CommentBaseItemView getCommentItemView() {
@@ -43,4 +46,11 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         this.container = container;
     }
 
+    public View getLevelView() {
+        return levelView;
+    }
+
+    public void setLevelView(View levelView) {
+        this.levelView = levelView;
+    }
 }

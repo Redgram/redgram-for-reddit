@@ -21,6 +21,7 @@ import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemGaller
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemAnimatedView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemHeaderView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemImageView;
+import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemSubView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemTextView;
 
 import butterknife.ButterKnife;
@@ -111,28 +112,8 @@ public class PostItemView extends CardView {
     }
 
     private void getAndSetUpView(PostItem item) {
-
-        if(dynamicView instanceof PostItemDefaultView){
-            ((PostItemDefaultView) dynamicView).setupView(item);
-            return;
-        }
-        if(dynamicView instanceof PostItemTextView){
-            ((PostItemTextView) dynamicView).setupView(item);
-            return;
-        }
-        if(dynamicView instanceof PostItemImageView){
-            ((PostItemImageView) dynamicView).setupView(item);
-            return;
-        }
-        if(dynamicView instanceof PostItemAnimatedView){
-            ((PostItemAnimatedView) dynamicView).setupView(item);
-            return;
-        }
-        if(dynamicView instanceof PostItemGalleryView){
-            //todo
-            ((PostItemGalleryView) dynamicView).setupView(item);
-            return;
-        }
+        ((PostItemSubView)dynamicView).setupView(item);
+        return;
     }
 
     /**

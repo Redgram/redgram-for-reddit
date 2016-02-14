@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.matie.redgram.ui.thread.views.widgets.comment.CommentBaseItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/comment_item_view"
-    card_view:cardBackgroundColor="@color/material_white">
+    android:background="@color/material_white"
+    android:clickable="true">
 
-    <!--inflate desired view here-->
-    <FrameLayout
-        android:id="@+id/container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <View
+            android:id="@+id/level_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@color/material_yellow300"/>
+        <!--inflate desired view here-->
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+    <View
+        style="@style/Separator"/>
 
 </com.matie.redgram.ui.thread.views.widgets.comment.CommentBaseItemView>
