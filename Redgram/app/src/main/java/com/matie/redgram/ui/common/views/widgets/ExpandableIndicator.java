@@ -63,10 +63,15 @@ public class ExpandableIndicator extends FrameLayout {
         impl.setExpandedState(isExpanded, animate);
     }
 
+    public void toggleState(){
+        impl.toggleState();
+    }
+
     static abstract class Impl {
 
         public abstract void init(Context context, AttributeSet attrs, int defStyleAttr, ExpandableIndicator indicator);
         public abstract void setExpandedState(boolean isExpanded, boolean animate);
+        public abstract void toggleState();
 
     }
 
@@ -74,6 +79,7 @@ public class ExpandableIndicator extends FrameLayout {
     protected class ExpandableIndicatorAnim extends Impl{
 
         private ImageView imageView;
+        private boolean isExpanded = true;
 
         @Override
         public void init(Context context, AttributeSet attrs, int defStyleAttr, ExpandableIndicator indicator) {
@@ -85,13 +91,27 @@ public class ExpandableIndicator extends FrameLayout {
         public void setExpandedState(boolean isExpanded, boolean animate) {
             int resId = (isExpanded) ? R.drawable.ic_action_arrow_drop_up : R.drawable.ic_action_arrow_drop_down;
             imageView.setImageResource(resId);
+
+            this.isExpanded = isExpanded;
             //add animation
+        }
+
+        @Override
+        public void toggleState() {
+            if(isExpanded){
+                imageView.setImageResource(R.drawable.ic_action_arrow_drop_up);
+                isExpanded = false;
+            }else{
+                imageView.setImageResource(R.drawable.ic_action_arrow_drop_down);
+                isExpanded = true;
+            }
         }
     }
 
     protected class ExpandableIndicatorNoAnim extends Impl{
 
         private ImageView imageView;
+        private boolean isExpanded = true;
 
         @Override
         public void init(Context context, AttributeSet attrs, int defStyleAttr, ExpandableIndicator indicator) {
@@ -103,6 +123,19 @@ public class ExpandableIndicator extends FrameLayout {
         public void setExpandedState(boolean isExpanded, boolean animate) {
             int resId = (isExpanded) ? R.drawable.ic_action_arrow_drop_up : R.drawable.ic_action_arrow_drop_down;
             imageView.setImageResource(resId);
+
+            this.isExpanded = isExpanded;
+        }
+
+        @Override
+        public void toggleState() {
+            if(isExpanded){
+                imageView.setImageResource(R.drawable.ic_action_arrow_drop_up);
+                isExpanded = false;
+            }else{
+                imageView.setImageResource(R.drawable.ic_action_arrow_drop_down);
+                isExpanded = true;
+            }
         }
     }
 }

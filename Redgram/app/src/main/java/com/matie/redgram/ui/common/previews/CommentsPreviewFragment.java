@@ -31,6 +31,7 @@ import com.matie.redgram.ui.thread.views.CommentsView;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentBaseItemView;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentItemView;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView;
+import com.matie.redgram.ui.thread.views.widgets.comment.CommentRegularItemView;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentViewHolder;
 
 import java.util.List;
@@ -154,17 +155,15 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
     }
 
     @Override
-    public void onClick(CommentBaseItem item) {
-//        if(item instanceof CommentItem){
-//            app.getToastHandler().showToast(((CommentItem) item).getAuthor(), Toast.LENGTH_SHORT);
-//        }
-//        if(item instanceof CommentMoreItem){
-//            app.getToastHandler().showToast(((CommentMoreItem) item).getCount()+"", Toast.LENGTH_SHORT);
-//        }
+    public void onClick(CommentBaseItemView itemView) {
+        CommentItemView commentItemView = (CommentItemView)itemView.getDynamicView();
+        if(commentItemView instanceof CommentRegularItemView){
+            ((CommentRegularItemView) commentItemView).getIndicator().toggleState();
+        }
     }
 
     @Override
-    public void onLongClick(CommentBaseItem item) {
+    public void onLongClick(CommentBaseItemView itemView) {
 //        if(item instanceof CommentItem){
 //            app.getToastHandler().showToast(item.getLevel()+" - Reg", Toast.LENGTH_SHORT);
 //        }

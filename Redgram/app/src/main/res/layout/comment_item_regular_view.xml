@@ -22,17 +22,28 @@
             android:textColor="@color/material_black"
             android:text="atioxx"/>
 
-        <TextView
-            android:id="@+id/time"
-            style="@style/Wrap"
+        <com.matie.redgram.ui.common.views.widgets.ExpandableIndicator
+            android:id="@+id/indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:paddingLeft="@dimen/default_padding"
             android:paddingRight="@dimen/default_padding"
             android:paddingTop="10dp"
-            android:textSize="@dimen/text_size_small"
-            android:textColor="@color/material_black"
-            android:text="atioxx"/>
+            />
+
+        <!--<TextView-->
+            <!--android:id="@+id/time"-->
+            <!--style="@style/Wrap"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:paddingLeft="@dimen/default_padding"-->
+            <!--android:paddingRight="@dimen/default_padding"-->
+            <!--android:paddingTop="10dp"-->
+            <!--android:textSize="@dimen/text_size_small"-->
+            <!--android:textColor="@color/material_black"-->
+            <!--android:text="atioxx"/>-->
     </RelativeLayout>
 
     <TextView

@@ -4,9 +4,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import com.h6ah4i.android.widget.advrecyclerview.expandable.annotation.ExpandableItemStateFlags;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentItem;
+import com.matie.redgram.ui.common.views.widgets.ExpandableIndicator;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -20,8 +22,10 @@ public class CommentRegularItemView extends CommentItemView{
     TextView textView;
     @InjectView(R.id.author)
     TextView authorView;
-    @InjectView(R.id.time)
-    TextView timeView;
+    @InjectView(R.id.indicator)
+    ExpandableIndicator indicator;
+//    @InjectView(R.id.time)
+//    TextView timeView;
 
     public CommentRegularItemView(Context context) {
         super(context);
@@ -40,7 +44,7 @@ public class CommentRegularItemView extends CommentItemView{
         CommentItem commentItem = (CommentItem)item;
         textView.setText(commentItem.getBody());
         authorView.setText(commentItem.getAuthor());
-        timeView.setText(commentItem.getLevel()+"");
+//        timeView.setText(commentItem.getLevel()+"");
     }
 
     @Override
@@ -49,4 +53,7 @@ public class CommentRegularItemView extends CommentItemView{
         ButterKnife.inject(this);
     }
 
+    public ExpandableIndicator getIndicator() {
+        return indicator;
+    }
 }

@@ -48,18 +48,18 @@ public class CommentViewHolder extends RecyclerView.ViewHolder implements View.O
     @Override
     public void onClick(View v) {
         CommentBaseItemView view = (CommentBaseItemView)v;
-        commentListener.onClick(view.getItem());
+        commentListener.onClick(view);
     }
 
     @Override
     public boolean onLongClick(View v) {
         CommentBaseItemView view = (CommentBaseItemView)v;
-        commentListener.onLongClick(view.getItem());
+        commentListener.onLongClick(view);
         return true;
     }
 
     public interface CommentListener{
-        void onClick(CommentBaseItem v);
-        void onLongClick(CommentBaseItem v);
+        void onClick(CommentBaseItemView v);
+        void onLongClick(CommentBaseItemView v);
     }
 }
