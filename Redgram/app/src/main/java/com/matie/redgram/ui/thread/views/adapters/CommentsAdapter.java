@@ -32,6 +32,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     private final LayoutInflater inflater;
     private List<CommentBaseItem> commentItems = Collections.emptyList();
     private Map<Integer, Integer> colorMap = new HashMap<>();
+    private CommentViewHolder.CommentListener commentListener;
 
     public CommentsAdapter(Context context) {
         this.inflater = LayoutInflater.from(context);
@@ -49,6 +50,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
             v.getContainer().addView(dynamicView);
         }
         v.setDynamicView(dynamicView);
+
+        if(commentListener != null){
+            return new CommentViewHolder(v, commentListener);
+        }
 
         return new CommentViewHolder(v);
     }
@@ -98,6 +103,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
             return id;
         }
         return id;
+    }
+
+    public void setCommentListener(CommentViewHolder.CommentListener commentListener) {
+        this.commentListener = commentListener;
     }
 
     public void replaceWith(List<CommentBaseItem> items){

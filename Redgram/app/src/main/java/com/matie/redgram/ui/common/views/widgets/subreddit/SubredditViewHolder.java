@@ -49,7 +49,7 @@ public class SubredditViewHolder extends RecyclerView.ViewHolder implements View
         return true;
     }
 
-    public static interface SubredditViewHolderListener{
+    public interface SubredditViewHolderListener{
         public void onClick(String subredditName);
         public void onLongClick(SubredditItem item);
     }

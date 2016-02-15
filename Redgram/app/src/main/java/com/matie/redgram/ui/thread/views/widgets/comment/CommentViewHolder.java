@@ -7,27 +7,34 @@ import android.widget.TextView;
 
 import com.h6ah4i.android.widget.advrecyclerview.expandable.annotation.ExpandableItemStateFlags;
 import com.matie.redgram.R;
+import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.ui.common.views.widgets.ExpandableIndicator;
 
 /**
  * Created by matie on 2016-01-30.
  */
-public class CommentViewHolder extends RecyclerView.ViewHolder {
+public class CommentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
     @ExpandableItemStateFlags
     private int flags;
 
     //main parent view
     private CommentBaseItemView commentBaseItemView;
-    //child view
-    private FrameLayout container;
-    private View levelView;
+    private CommentListener commentListener;
+
 
     public CommentViewHolder(CommentBaseItemView itemView) {
         super(itemView);
         this.commentBaseItemView = itemView;
-        this.container = (FrameLayout)itemView.findViewById(R.id.container);
-        this.levelView = (View)itemView.findViewById(R.id.level_view);
+    }
+
+    public CommentViewHolder(CommentBaseItemView itemView, CommentListener listener) {
+        super(itemView);
+        this.commentBaseItemView = itemView;
+        this.commentListener = listener;
+
+        commentBaseItemView.setOnClickListener(this);
+        commentBaseItemView.setOnLongClickListener(this);
     }
 
     public CommentBaseItemView getCommentItemView() {
@@ -38,19 +45,21 @@ public class CommentViewHolder extends RecyclerView.ViewHolder {
         this.commentBaseItemView = commentBaseItemView;
     }
 
-    public FrameLayout getContainer() {
-        return container;
+    @Override
+    public void onClick(View v) {
+        CommentBaseItemView view = (CommentBaseItemView)v;
+        commentListener.onClick(view.getItem());
     }
 
-    public void setContainer(FrameLayout container) {
-        this.container = container;
+    @Override
+    public boolean onLongClick(View v) {
+        CommentBaseItemView view = (CommentBaseItemView)v;
+        commentListener.onLongClick(view.getItem());
+        return true;
     }
 
-    public View getLevelView() {
-        return levelView;
-    }
-
-    public void setLevelView(View levelView) {
-        this.levelView = levelView;
+    public interface CommentListener{
+        void onClick(CommentBaseItem v);
+        void onLongClick(CommentBaseItem v);
     }
 }

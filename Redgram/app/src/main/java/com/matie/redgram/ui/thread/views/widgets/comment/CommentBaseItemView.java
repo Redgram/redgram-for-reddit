@@ -36,6 +36,7 @@ public class CommentBaseItemView extends RelativeLayout{
 
     View dynamicView;
     Context context;
+    CommentBaseItem baseItem;
 
     public CommentBaseItemView(Context context) {
         super(context);
@@ -59,6 +60,7 @@ public class CommentBaseItemView extends RelativeLayout{
     }
 
     public void setUp(CommentBaseItem item, int position, Map<Integer, Integer> levelToColorMap){
+        baseItem = item;
         resolveDimensions(item.getLevel(), position);
         resolveLevelDimension(item.getLevel());
         resolveLevelColor(item.getLevel(), levelToColorMap);
@@ -90,7 +92,7 @@ public class CommentBaseItemView extends RelativeLayout{
     }
 
     private void resolveLevelDimension(int level){
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(level*20, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(level*10, LinearLayout.LayoutParams.MATCH_PARENT);
         levelView.setLayoutParams(lp);
     }
 
@@ -106,5 +108,9 @@ public class CommentBaseItemView extends RelativeLayout{
 
         this.setLayoutParams(lp);
 
+    }
+
+    public CommentBaseItem getItem() {
+        return baseItem;
     }
 }
