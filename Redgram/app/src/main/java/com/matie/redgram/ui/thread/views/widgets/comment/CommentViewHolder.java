@@ -8,7 +8,9 @@ import android.widget.TextView;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.annotation.ExpandableItemStateFlags;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.comment.CommentItem;
 import com.matie.redgram.ui.common.views.widgets.ExpandableIndicator;
+import com.matie.redgram.ui.thread.views.CommentsView;
 
 /**
  * Created by matie on 2016-01-30.
@@ -20,7 +22,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder implements View.O
 
     //main parent view
     private CommentBaseItemView commentBaseItemView;
-    private CommentListener commentListener;
+    private CommentsView commentListener;
 
 
     public CommentViewHolder(CommentBaseItemView itemView) {
@@ -28,7 +30,7 @@ public class CommentViewHolder extends RecyclerView.ViewHolder implements View.O
         this.commentBaseItemView = itemView;
     }
 
-    public CommentViewHolder(CommentBaseItemView itemView, CommentListener listener) {
+    public CommentViewHolder(CommentBaseItemView itemView, CommentsView listener) {
         super(itemView);
         this.commentBaseItemView = itemView;
         this.commentListener = listener;
@@ -48,18 +50,42 @@ public class CommentViewHolder extends RecyclerView.ViewHolder implements View.O
     @Override
     public void onClick(View v) {
         CommentBaseItemView view = (CommentBaseItemView)v;
-        commentListener.onClick(view);
+        resolveCommentType(view);
     }
+
 
     @Override
     public boolean onLongClick(View v) {
         CommentBaseItemView view = (CommentBaseItemView)v;
-        commentListener.onLongClick(view);
+        commentListener.collapseItem(view.getItemPosition());
         return true;
     }
 
-    public interface CommentListener{
-        void onClick(CommentBaseItemView v);
-        void onLongClick(CommentBaseItemView v);
+    private void resolveCommentType(CommentBaseItemView v) {
+        CommentItemView commentItemView = (CommentItemView)v.getDynamicView();
+
+        if(commentItemView instanceof CommentRegularItemView){
+            resolveExpandCollapse(commentItemView, v.getItemPosition());
+        }else if(commentItemView instanceof CommentMoreItemView){
+            loadMore(commentItemView, v.getItemPosition());
+        }
     }
+
+    private void loadMore(CommentItemView v, int itemPosition) {
+        CommentMoreItemView targetView = (CommentMoreItemView) v;
+        commentListener.loadMore(itemPosition);
+    }
+
+    private void resolveExpandCollapse(CommentItemView v, int position) {
+        CommentRegularItemView targetView = (CommentRegularItemView) v;
+        //toggles between expand/collapse
+        boolean isExpanded = targetView.getIndicator().isExpanded();
+        if(isExpanded){
+            commentListener.collapseItem(position);
+        }else{
+            commentListener.expandItem(position);
+        }
+    }
+
+
 }

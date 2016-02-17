@@ -18,7 +18,7 @@
             android:paddingLeft="@dimen/default_padding"
             android:paddingRight="@dimen/default_padding"
             android:paddingTop="10dp"
-            android:textSize="@dimen/text_size_small"
+            android:textSize="@dimen/text_size_micro"
             android:textColor="@color/material_black"
             android:text="atioxx"/>
 
@@ -52,6 +52,7 @@
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_micro"
         android:padding="@dimen/default_padding"
         android:text="REGULAR"/>
 

@@ -41,10 +41,23 @@ public class CommentRegularItemView extends CommentItemView{
 
     @Override
     protected void setUpView(CommentBaseItem item) {
+
         CommentItem commentItem = (CommentItem)item;
         textView.setText(commentItem.getBody());
         authorView.setText(commentItem.getAuthor());
-//        timeView.setText(commentItem.getLevel()+"");
+
+        indicator.setExpandedState(commentItem.isExpanded(), commentItem.getChildCount());
+        if(!commentItem.isExpanded()){
+            setBackgroundColor(getResources().getColor(R.color.material_grey100));
+        }else{
+            setBackgroundColor(getResources().getColor(R.color.material_white));
+        }
+
+        if(commentItem.hasReplies()){
+            indicator.setVisibility(VISIBLE);
+        }else{
+            indicator.setVisibility(GONE);
+        }
     }
 
     @Override

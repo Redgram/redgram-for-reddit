@@ -14,4 +14,5 @@ public interface CommentsView extends BaseContextView {
      void collapseAll(int position);
      void hideItem(int position);
      void scrollTo(int position);
+     void loadMore(int position);
 }

@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
+import com.matie.redgram.ui.thread.views.CommentsView;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentBaseItemView;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentViewHolder;
 
@@ -32,7 +33,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     private final LayoutInflater inflater;
     private List<CommentBaseItem> commentItems = Collections.emptyList();
     private Map<Integer, Integer> colorMap = new HashMap<>();
-    private CommentViewHolder.CommentListener commentListener;
+    private CommentsView commentListener;
 
     public CommentsAdapter(Context context) {
         this.inflater = LayoutInflater.from(context);
@@ -105,7 +106,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
         return id;
     }
 
-    public void setCommentListener(CommentViewHolder.CommentListener commentListener) {
+    public void setCommentListener(CommentsView commentListener) {
         this.commentListener = commentListener;
     }
 
@@ -143,4 +144,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
         return colorMap;
     }
 
+    public List<CommentBaseItem> getCommentItems() {
+        return commentItems;
+    }
 }

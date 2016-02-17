@@ -254,8 +254,9 @@ public class RedditClient extends RedditServiceBase {
         return map;
     }
 
-    private void mapCommentToCommentItem(RedditComment commentData, int level, List<CommentBaseItem> comments) {
+    private int mapCommentToCommentItem(RedditComment commentData, int level, List<CommentBaseItem> comments) {
         CommentItem item = new CommentItem();
+        int count = 0; //child count defaults 0
 
         item.setCommentType(CommentBaseItem.CommentType.REGULAR);
         item.setId(commentData.getId());
@@ -273,14 +274,20 @@ public class RedditClient extends RedditServiceBase {
         if(commentData.getReplies() instanceof com.matie.redgram.data.models.api.reddit.RedditListing) {
             com.matie.redgram.data.models.api.reddit.RedditListing listing =
                     (com.matie.redgram.data.models.api.reddit.RedditListing) commentData.getReplies();
-            for (RedditObject object : listing.getChildren()) {
-                if (object instanceof RedditComment) {
-                    mapCommentToCommentItem((RedditComment)object, level, comments);
-                }else if(object instanceof RedditMore){
-                    mapCommentToCommentMoreItem((RedditMore)object, level, comments);
+            if(listing.getChildren().size() > 0){
+                item.setHasReplies(true);
+                count += listing.getChildren().size();
+                for (RedditObject object : listing.getChildren()) {
+                    if (object instanceof RedditComment) {
+                        count += mapCommentToCommentItem((RedditComment)object, level, comments);
+                    }else if(object instanceof RedditMore){
+                        mapCommentToCommentMoreItem((RedditMore)object, level, comments);
+                    }
                 }
+                item.setChildCount(count);
             }
         }
+        return count;
     }
 
     private void mapCommentToCommentMoreItem(RedditMore commentData, int level, List<CommentBaseItem> comments) {

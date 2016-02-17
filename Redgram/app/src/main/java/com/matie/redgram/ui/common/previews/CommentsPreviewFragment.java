@@ -28,6 +28,7 @@ import com.matie.redgram.ui.thread.components.ThreadComponent;
 import com.matie.redgram.ui.thread.modules.CommentsModule;
 import com.matie.redgram.ui.thread.views.CommentsActivity;
 import com.matie.redgram.ui.thread.views.CommentsView;
+import com.matie.redgram.ui.thread.views.adapters.CommentsAdapter;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentBaseItemView;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentItemView;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView;
@@ -44,7 +45,7 @@ import butterknife.InjectView;
 /**
  * Created by matie on 2016-01-07.
  */
-public class CommentsPreviewFragment extends BasePreviewFragment implements CommentsView, CommentViewHolder.CommentListener{
+public class CommentsPreviewFragment extends BasePreviewFragment implements CommentsView{
 
     @InjectView(R.id.comment_recycler_view)
     CommentRecyclerView commentRecyclerView;
@@ -121,12 +122,38 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
 
     @Override
     public void expandItem(int position) {
-
+        CommentItem item = (CommentItem)getItem(position);
+        if(item.hasReplies() && !item.isExpanded()){
+            item.setIsExpanded(true);
+            int count = (position+item.getChildCount());
+            for(int i = position+1; i <= count; i++){
+                getItem(i).setIsGrouped(false);
+                if(!getItem(i).isExpanded()){ //means children are grouped, leave them
+                    i += ((CommentItem)getItem(i)).getChildCount();
+                }
+            }
+        }else{
+            app.getToastHandler().showToast("do nothing", Toast.LENGTH_SHORT);
+        }
+        commentRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
     public void collapseItem(int position) {
-
+        CommentItem item = (CommentItem)getItem(position);
+        if(item.hasReplies() && item.isExpanded()){
+            item.setIsExpanded(false);
+            int count = (position+item.getChildCount());
+            for(int i = position+1; i <= count; i++){
+                getItem(i).setIsGrouped(true);
+                if(!getItem(i).isExpanded()){
+                    i += ((CommentItem)getItem(i)).getChildCount();
+                }
+            }
+        }else{
+            app.getToastHandler().showToast("do nothing", Toast.LENGTH_SHORT);
+        }
+        commentRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
@@ -150,25 +177,21 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
     }
 
     @Override
-    public Fragment getFragment() {
-        return this;
-    }
-
-    @Override
-    public void onClick(CommentBaseItemView itemView) {
-        CommentItemView commentItemView = (CommentItemView)itemView.getDynamicView();
-        if(commentItemView instanceof CommentRegularItemView){
-            ((CommentRegularItemView) commentItemView).getIndicator().toggleState();
+    public void loadMore(int position) {
+        if(commentItems.get(position) instanceof CommentMoreItem){
+            app.getToastHandler().showToast("load more", Toast.LENGTH_SHORT);
         }
     }
 
     @Override
-    public void onLongClick(CommentBaseItemView itemView) {
-//        if(item instanceof CommentItem){
-//            app.getToastHandler().showToast(item.getLevel()+" - Reg", Toast.LENGTH_SHORT);
-//        }
-//        if(item instanceof CommentMoreItem){
-//            app.getToastHandler().showToast(item.getLevel()+" - More", Toast.LENGTH_SHORT);
-//        }
+    public Fragment getFragment() {
+        return this;
+    }
+
+    private CommentBaseItem getItem(int position){
+        return ((CommentsAdapter)commentRecyclerView.getAdapter()).getItem(position);
+    }
+    private List<CommentBaseItem> getCommentItems(){
+        return ((CommentsAdapter)commentRecyclerView.getAdapter()).getCommentItems();
     }
 }

@@ -1,18 +1,13 @@
 package com.matie.redgram.ui.common.views.widgets;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.Animatable;
-import android.os.Build;
 import android.os.Parcelable;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.matie.redgram.R;
 
@@ -39,13 +34,7 @@ public class ExpandableIndicator extends FrameLayout {
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // NOTE: VectorDrawable only supports API level 21 or later
-            impl = new ExpandableIndicatorAnim();
-        } else {
-            impl = new ExpandableIndicatorNoAnim();
-        }
+        impl = new ExpandableIndicatorAnim();
         impl.init(context, attrs, defStyleAttr, this);
     }
 
@@ -59,83 +48,45 @@ public class ExpandableIndicator extends FrameLayout {
         super.dispatchThawSelfOnly(container);
     }
 
-    public void setExpandedState(boolean isExpanded, boolean animate) {
-        impl.setExpandedState(isExpanded, animate);
+    public void setExpandedState(boolean isExpanded, int count) {
+        impl.setExpandedState(isExpanded, count);
     }
 
-    public void toggleState(){
-        impl.toggleState();
+    public boolean isExpanded(){
+        return impl.isExpanded();
     }
 
     static abstract class Impl {
 
         public abstract void init(Context context, AttributeSet attrs, int defStyleAttr, ExpandableIndicator indicator);
-        public abstract void setExpandedState(boolean isExpanded, boolean animate);
-        public abstract void toggleState();
+        public abstract void setExpandedState(boolean isExpanded, int count);
+        public abstract boolean isExpanded();
 
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     protected class ExpandableIndicatorAnim extends Impl{
 
-        private ImageView imageView;
+        private TextView textView;
         private boolean isExpanded = true;
 
         @Override
         public void init(Context context, AttributeSet attrs, int defStyleAttr, ExpandableIndicator indicator) {
             View v = LayoutInflater.from(context).inflate(R.layout.expand_indicator_widget, indicator, true);
-            imageView = (ImageView)v.findViewById(R.id.image_view);
+            textView = (TextView)v.findViewById(R.id.text_view);
         }
 
         @Override
-        public void setExpandedState(boolean isExpanded, boolean animate) {
-            int resId = (isExpanded) ? R.drawable.ic_action_arrow_drop_up : R.drawable.ic_action_arrow_drop_down;
-            imageView.setImageResource(resId);
-
-            this.isExpanded = isExpanded;
-            //add animation
-        }
-
-        @Override
-        public void toggleState() {
-            if(isExpanded){
-                imageView.setImageResource(R.drawable.ic_action_arrow_drop_up);
-                isExpanded = false;
-            }else{
-                imageView.setImageResource(R.drawable.ic_action_arrow_drop_down);
-                isExpanded = true;
-            }
-        }
-    }
-
-    protected class ExpandableIndicatorNoAnim extends Impl{
-
-        private ImageView imageView;
-        private boolean isExpanded = true;
-
-        @Override
-        public void init(Context context, AttributeSet attrs, int defStyleAttr, ExpandableIndicator indicator) {
-            View v = LayoutInflater.from(context).inflate(R.layout.expand_indicator_widget, indicator, true);
-            imageView = (ImageView)v.findViewById(R.id.image_view);
-        }
-
-        @Override
-        public void setExpandedState(boolean isExpanded, boolean animate) {
-            int resId = (isExpanded) ? R.drawable.ic_action_arrow_drop_up : R.drawable.ic_action_arrow_drop_down;
-            imageView.setImageResource(resId);
+        public void setExpandedState(boolean isExpanded, int count) {
+            String num = (isExpanded) ? "" : count+"";
+            textView.setText(num);
 
             this.isExpanded = isExpanded;
         }
 
         @Override
-        public void toggleState() {
-            if(isExpanded){
-                imageView.setImageResource(R.drawable.ic_action_arrow_drop_up);
-                isExpanded = false;
-            }else{
-                imageView.setImageResource(R.drawable.ic_action_arrow_drop_down);
-                isExpanded = true;
-            }
+        public boolean isExpanded() {
+            return isExpanded;
         }
     }
+
 }

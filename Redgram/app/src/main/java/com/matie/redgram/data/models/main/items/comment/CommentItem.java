@@ -13,7 +13,10 @@ public class CommentItem extends CommentBaseItem {
     private String bodyHtml;
     private String link_id;
     private String subreddit_id;
-    private List<CommentBaseItem> replies; //might not be needed..establish a parent child relationship using ID's
+
+    //UI state related
+    private boolean hasReplies = false; //no replies by default
+    private int childCount;
 
     public String getAuthor() {
         return author;
@@ -55,12 +58,20 @@ public class CommentItem extends CommentBaseItem {
         this.subreddit_id = subreddit_id;
     }
 
-    public List<CommentBaseItem> getReplies() {
-        return replies;
+    public boolean hasReplies() {
+        return hasReplies;
     }
 
-    public void setReplies(List<CommentBaseItem> replies) {
-        this.replies = replies;
+    public void setHasReplies(boolean hasReplies) {
+        this.hasReplies = hasReplies;
+    }
+
+    public void setChildCount(int childCount) {
+        this.childCount = childCount;
+    }
+
+    public int getChildCount() {
+        return childCount;
     }
 
 }

@@ -18,6 +18,8 @@ public class CommentBaseItem extends RedditObject {
     private String parentId;
     private CommentType commentType;
     private int level;
+    private boolean isExpanded = true; //expanded by default
+    private boolean isGrouped = false;
 
     public String getId() {
         return id;
@@ -49,5 +51,21 @@ public class CommentBaseItem extends RedditObject {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public boolean isExpanded() {
+        return isExpanded;
+    }
+
+    public void setIsExpanded(boolean isExpanded) {
+        this.isExpanded = isExpanded;
+    }
+
+    public boolean isGrouped() {
+        return isGrouped;
+    }
+
+    public void setIsGrouped(boolean isGrouped) {
+        this.isGrouped = isGrouped;
     }
 }
