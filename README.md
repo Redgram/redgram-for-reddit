@@ -39,7 +39,10 @@ For collaborations, please view [this issue](https://github.com/Redgram/redgram-
 	- <del>Hold click subreddit to view infromation on it (requires new fragment [SubredditDetailsFragment])
 	- Ability to update information viewed in SubredditDetailsFragment
 - User Authentication (**dev-auth** branch - has to be merged with **dev** before starting).
-- String Builder Manager to highlight text (NSFW, username, GOLD, etc).
+- String Builder Manager to highlight text
+	- <del>Use in headers
+	- Use to mark Admins, Mods in borders
+	- Tag view, visit source webpage on link click (for default view too)
 	- Extend to manipulate mutable text (EditText) for submissions 
 - Shared Preferences Manager:
 	- <del>Create a Manager Class.
