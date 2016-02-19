@@ -1,8 +1,6 @@
-package com.matie.redgram.data.models.api.reddit;
+package com.matie.redgram.data.models.api.reddit.main;
 
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
-
-import java.util.List;
 
 /**
  * Created by matie on 2016-01-04.

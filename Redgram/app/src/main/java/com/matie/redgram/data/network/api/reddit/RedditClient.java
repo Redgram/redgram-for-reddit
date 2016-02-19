@@ -2,13 +2,13 @@ package com.matie.redgram.data.network.api.reddit;
 
 import android.support.annotation.Nullable;
 
-import com.matie.redgram.data.models.api.reddit.RedditComment;
-import com.matie.redgram.data.models.api.reddit.RedditMore;
-import com.matie.redgram.data.models.api.reddit.RedditSubreddit;
+import com.matie.redgram.data.models.api.reddit.main.RedditComment;
+import com.matie.redgram.data.models.api.reddit.main.RedditMore;
+import com.matie.redgram.data.models.api.reddit.main.RedditSubreddit;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.api.reddit.RedditLink;
+import com.matie.redgram.data.models.api.reddit.main.RedditLink;
 import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.items.comment.CommentItem;
@@ -38,19 +38,16 @@ public class RedditClient extends RedditServiceBase {
     public static final String MODHASH = "modhash";
 
     private final RedditProviderBase provider;
-    private final App app;
 
     @Inject
     public RedditClient(App app) {
         super(app);
-
-        this.app = app;
         this.provider = getRestAdapter().create(RedditProviderBase.class);
     }
 
     public Observable<RedditListing<PostItem>> getSubredditListing(String query, @Nullable Map<String, String> params, List<PostItem> postItems) {
 
-        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> subObservable
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subObservable
                 = provider.getSubreddit(query, params);
 
         return getDefaultPostListObservable(subObservable, postItems);
@@ -59,7 +56,7 @@ public class RedditClient extends RedditServiceBase {
 
     public Observable<RedditListing<PostItem>> getSubredditListing(String query, @Nullable String filter, @Nullable Map<String, String> params, List<PostItem> postItems) {
 
-        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> subObservable
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subObservable
                 = provider.getSubreddit(query, filter, params);
 
         return getDefaultPostListObservable(subObservable, postItems);
@@ -68,7 +65,7 @@ public class RedditClient extends RedditServiceBase {
 
     public Observable<RedditListing<PostItem>> executeSearch(String subreddit, @Nullable Map<String, String> params, List<PostItem> postItems) {
 
-        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> searchObservable = null;
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> searchObservable = null;
 
         if(!subreddit.isEmpty()){
             if (params != null) {
@@ -84,11 +81,11 @@ public class RedditClient extends RedditServiceBase {
     }
 
     public Observable<RedditListing<PostItem>> getListing(String front, @Nullable Map<String, String> params, List<PostItem> postItems){
-        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> listingObservable = provider.getListing(front, params);
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> listingObservable = provider.getListing(front, params);
         return getDefaultPostListObservable(listingObservable, postItems);
     }
 
-    private Observable<RedditListing<PostItem>> getDefaultPostListObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> listingObservable, List<PostItem> postItems) {
+    private Observable<RedditListing<PostItem>> getDefaultPostListObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> listingObservable, List<PostItem> postItems) {
 
         Observable<List<PostItem>> itemsObservable = getItemsObservable(listingObservable, postItems);
         Observable<Map<String,String>> fieldsObservable = getFieldsObservable(listingObservable);
@@ -106,7 +103,7 @@ public class RedditClient extends RedditServiceBase {
         });
     }
 
-    private Observable<List<PostItem>> getItemsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> observable, @Nullable List<PostItem> postItems){
+    private Observable<List<PostItem>> getItemsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> observable, @Nullable List<PostItem> postItems){
 
         return observable.flatMap(response -> Observable.from(response.getData().getChildren()))
                 .cast(RedditLink.class)
@@ -163,7 +160,7 @@ public class RedditClient extends RedditServiceBase {
 
     public Observable<RedditListing<SubredditItem>> getSubreddits(String filter, @Nullable Map<String, String> params){
 
-        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> subredditsListingObservable
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subredditsListingObservable
                 = provider.getSubredditsListing(filter, params);
 
         Observable<List<SubredditItem>> itemsObservable = subredditsListingObservable
@@ -189,10 +186,10 @@ public class RedditClient extends RedditServiceBase {
 
     public Observable<CommentsWrapper> getCommentsByArticle(String article, @Nullable Map<String, String> params){
 
-        Observable<List<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>>>
+        Observable<List<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>>>
                 commentsWrapper = provider.getCommentsByArticle(article, params);
 
-        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> listings =
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> listings =
                 commentsWrapper.flatMapIterable(redditResponses -> redditResponses);
 
         Observable<PostItem>
@@ -239,13 +236,13 @@ public class RedditClient extends RedditServiceBase {
      * @param responseObservable
      * @return
      */
-    private Observable<Map<String,String>> getFieldsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing>> responseObservable) {
+    private Observable<Map<String,String>> getFieldsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> responseObservable) {
         return responseObservable.map(listing -> mapFieldsToHashMap(listing));
     }
 
-    private Map<String, String> mapFieldsToHashMap(RedditResponse<com.matie.redgram.data.models.api.reddit.RedditListing> listing) {
+    private Map<String, String> mapFieldsToHashMap(RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing> listing) {
         Map<String, String> map = new HashMap<String,String>();
-        com.matie.redgram.data.models.api.reddit.RedditListing listingData = (com.matie.redgram.data.models.api.reddit.RedditListing)listing.getData();
+        com.matie.redgram.data.models.api.reddit.main.RedditListing listingData = (com.matie.redgram.data.models.api.reddit.main.RedditListing)listing.getData();
 
         map.put(AFTER, listingData.getAfter());
         map.put(BEFORE, listingData.getBefore());
@@ -271,9 +268,9 @@ public class RedditClient extends RedditServiceBase {
         comments.add(item);
         level += 1;
 
-        if(commentData.getReplies() instanceof com.matie.redgram.data.models.api.reddit.RedditListing) {
-            com.matie.redgram.data.models.api.reddit.RedditListing listing =
-                    (com.matie.redgram.data.models.api.reddit.RedditListing) commentData.getReplies();
+        if(commentData.getReplies() instanceof com.matie.redgram.data.models.api.reddit.main.RedditListing) {
+            com.matie.redgram.data.models.api.reddit.main.RedditListing listing =
+                    (com.matie.redgram.data.models.api.reddit.main.RedditListing) commentData.getReplies();
             if(listing.getChildren().size() > 0){
                 item.setHasReplies(true);
                 count += listing.getChildren().size();

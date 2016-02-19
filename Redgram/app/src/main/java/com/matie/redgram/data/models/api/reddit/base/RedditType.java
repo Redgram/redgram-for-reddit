@@ -1,10 +1,10 @@
 package com.matie.redgram.data.models.api.reddit.base;
 
-import com.matie.redgram.data.models.api.reddit.RedditComment;
-import com.matie.redgram.data.models.api.reddit.RedditLink;
-import com.matie.redgram.data.models.api.reddit.RedditListing;
-import com.matie.redgram.data.models.api.reddit.RedditMore;
-import com.matie.redgram.data.models.api.reddit.RedditSubreddit;
+import com.matie.redgram.data.models.api.reddit.main.RedditComment;
+import com.matie.redgram.data.models.api.reddit.main.RedditLink;
+import com.matie.redgram.data.models.api.reddit.main.RedditListing;
+import com.matie.redgram.data.models.api.reddit.main.RedditMore;
+import com.matie.redgram.data.models.api.reddit.main.RedditSubreddit;
 
 /**
  * Created by matie on 16/04/15.

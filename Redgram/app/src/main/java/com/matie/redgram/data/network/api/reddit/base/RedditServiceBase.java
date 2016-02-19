@@ -1,6 +1,7 @@
 package com.matie.redgram.data.network.api.reddit.base;
 
 import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -52,7 +53,6 @@ public class RedditServiceBase extends RedditBase {
     }
 
     public RestAdapter getRestAdapter() {
-
         //todo: get rid of Request Interceptor and use okHttp request interceptor
          return adapterBuilder.setEndpoint(REDDIT_HOST)
                  .setRequestInterceptor(getInterceptor()).build();
@@ -84,7 +84,10 @@ public class RedditServiceBase extends RedditBase {
                     Log.d("CSTATUS", "no connection!, stale = "+ MAX_STALE);
                 }
 
-                //todo: Auth headers
+                //this is used if we ever decided to login. If the user is already logged in, use a
+                //different interceptor with the Bearer + token header
+                String credentials = getKey()+":"+getSecret();
+                request.addHeader("Authorization", "Basic " + Base64.encodeToString(credentials.getBytes(),Base64.NO_WRAP));
             }
         };
     }

@@ -9,9 +9,10 @@ import com.matie.redgram.data.network.api.ApiBase;
 public class RedditBase extends ApiBase {
 
     protected static final String REDDIT_HOST = "http://www.reddit.com";
-    protected static final String OAUTH_URL = "https://www.reddit.com/api/v1/authorize";
-    protected static final String scopeList = "identity,edit,history,mysubreddits, privatemessages," +
-            "read,report,save,submit, subscribe, vote, wikiread";
+    protected static final String NAMESPACE = "/api/v1/";
+    protected static final String OAUTH_NAMESPACE = "authorize";
+    protected static final String scopeList = "identity,edit,history,mysubreddits,privatemessages," +
+            "read,report,save,submit,subscribe,vote,wikiread";
 
     private static String API_KEY = "";
     private static String API_SECRET = "";
