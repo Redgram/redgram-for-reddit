@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_home" android:icon="@drawable/ic_action_public"
+            android:title="@string/fragment_home" />
+        <item android:id="@+id/nav_search" android:icon="@drawable/ic_action_search"
+            android:title="@string/fragment_search" />
+        <item android:id="@+id/nav_subs" android:icon="@drawable/ic_list"
+            android:title="@string/fragment_subreddits" />
+    </group>
+
+    <item android:title="">
+        <menu>
+            <item android:id="@+id/nav_settings" android:title="@string/fragment_settings" />
+            <item android:id="@+id/nav_logout" android:title="@string/fragment_logout" />
+            <item android:id="@+id/nav_about" android:title="@string/fragment_about" />
+        </menu>
+    </item>
+
+</menu>

@@ -3,14 +3,12 @@ package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 import android.content.Context;
 import android.graphics.PointF;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
@@ -20,12 +18,10 @@ import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
-import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.base.Fragments;
-import com.matie.redgram.ui.common.main.MainActivity;
-import com.matie.redgram.ui.common.previews.WebPreviewFragment;
+import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -57,6 +53,8 @@ public class PostItemGalleryView extends PostItemSubView {
     View overlay;
 
     PostItem postItem;
+    int position;
+    LinksView listener;
 
     public PostItemGalleryView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -69,10 +67,12 @@ public class PostItemGalleryView extends PostItemSubView {
     }
 
     @Override
-    public void setupView(PostItem item) {
-        postItem = item;
+    public void setupView(PostItem item, int position, LinksView listener) {
+        this.postItem = item;
+        this.position = position;
+        this.listener = listener;
 
-        postItemTextView.setupView(item);
+        postItemTextView.setupView(item, position, listener);
 
         thumbnailView.setHierarchy(getDraweeHierarchy(item));
         thumbnailView.setController(getDraweeController(item));
@@ -81,6 +81,13 @@ public class PostItemGalleryView extends PostItemSubView {
         overlay.setBackgroundColor(OVERLAY_OPACITY * 0x1000000);
         overlayText.setVisibility(GONE);
         overlayImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_photo_library));
+    }
+
+    @Override
+    public void handleNsfwUpdate(boolean disabled) {
+        if(disabled){
+            listener.viewWebMedia(position);
+        }
     }
 
     private GenericDraweeHierarchy getDraweeHierarchy(PostItem item) {
@@ -104,37 +111,11 @@ public class PostItemGalleryView extends PostItemSubView {
         return controller;
     }
 
-    @OnClick(R.id.overlay_image)
-    public void onClick(){
-        handleGalleryClickEvent();
-    }
-
-    private void handleGalleryClickEvent() {
-        if(galleryOverlay.getVisibility() == GONE){
-            // TODO: 2015-10-20 load gallery
-            if(getContext() instanceof MainActivity){
-                ((MainActivity) getContext()).getApp().getToastHandler().showToast("NSFW diabled", Toast.LENGTH_SHORT);
-            }
-        }
-    }
-
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-        handleMainClickEvent();
-    }
-
-    @Override
-    public void handleMainClickEvent() {
-        Bundle bundle = new Bundle();
-        String key = getResources().getString(R.string.main_data_key);
-        bundle.putString(key, new Gson().toJson(postItem));
-        getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
-    }
 
     @OnClick({R.id.gallery_overlay, R.id.overlay_image, R.id.overlay_text})
     public void onGalleryClick(){
         if(postItem != null && isNsfwDisabled()){
-            handleMainClickEvent();
+            listener.viewWebMedia(position);
         }else{
             callNsfwDialog();
         }

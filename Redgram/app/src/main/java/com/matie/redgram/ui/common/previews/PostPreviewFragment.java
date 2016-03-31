@@ -3,6 +3,8 @@ package com.matie.redgram.ui.common.previews;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.thread.views.PostView;
 import com.matie.redgram.ui.common.base.BaseActivity;
 
@@ -42,7 +45,7 @@ public class PostPreviewFragment extends BasePreviewFragment implements PostView
         String content = postItem.getText();
 
         if(content.length() > 0){
-            mContent.setText(content);
+           mContent.setText(content);
         }else{
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
             params.gravity = Gravity.CENTER_HORIZONTAL;
@@ -76,7 +79,12 @@ public class PostPreviewFragment extends BasePreviewFragment implements PostView
 
 
     @Override
-    public Fragment getFragment() {
+    public BaseActivity getBaseActivity() {
+        return (BaseActivity)getActivity();
+    }
+
+    @Override
+    public BaseFragment getBaseFragment() {
         return this;
     }
 

@@ -1,16 +1,12 @@
 package com.matie.redgram.ui.common.previews;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.CommentsPresenterImpl;
 import com.matie.redgram.data.models.main.items.PostItem;
@@ -20,8 +16,8 @@ import com.matie.redgram.data.models.main.items.comment.CommentMoreItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
+import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.thread.components.CommentsComponent;
 import com.matie.redgram.ui.thread.components.DaggerCommentsComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
@@ -29,11 +25,7 @@ import com.matie.redgram.ui.thread.modules.CommentsModule;
 import com.matie.redgram.ui.thread.views.CommentsActivity;
 import com.matie.redgram.ui.thread.views.CommentsView;
 import com.matie.redgram.ui.thread.views.adapters.CommentsAdapter;
-import com.matie.redgram.ui.thread.views.widgets.comment.CommentBaseItemView;
-import com.matie.redgram.ui.thread.views.widgets.comment.CommentItemView;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView;
-import com.matie.redgram.ui.thread.views.widgets.comment.CommentRegularItemView;
-import com.matie.redgram.ui.thread.views.widgets.comment.CommentViewHolder;
 
 import java.util.List;
 
@@ -67,11 +59,6 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
 
         View view = inflater.inflate(R.layout.preview_comments_fragment, container, false);
         ButterKnife.inject(this, view);
-
-        // TODO: 2016-02-15 clean up?
-        String json = getArguments().getString(getMainKey());
-//        String title = (new Gson().fromJson(json, PostItem.class)).getTitle();
-//        titleView.setText(title);
 
         commentRecyclerView.setAdapterListener(this);
         return view;
@@ -109,8 +96,13 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
         ButterKnife.reset(this);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        ((CommentsActivity)context).commentsView = this;
+    }
 
-    public void refreshComments(List<CommentBaseItem> items){
+    private void refreshComments(List<CommentBaseItem> items){
         setComments(items);
         //refresh adapter
         commentRecyclerView.replaceWith(commentItems);
@@ -143,11 +135,18 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
         CommentItem item = (CommentItem)getItem(position);
         if(item.hasReplies() && item.isExpanded()){
             item.setIsExpanded(false);
+            /**
+             * pos = 4
+             * children = 3
+             * count = 7
+             * i = 5, 6, 7
+             */
             int count = (position+item.getChildCount());
-            for(int i = position+1; i <= count; i++){
-                getItem(i).setIsGrouped(true);
-                if(!getItem(i).isExpanded()){
-                    i += ((CommentItem)getItem(i)).getChildCount();
+            for(int i = position+1; (i <= count && (getItem(i).getLevel() > item.getLevel())); i++){
+                CommentBaseItem child = getItem(i);
+                child.setIsGrouped(true);
+                if(!child.isExpanded()){
+                    i += ((CommentItem)child).getChildCount();
                 }
             }
         }else{
@@ -181,11 +180,22 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
         if(commentItems.get(position) instanceof CommentMoreItem){
             app.getToastHandler().showToast("load more", Toast.LENGTH_SHORT);
         }
+
     }
 
     @Override
-    public Fragment getFragment() {
+    public BaseActivity getBaseActivity() {
+        return (BaseActivity)getActivity();
+    }
+
+    @Override
+    public BaseFragment getBaseFragment() {
         return this;
+    }
+
+    @Override
+    public void setItems(List<CommentBaseItem> items) {
+        refreshComments(items);
     }
 
     private CommentBaseItem getItem(int position){
@@ -194,4 +204,5 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
     private List<CommentBaseItem> getCommentItems(){
         return ((CommentsAdapter)commentRecyclerView.getAdapter()).getCommentItems();
     }
+
 }

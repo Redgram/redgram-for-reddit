@@ -133,7 +133,12 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     }
 
     @Override
-    public Fragment getFragment() {
+    public BaseActivity getBaseActivity() {
+        return (BaseActivity)getActivity();
+    }
+
+    @Override
+    public BaseFragment getBaseFragment() {
         return this;
     }
 

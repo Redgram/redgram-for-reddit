@@ -11,6 +11,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
  * Created by matie on 2015-10-31.
  */
 public interface SlidingPanelControllerInterface {
+
     /**
      *  Shows the collapsed panel
      */
@@ -42,7 +43,6 @@ public interface SlidingPanelControllerInterface {
      * @param view
      */
     public void setDraggable(View view);
-
 
     /**
      * Panel State

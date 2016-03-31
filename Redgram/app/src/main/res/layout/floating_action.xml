@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.matie.redgram.ui.common.utils.widgets.FloatingActionView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/panel_height"
+    android:layout_alignParentBottom="true"
+    android:background="@color/material_green100"
+    android:layout_margin="@dimen/activity_horizontal_margin"
+    android:alpha="0.9">
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Item Hidden"
+        android:layout_gravity="center_vertical|left"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:clickable="false"/>
+
+    <TextView
+        android:id="@+id/action"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Undo"
+        android:textStyle="bold"
+        android:layout_gravity="center_vertical|right"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:clickable="true"/>
+
+</com.matie.redgram.ui.common.utils.widgets.FloatingActionView>

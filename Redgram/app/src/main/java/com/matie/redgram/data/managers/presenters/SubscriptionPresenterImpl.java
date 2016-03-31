@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.preferences.PreferenceManager;
+import com.matie.redgram.data.managers.storage.preferences.PreferenceManager;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
@@ -81,8 +81,6 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         Map<String,String> params = new HashMap<String, String>();
         params.put("limit", "100");
 
-        String subredditFilterChoice = subscriptionView.getContext().getResources().getString(R.string.default_subreddit_filter).toLowerCase();
-
         //check if subreddits are in shared preferences
         SharedPreferences sharedPreferences = preferenceManager
                 .getSharedPreferences(PreferenceManager.SUBREDDIT_PREF);
@@ -97,10 +95,10 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
             subredditsObservable = Observable.just(storedListing);
 
         }else{
-            subredditsObservable = redditClient.getSubreddits(subredditFilterChoice, params);
+            subredditsObservable = redditClient.getSubscriptions(params);
         }
 
-        subredditSubscription = (Subscription)bindFragment(subscriptionView.getFragment(), subredditsObservable)
+        subredditSubscription = (Subscription)bindFragment(subscriptionView.getBaseFragment(), subredditsObservable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing<SubredditItem>>() {

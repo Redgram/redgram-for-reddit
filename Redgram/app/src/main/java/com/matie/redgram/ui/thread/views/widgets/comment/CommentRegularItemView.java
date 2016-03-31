@@ -3,9 +3,8 @@ package com.matie.redgram.ui.thread.views.widgets.comment;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
-
-import com.h6ah4i.android.widget.advrecyclerview.expandable.annotation.ExpandableItemStateFlags;
 import com.matie.redgram.R;
+import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentItem;
 import com.matie.redgram.ui.common.views.widgets.ExpandableIndicator;
@@ -44,7 +43,7 @@ public class CommentRegularItemView extends CommentItemView{
 
         CommentItem commentItem = (CommentItem)item;
         textView.setText(commentItem.getBody());
-        authorView.setText(commentItem.getAuthor());
+        authorView.setText(getAuthor(commentItem));
 
         indicator.setExpandedState(commentItem.isExpanded(), commentItem.getChildCount());
         if(!commentItem.isExpanded()){
@@ -58,6 +57,19 @@ public class CommentRegularItemView extends CommentItemView{
         }else{
             indicator.setVisibility(GONE);
         }
+    }
+
+    private String getAuthor(CommentItem commentItem) {
+        if(commentItem.getEdited() instanceof BooleanDate.DateInstance){
+            return commentItem.getAuthor() + " *";
+        }else if(commentItem.getEdited() instanceof BooleanDate.BooleanInstance){
+            if(((BooleanDate.BooleanInstance) commentItem.getEdited()).getData() == true){
+                return commentItem.getAuthor() + " *";
+            }else{
+                return commentItem.getAuthor();
+            }
+        }
+        return commentItem.getAuthor();
     }
 
     @Override

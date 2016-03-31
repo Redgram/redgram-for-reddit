@@ -2,10 +2,15 @@ package com.matie.redgram.data.network.api.reddit;
 
 import android.support.annotation.Nullable;
 
+import com.google.gson.JsonElement;
+import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
+import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
+import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.api.reddit.main.RedditComment;
 import com.matie.redgram.data.models.api.reddit.main.RedditMore;
 import com.matie.redgram.data.models.api.reddit.main.RedditSubreddit;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
+import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.api.reddit.main.RedditLink;
@@ -15,8 +20,8 @@ import com.matie.redgram.data.models.main.items.comment.CommentItem;
 import com.matie.redgram.data.models.main.items.comment.CommentMoreItem;
 import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
-import com.matie.redgram.data.network.api.reddit.base.RedditProviderBase;
-import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
+import com.matie.redgram.data.network.api.reddit.base.RedditProvider;
+import com.matie.redgram.data.network.api.reddit.base.RedditService;
 import com.matie.redgram.ui.App;
 
 import java.util.ArrayList;
@@ -26,23 +31,55 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Func2;
+import rx.functions.Func3;
 
 /**
  * Created by matie on 17/04/15.
  */
-public class RedditClient extends RedditServiceBase {
+public class RedditClient extends RedditService {
     public static final String BEFORE = "before";
     public static final String AFTER = "after";
     public static final String MODHASH = "modhash";
 
-    private final RedditProviderBase provider;
+    private final RedditProvider provider;
 
     @Inject
     public RedditClient(App app) {
         super(app);
-        this.provider = getRestAdapter().create(RedditProviderBase.class);
+        this.provider = buildRetrofit(OAUTH_HOST_ABSOLUTE).create(RedditProvider.class);
+    }
+
+    public Observable<AuthWrapper> getAuthWrapper(String code){
+        return getAccessToken(code)
+                .filter(accessToken -> accessToken.getAccessToken() != null) //make sure it's not null
+                .flatMap(accessToken -> {
+                    String token = accessToken.getAccessToken();
+                    return Observable.zip(getUser(token), getUserPrefs(token), Observable.just(accessToken), new Func3<AuthUser, AuthPrefs, AccessToken, AuthWrapper>() {
+                        @Override
+                        public AuthWrapper call(AuthUser authUser, AuthPrefs authPrefs, AccessToken accessToken) {
+                            AuthWrapper wrapper = new AuthWrapper();
+                            wrapper.setAccessToken(accessToken);
+                            wrapper.setAuthUser(authUser);
+                            wrapper.setAuthPrefs(authPrefs);
+                            return wrapper;
+                        }
+                    });
+                });
+    }
+
+    public Observable<AuthUser> getUser(@Nullable String accessToken) {
+        accessToken = "bearer " + accessToken;
+        return provider.getUser(accessToken);
+    }
+
+    public Observable<AuthPrefs> getUserPrefs(@Nullable String accessToken){
+        accessToken = "bearer " + accessToken;
+        return provider.getUserPrefs(accessToken);
     }
 
     public Observable<RedditListing<PostItem>> getSubredditListing(String query, @Nullable Map<String, String> params, List<PostItem> postItems) {
@@ -61,7 +98,6 @@ public class RedditClient extends RedditServiceBase {
 
         return getDefaultPostListObservable(subObservable, postItems);
     }
-
 
     public Observable<RedditListing<PostItem>> executeSearch(String subreddit, @Nullable Map<String, String> params, List<PostItem> postItems) {
 
@@ -107,6 +143,7 @@ public class RedditClient extends RedditServiceBase {
 
         return observable.flatMap(response -> Observable.from(response.getData().getChildren()))
                 .cast(RedditLink.class)
+                .filter(link -> filterHidden(link)) //filters hidden posts
                 .map(this::mapLinkToPostItem)
                 .filter(item -> (postItems != null ? filterExistingItems(postItems, item) : true))
                 .concatMap(postItem -> {
@@ -138,6 +175,13 @@ public class RedditClient extends RedditServiceBase {
                 .toList();
     }
 
+    private Boolean filterHidden(RedditLink link) {
+        if(link.isHidden()){
+            return false;
+        }
+        return true;
+    }
+
     /**
      * This function replaces the old item in the list with the new one only if both items have the
      * same id. If replaced, filter out the emitted item. If not, return true to include it.
@@ -163,6 +207,18 @@ public class RedditClient extends RedditServiceBase {
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subredditsListingObservable
                 = provider.getSubredditsListing(filter, params);
 
+        return getSubredditsObservable(subredditsListingObservable);
+    }
+
+    public Observable<RedditListing<SubredditItem>> getSubscriptions(@Nullable Map<String, String> params){
+
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subredditsListingObservable
+                = provider.getSubscriptions(params);
+
+        return getSubredditsObservable(subredditsListingObservable);
+    }
+
+    private Observable<RedditListing<SubredditItem>> getSubredditsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subredditsListingObservable) {
         Observable<List<SubredditItem>> itemsObservable = subredditsListingObservable
                 .flatMap(response -> Observable.from(response.getData().getChildren()))
                 .cast(RedditSubreddit.class)
@@ -231,6 +287,34 @@ public class RedditClient extends RedditServiceBase {
 
     }
 
+    public Observable<JsonElement> voteFor(String id, Integer direction){
+        return provider.voteFor(id, direction);
+    }
+
+    public Observable<JsonElement> hide(String id, boolean hide){
+        if(hide)
+            return provider.hide(id);
+        else
+            return provider.unhide(id);
+    }
+
+    public Observable<JsonElement> save(String id, boolean save){
+        if(save)
+            return provider.save(id);
+        else
+            return provider.unsave(id);
+    }
+
+    //Confirmation prompt
+    public Observable<JsonElement> report(String id){
+        return provider.report("json", id, "");
+    }
+
+    //Confirmation prompt
+    public Observable<JsonElement> delete(String id){
+        return provider.delete(id);
+    }
+
     /**
      * Maps attributes that belong to listings only. BEFORE AFTER AND MODHASH.
      * @param responseObservable
@@ -263,6 +347,7 @@ public class RedditClient extends RedditServiceBase {
         item.setBodyHtml(commentData.getBody_html());
         item.setParentId(commentData.getParentId());
         item.setSubredditId(commentData.getSubredditId());
+        item.setEdited(commentData.isEdited());
         item.setLevel(level);
 
         comments.add(item);
@@ -301,7 +386,6 @@ public class RedditClient extends RedditServiceBase {
         comments.add(item);
     }
 
-
     // TODO: 22/09/15 move to a builder class
     private PostItem mapLinkToPostItem(RedditLink link){
         PostItem item = new PostItem();
@@ -317,9 +401,11 @@ public class RedditClient extends RedditServiceBase {
         item.setTitle(link.getTitle());
         item.setDomain(link.getDomain());
         item.setText(link.getSelftext());
+        item.setLikes(link.getLikes());
         item.setHtmlText(link.getSelftextHtml());
         item.setNumComments(link.getNumComments());
         item.setIsSelf(link.isSelf());
+        item.setSaved(link.isSaved());
 
         item.setIsAdult(link.isAdult());
         item.setIsDistinguished(link.isDistinguished());
@@ -347,7 +433,6 @@ public class RedditClient extends RedditServiceBase {
         subredditItem.setSubmissionType(item.getSubmissionType());
         return subredditItem;
     }
-
 
 
 }

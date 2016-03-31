@@ -16,8 +16,10 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
+import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.main.MainActivity;
+import com.matie.redgram.ui.common.utils.display.SlidingPanelControllerInterface;
+import com.matie.redgram.ui.thread.views.CommentsActivity;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -105,7 +107,7 @@ public class WebPreviewFragment extends BasePreviewFragment{
 
     @OnClick(R.id.close_fragment)
     public void OnCloseFragment(){
-        MainActivity activity = (MainActivity)getContext();
+        SlidingUpPanelActivity activity = (SlidingUpPanelActivity)getContext();
         activity.hidePanel();
     }
 

@@ -4,7 +4,6 @@ package com.matie.redgram.ui.home;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,15 +23,20 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
+import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
+import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.Fragments;
+import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
-import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.posts.LinksComponent;
+import com.matie.redgram.ui.posts.LinksContainerView;
+import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.nineoldandroids.view.ViewHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -51,22 +54,19 @@ import butterknife.InjectView;
  * Created by matie on 17/01/15.
  */
 public class HomeFragment extends SlidingUpPanelFragment implements HomeView, ObservableScrollViewCallbacks,
-        SwipeRefreshLayout.OnRefreshListener{
+        SwipeRefreshLayout.OnRefreshListener {
 
-    @InjectView(R.id.home_swipe_container)
+    @InjectView(R.id.swipe_container)
     SwipeRefreshLayout homeSwipeContainer;
-    @InjectView(R.id.home_linear_layout)
-    LinearLayout homeLinearLayout;
-    @InjectView(R.id.home_recycler_view)
-    PostRecyclerView homeRecyclerView;
-    @InjectView(R.id.home_load_more_bar)
-    ProgressBar homeProgressBar;
+    @InjectView(R.id.links_container_view)
+    LinksContainerView linksContainerView;
 
     Toolbar mToolbar;
     View mContentView;
     LayoutInflater mInflater;
     LinearLayoutManager mLayoutManager;
 
+    PostRecyclerView homeRecyclerView;
     FrameLayout frameLayout;
     LinearLayout titleWrapper;
     TextView toolbarTitle;
@@ -74,16 +74,12 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
     ImageView listingFilter;
     ImageView listingRefresh;
 
-    String subredditChoice;
-    String filterChoice;
-    Map<String,String> params;
-
-    //recycler view listeners to add.
-    RecyclerView.OnScrollListener swipeLayoutEnablerListener;
-    RecyclerView.OnScrollListener loadMoreListener;
 
     HomeComponent component;
+    LinksComponent linksComponent;
 
+    @Inject
+    App app;
     @Inject
     HomePresenterImpl homePresenter;
     @Inject
@@ -95,46 +91,66 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.inject(this, view);
 
-        mLayoutManager = (LinearLayoutManager)homeRecyclerView.getLayoutManager();
+        setUpRecyclerView();
+
         mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
         mContentView = getActivity().findViewById(R.id.container);
         mInflater = inflater;
 
-        // TODO: 2015-10-27 include in settings as values to set
-        subredditChoice = null;
-        filterChoice = getContext().getResources().getString(R.string.default_home_filter); //default value
-        params = new HashMap<String,String>();
-
         setupSwipeContainer();
-        setupListeners();
-        setupRecyclerView();
-
 
         return view;
     }
 
+    private void setUpRecyclerView() {
+        homeRecyclerView = linksContainerView.getContainerRecyclerView();
+        mLayoutManager = (LinearLayoutManager)homeRecyclerView.getLayoutManager();
+
+        //this listener is responsible for invoking SWIPE-TO-REFRESH if the first item is fully visible.
+        homeRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                boolean enable = false;
+                if (homeRecyclerView != null && homeRecyclerView.getChildCount() > 0) {
+                    // check if the first item of the list is visible
+                    boolean firstItemVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
+                    // enabling or disabling the refresh layout
+                    enable = firstItemVisible;
+                }
+                homeSwipeContainer.setEnabled(enable);
+            }
+        });
+
+    }
+
     private void checkArgumentsAndUpdate() {
+        String filter = getResources().getString(R.string.default_filter);
         if(getArguments() != null && getArguments().containsKey(SubscriptionActivity.RESULT_SUBREDDIT_NAME)){
-            subredditChoice = getArguments().getString(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
-            homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
+            String subredditChoice = getArguments().getString(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
+            Map<String, String> params = new HashMap<>();
+            linksContainerView.refreshView(subredditChoice, filter.toLowerCase(), params);
             toolbarTitle.setText(subredditChoice);
+            toolbarSubtitle.setText(filter);
         } else{
             homePresenter.getHomeViewWrapper();
+            linksContainerView.refreshView();
+            toolbarSubtitle.setText(filter);
         }
-        // TODO: 2015-10-27 set the title after the data is retrieved
-        toolbarSubtitle.setText(filterChoice);
     }
 
     @Override
     protected void setupComponent() {
         AppComponent appComponent = ((BaseActivity)getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
+        LinksModule linksModule = new LinksModule(linksContainerView, this);
         component = DaggerHomeComponent.builder()
                 .mainComponent(mainComponent)
                 .homeModule(new HomeModule(this))
+                .linksModule(linksModule)
                 .build();
-
         component.inject(this);
+        linksComponent = component.getLinksComponent(linksModule);
+        linksContainerView.setComponent(linksComponent);
     }
     @Override
     protected void setupToolbar() {
@@ -148,8 +164,8 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
         titleWrapper = (LinearLayout)rl.findViewById(R.id.home_toolbar_title_linear_layout);
         //// TODO: 2015-10-20 handle subreddits and change the view to indicate a clickable
 
-        toolbarTitle = (TextView)rl.findViewById(R.id.home_toolbar_title);
-        toolbarSubtitle = (TextView)rl.findViewById(R.id.home_toolbar_subtitle);
+        toolbarTitle = (TextView) rl.findViewById(R.id.home_toolbar_title);
+        toolbarSubtitle = (TextView) rl.findViewById(R.id.home_toolbar_subtitle);
         listingFilter = (ImageView)rl.findViewById(R.id.listing_filter);
         listingRefresh = (ImageView)rl.findViewById(R.id.listing_refresh);
 
@@ -159,14 +175,11 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
                 if(homeRecyclerView.getVisibility() == View.VISIBLE && homePresenter.getSubreddits() != null){
 
                     List<String> subreddits = homePresenter.getSubreddits();
-
                     //if a subreddit was selected before, add an option to return to home
-                    if(subredditChoice != null && !subredditChoice.isEmpty()){
+                    if(!getResources().getString(R.string.frontpage).equalsIgnoreCase(toolbarTitle.getText().toString())){
                         subreddits.add(0, "Return to Frontpage");
                     }else{
-                        if("Frontpage".equalsIgnoreCase(subreddits.get(0))){
-                            subreddits.remove(0);
-                        }
+                        subreddits.remove(0);
                     }
 
                     dialogUtil.build()
@@ -175,17 +188,21 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
                             .itemsCallback(new MaterialDialog.ListCallback() {
                                 @Override
                                 public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+
+                                    String subredditChoice = charSequence.toString();
+                                    String filterChoice = getContext().getResources().getString(R.string.default_filter);
+                                    Map<String, String> params = new HashMap<String, String>();
+                                    //common
+                                    toolbarSubtitle.setText(filterChoice);
+
                                     if (i == 0 && "Return to Frontpage".equalsIgnoreCase(charSequence.toString())) {
-                                        homePresenter.getHomeViewWrapper();
-                                        toolbarTitle.setText("Frontpage");
-                                        filterChoice = getContext().getResources().getString(R.string.default_home_filter);
-                                        toolbarSubtitle.setText(filterChoice);
-                                        subredditChoice = null;
+                                        toolbarTitle.setText(getResources().getString(R.string.frontpage));
+                                        linksContainerView.refreshView(null, filterChoice.toLowerCase(), params);
                                     } else {
-                                        subredditChoice = charSequence.toString();
                                         toolbarTitle.setText(subredditChoice);
-                                        homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
+                                        linksContainerView.refreshView(subredditChoice, filterChoice.toLowerCase(), params);
                                     }
+
                                 }
                             })
                             .show();
@@ -193,7 +210,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
             }
         });
 
-        toolbarTitle.setText("Frontpage");
+        toolbarTitle.setText(getResources().getString(R.string.frontpage));
 
         listingFilter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,11 +227,8 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
                                         callSortDialog(charSequence);
                                     } else {
                                         if(!homeSwipeContainer.isRefreshing()){
-                                            //necessary as not all filters have url parameters in their calls
-                                            params.clear();
-                                            //keep track of filter choice
-                                            filterChoice = charSequence.toString();
-                                            homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
+                                            String filterChoice = charSequence.toString();
+                                            linksContainerView.sortView(filterChoice.toLowerCase());
                                             toolbarSubtitle.setText(filterChoice);
                                         }
                                     }
@@ -228,46 +242,11 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
         listingRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!homeSwipeContainer.isRefreshing()){
-                    homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
+                if (!homeSwipeContainer.isRefreshing()) {
+                    linksContainerView.refreshView();
                 }
             }
         });
-    }
-
-    private void setupListeners() {
-
-        //this listener is responsible for invoking SWIPE-TO-REFRESH if the first item is fully visible.
-        swipeLayoutEnablerListener = new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                boolean enable = false;
-                if(homeRecyclerView != null && homeRecyclerView.getChildCount() > 0){
-                    // check if the first item of the list is visible
-                    boolean firstItemVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
-                    // enabling or disabling the refresh layout
-                    enable = firstItemVisible;
-                }
-                homeSwipeContainer.setEnabled(enable);
-            }
-        };
-
-        //this listener is responsible for LOAD MORE. This listener object will be added on startup. Removed when
-        // a network call is done and added again when the requested network call is either COMPLETED or had an ERROR.
-        loadMoreListener = new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if(newState == RecyclerView.SCROLL_STATE_IDLE){
-                    if(homeRecyclerView != null && homeRecyclerView.getChildCount() > 0){
-                        int lastItemPosition = homeRecyclerView.getAdapter().getItemCount() - 1;
-                        if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
-                            homePresenter.getMoreListing(subredditChoice, filterChoice.toLowerCase(), params);
-                        }
-                    }
-                }
-            }
-        };
-
     }
 
     private void setupSwipeContainer(){
@@ -284,21 +263,12 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
                     getContext().getResources().getDisplayMetrics());
             //push it down to the same position as the first item to be loaded
-            homeSwipeContainer.setProgressViewOffset(false, 0 , actionBarHeight+50);
+            homeSwipeContainer.setProgressViewOffset(false, 0 , 50);
         }
     }
 
-    private void setupRecyclerView(){
-        homeRecyclerView.setScrollViewCallbacks(this);
-        //enable swipe to refresh when the FIRST time is visible ONLY.
-        homeRecyclerView.addOnScrollListener(swipeLayoutEnablerListener);
-        homeRecyclerView.addOnScrollListener(loadMoreListener);
-    }
 
-    private void callSortDialog(CharSequence query)
-    {
-        filterChoice = query.toString();
-
+    private void callSortDialog(CharSequence query) {
         dialogUtil.build()
                 .title("Sort By")
                 .items(R.array.fromArray)
@@ -306,16 +276,18 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
                     @Override
                     public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                         if(!homeSwipeContainer.isRefreshing()){
+
                             //create parameters list for the network call
-                            Map<String, String> urlParams = new HashMap<String, String>();
-                            urlParams.put("t", charSequence.toString().toLowerCase());
-                            //keep track of filter sort choice
-                            params = urlParams;
+                            Map<String, String> params = new HashMap<>();
+                            params.put("t", charSequence.toString().toLowerCase());
+
                             //perform network call
-                            homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
+                            linksContainerView.refreshView(null, query.toString().toLowerCase(), params);
+
                             //change subtitle only
                             String bullet = getContext().getResources().getString(R.string.text_bullet);
                             toolbarSubtitle.setText(query+" "+bullet+" "+charSequence);
+
                         }
                     }
                 }).show();
@@ -332,12 +304,14 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
     public void onResume() {
         super.onResume();
         homePresenter.registerForEvents();
+        linksContainerView.getLinksPresenter().registerForEvents();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         homePresenter.unregisterForEvents();
+        linksContainerView.getLinksPresenter().unregisterForEvents();
     }
 
 
@@ -379,19 +353,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
     public void hideLoading() {
         homeSwipeContainer.setRefreshing(false);
         homeRecyclerView.setVisibility(View.VISIBLE);
-        homePresenter.loadSample();
-    }
-
-    @Override
-    public void showLoadMoreIndicator() {
-        homeRecyclerView.removeOnScrollListener(loadMoreListener);
-        homeProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideLoadMoreIndicator() {
-        homeRecyclerView.addOnScrollListener(loadMoreListener);
-        homeProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -399,10 +360,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
 
     @Override
     public void showErrorMessage(String errorMsg) {
-//        App app = (App)(getActivity().getApplication());
-//        ToastHandler toastHandler = app.getToastHandler();
-//        toastHandler.showToast(errorMsg, Toast.LENGTH_SHORT);
-
         dialogUtil.build().title("Error Message").content(errorMsg).show();
     }
 
@@ -416,10 +373,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
         moveToolbar(-mToolbar.getHeight());
     }
 
-    @Override
-    public PostRecyclerView getRecyclerView() {
-        return homeRecyclerView;
-    }
 
     @Override
     public Context getContext() {
@@ -427,7 +380,12 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
     }
 
     @Override
-    public Fragment getFragment() {
+    public BaseActivity getBaseActivity() {
+        return (BaseActivity)getActivity();
+    }
+
+    @Override
+    public BaseFragment getBaseFragment() {
         return this;
     }
 
@@ -458,36 +416,34 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
         animator.start();
     }
 
-    // TODO: 2015-10-27 make sure to update the params list IF there was anything set up in sharedPreferences for params.
-    // TODO: 2015-10-27 make sure to update the filterChoice when loading the presenter and found a filterChoice.
     @Override
     public void onRefresh() {
-        homePresenter.getListing(subredditChoice, filterChoice.toLowerCase(), params);
+        linksContainerView.refreshView();
     }
 
     @Override
     public void showPanel() {
-        ((MainActivity)getActivity()).showPanel();
+        ((SlidingUpPanelActivity)getActivity()).showPanel();
     }
 
     @Override
     public void hidePanel() {
-        ((MainActivity)getActivity()).hidePanel();
+        ((SlidingUpPanelActivity)getActivity()).hidePanel();
     }
 
     @Override
     public void togglePanel() {
-        ((MainActivity)getActivity()).togglePanel();
+        ((SlidingUpPanelActivity)getActivity()).togglePanel();
     }
 
     @Override
     public void setPanelHeight(int height) {
-        ((MainActivity)getActivity()).setPanelHeight(height);
+        ((SlidingUpPanelActivity)getActivity()).setPanelHeight(height);
     }
 
     @Override
     public void setPanelView(Fragments fragmentEnum, Bundle bundle) {
-//        ((MainActivity)getActivity()).setPanelView(fragmentName);
+        ((SlidingUpPanelActivity)getActivity()).setPanelView(fragmentEnum, bundle);
     }
 
     @Override
@@ -497,7 +453,8 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
 
     @Override
     public SlidingUpPanelLayout.PanelState getPanelState() {
-        return ((MainActivity)getActivity()).getPanelState();
+        return ((SlidingUpPanelActivity) getActivity()).getPanelState();
     }
+
 
 }

@@ -1,14 +1,12 @@
 package com.matie.redgram.ui.thread.views;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 
@@ -16,11 +14,9 @@ import android.support.v7.widget.Toolbar;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -28,10 +24,12 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.media.images.ImageManager;
+import com.matie.redgram.data.managers.media.video.ImageManager;
 import com.matie.redgram.data.managers.presenters.ThreadPresenterImpl;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.ui.AppComponent;
+import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.thread.components.DaggerThreadComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
@@ -44,7 +42,7 @@ import com.matie.redgram.ui.common.previews.WebPreviewFragment;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 
-import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -82,9 +80,11 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     @InjectView(R.id.comments_swipe_container)
     SwipeRefreshLayout commentsSwipeContainer;
 
+    public CommentsView commentsView;
     private PostItem postItem;
     private boolean isSelf;
     private SlidrInterface mSlidrInterface;
+
 
     //dagger
     ThreadComponent threadComponent;
@@ -97,7 +97,6 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_comments);
         ButterKnife.inject(this);
 
         if (getIntent() != null) {
@@ -119,7 +118,7 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
         setupViewPager();
         setupToolbarImage();
         setToolbarTitle(0);
-        setUpSwipeLayout();
+        setupSwipeLayout();
 
 //        resolveAppBarHeight();
         mSlidrInterface = Slidr.attach(this);
@@ -198,7 +197,7 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
         });
     }
 
-    private void setUpSwipeLayout() {
+    private void setupSwipeLayout() {
         commentsSwipeContainer.setEnabled(false);
         commentsSwipeContainer.setColorSchemeResources(android.R.color.holo_green_dark,
                 android.R.color.holo_red_dark,
@@ -212,7 +211,7 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     protected void setupComponent(AppComponent appComponent) {
         threadComponent = DaggerThreadComponent.builder()
                 .appComponent(appComponent)
-                .threadModule(new ThreadModule(this, this))
+                .threadModule(new ThreadModule(this))
                 .build();
         threadComponent.inject(this);
     }
@@ -220,6 +219,21 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     @Override
     public AppComponent component() {
         return threadComponent;
+    }
+
+    @Override
+    protected BaseActivity activity() {
+        return getBaseActivity();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_comments;
+    }
+
+    @Override
+    protected int getContainerId() {
+        return 0;
     }
 
 
@@ -375,8 +389,8 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     }
 
     @Override
-    public CommentsPagerAdapter getAdapter() {
-        return commentsPagerAdapter;
+    public void passDataToCommentsView(List<CommentBaseItem> commentItems) {
+        commentsView.setItems(commentItems);
     }
 
     @Override
@@ -385,12 +399,12 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     }
 
     @Override
-    public Activity getActivity() {
+    public BaseActivity getBaseActivity() {
         return this;
     }
 
     @Override
-    public Fragment getFragment() {
+    public BaseFragment getBaseFragment() {
         return null;
     }
 

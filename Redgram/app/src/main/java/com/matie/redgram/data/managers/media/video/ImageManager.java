@@ -1,4 +1,4 @@
-package com.matie.redgram.data.managers.media.images;
+package com.matie.redgram.data.managers.media.video;
 
 import android.content.Context;
 import android.graphics.PointF;

@@ -1,9 +1,10 @@
 package com.matie.redgram.ui.common.main;
 
-import com.matie.redgram.data.managers.media.images.ImageManager;
-import com.matie.redgram.data.managers.media.images.ImageModule;
+import android.app.Activity;
+
 import com.matie.redgram.ui.ActivityScope;
 import com.matie.redgram.ui.AppComponent;
+import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 
 import dagger.Component;
@@ -15,8 +16,7 @@ import dagger.Component;
 @Component(
         dependencies = AppComponent.class,
         modules = {
-                MainModule.class,
-                ImageModule.class
+                MainModule.class
         }
 )
 public interface MainComponent extends AppComponent{
@@ -24,5 +24,4 @@ public interface MainComponent extends AppComponent{
 
     MainActivity activity();
     DialogUtil getDialogUtil();
-    ImageManager getImageManager();
 }

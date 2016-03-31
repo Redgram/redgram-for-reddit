@@ -20,7 +20,7 @@
         <activity
             android:name=".ui.common.main.MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,6 +42,12 @@
             android:name=".ui.thread.views.CommentsActivity"
             android:label="@string/title_activity_comments"
             android:theme="@style/AppTheme.Slider" >
+        </activity>
+        <activity
+            android:name=".ui.common.auth.AuthActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_auth"
+            android:theme="@style/FullscreenTheme" >
         </activity>
     </application>
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--include fixed header of nav drawer-->
+<RelativeLayout
+    android:id="@+id/userDrawerHeader"
+    android:layout_width="@dimen/navigation_drawer_width"
+    android:layout_height="@dimen/navigation_drawer_personal_data_layout_height"
+    android:paddingBottom="@dimen/default_small_padding"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        style="@style/Wrap"
+        android:id="@+id/drawerUserImage"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="40dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_launcher"
+        android:layout_marginRight="@dimen/default_horizontal_margin"
+        android:layout_marginLeft="@dimen/default_horizontal_margin"/>
+
+    <TextView
+        android:id="@+id/drawerUserName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:layout_below="@id/drawerUserImage"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_medium"
+        android:layout_marginRight="@dimen/default_horizontal_margin"
+        android:layout_marginLeft="@dimen/default_horizontal_margin"/>
+
+</RelativeLayout>

@@ -8,6 +8,7 @@ import org.joda.time.DateTime;
  * Created by matie on 17/04/15.
  */
 public class RedditSubmission extends RedditObject {
+
     String banned_by;
     String subreddit;
     boolean saved;
@@ -16,6 +17,7 @@ public class RedditSubmission extends RedditObject {
     String author;
     int score;
     String name;
+    String likes;
     long created;
     String author_flair_text;
     DateTime created_utc;
@@ -67,5 +69,9 @@ public class RedditSubmission extends RedditObject {
 
     public int getUps() {
         return ups;
+    }
+
+    public String getLikes() {
+        return likes;
     }
 }

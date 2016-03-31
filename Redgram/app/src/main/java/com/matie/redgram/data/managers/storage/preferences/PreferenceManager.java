@@ -1,4 +1,4 @@
-package com.matie.redgram.data.managers.preferences;
+package com.matie.redgram.data.managers.storage.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,18 +10,8 @@ import javax.inject.Inject;
  *
  * Singleton manager
  */
-public class PreferenceManager {
+public class PreferenceManager implements Constants {
 
-    //preferences keys
-    public static final String POSTS_PREF = "posts_pref_key";
-    public static final String SUBREDDIT_PREF = "subr_pref_key";
-    public static final String HOME_PREF = "home_pref_key";
-    public static final String SEARCH_PREF = "search_pref_key";
-
-    //object keys
-    public static final String POSTS_NSFW_KEY = "is_nsfw_enabled";
-    public static final String POSTS_MOST_RECENT = "most_recent_post";
-    public static final String SUBREDDIT_LIST = "updated_subreddit_list";
 
     private Context mContext;
 

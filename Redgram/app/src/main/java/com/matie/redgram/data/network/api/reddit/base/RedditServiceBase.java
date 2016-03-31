@@ -1,146 +1,47 @@
 package com.matie.redgram.data.network.api.reddit.base;
 
-import android.content.Context;
 import android.util.Base64;
-import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.matie.redgram.ui.App;
-import com.matie.redgram.data.network.connection.ConnectionManager;
-import com.matie.redgram.data.models.api.reddit.base.RedditObject;
-import com.matie.redgram.data.utils.reddit.DateTimeDeserializer;
-import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
-import com.squareup.okhttp.Cache;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Response;
-
-import org.joda.time.DateTime;
-
-import java.io.File;
-import java.io.IOException;
-
-import javax.inject.Inject;
-
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
-import retrofit.client.OkClient;
-import retrofit.converter.GsonConverter;
+import com.matie.redgram.data.network.api.ApiBase;
 
 /**
  * Created by matie on 15/04/15.
+ * Check for nulls before using the methods.
  */
-public class RedditServiceBase extends RedditBase {
+public class RedditServiceBase extends ApiBase {
 
-    private static final int MAX_AGE = 60; //1 minute
-    private static final int MAX_STALE = 60 * 60 * 24 * 28; //tolerate 4-weeks
-    private static final int CACHE_DIR_SIZE = 10 * 1024 * 1024; //
+    public static final String SSL = "https://";
+    public static final char SEP = '/';
+    public static final String REDDIT_HOST = "www.reddit.com";
+    public static final String OAUTH_HOST = "oauth.reddit.com";
+    public static final String REDDIT_HOST_ABSOLUTE = SSL+REDDIT_HOST+SEP;
+    public static final String OAUTH_HOST_ABSOLUTE = SSL+OAUTH_HOST+SEP;
+    public static final String NAMESPACE = "api/v1/";
+    public static final String OAUTH_URL = "authorize?client_id={client_id}&response_type=code&state=TEST&redirect_uri={redirect_uri}&duration={duration}&scope={scope}";
+    public static final String scopeList = "identity,edit,history,mysubreddits,privatemessages," +
+            "read,report,save,submit,subscribe,vote,wikiread";
+    public static final String REDIRECT_URI = "http://localhost";
+    public static final String DURATION = "permanent";
+    public static final String GRANT_TYPE_REFRESH="refresh_token";
+    public static final String GRANT_TYPE_AUTHORIZE="authorization_code";
 
-    private final App app;
-    private final Context mContext;
-    private final ConnectionManager connectionManager;
-    private final RestAdapter.Builder adapterBuilder;
+    public static final String API_KEY = "TK68m6qyOWxMZg";
+    private static final String API_SECRET = "";
+    private static final String CREDENTIALS = API_KEY+":"+API_SECRET;
 
-    @Inject
-    public RedditServiceBase(App application) {
-        app = application;
-        mContext = app.getApplicationContext();
-        connectionManager = app.getConnectionManager();
-
-        //create a builder once that has all the common build components
-        adapterBuilder = getAdapterBuilder();
+    @Override
+    public String getKey() {
+        return API_KEY;
     }
 
-    public RestAdapter getRestAdapter() {
-        //todo: get rid of Request Interceptor and use okHttp request interceptor
-         return adapterBuilder.setEndpoint(REDDIT_HOST)
-                 .setRequestInterceptor(getInterceptor()).build();
-    }
-
-    private RestAdapter.Builder getAdapterBuilder(){
-        return new RestAdapter.Builder()
-                .setLogLevel(RestAdapter.LogLevel.FULL)
-                .setConverter(new GsonConverter(getGson()))
-                .setClient(new OkClient(getHttpClient()));
-    }
-
-    private RequestInterceptor getInterceptor() {
-        return new RequestInterceptor() {
-            @Override
-            public void intercept(RequestFacade request){
-
-                request.addHeader("Accept", "application/json");
-
-                if(!connectionManager.isOnline()){
-
-                    connectionManager.showConnectionStatus(false);
-
-                    request.addHeader("Cache-Control",
-                            "public, only-if-cached, max-stale=" + MAX_STALE);
-
-                    request.addHeader("Connection-Status", "No Connection");
-
-                    Log.d("CSTATUS", "no connection!, stale = "+ MAX_STALE);
-                }
-
-                //this is used if we ever decided to login. If the user is already logged in, use a
-                //different interceptor with the Bearer + token header
-                String credentials = getKey()+":"+getSecret();
-                request.addHeader("Authorization", "Basic " + Base64.encodeToString(credentials.getBytes(),Base64.NO_WRAP));
-            }
-        };
-    }
-
-    private static Gson getGson() {
-        return new GsonBuilder()
-                .registerTypeAdapter(RedditObject.class, new RedditObjectDeserializer())
-                .registerTypeAdapter(DateTime.class, new DateTimeDeserializer())
-                .create();
+    @Override
+    public String getSecret() {
+        return API_SECRET;
     }
 
 
-    private OkHttpClient getHttpClient(){
-
-        Cache cache = getCache();
-
-        OkHttpClient client = new OkHttpClient();
-        client.networkInterceptors().add(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-
-                boolean isOnline = connectionManager.isOnline();
-
-                Response.Builder responseBuilder = chain.proceed(chain.request()).newBuilder();
-                if (isOnline) {
-                    responseBuilder.header("cache-control", "public, max-age=" + MAX_AGE);
-                    responseBuilder.header("Connection-Status", "Connected");
-                    Log.d("CSTATUS", "connected to internet! age = " + MAX_AGE + " seconds");
-                }
-
-                return responseBuilder.build();
-            }
-        });
-
-        if(cache != null)
-            client.setCache(cache);
-
-        return client;
+    public String getCredentials() {
+        return "Basic " +
+                Base64.encodeToString(CREDENTIALS.getBytes(), Base64.NO_WRAP);
     }
-
-    private Cache getCache(){
-        //setup cache
-        File httpCacheDir = new File(mContext.getCacheDir(), "HttpCacheDir");
-
-        Cache httpResponseCache = null;
-
-        try {
-            httpResponseCache = new Cache(httpCacheDir, CACHE_DIR_SIZE);
-        } catch (IOException e) {
-            Log.e("Retrofit", "Could not create http cache", e);
-        }
-
-        return httpResponseCache;
-    }
-
 }

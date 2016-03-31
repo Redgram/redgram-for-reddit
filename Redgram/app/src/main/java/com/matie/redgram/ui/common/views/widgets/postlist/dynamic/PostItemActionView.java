@@ -1,17 +1,14 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -21,7 +18,8 @@ import butterknife.OnClick;
  * Created by matie on 04/04/15.
  */
 public class PostItemActionView extends PostItemSubView {
-
+    public static final String TRUE = "true";
+    public static final String FALSE = "false";
 
     @InjectView(R.id.action_vote_up)
     ImageView voteUp;
@@ -37,6 +35,8 @@ public class PostItemActionView extends PostItemSubView {
     ImageView hideView;
 
     PostItem postItem;
+    int position;
+    LinksView listener;
 
     public PostItemActionView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -49,9 +49,29 @@ public class PostItemActionView extends PostItemSubView {
     }
 
     @Override
-    public void setupView(PostItem item) {
+    public void setupView(PostItem item, int position, LinksView listener) {
+        this.position = position;
         postItem = item;
+        this.listener = listener;
         scoreView.setText(item.getScore() + "");
+
+        if(TRUE.equalsIgnoreCase(item.getLikes())){
+            voteUp.setColorFilter(getResources().getColor(R.color.material_green700));
+            voteDown.setColorFilter(null);
+        }else if(FALSE.equalsIgnoreCase(item.getLikes())){
+            voteDown.setColorFilter(getResources().getColor(R.color.material_red900));
+            voteUp.setColorFilter(null);
+        }else{
+            voteUp.setColorFilter(null);
+            voteDown.setColorFilter(null);
+        }
+
+        if(item.isSaved()){
+            favoriteView.setColorFilter(getResources().getColor(R.color.material_red400));
+        }else{
+            favoriteView.setColorFilter(null);
+        }
+
     }
 
     @Override
@@ -59,40 +79,46 @@ public class PostItemActionView extends PostItemSubView {
 
     }
 
-    @Override
-    public void handleMainClickEvent() {
-
-    }
-
     @OnClick(R.id.action_share)
     public void onActionShare(){
-        getMainActivity().getDialogUtil().build()
-                .title("Share")
-                .items(R.array.shareOptions)
-                .itemsCallback(new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                        String urlToShare = "";
-                        if(charSequence.toString().equalsIgnoreCase("Link")){
-                            urlToShare = postItem.getUrl();
-                        }
-
-                        if(charSequence.toString().equalsIgnoreCase("Comments")){
-                            urlToShare = "https://reddit.com/"+postItem.getPermalink();
-                        }
-
-                        callShareDialog(urlToShare);
-                    }
-                })
-                .show();
+        listener.sharePost(position);
     }
 
-    private void callShareDialog(String contentToShare){
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, contentToShare);
-        sendIntent.setType("text/plain");
-        getMainActivity().startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+    @OnClick(R.id.action_vote_up)
+    public void onUpVoteClick(){
+        if (!TRUE.equalsIgnoreCase(postItem.getLikes())){
+            voteUp.setColorFilter(getResources().getColor(R.color.material_green700));
+            voteDown.setColorFilter(null);
+            listener.votePost(position, listener.UP_VOTE);
+        }else{
+            voteUp.setColorFilter(null);
+            listener.votePost(position, listener.UN_VOTE);
+        }
     }
 
+    @OnClick(R.id.action_vote_down)
+    public void onDownVoteClick(){
+        if (!FALSE.equalsIgnoreCase(postItem.getLikes())){
+            voteDown.setColorFilter(R.color.material_red700);
+            voteUp.setColorFilter(null);
+            listener.votePost(position, listener.DOWN_VOTE);
+        }else{
+            voteDown.setColorFilter(null);
+            listener.votePost(position, listener.UN_VOTE);
+        }
+    }
+
+    @OnClick(R.id.action_favorite)
+     public void onFavClick(){
+        if(postItem.isSaved()){
+            listener.savePost(position, false);
+        }else{
+            listener.savePost(position, true);
+        }
+    }
+
+    @OnClick(R.id.action_hide)
+    public void onHideClick(){
+        listener.hidePost(position);
+    }
 }

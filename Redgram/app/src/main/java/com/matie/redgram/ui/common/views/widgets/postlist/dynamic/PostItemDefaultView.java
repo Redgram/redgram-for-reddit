@@ -1,12 +1,9 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.PointF;
 import android.net.Uri;
-import android.os.Bundle;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,13 +13,10 @@ import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
-import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.base.Fragments;
-import com.matie.redgram.ui.common.previews.ImagePreviewFragment;
-import com.matie.redgram.ui.common.previews.WebPreviewFragment;
+import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -49,6 +43,8 @@ public class PostItemDefaultView extends PostItemSubView {
     PostItemTextView postItemTextView;
 
     PostItem postItem;
+    int position;
+    LinksView listener;
 
     public PostItemDefaultView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -61,10 +57,12 @@ public class PostItemDefaultView extends PostItemSubView {
     }
 
     @Override
-    public void setupView(PostItem item) {
-        postItem = item;
+    public void setupView(PostItem item, int position, LinksView listener) {
+        this.postItem = item;
+        this.position = position;
+        this.listener = listener;
 
-        postItemTextView.setupView(item);
+        postItemTextView.setupView(item, position, listener);
 
         if(item.getType() == PostItem.Type.IMGUR){
             postLinkText.setTextColor(getResources().getColor(R.color.material_green400));
@@ -91,21 +89,17 @@ public class PostItemDefaultView extends PostItemSubView {
 
     @Override
     public void handleNsfwUpdate(boolean disabled) {
-        handleMainClickEvent();
+        if(disabled){
+            listener.viewWebMedia(position);
+        }
     }
 
-    @Override
-    public void handleMainClickEvent() {
-        Bundle bundle = new Bundle();
-        String key = getResources().getString(R.string.main_data_key);
-        bundle.putString(key, new Gson().toJson(postItem));
-        getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
-    }
+
 
     @OnClick(R.id.default_wrapper)
     public void onDefaultWrapperClick(){
         if(postItem != null && isNsfwDisabled()){
-            handleMainClickEvent();
+            listener.viewWebMedia(position);
         }else{
             callNsfwDialog();
         }

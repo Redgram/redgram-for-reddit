@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.models.api.reddit.base.RedditObjectWrapper;
+import com.matie.redgram.data.models.api.reddit.main.RedditComment;
 
 import java.lang.reflect.Type;
 

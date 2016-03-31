@@ -1,5 +1,6 @@
 package com.matie.redgram.data.models.api.reddit.main;
 
+import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 
 /**
@@ -10,8 +11,7 @@ public class RedditComment extends RedditSubmission {
     private String author_flair_css_class;
     private String body;
     private String body_html;
-    private boolean edited;
-    private boolean likes;
+    private BooleanDate edited; //either boolean or Datetime
     private String link_id;
     private String link_author;
     private String link_title;
@@ -51,17 +51,13 @@ public class RedditComment extends RedditSubmission {
         return body_html;
     }
 
-    public boolean isEdited() {
+    public BooleanDate isEdited() {
         return edited;
     }
 
     @Override
     public int getGilded() {
         return gilded;
-    }
-
-    public boolean isLikes() {
-        return likes;
     }
 
     public String getLink_author() {

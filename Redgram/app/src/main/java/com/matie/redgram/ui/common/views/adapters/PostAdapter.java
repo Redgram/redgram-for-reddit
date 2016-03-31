@@ -28,7 +28,6 @@ public class PostAdapter extends PostAdapterBase {
         if(dynamicView == null){
             dynamicView = inflateViewByType(type, dynamicView, dynamicParent);
         }
-//        Log.d(" GET DYNAMIC VIEW", dynamicView + "");
         return dynamicView;
     }
 

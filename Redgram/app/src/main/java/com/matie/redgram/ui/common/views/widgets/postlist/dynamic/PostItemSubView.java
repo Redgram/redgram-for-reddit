@@ -1,18 +1,16 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.gson.Gson;
-import com.matie.redgram.R;
-import com.matie.redgram.data.managers.preferences.PreferenceManager;
+import com.matie.redgram.data.managers.storage.preferences.PreferenceManager;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
+import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.common.main.MainActivity;
+import com.matie.redgram.ui.posts.views.LinksView;
 
 /**
  * Created by matie on 19/05/15.
@@ -26,6 +24,7 @@ public abstract class PostItemSubView extends RelativeLayout {
 
     private MainActivity mainActivity;
     private SharedPreferences postPreferences;
+    private HomeView listener;
 
     public PostItemSubView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -33,13 +32,8 @@ public abstract class PostItemSubView extends RelativeLayout {
         postPreferences = (mainActivity.getApp()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
     }
 
-    public MainActivity getMainActivity() {
-        return mainActivity;
-    }
-
-    public abstract void setupView(PostItem item);
+    public abstract void setupView(PostItem item, int position, LinksView listener);
     public abstract void handleNsfwUpdate(boolean disabled);
-    public abstract void handleMainClickEvent();
 
     public boolean isNsfwDisabled(){
         return postPreferences.getBoolean(PreferenceManager.POSTS_NSFW_KEY, false);
@@ -62,7 +56,6 @@ public abstract class PostItemSubView extends RelativeLayout {
                         super.onPositive(dialog);
                         disableNsfw();
                     }
-
                     @Override
                     public void onNegative(MaterialDialog dialog) {
                         super.onNegative(dialog);
@@ -70,16 +63,6 @@ public abstract class PostItemSubView extends RelativeLayout {
                 })
                 .show();
     }
-
-    public void loadComments(PostItem item){
-        Intent intent = new Intent(getMainActivity(), CommentsActivity.class);
-
-        String key = getResources().getString(R.string.main_data_key);
-        intent.putExtra(key, new Gson().toJson(item));
-        mainActivity.openIntent(intent, R.anim.enter, R.anim.exit);
-    }
-
-
 
 
 }

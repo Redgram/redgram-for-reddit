@@ -4,11 +4,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 /**
  * Created by matie on 2015-12-20.
  */
-public abstract class SectionsPagerAdapter extends FragmentPagerAdapter {
+public abstract class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
     private FragmentManager fm;
 

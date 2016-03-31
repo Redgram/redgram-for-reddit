@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.h6ah4i.android.widget.advrecyclerview.expandable.annotation.ExpandableItemStateFlags;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentItem;
@@ -16,9 +15,6 @@ import com.matie.redgram.ui.thread.views.CommentsView;
  * Created by matie on 2016-01-30.
  */
 public class CommentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-
-    @ExpandableItemStateFlags
-    private int flags;
 
     //main parent view
     private CommentBaseItemView commentBaseItemView;

@@ -3,7 +3,6 @@ package com.matie.redgram.ui.search;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,12 +36,17 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
+import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.Fragments;
+import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.posts.LinksComponent;
+import com.matie.redgram.ui.posts.LinksContainerView;
+import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.search.views.SearchView;
 import com.nineoldandroids.view.ViewHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -63,14 +67,10 @@ import butterknife.InjectView;
  */
 public class SearchFragment extends SlidingUpPanelFragment implements SearchView, ObservableScrollViewCallbacks{
 
-    @InjectView(R.id.search_linear_layout)
-    LinearLayout searchLinearLayout;
-    @InjectView(R.id.search_recycler_view)
-    PostRecyclerView searchRecyclerView;
-    @InjectView(R.id.search_swipe_container)
+    @InjectView(R.id.links_container_view)
+    LinksContainerView linksContainerView;
+    @InjectView(R.id.swipe_container)
     SwipeRefreshLayout searchSwipeContainer;
-    @InjectView(R.id.search_load_more_bar)
-    ProgressBar searchProgressBar;
 
     Toolbar mToolbar;
     View mContentView;
@@ -78,11 +78,13 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     LinearLayoutManager mLayoutManager;
 
     SearchComponent component;
+    LinksComponent linksComponent;
 
     FrameLayout frameLayout;
     EditText searchView;
     ImageView searchClear;
 
+    PostRecyclerView searchRecyclerView;
     ImageView searchFilter;
     Spinner sortSpinner;
     Spinner fromSpinner;
@@ -91,15 +93,15 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     List<String> sortArray;
     List<String> fromArray;
-    String subreddit;
-    Map<String, String> params;
 
-    RecyclerView.OnScrollListener loadMoreListener;
+    private String subreddit;
+    private Map<String, String> params = new HashMap<>();
 
     @Inject
     SearchPresenterImpl searchPresenter;
     @Inject
     DialogUtil dialogUtil;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,17 +115,13 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.inject(this,view);
 
-        mLayoutManager = (LinearLayoutManager)searchRecyclerView.getLayoutManager();
         mContentView = getActivity().findViewById(R.id.container);
         mInflater = inflater;
 
         sortArray = Arrays.asList(getContext().getResources().getStringArray(R.array.searchSortArray));
         fromArray = Arrays.asList(getContext().getResources().getStringArray(R.array.fromArray));
-        subreddit = "";
-        params = new HashMap<>();
 
         setupSwipeContainer();
-        setupListeners();
         setupRecyclerView();
 
         return view;
@@ -144,12 +142,15 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     protected void setupComponent() {
         AppComponent appComponent = ((BaseActivity)getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
+        LinksModule linksModule = new LinksModule(linksContainerView, this);
         component = DaggerSearchComponent.builder()
                 .mainComponent(mainComponent)
                 .searchModule(new SearchModule(this))
+                .linksModule(linksModule)
                 .build();
-
         component.inject(this);
+        linksComponent = component.getLinksComponent(linksModule);
+        linksContainerView.setComponent(linksComponent);
     }
 
     @Override
@@ -177,7 +178,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                     if (query.length() > 0 && !searchSwipeContainer.isRefreshing()) {
                         params.put("q", query);
                         subreddit = "";
-                        searchPresenter.executeSearch(subreddit, params);
+                        linksContainerView.search(subreddit,params);
                         searchView.setCursorVisible(false);
                     }
                 }
@@ -272,32 +273,12 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
                     getContext().getResources().getDisplayMetrics());
             //push it down to the same position as the first item to be loaded
-            searchSwipeContainer.setProgressViewOffset(false, 0 , actionBarHeight+50);
+            searchSwipeContainer.setProgressViewOffset(false, 0 , 50);
         }
     }
 
-    private void setupListeners() {
-        //this listener is responsible for LOAD MORE. This listener object will be added on startup. Removed when
-        // a network call is done and added again when the requested network call is either COMPLETED or had an ERROR.
-        loadMoreListener = new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if(newState == RecyclerView.SCROLL_STATE_IDLE){
-                    if(searchRecyclerView != null && searchRecyclerView.getChildCount() > 0){
-                        int lastItemPosition = searchRecyclerView.getAdapter().getItemCount() - 1;
-                        if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
-                            searchPresenter.loadMoreResults(subreddit, params);
-                        }
-                    }
-                }
-            }
-        };
-
-    }
-
     private void setupRecyclerView() {
-        searchRecyclerView.setScrollViewCallbacks(this);
-        searchRecyclerView.addOnScrollListener(loadMoreListener);
+        searchRecyclerView = linksContainerView.getContainerRecyclerView();
     }
 
     private void setupFilterContentLayout() {
@@ -333,7 +314,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
             subreddit = limitTo.trim();
 
-            searchPresenter.executeSearch(subreddit, params);
+            linksContainerView.search(subreddit, params);
 
             if (!searchView.getText().toString().equals(query)) {
                 searchView.setText(query);
@@ -356,6 +337,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     public void onResume() {
         super.onResume();
         searchPresenter.registerForEvents();
+        linksContainerView.getLinksPresenter().registerForEvents();
     }
 
     @Override
@@ -365,6 +347,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         //hide keyboard
         toggleKeyboard(false);
         searchPresenter.unregisterForEvents();
+        linksContainerView.getLinksPresenter().unregisterForEvents();
     }
 
 
@@ -446,17 +429,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         searchRecyclerView.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void showLoadMoreIndicator() {
-        searchRecyclerView.removeOnScrollListener(loadMoreListener);
-        searchProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideLoadMoreIndicator() {
-        searchRecyclerView.addOnScrollListener(loadMoreListener);
-        searchProgressBar.setVisibility(View.GONE);
-    }
 
     @Override
     public void showInfoMessage() {
@@ -464,13 +436,8 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     }
 
     @Override
-    public void showErrorMessage() {
+    public void showErrorMessage(String error) {
 
-    }
-
-    @Override
-    public PostRecyclerView getRecyclerView() {
-        return searchRecyclerView;
     }
 
     @Override
@@ -479,28 +446,33 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     }
 
     @Override
-    public Fragment getFragment() {
+    public BaseActivity getBaseActivity() {
+        return (BaseActivity)getActivity();
+    }
+
+    @Override
+    public BaseFragment getBaseFragment() {
         return this;
     }
 
     @Override
     public void showPanel() {
-        ((MainActivity)getActivity()).showPanel();
+        ((SlidingUpPanelActivity)getActivity()).showPanel();
     }
 
     @Override
     public void hidePanel() {
-        ((MainActivity)getActivity()).hidePanel();
+        ((SlidingUpPanelActivity)getActivity()).hidePanel();
     }
 
     @Override
     public void togglePanel() {
-        ((MainActivity)getActivity()).togglePanel();
+        ((SlidingUpPanelActivity)getActivity()).togglePanel();
     }
 
     @Override
     public void setPanelHeight(int height) {
-        ((MainActivity)getActivity()).setPanelHeight(height);
+        ((SlidingUpPanelActivity)getActivity()).setPanelHeight(height);
     }
 
     @Override

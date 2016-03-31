@@ -3,21 +3,19 @@ package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.utils.text.CustomClickable;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 import com.matie.redgram.ui.common.utils.text.StringUtils;
+import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -36,14 +34,14 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
     TextView tags;
 
     PostItem item;
-    int eventCode;
+    int position;
+    LinksView listener;
 
     final Resources res;
 
     public PostItemTagView(Context context, AttributeSet attrs) {
         super(context, attrs);
         res = context.getResources();
-        eventCode = WEB_EVENT;
     }
 
     @Override
@@ -53,8 +51,10 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
     }
 
     @Override
-    public void setupView(PostItem item) {
+    public void setupView(PostItem item, int position, LinksView listener) {
         this.item = item;
+        this.position = position;
+        this.listener = listener;
 
         String bullet = " "+res.getString(R.string.text_bullet)+" ";
         String comments = item.getNumComments() + " comments";
@@ -80,34 +80,13 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
     }
 
     @Override
-    public void handleMainClickEvent() {
-        if(eventCode == WEB_EVENT){
-            Bundle bundle = new Bundle();
-            String key = getResources().getString(R.string.main_data_key);
-            bundle.putString(key, new Gson().toJson(item));
-            getMainActivity().setPanelView(Fragments.WEB_PREVIEW, bundle);
-            return;
-        }
-
-        if(eventCode == COMMENTS_EVENT){
-            loadComments(item);
-            return;
-        }
-
-    }
-
-    @Override
     public void onClickableEvent(CharSequence targetString) {
         if(targetString.toString().startsWith("[ ") && targetString.toString().endsWith(" ]")){
             //open webview
-            Log.d("CLICKABLE", "web view [" + targetString + "]");
-            eventCode = WEB_EVENT;
-            handleMainClickEvent();
+            listener.viewWebMedia(position);
         }else if(targetString.toString().endsWith("comments")){
             //navigate to comments
-            Log.d("CLICKABLE", "comments view [" + targetString + "]");
-            eventCode = COMMENTS_EVENT;
-            handleMainClickEvent();
+            listener.loadCommentsForPost(position);
         }
     }
 }

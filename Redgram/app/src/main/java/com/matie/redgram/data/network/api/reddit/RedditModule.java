@@ -17,5 +17,4 @@ public class RedditModule {
     public RedditClient provideRedditClient(App app){
         return new RedditClient(app);
     }
-
 }

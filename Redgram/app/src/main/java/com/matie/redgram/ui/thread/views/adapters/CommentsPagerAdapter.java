@@ -16,9 +16,6 @@ public class CommentsPagerAdapter extends SectionsPagerAdapter {
     private Bundle bundle;
     private boolean isSelf;
 
-    private PostPreviewFragment postPreviewFragment;
-    private CommentsPreviewFragment commentsPreviewFragment;
-
     public CommentsPagerAdapter(FragmentManager fm, Bundle bundle, boolean isSelf) {
         super(fm);
         this.bundle = bundle;
@@ -53,12 +50,11 @@ public class CommentsPagerAdapter extends SectionsPagerAdapter {
     private Fragment getFragment(int position){
         switch (position){
             case 1:
-                postPreviewFragment = new PostPreviewFragment();
+                PostPreviewFragment postPreviewFragment = new PostPreviewFragment();
                 postPreviewFragment.setArguments(bundle);
                 return postPreviewFragment;
             case 2:
-                commentsPreviewFragment = new CommentsPreviewFragment();
-                commentsPreviewFragment.setArguments(bundle);
+                CommentsPreviewFragment commentsPreviewFragment = new CommentsPreviewFragment();
                 return commentsPreviewFragment;
         }
         return null;
@@ -74,11 +70,4 @@ public class CommentsPagerAdapter extends SectionsPagerAdapter {
         return null;
     }
 
-    public PostPreviewFragment getPostPreviewFragment() {
-        return postPreviewFragment;
-    }
-
-    public CommentsPreviewFragment getCommentsPreviewFragment() {
-        return commentsPreviewFragment;
-    }
 }

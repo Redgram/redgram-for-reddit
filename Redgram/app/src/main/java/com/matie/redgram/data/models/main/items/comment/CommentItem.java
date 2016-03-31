@@ -1,5 +1,6 @@
 package com.matie.redgram.data.models.main.items.comment;
 
+import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public class CommentItem extends CommentBaseItem {
     private String bodyHtml;
     private String link_id;
     private String subreddit_id;
+    private BooleanDate edited;
 
     //UI state related
     private boolean hasReplies = false; //no replies by default
@@ -74,4 +76,11 @@ public class CommentItem extends CommentBaseItem {
         return childCount;
     }
 
+    public BooleanDate getEdited() {
+        return edited;
+    }
+
+    public void setEdited(BooleanDate edited) {
+        this.edited = edited;
+    }
 }

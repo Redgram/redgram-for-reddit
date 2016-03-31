@@ -286,4 +286,6 @@
     <color name="material_black">#ff000000</color>
     <color name="material_white">#ffffffff</color>
 
+    <color name="black_overlay">#66000000</color>
+
 </resources>

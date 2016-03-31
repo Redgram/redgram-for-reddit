@@ -10,6 +10,8 @@ import android.widget.TextView;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.main.MainActivity;
+import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -28,6 +30,8 @@ public class PostItemTextView extends PostItemSubView {
     PostItemTagView textTagView;
 
     PostItem postItem;
+    int position;
+    LinksView listener;
 
     final Resources res;
     MainActivity mainActivity;
@@ -47,10 +51,12 @@ public class PostItemTextView extends PostItemSubView {
     }
 
     @Override
-    public void setupView(PostItem item) {
-        postItem = item;
+    public void setupView(PostItem item, int position, LinksView listener) {
+        this.postItem = item;
+        this.position = position;
+        this.listener = listener;
 
-        textTagView.setupView(item);
+        textTagView.setupView(item, position, listener);
 
         textTitleView.setText(item.getTitle());
 
@@ -86,14 +92,10 @@ public class PostItemTextView extends PostItemSubView {
         }
     }
 
-    @Override
-    public void handleMainClickEvent() {
-        //opens comments section because it exists in all views
-    }
 
     @OnClick(R.id.text_title_view)
     public void onTitleClick(){
-        loadComments(postItem);
+        listener.loadCommentsForPost(position);
     }
 
     @OnClick(R.id.text_content_view)
@@ -104,7 +106,7 @@ public class PostItemTextView extends PostItemSubView {
                 callNsfwDialog();
             }
         }else{
-            loadComments(postItem);
+            listener.loadCommentsForPost(position);
         }
     }
 

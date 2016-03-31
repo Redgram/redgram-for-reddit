@@ -5,6 +5,7 @@ import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.FragmentScope;
 import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.posts.LinksComponent;
 
 import dagger.Module;
 import dagger.Provides;
@@ -30,6 +31,5 @@ public class HomeModule {
     public HomePresenter provideHomePresenter(App app){
         return new HomePresenterImpl(homeView, app);
     }
-
 
 }

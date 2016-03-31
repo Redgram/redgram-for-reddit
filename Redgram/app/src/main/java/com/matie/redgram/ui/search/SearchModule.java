@@ -4,6 +4,7 @@ import com.matie.redgram.data.managers.presenters.SearchPresenter;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.FragmentScope;
+import com.matie.redgram.ui.posts.views.LinksView;
 import com.matie.redgram.ui.search.views.SearchView;
 
 import dagger.Module;
@@ -26,7 +27,7 @@ public class SearchModule {
 
     @FragmentScope
     @Provides
-    public SearchPresenter provideSearchPresenter(App app){
+    public SearchPresenter provideSearchPresenter(App app, LinksView linksView){
         return new SearchPresenterImpl(searchView, app);
     }
 }

@@ -14,15 +14,11 @@ import android.widget.RelativeLayout;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.main.reddit.RedditObject;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView;
-import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemDefaultView;
-import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemGalleryView;
-import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemAnimatedView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemHeaderView;
-import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemImageView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemSubView;
-import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemTextView;
+import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -52,6 +48,7 @@ public class PostItemView extends CardView {
 
 
     Uri uri;
+    private LinksView listener;
 
     public PostItemView(Context context) {
         super(context);
@@ -106,14 +103,15 @@ public class PostItemView extends CardView {
             resolveOtherItemsDimensions();
         }
 
-        postItemHeaderView.setupView(item);
-        getAndSetUpView(item);
-        postItemActionView.setupView(item);
+//        resolveOtherItemsDimensions();
+
+        postItemHeaderView.setupView(item, position, listener);
+        getAndSetUpView(item, position);
+        postItemActionView.setupView(item, position, listener);
     }
 
-    private void getAndSetUpView(PostItem item) {
-        ((PostItemSubView)dynamicView).setupView(item);
-        return;
+    private void getAndSetUpView(PostItem item, int position) {
+        ((PostItemSubView)dynamicView).setupView(item, position, listener);
     }
 
     /**
@@ -130,7 +128,8 @@ public class PostItemView extends CardView {
         {
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, res.getDisplayMetrics());
             RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(this.getLayoutParams());
-            lp.setMargins(25, actionBarHeight+50, 25, 50);
+            lp.setMargins(25, 50, 25, 50);
+//            lp.setMargins(25, actionBarHeight+50, 25, 50);
             this.setLayoutParams(lp);
         }
     }
@@ -151,4 +150,7 @@ public class PostItemView extends CardView {
         return false;
     }
 
+    public void setListener(LinksView listener) {
+        this.listener = listener;
+    }
 }

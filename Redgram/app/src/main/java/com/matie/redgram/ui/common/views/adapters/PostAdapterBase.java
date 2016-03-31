@@ -1,6 +1,5 @@
 package com.matie.redgram.ui.common.views.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +9,8 @@ import android.view.ViewGroup;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostViewHolder;
+import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.posts.views.LinksView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +26,7 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
 
     private final LayoutInflater inflater;
     private List<PostItem> items = Collections.emptyList();
+    private LinksView linksView;
 
 
     public PostAdapterBase(Context context, int layoutResId){
@@ -38,8 +40,16 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
         notifyDataSetChanged();
     }
 
+    public void setPostItemListener(LinksView linksView){
+        this.linksView = linksView;
+    }
+
     public PostItem getItem(int position){
         return items.get(position);
+    }
+
+    public List<PostItem> getItems() {
+        return items;
     }
 
     public int getViewTypeCount() {
@@ -70,6 +80,10 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
         }
         v.setDynamicView(dynamicView);
 
+        if(linksView != null){
+           return new PostViewHolder(v, linksView);
+        }
+
         return new PostViewHolder(v);
     }
 
@@ -94,5 +108,6 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
     public int getItemViewType(int position) {
         return getItemType(position);
     }
+
 
 }

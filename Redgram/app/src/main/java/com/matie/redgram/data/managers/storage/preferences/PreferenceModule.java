@@ -1,4 +1,4 @@
-package com.matie.redgram.data.managers.preferences;
+package com.matie.redgram.data.managers.storage.preferences;
 
 import com.matie.redgram.ui.App;
 

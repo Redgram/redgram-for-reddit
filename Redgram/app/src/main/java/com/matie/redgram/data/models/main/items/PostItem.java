@@ -28,9 +28,9 @@ public class PostItem extends RedditObject {
 //        IMGUR_SUBREDDIT
     }
 
-
     private String id;
     private String name;
+    private String likes;
     private Type type;
     private String author;
     private int time;
@@ -47,6 +47,8 @@ public class PostItem extends RedditObject {
     private boolean isAdult;
     private String distinguished;
     private String subreddit;
+    private boolean isSaved;
+    private boolean isHidden;
 
     public PostItem(){}
 
@@ -192,6 +194,30 @@ public class PostItem extends RedditObject {
 
     public void setPermalink(String permalink) {
         this.permalink = permalink;
+    }
+
+    public String getLikes() {
+        return likes;
+    }
+
+    public boolean isSaved() {
+        return isSaved;
+    }
+
+    public void setSaved(boolean saved) {
+        this.isSaved = saved;
+    }
+
+    public void setLikes(String likes) {
+        this.likes = likes;
+    }
+
+    public boolean isHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(boolean isHidden) {
+        this.isHidden = isHidden;
     }
 
     public Type identifyType() {

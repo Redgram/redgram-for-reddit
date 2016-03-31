@@ -43,7 +43,6 @@ public class SubscriptionActivity extends BaseActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sub);
         ButterKnife.inject(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -78,7 +77,7 @@ public class SubscriptionActivity extends BaseActivity{
         if (id == android.R.id.home) {
             //if no fragments in stack close activity
             if(!getSupportFragmentManager().popBackStackImmediate()){
-                onBackPressed();
+                finish();
             }
         }
 
@@ -112,6 +111,21 @@ public class SubscriptionActivity extends BaseActivity{
     @Override
     public AppComponent component() {
         return subscriptionActivityComponent;
+    }
+
+    @Override
+    protected BaseActivity activity() {
+        return this;
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_sub;
+    }
+
+    @Override
+    protected int getContainerId() {
+        return 0;
     }
 
     public App getApp() {

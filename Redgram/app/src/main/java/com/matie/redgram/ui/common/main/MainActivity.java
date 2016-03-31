@@ -2,10 +2,14 @@ package com.matie.redgram.ui.common.main;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,68 +18,63 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.media.images.ImageManager;
+import com.matie.redgram.data.managers.storage.db.session.SessionHelper;
+import com.matie.redgram.data.managers.storage.db.session.SessionManager;
+import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
+import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
+import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.utils.display.ScrimInsetsFrameLayout;
-import com.matie.redgram.ui.common.utils.display.SlidingPanelControllerInterface;
 import com.matie.redgram.ui.home.HomeFragment;
-import com.matie.redgram.data.models.main.items.DrawerItem;
-import com.matie.redgram.ui.common.views.widgets.drawer.DrawerView;
 import com.matie.redgram.ui.search.SearchFragment;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnItemClick;
+import butterknife.Optional;
+import io.realm.Realm;
 
 
-public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout.OnInsetsCallback,
-        SlidingPanelControllerInterface, SlidingUpPanelLayout.PanelSlideListener {
+public class MainActivity extends SlidingUpPanelActivity implements CoordinatorLayoutInterface, NavigationView.OnNavigationItemSelectedListener{
 
     private static final int SUBSCRIPTION_REQUEST_CODE = 69;
-    private int currentSelectedPosition = 0;
+    private int currentSelectedPosition = R.id.nav_home;
 
     static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
-
-    @InjectView(R.id.slide_up_panel_layout)
-    SlidingUpPanelLayout slidingUpPanelLayout;
 
     @InjectView(R.id.main_slide_up_panel)
     FrameLayout slidingUpFrameLayout;
 
-    @InjectView(R.id.navigationDrawerListViewWrapper)
-    DrawerView mNavigationDrawerListViewWrapper;
-
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
-    @InjectView(R.id.scrimInsetsFrameLayout)
-    ScrimInsetsFrameLayout scrimInsetsFrameLayout;
+    @InjectView(R.id.coordinator_layout)
+    CoordinatorLayout coordinatorLayout;
 
-    @InjectView(R.id.leftDrawerListView)
-    ListView leftDrawerListView;
+    @InjectView(R.id.nav_view)
+    NavigationView navigationView;
 
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
+
+    @Optional
+    @InjectView(R.id.drawerUserName)
+    TextView drawerUserName;
 
     BasePreviewFragment previewFragment;
     Fragments currentPreviewFragment;
@@ -84,26 +83,19 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     App app;
     @Inject
     DialogUtil dialogUtil;
-    @Inject
-    ImageManager imageManager;
 
     private ActionBarDrawerToggle mDrawerToggle;
-
     private CharSequence mTitle;
-
     private CharSequence mDrawerTitle;
-
-    private List<DrawerItem> navigationItems;
-
     private MainComponent mainComponent;
 
     private Window window;
     private boolean isDrawerOpen = false;
+    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
         mTitle = mDrawerTitle = getTitle();
@@ -113,7 +105,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
         //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
+            window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(getResources().getColor(R.color.material_red600));
@@ -126,7 +118,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         if (!isTaskRoot()) {
             final Intent intent = getIntent();
             if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(intent.getAction())) {
-                Log.w("LAUNCH_LOG", "Main Activity is not the root.  Finishing Main Activity instead of launching.");
+                Log.w("LAUNCH_LOG", "Main MainActivity is not the root.  Finishing Main MainActivity instead of launching.");
                 finish();
                 return;
             }
@@ -134,14 +126,45 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
 
         if (savedInstanceState == null) {
-          getSupportFragmentManager().beginTransaction().add(R.id.container,
-          Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment())).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.container,
+                    Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment())).commit();
         } else {
-          currentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+            currentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
         }
 
+        setUpToolbar();
         setup();
         setUpPanel();
+        setUpRealm();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected int getContainerId() {
+        return R.id.container;
+    }
+
+    private void setUpToolbar() {
+        //ActionBar setup
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+    }
+
+    private void setUpRealm() {
+        SessionManager sessionManager = app.getSessionManager();
+        realm = sessionManager.getInstance();
+        User user = SessionHelper.getSessionUser(realm);
+        if(user != null){
+//            navigationView.get(0)
+//            drawerUserName.setText(user.getUserName());
+        }
+
     }
 
 
@@ -159,31 +182,12 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         return mainComponent;
     }
 
+    @Override
+    public BaseActivity activity() {
+        return this;
+    }
+
     private void setup(){
-
-        //ActionBar setup
-        this.setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            scrimInsetsFrameLayout.setOnInsetsCallback(this);
-        }
-
-        navigationItems = new ArrayList<DrawerItem>();
-
-        //menu items
-        navigationItems.add(new DrawerItem(getString(R.string.fragment_home), R.drawable.ic_action_public, true));
-        navigationItems.add(new DrawerItem(getString(R.string.fragment_search), R.drawable.ic_action_search, true));
-        navigationItems.add(new DrawerItem(getString(R.string.fragment_subreddits), R.drawable.ic_list ,true));
-        //sub-menu items
-
-        navigationItems.add(new DrawerItem(getString(R.string.fragment_settings), 0, false));
-        navigationItems.add(new DrawerItem(getString(R.string.fragment_about), 0, false));
-
-
-        mNavigationDrawerListViewWrapper.replaceWith(navigationItems);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.navigation_drawer_open,
@@ -192,7 +196,6 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                 super.onDrawerClosed(view);
                 supportInvalidateOptionsMenu();
 
-                // TODO: 2015-11-06 get dimension height from resources
                 isDrawerOpen = false;
             }
 
@@ -227,9 +230,17 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                currentSelectedPosition = item.getItemId();
+                return true;
+            }
+        });
+        navigationView.setNavigationItemSelectedListener(this);
+
         //if nothing in intent, open home fragment
         selectItem(currentSelectedPosition);
-        closeDrawer();
     }
 
     private boolean checkIntentStatus(Intent intent){
@@ -241,6 +252,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                 String path = data.getPath();
                 String subredditName = path.substring(path.lastIndexOf('/')+1, path.length());
                 openFragmentWithResult(subredditName);
+                selectItem(R.id.nav_home);
             }else if(data.getPath().contains("/u/")){
                 //open user
             }
@@ -262,10 +274,17 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ButterKnife.reset(this);
+        SessionHelper.close(realm);
+    }
 
     @Override
     public void onResume() {
         super.onResume();
+        selectItem(currentSelectedPosition);
     }
 
     @Override
@@ -277,9 +296,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if(mDrawerToggle != null) { //create this check to prevent the call of syncState() when the user is not logged in
-            mDrawerToggle.syncState();
-        }
+        syncDrawerToggle();
     }
 
     @Override
@@ -297,7 +314,6 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         } else if (item.getItemId() == R.id.action_settings) {
@@ -306,7 +322,15 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         return super.onOptionsItemSelected(item);
     }
 
-    //// TODO: 2015-11-30 subreddits activity result - open home fragment with the returned result
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            closeDrawer();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == SUBSCRIPTION_REQUEST_CODE){
@@ -314,6 +338,8 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
                 String subredditName = data.getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
                 if(!subredditName.isEmpty() || subredditName != null){
                     openFragmentWithResult(subredditName);
+                    //select home fragment - first item
+                    selectItem(R.id.nav_home);
                 }
 
             }
@@ -326,95 +352,61 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         checkIntentStatus(intent);
     }
 
-    public void openFragmentWithResult(String subredditName) {
-            HomeFragment homeFragment = (HomeFragment)Fragment
-                    .instantiate(MainActivity.this, Fragments.HOME.getFragment());
-
-            Bundle bundle = new Bundle();
-            bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
-            homeFragment.setArguments(bundle);
-
-
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, homeFragment)
-                    //important to avoid IllegalStateException
-                    .commitAllowingStateLoss();
-            //select home fragment - first item
-            selectItem(0);
-
+    private void syncDrawerToggle(){
+        if(mDrawerToggle != null) { //create this check to prevent the call of syncState() when the user is not logged in
+            mDrawerToggle.syncState();
+        }
     }
 
     public int getCurrentSelectedPosition() {
         return currentSelectedPosition;
     }
 
-    public List<DrawerItem> getNavigationItems() {
-        return navigationItems;
-    }
-
-    @OnItemClick(R.id.leftDrawerListView)
-    public void OnItemClick(int position, long id) {
-        if (mDrawerLayout.isDrawerOpen(scrimInsetsFrameLayout)) {
-            mDrawerLayout.closeDrawer(scrimInsetsFrameLayout);
-            onNavigationDrawerItemSelected(position);
-
-            selectItem(position);
-            closeDrawer();
-        }
-    }
-
     private void selectItem(int position) {
-
-        if (leftDrawerListView != null) {
-
-            //none-activity views only
-            if(position < 2){
-                leftDrawerListView.setItemChecked(position, true);
-
-                navigationItems.get(currentSelectedPosition).setSelected(false);
-                navigationItems.get(position).setSelected(true);
-
-                currentSelectedPosition = position;
-            }
-
-        }
+        navigationView.setCheckedItem(position);
+        closeDrawer();
     }
 
     private void closeDrawer(){
-        if (scrimInsetsFrameLayout != null) {
-            mDrawerLayout.closeDrawer(scrimInsetsFrameLayout);
-        }
+        mDrawerLayout.closeDrawer(GravityCompat.START);
     }
 
-    private void onNavigationDrawerItemSelected(int position) {
-        switch (position) {
-            case 0:
-                if (!(getSupportFragmentManager().getFragments()
-                        .get(0) instanceof HomeFragment)) {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, Fragment
-                                    .instantiate(MainActivity.this, Fragments.HOME.getFragment()))
-                            .commit();
-                }
-                break;
-
-            //add one for each navigation item
-            case 1:
-                if (!(getSupportFragmentManager().getFragments()
-                        .get(0) instanceof SearchFragment)) {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, Fragment
-                                    .instantiate(MainActivity.this, Fragments.SEARCH.getFragment()))
-                            .commit();
-                }
-                break;
-            case 2:
-                Intent intent = new Intent(this, SubscriptionActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivityForResult(intent, SUBSCRIPTION_REQUEST_CODE);
-                break;
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.nav_home){
+            if (!(getSupportFragmentManager().getFragments()
+                    .get(0) instanceof HomeFragment)) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, Fragment
+                                .instantiate(MainActivity.this, Fragments.HOME.getFragment()))
+                        .commit();
+            }
+        } else if(id == R.id.nav_search){
+            if (!(getSupportFragmentManager().getFragments()
+                    .get(0) instanceof SearchFragment)) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container, Fragment
+                                .instantiate(MainActivity.this, Fragments.SEARCH.getFragment()))
+                        .commit();
+            }
+        } else if(id == R.id.nav_subs){
+            Intent intent = new Intent(this, SubscriptionActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivityForResult(intent, SUBSCRIPTION_REQUEST_CODE);
+        } else if(id == R.id.nav_logout){
+            app.getToastHandler().showToast("Logout", Toast.LENGTH_SHORT);
+            logoutCurrentUser();
         }
 
+        closeDrawer();
+        return true;
+    }
+
+    private void logoutCurrentUser() {
+        app.getSessionManager().deleteSession(realm);
+        app.startAuthActivity();
     }
 
     public App getApp() {
@@ -425,44 +417,27 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
         return dialogUtil;
     }
 
-    public ImageManager getImageManager() {
-        return imageManager;
-    }
-
-    @Override
-    public void onInsetsChanged(Rect insets) {
-        Toolbar toolbar = this.toolbar;
-        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
-                                                    toolbar.getLayoutParams();
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-            lp.topMargin = insets.top;
-
-        int top = insets.top;
-        insets.top += toolbar.getHeight();
-        toolbar.setLayoutParams(lp);
-        insets.top = top; // revert
-    }
 
     @Override
     public void togglePanel() {
-        if(slidingUpPanelLayout.getPanelState() != SlidingUpPanelLayout.PanelState.EXPANDED){
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+        if(getSlidingUpPanelLayout().getPanelState() != SlidingUpPanelLayout.PanelState.EXPANDED){
+            getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         }else{
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
     }
 
     @Override
     public void showPanel() {
-        if(slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN){
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        if(getSlidingUpPanelLayout().getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN){
+            getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
     }
 
     @Override
     public void hidePanel() {
-        if(slidingUpPanelLayout.getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN){
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        if(getSlidingUpPanelLayout().getPanelState() != SlidingUpPanelLayout.PanelState.HIDDEN){
+            getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         }
     }
 
@@ -470,7 +445,7 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     public void setPanelHeight(int height) {
         float pixels = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, height, getResources().getDisplayMetrics());
-        slidingUpPanelLayout.setPanelHeight((int) pixels);
+        getSlidingUpPanelLayout().setPanelHeight((int) pixels);
     }
 
     @Override
@@ -497,12 +472,12 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
 
     @Override
     public void setDraggable(View view) {
-        slidingUpPanelLayout.setDragView(view);
+        getSlidingUpPanelLayout().setDragView(view);
     }
 
     @Override
     public SlidingUpPanelLayout.PanelState getPanelState() {
-        return slidingUpPanelLayout.getPanelState();
+        return getSlidingUpPanelLayout().getPanelState();
     }
 
     @Override
@@ -528,6 +503,33 @@ public class MainActivity extends BaseActivity implements ScrimInsetsFrameLayout
     @Override
     public void onPanelHidden(View panel) {
 
+    }
+
+    //controlling the coordinator layout
+    @Override
+    public CoordinatorLayout getCoordinatorLayout() {
+        return coordinatorLayout;
+    }
+
+    @Override
+    public void showSnackBar(String msg, int length, @Nullable String actionText, @Nullable View.OnClickListener onClickListener, @Nullable Snackbar.Callback callback) {
+        if(getCoordinatorLayout() != null){
+
+            Snackbar snackbar = Snackbar.make(getCoordinatorLayout(), msg, length);
+
+            if(actionText != null && onClickListener != null){
+                snackbar.setAction(actionText, onClickListener);
+            }
+
+            if(callback != null) {
+                snackbar.setCallback(callback);
+            }else{
+                snackbar.setCallback(new PanelSnackBarCallback());
+            }
+            //hide the panel before showing the snack bar
+            setPanelHeight(0);
+            snackbar.show();
+        }
     }
 }
 

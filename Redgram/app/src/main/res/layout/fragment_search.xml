@@ -2,31 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/Match">
 
-
-    <ProgressBar
-        android:id="@+id/search_load_more_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxHeight="5dp"
-        android:indeterminateOnly="true"
-        android:visibility="gone"
-        android:layout_alignParentBottom="true"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
-
     <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/search_swipe_container"
-        style="@style/Match"
-        android:layout_above="@+id/home_load_more_bar">
+        android:id="@+id/swipe_container"
+        style="@style/Match">
 
-        <LinearLayout
-            android:id="@+id/search_linear_layout"
-            style="@style/MatchWidth"
-            android:orientation="vertical">
-
-            <include android:id="@+id/search_recycler_view"
-                layout="@layout/post_recycler_view"></include>
-        </LinearLayout>
+        <include android:id="@+id/links_container_view"
+            layout="@layout/links_container_view"></include>
 
     </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </RelativeLayout>

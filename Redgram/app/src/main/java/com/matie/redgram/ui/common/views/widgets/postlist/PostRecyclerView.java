@@ -9,7 +9,8 @@ import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.views.adapters.PostAdapter;
-import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
+import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.posts.views.LinksView;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import butterknife.ButterKnife;
 /**
  * Created by matie on 04/04/15.
  */
-public class PostRecyclerView extends ObservableRecyclerView {
+public class PostRecyclerView extends RecyclerView {
 
     private final Context context;
     private final LayoutManager layoutManager;
@@ -38,6 +39,10 @@ public class PostRecyclerView extends ObservableRecyclerView {
 
         setLayoutManager(layoutManager);
         setAdapter(postAdapter);
+    }
+
+    public void setListener(LinksView linksView){
+        postAdapter.setPostItemListener(linksView);
     }
 
     public void replaceWith(List<PostItem> items){

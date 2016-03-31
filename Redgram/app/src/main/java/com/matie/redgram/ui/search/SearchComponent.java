@@ -3,6 +3,8 @@ package com.matie.redgram.ui.search;
 import com.matie.redgram.data.managers.presenters.SearchPresenter;
 import com.matie.redgram.ui.FragmentScope;
 import com.matie.redgram.ui.common.main.MainComponent;
+import com.matie.redgram.ui.posts.LinksComponent;
+import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.search.views.SearchView;
 
 import dagger.Component;
@@ -14,7 +16,8 @@ import dagger.Component;
 @Component(
         dependencies = MainComponent.class,
         modules = {
-                SearchModule.class
+                SearchModule.class,
+                LinksModule.class
         }
 )
 public interface SearchComponent{
@@ -22,4 +25,5 @@ public interface SearchComponent{
 
     SearchView getSearchView();
     SearchPresenter getSearchPresenter();
+    LinksComponent getLinksComponent(LinksModule linksModule);
 }

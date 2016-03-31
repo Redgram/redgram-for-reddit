@@ -2,16 +2,11 @@ package com.matie.redgram.ui.thread.modules;
 
 import android.app.Activity;
 
-import com.matie.redgram.data.managers.presenters.HomePresenter;
-import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
 import com.matie.redgram.data.managers.presenters.ThreadPresenter;
 import com.matie.redgram.data.managers.presenters.ThreadPresenterImpl;
 import com.matie.redgram.ui.ActivityScope;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.FragmentScope;
-import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.thread.views.CommentsActivity;
 import com.matie.redgram.ui.thread.views.ThreadView;
 
@@ -27,9 +22,9 @@ public class ThreadModule {
     private final Activity activity;
     private final ThreadView threadView;
 
-    public ThreadModule(Activity activity, ThreadView threadView) {
+    public ThreadModule(Activity activity) {
         this.activity = activity;
-        this.threadView = threadView;
+        this.threadView = activity();
     }
 
     @ActivityScope
