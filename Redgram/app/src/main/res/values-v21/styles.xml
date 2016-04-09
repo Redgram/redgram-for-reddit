@@ -13,21 +13,15 @@
         <item name="android:height">?attr/actionBarSize</item>
         <item name="android:background">@color/material_red400</item>
         <item name="android:theme">@style/ToolbarTheme</item>
-        <item name="android:popupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
+        <item name="android:popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="android:contentInsetLeft">@dimen/content_inset</item>
         <item name="android:contentInsetStart">@dimen/content_inset</item>
         <item name="android:elevation">4dp</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
-    <style name="AppTheme.Slider" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/material_red400</item>
-        <item name="colorPrimaryDark">@color/material_red600</item>
-        <item name="colorAccent">@color/material_red400</item>
-        <item name="windowActionModeOverlay">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-
+    <style name="Slider" parent="AppTheme">
+        <item name="colorPrimaryDark">@color/material_blue_grey_900</item>
         <!--for the slider-->
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>

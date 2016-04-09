@@ -6,8 +6,8 @@
         <item name="colorAccent">@color/material_red400</item>
     </style>
 
-    <style name="AppTheme.Slider" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorAccent">@color/material_red400</item>
+    <style name="Slider" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimaryDark">@color/material_blue_grey_900</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 </resources>

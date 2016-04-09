@@ -76,6 +76,7 @@
     <!--preview fragment keys-->
     <string name="local_cache_key">local_cache_key</string>
     <string name="main_data_key">main_data_key</string>
+    <string name="main_data_position">main_data_position</string>
 
     <string name="large_text">
         "Material is the metaphor.\n\n"
@@ -166,7 +167,7 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
-    <string name="no_text">no text provided, swipe left for comments</string>
+    <string name="no_text">no text provided, swipe for comments</string>
     <string name="load_more">Load More</string>
 
     <string name="title_activity_web_view">WebViewActivity</string>

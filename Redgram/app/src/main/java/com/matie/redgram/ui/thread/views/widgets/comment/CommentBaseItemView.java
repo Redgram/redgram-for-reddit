@@ -82,12 +82,6 @@ public class CommentBaseItemView extends RelativeLayout{
                                         RelativeLayout.LayoutParams.WRAP_CONTENT);
         }
 
-        if(position != 0){
-            lp.setMargins(0, 0, 0, 0);
-        }else{
-            lp.setMargins(0, 100, 0, 0);
-        }
-
         setLayoutParams(lp);
         return isGrouped;
     }

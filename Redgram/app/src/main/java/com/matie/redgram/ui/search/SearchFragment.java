@@ -2,7 +2,9 @@ package com.matie.redgram.ui.search;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,10 +32,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
+import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
@@ -48,6 +50,7 @@ import com.matie.redgram.ui.posts.LinksComponent;
 import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.search.views.SearchView;
+import com.matie.redgram.ui.thread.views.CommentsActivity;
 import com.nineoldandroids.view.ViewHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -63,9 +66,9 @@ import butterknife.InjectView;
 
 /**
  * Created by matie on 28/06/15.
- * todo: wrap layout with SwipeRefreshLayout and DISABLE functionality, but use loading animation.
+ *
  */
-public class SearchFragment extends SlidingUpPanelFragment implements SearchView, ObservableScrollViewCallbacks{
+public class SearchFragment extends SlidingUpPanelFragment implements SearchView{
 
     @InjectView(R.id.links_container_view)
     LinksContainerView linksContainerView;
@@ -129,8 +132,18 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == CommentsActivity.REQ_CODE){
+            if(resultCode == getActivity().RESULT_OK){
+                PostItem postItem = new Gson().fromJson(data.getStringExtra(CommentsActivity.RESULT_POST_CHANGE), PostItem.class);
+                int pos = data.getIntExtra(CommentsActivity.RESULT_POST_POS, -1);
+                if(linksContainerView.getItems().contains(postItem) && pos >= 0){
+                    linksContainerView.getItems().remove(pos);
+                    linksContainerView.getItems().add(pos, postItem);
+                    linksContainerView.refreshView();
+                }
+            }
+        }
     }
 
     @Override
@@ -358,66 +371,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     }
 
     @Override
-    public void onScrollChanged(int i, boolean b, boolean b1) {
-
-    }
-
-    @Override
-    public void onDownMotionEvent() {
-
-    }
-
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-        if (scrollState == ScrollState.UP) {
-            if (toolbarIsShown()) {
-                hideToolbar();
-            }
-        } else if (scrollState == ScrollState.DOWN) {
-            if (toolbarIsHidden()) {
-                showToolbar();
-            }
-        }
-    }
-
-    @Override
-    public void showToolbar() {
-        moveToolbar(0);
-    }
-
-    @Override
-    public void hideToolbar() {
-        moveToolbar(-mToolbar.getHeight());
-    }
-
-    public boolean toolbarIsShown() {
-        return ViewHelper.getTranslationY(mToolbar) == 0;
-    }
-
-    public boolean toolbarIsHidden() {
-        return ViewHelper.getTranslationY(mToolbar) == -mToolbar.getHeight();
-    }
-
-    private void moveToolbar(float toTranslationY) {
-        if (ViewHelper.getTranslationY(mToolbar) == toTranslationY) {
-            return;
-        }
-        ValueAnimator animator = ValueAnimator.ofFloat(ViewHelper.getTranslationY(mToolbar), toTranslationY).setDuration(150);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float translationY = (float) animation.getAnimatedValue();
-                ViewHelper.setTranslationY(mToolbar, translationY);
-                ViewHelper.setTranslationY((View) searchRecyclerView, translationY);
-                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) ((View) searchRecyclerView).getLayoutParams();
-                lp.height = (int) -translationY + mContentView.getHeight() - lp.topMargin;
-                ((View) searchRecyclerView).requestLayout();
-            }
-        });
-        animator.start();
-    }
-
-    @Override
     public void showLoading() {
         searchRecyclerView.setVisibility(View.GONE);
         searchSwipeContainer.setRefreshing(true);
@@ -488,5 +441,15 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     @Override
     public SlidingUpPanelLayout.PanelState getPanelState() {
         return ((MainActivity)getActivity()).getPanelState();
+    }
+
+    @Override
+    public void showToolbar() {
+
+    }
+
+    @Override
+    public void hideToolbar() {
+
     }
 }

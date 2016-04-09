@@ -1,5 +1,7 @@
 package com.matie.redgram.data.managers.presenters;
 
+import com.google.gson.JsonElement;
+import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
@@ -17,6 +19,7 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 import static rx.android.app.AppObservable.bindActivity;
+import static rx.android.app.AppObservable.bindFragment;
 
 /**
  * Created by matie on 2016-02-10.
@@ -82,5 +85,35 @@ public class ThreadPresenterImpl implements ThreadPresenter {
                 });
     }
 
+    @Override
+    public void vote(PostItem item, int dir) {
+        Subscription voteSubscription = bindActivity(threadView.getBaseActivity(), redditClient.voteFor(item.getName(), dir))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<JsonElement>() {
+                    @Override
+                    public void onCompleted() {
+                        if(dir == 1){
+                            item.setLikes("true");
+                        }else if(dir == -1){
+                            item.setLikes("false");
+                        }else{
+                            item.setLikes(null);
+                        }
+                        threadView.toggleVote(dir);
+                    }
 
+                    @Override
+                    public void onError(Throwable e) {
+                        threadView.showErrorMessage(e.toString());
+                    }
+
+                    @Override
+                    public void onNext(JsonElement redditObject) {
+                    }
+                });
+        if(!subscriptions.isUnsubscribed()){
+            subscriptions.add(voteSubscription);
+        }
+    }
 }

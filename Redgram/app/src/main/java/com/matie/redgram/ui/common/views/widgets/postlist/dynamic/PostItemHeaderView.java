@@ -47,7 +47,7 @@ public class PostItemHeaderView extends PostItemSubView implements CustomSpanLis
     LinksView listener;
     int position;
 
-    private  final Resources res;
+    private final Resources res;
 
     public PostItemHeaderView(Context context, AttributeSet attrs) {
         super(context, attrs);

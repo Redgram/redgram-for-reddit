@@ -5,10 +5,10 @@
 
 
     <dimen name="action_bar_height">48dp</dimen>
-    <dimen name="app_bar_height">240dp</dimen>
+    <dimen name="app_bar_height">400dp</dimen>
     <dimen name="default_horizontal_margin">16dp</dimen>
     <dimen name="default_vertical_margin">16dp</dimen>
-    <dimen name="first_level_vertical_margin">28dp</dimen>
+    <dimen name="first_level_vertical_margin">36dp</dimen>
     <dimen name="default_padding">16dp</dimen>
     <dimen name="default_medium_padding">12dp</dimen>
     <dimen name="default_small_padding">8dp</dimen>

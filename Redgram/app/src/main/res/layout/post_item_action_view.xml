@@ -8,7 +8,9 @@
         <ImageView
             android:id="@+id/action_vote_up"
             style="@style/ActionPostItemIcon"
-            android:src="@drawable/ic_action_keyboard_arrow_up"/>
+            android:backgroundTintMode="@color/material_grey100"
+            android:src="@drawable/ic_arrow"
+            android:rotation="90"/>
         <TextView
             android:id="@+id/action_score_view"
             style="@style/ActionPostItemScore"
@@ -16,7 +18,8 @@
         <ImageView
             android:id="@+id/action_vote_down"
             style="@style/ActionPostItemIcon"
-            android:src="@drawable/ic_action_keyboard_arrow_down"/>
+            android:src="@drawable/ic_arrow"
+            android:rotation="-90"/>
     </LinearLayout>
 
     <LinearLayout

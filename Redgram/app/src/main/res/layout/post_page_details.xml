@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.matie.redgram.ui.thread.views.widgets.OptionsView
+    style="@style/MatchWidth"
+    android:background="@color/material_white"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v7.widget.CardView
+        style="@style/MatchWidth"
+        card_view:cardCornerRadius="0dp"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/first_level_vertical_margin">
+
+        <RelativeLayout
+            style="@style/MatchWidth"
+            android:background="@color/material_white"
+            android:gravity="center">
+
+            <LinearLayout
+                android:id="@+id/details_left_wrapper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="@dimen/default_horizontal_margin"
+                android:layout_marginLeft="@dimen/default_horizontal_margin"
+                android:layout_marginRight="@dimen/default_horizontal_margin">
+                <TextView android:id="@+id/score" style="@style/Wrap"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:text="score"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/text_size_medium"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/details_right_wrapper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="@dimen/default_horizontal_margin"
+                android:layout_marginLeft="@dimen/default_horizontal_margin"
+                android:layout_marginRight="@dimen/default_horizontal_margin">
+                <TextView android:id="@+id/username" style="@style/Wrap"
+                    android:textAlignment="textEnd"
+                    android:layout_gravity="end"
+                    android:textSize="@dimen/text_size_small"
+                    android:text="username"/>
+
+                <TextView android:id="@+id/time" style="@style/Wrap"
+                    android:text="time"
+                    android:textAlignment="textEnd"
+                    android:textSize="@dimen/text_size_micro"
+                    android:layout_gravity="end"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/right_action_wrapper"
+                style="@style/Wrap"
+                android:layout_centerHorizontal="true"
+                android:background="@color/material_white"
+                android:layout_below="@id/details_right_wrapper">
+                <ImageView
+                    android:id="@+id/action_profile"
+                    style="@style/ActionPostItemIcon"
+                    android:src="@drawable/ic_perm_identity"/>
+                <ImageView
+                    android:id="@+id/action_subreddit"
+                    style="@style/ActionPostItemIcon"
+                    android:src="@drawable/ic_list_small"/>
+                <ImageView
+                    android:id="@+id/action_browser"
+                    style="@style/ActionPostItemIcon"
+                    android:src="@drawable/ic_launch"/>
+                <ImageView
+                    android:id="@+id/action_copy"
+                    style="@style/ActionPostItemIcon"
+                    android:src="@drawable/ic_link"/>
+                <ImageView
+                    android:id="@+id/action_share"
+                    style="@style/ActionPostItemIcon"
+                    android:src="@drawable/ic_action_share"/>
+
+                <ImageView
+                    android:id="@+id/action_favorite"
+                    style="@style/ActionPostItemIcon"
+                    android:src="@drawable/ic_action_favorite"/>
+
+                <ImageView
+                    android:id="@+id/action_hide"
+                    style="@style/ActionPostItemIcon"
+                    android:src="@drawable/ic_action_remove"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</com.matie.redgram.ui.thread.views.widgets.OptionsView>
+

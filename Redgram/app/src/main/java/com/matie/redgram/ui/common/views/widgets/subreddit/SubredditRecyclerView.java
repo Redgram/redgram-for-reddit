@@ -5,7 +5,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
+
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 /**
  * Created by matie on 2015-10-25.
  */
-public class SubredditRecyclerView extends ObservableRecyclerView {
+public class SubredditRecyclerView extends RecyclerView {
     private final Context context;
     private final RecyclerView.LayoutManager layoutManager;
     private final SubredditAdapter subredditAdapter;

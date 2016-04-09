@@ -57,19 +57,19 @@ public class PostItemActionView extends PostItemSubView {
 
         if(TRUE.equalsIgnoreCase(item.getLikes())){
             voteUp.setColorFilter(getResources().getColor(R.color.material_green700));
-            voteDown.setColorFilter(null);
+            voteDown.setColorFilter(getResources().getColor(R.color.material_grey700));
         }else if(FALSE.equalsIgnoreCase(item.getLikes())){
-            voteDown.setColorFilter(getResources().getColor(R.color.material_red900));
-            voteUp.setColorFilter(null);
+            voteDown.setColorFilter(getResources().getColor(R.color.material_red400));
+            voteUp.setColorFilter(getResources().getColor(R.color.material_grey700));
         }else{
-            voteUp.setColorFilter(null);
-            voteDown.setColorFilter(null);
+            voteUp.setColorFilter(getResources().getColor(R.color.material_grey700));
+            voteDown.setColorFilter(getResources().getColor(R.color.material_grey700));
         }
 
         if(item.isSaved()){
             favoriteView.setColorFilter(getResources().getColor(R.color.material_red400));
         }else{
-            favoriteView.setColorFilter(null);
+            favoriteView.setColorFilter(getResources().getColor(R.color.material_grey700));
         }
 
     }

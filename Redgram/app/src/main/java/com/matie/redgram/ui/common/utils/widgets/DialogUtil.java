@@ -19,7 +19,7 @@ public class DialogUtil {
     }
 
     public MaterialDialog.Builder build(){
-        return  new MaterialDialog.Builder(mContext);
+        return new MaterialDialog.Builder(mContext);
     }
 
 }

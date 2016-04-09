@@ -3,6 +3,7 @@ package com.matie.redgram.ui.home;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,10 +20,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
+import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
@@ -38,6 +39,7 @@ import com.matie.redgram.ui.posts.LinksComponent;
 import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
+import com.matie.redgram.ui.thread.views.CommentsActivity;
 import com.nineoldandroids.view.ViewHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -53,7 +55,7 @@ import butterknife.InjectView;
 /**
  * Created by matie on 17/01/15.
  */
-public class HomeFragment extends SlidingUpPanelFragment implements HomeView, ObservableScrollViewCallbacks,
+public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         SwipeRefreshLayout.OnRefreshListener {
 
     @InjectView(R.id.swipe_container)
@@ -123,6 +125,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
 
     }
 
+    //initial call to get data
     private void checkArgumentsAndUpdate() {
         String filter = getResources().getString(R.string.default_filter);
         if(getArguments() != null && getArguments().containsKey(SubscriptionActivity.RESULT_SUBREDDIT_NAME)){
@@ -301,6 +304,21 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == CommentsActivity.REQ_CODE){
+            if(resultCode == getActivity().RESULT_OK){
+                PostItem postItem = new Gson().fromJson(data.getStringExtra(CommentsActivity.RESULT_POST_CHANGE), PostItem.class);
+                int pos = data.getIntExtra(CommentsActivity.RESULT_POST_POS, -1);
+                if(linksContainerView.getItems().contains(postItem) && pos >= 0){
+                    linksContainerView.getItems().remove(pos);
+                    linksContainerView.getItems().add(pos, postItem);
+                    linksContainerView.refreshView();
+                }
+            }
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         homePresenter.registerForEvents();
@@ -322,26 +340,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
         ButterKnife.reset(this);
     }
 
-    @Override
-    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
-    }
-
-    @Override
-    public void onDownMotionEvent() {
-    }
-
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-        if (scrollState == ScrollState.UP) {
-            if (toolbarIsShown()) {
-                hideToolbar();
-            }
-        } else if (scrollState == ScrollState.DOWN) {
-            if (toolbarIsHidden()) {
-                showToolbar();
-            }
-        }
-    }
 
     @Override
     public void showLoading() {
@@ -365,12 +363,12 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
 
     @Override
     public void showToolbar() {
-        moveToolbar(0);
+
     }
 
     @Override
     public void hideToolbar() {
-        moveToolbar(-mToolbar.getHeight());
+
     }
 
 
@@ -389,32 +387,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
         return this;
     }
 
-    public boolean toolbarIsShown() {
-        return ViewHelper.getTranslationY(mToolbar) == 0;
-    }
-
-    public boolean toolbarIsHidden() {
-        return ViewHelper.getTranslationY(mToolbar) == -mToolbar.getHeight();
-    }
-
-    private void moveToolbar(float toTranslationY) {
-        if (ViewHelper.getTranslationY(mToolbar) == toTranslationY) {
-            return;
-        }
-        ValueAnimator animator = ValueAnimator.ofFloat(ViewHelper.getTranslationY(mToolbar), toTranslationY).setDuration(150);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float translationY = (float) animation.getAnimatedValue();
-                ViewHelper.setTranslationY(mToolbar, translationY);
-                ViewHelper.setTranslationY((View) homeRecyclerView, translationY);
-                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) ((View) homeRecyclerView).getLayoutParams();
-                lp.height = (int) -translationY + mContentView.getHeight() - lp.topMargin;
-                ((View) homeRecyclerView).requestLayout();
-            }
-        });
-        animator.start();
-    }
 
     @Override
     public void onRefresh() {
@@ -456,5 +428,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView, Ob
         return ((SlidingUpPanelActivity) getActivity()).getPanelState();
     }
 
-
+    public SwipeRefreshLayout getHomeSwipeContainer() {
+        return homeSwipeContainer;
+    }
 }

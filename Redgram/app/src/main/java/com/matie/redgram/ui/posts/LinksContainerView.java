@@ -37,7 +37,7 @@ import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.utils.widgets.FloatingActionView;
+import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.posts.views.LinksView;
@@ -175,33 +175,8 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     @Override
     public void sharePost(int position) {
         PostItem item = getItem(position);
-        dialogUtil.build()
-                .title("Share")
-                .items(R.array.shareOptions)
-                .itemsCallback(new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                        String urlToShare = "";
-                        if(charSequence.toString().equalsIgnoreCase("Link")){
-                            urlToShare = item.getUrl();
-                        }
-
-                        if(charSequence.toString().equalsIgnoreCase("Comments")){
-                            urlToShare = "https://reddit.com/"+item.getPermalink();
-                        }
-
-                        callShareDialog(urlToShare);
-                    }
-                })
-                .show();
-    }
-
-    private void callShareDialog(String contentToShare){
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, contentToShare);
-        sendIntent.setType("text/plain");
-        context.startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to)));
+        MaterialDialog.ListCallback callback = LinksHelper.getShareCallback(context, item);
+        LinksHelper.showExternalDialog(dialogUtil, "Share" ,callback);
     }
 
     @Override
@@ -216,16 +191,13 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     @Override
     public void reportPost(int position) {
-        dialogUtil.build()
-                .title("Report Post?")
-                .positiveText("Report")
-                .negativeText("Cancel")
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-                        linksPresenter.report(position);
-                    }
-                }).show();
+        MaterialDialog.SingleButtonCallback callback = new MaterialDialog.SingleButtonCallback() {
+            @Override
+            public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
+                linksPresenter.report(position);
+            }
+        };
+        LinksHelper.callReportDialog(dialogUtil, callback);
     }
 
     @Override
@@ -238,7 +210,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         filterChoice = getResources().getString(R.string.default_filter).toLowerCase();
         params.clear();
         subredditChoice = subredditName;
-        ((BaseActivity)context).openFragmentWithResult(subredditName);
+        LinksHelper.openResult(context, subredditName, LinksHelper.SUB);
     }
 
     @Override
@@ -257,57 +229,25 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     }
 
     private void buildBrowserDialog(int position) {
-        dialogUtil.build()
-                .title("Open")
-                .items(R.array.shareOptions)
-                .itemsCallback(new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                        Uri urlToOpen = getUriToOpen(position, charSequence);
-                        if (urlToOpen != null) {
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, urlToOpen);
-                            context.startActivity(browserIntent);
-                        }
-                    }
-                }).show();
+        PostItem item = getItem(position);
+        MaterialDialog.ListCallback callback = LinksHelper.getBrowseCallback(context, item);
+        LinksHelper.showExternalDialog(dialogUtil, "Open in Browser",callback);
     }
 
     private void buildCopyDialog(int position) {
-        dialogUtil.build()
-                .title("Copy")
-                .items(R.array.shareOptions)
-                .itemsCallback(new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                        Uri urlToOpen = getUriToOpen(position, charSequence);
-                        if (urlToOpen != null) {
-                            ClipboardManager clipboard = (ClipboardManager)
-                                    context.getSystemService(Context.CLIPBOARD_SERVICE);
-                            ClipData clip = ClipData.newUri(getContext().getContentResolver(), "URI", urlToOpen);
-                            clipboard.setPrimaryClip(clip);
-                            app.getToastHandler().showToast("Link Copied", Toast.LENGTH_SHORT);
-                        }
-                    }
-                }).show();
-    }
-
-    private Uri getUriToOpen(int position, CharSequence charSequence) {
-        Uri urlToOpen = null;
-        if (charSequence.toString().equalsIgnoreCase("Link")) {
-            urlToOpen = Uri.parse(getItem(position).getUrl());
-        }
-        if (charSequence.toString().equalsIgnoreCase(("Comments"))) {
-            urlToOpen = Uri.parse("https://reddit.com/" + getItem(position).getPermalink());
-        }
-        return urlToOpen;
+        PostItem item = getItem(position);
+        MaterialDialog.ListCallback callback = LinksHelper.getCopyCallback(context, app.getToastHandler(), item);
+        LinksHelper.showExternalDialog(dialogUtil, "Copy" ,callback);
     }
 
     @Override
     public void loadCommentsForPost(int position) {
         Intent intent = new Intent(context, CommentsActivity.class);
         String key = getResources().getString(R.string.main_data_key);
+        String posKey = getResources().getString(R.string.main_data_position);
         intent.putExtra(key, new Gson().toJson(getItem(position)));
-        ((BaseActivity)context).openIntent(intent, R.anim.enter, R.anim.exit);
+        intent.putExtra(posKey, position);
+        ((BaseActivity)context).openIntentForResult(intent, CommentsActivity.REQ_CODE, R.anim.enter, R.anim.exit);
     }
 
     @Override
@@ -338,7 +278,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
                     bundle.putString(getResources().getString(R.string.main_data_key), new Gson().toJson(item));
 
-                    ((SlidingUpPanelActivity)context).setPanelView(Fragments.WEB_PREVIEW, bundle);
+                    ((SlidingUpPanelActivity)context).setPanelView(Fragments.IMAGE_PREVIEW, bundle);
                 }
             }
         }

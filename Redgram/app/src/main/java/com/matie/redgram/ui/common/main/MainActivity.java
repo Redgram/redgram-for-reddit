@@ -9,6 +9,8 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
@@ -53,7 +55,7 @@ import io.realm.Realm;
 public class MainActivity extends SlidingUpPanelActivity implements CoordinatorLayoutInterface, NavigationView.OnNavigationItemSelectedListener{
 
     private static final int SUBSCRIPTION_REQUEST_CODE = 69;
-    private int currentSelectedPosition = R.id.nav_home;
+    private int currentSelectedMenuId = R.id.nav_home;
 
     static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
 
@@ -111,7 +113,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             window.setStatusBarColor(getResources().getColor(R.color.material_red600));
         }
 
-
         // Possible work around for market launches. See http://code.google.com/p/android/issues/detail?id=2373
         // for more details. Essentially, the market launches the main activity on top of other activities.
         // we never want this to happen. Instead, we check if we are the root and if not, we finish.
@@ -124,12 +125,12 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             }
         }
 
-
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.container,
                     Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment())).commit();
+            selectItem(currentSelectedMenuId);
         } else {
-            currentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+            currentSelectedMenuId = savedInstanceState.getInt(STATE_SELECTED_POSITION);
         }
 
         setUpToolbar();
@@ -188,7 +189,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     private void setup(){
-
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close) {
@@ -230,17 +230,25 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
-                currentSelectedPosition = item.getItemId();
-                return true;
-            }
-        });
+        getSupportFragmentManager().addOnBackStackChangedListener(
+                () -> { selectItem(currentSelectedMenuId); }
+        );
+
         navigationView.setNavigationItemSelectedListener(this);
 
-        //if nothing in intent, open home fragment
-        selectItem(currentSelectedPosition);
+        if(getIntent().getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME) != null){
+            disableDrawer();
+            String subredditName = getIntent().getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
+
+            Bundle bundle = new Bundle();
+            bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
+
+            HomeFragment homeFragment = (HomeFragment) Fragment
+                    .instantiate(activity(), Fragments.HOME.getFragment());
+
+            openFragmentWithResult(homeFragment, bundle);
+        } // TODO: 2016-04-08 do the same for profile
+
     }
 
     private boolean checkIntentStatus(Intent intent){
@@ -251,8 +259,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                 //open subreddit
                 String path = data.getPath();
                 String subredditName = path.substring(path.lastIndexOf('/')+1, path.length());
-                openFragmentWithResult(subredditName);
-                selectItem(R.id.nav_home);
+                // TODO: 2016-04-06 open another activity and check intent to hide navbar
+                openActivityForSubreddit(subredditName);
             }else if(data.getPath().contains("/u/")){
                 //open user
             }
@@ -284,13 +292,13 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     @Override
     public void onResume() {
         super.onResume();
-        selectItem(currentSelectedPosition);
+        selectItem(currentSelectedMenuId);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(STATE_SELECTED_POSITION, currentSelectedPosition);
+        outState.putInt(STATE_SELECTED_POSITION, currentSelectedMenuId);
     }
 
     @Override
@@ -318,16 +326,26 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             return true;
         } else if (item.getItemId() == R.id.action_settings) {
             return true;
+        }else if(item.getItemId() == android.R.id.home){
+            //only when back button enabled for this activity
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             closeDrawer();
         } else {
+//            Log.d("back-stack", getSupportFragmentManager().getBackStackEntryCount()+"");
             super.onBackPressed();
+//            Log.d("back-stack-after", getSupportFragmentManager().getBackStackEntryCount()+"");
+            if(getSupportFragmentManager().getBackStackEntryCount() == 0){
+                currentSelectedMenuId = R.id.nav_home;
+                selectItem(currentSelectedMenuId);
+            }
         }
     }
 
@@ -337,13 +355,19 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             if(resultCode == RESULT_OK){
                 String subredditName = data.getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
                 if(!subredditName.isEmpty() || subredditName != null){
-                    openFragmentWithResult(subredditName);
                     //select home fragment - first item
-                    selectItem(R.id.nav_home);
-                }
+                    Bundle bundle = new Bundle();
+                    bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
 
+                    HomeFragment homeFragment = (HomeFragment) Fragment
+                            .instantiate(activity(), Fragments.HOME.getFragment());
+
+                    openFragmentWithResult(homeFragment, bundle);
+                }
             }
+            return;
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -358,13 +382,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         }
     }
 
-    public int getCurrentSelectedPosition() {
-        return currentSelectedPosition;
-    }
-
     private void selectItem(int position) {
         navigationView.setCheckedItem(position);
-        closeDrawer();
     }
 
     private void closeDrawer(){
@@ -375,21 +394,28 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
+        int currentFragmentPos = getSupportFragmentManager().getFragments().size()-1;
+
         if(id == R.id.nav_home){
             if (!(getSupportFragmentManager().getFragments()
-                    .get(0) instanceof HomeFragment)) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, Fragment
-                                .instantiate(MainActivity.this, Fragments.HOME.getFragment()))
-                        .commit();
+                    .get(currentFragmentPos) instanceof HomeFragment)) {
+                //this fragment is added on activity entry, choosing it from the menu when not visible,
+                //will pop all stack to return to it, and re-create it
+                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                currentSelectedMenuId = item.getItemId();
             }
         } else if(id == R.id.nav_search){
             if (!(getSupportFragmentManager().getFragments()
-                    .get(0) instanceof SearchFragment)) {
-                getSupportFragmentManager().beginTransaction()
+                    .get(currentFragmentPos) instanceof SearchFragment)) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, Fragment
-                                .instantiate(MainActivity.this, Fragments.SEARCH.getFragment()))
-                        .commit();
+                                .instantiate(MainActivity.this, Fragments.SEARCH.getFragment()), Fragments.SEARCH.toString());
+                //only add to back-stack if currentSelectedMenuId is the home menu's
+                if(currentSelectedMenuId == R.id.nav_home){
+                    transaction.addToBackStack("search_view");
+                }
+                transaction.commit();
+                currentSelectedMenuId = item.getItemId();
             }
         } else if(id == R.id.nav_subs){
             Intent intent = new Intent(this, SubscriptionActivity.class);
@@ -530,6 +556,16 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             setPanelHeight(0);
             snackbar.show();
         }
+    }
+
+    public void enableDrawer(){
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+    }
+
+    public void disableDrawer(){
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        mDrawerToggle.setDrawerIndicatorEnabled(false);
     }
 }
 

@@ -8,11 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.storage.preferences.PreferenceManager;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.auth.AuthActivity;
-import com.matie.redgram.ui.home.HomeFragment;
+import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 
 import icepick.Icepick;
@@ -56,19 +54,45 @@ public abstract class BaseActivity extends AppCompatActivity {
         overridePendingTransition(enterAnim, exitAnim);
     }
 
-    public void openFragmentWithResult(String subredditName) {
-        HomeFragment homeFragment = (HomeFragment) Fragment
-                .instantiate(activity(), Fragments.HOME.getFragment());
+    public void openIntentForResult(Intent intent, int requestCode, int enterAnim, int exitAnim){
+        startActivityForResult(intent, requestCode);
+        overridePendingTransition(enterAnim, exitAnim);
+    }
 
-        Bundle bundle = new Bundle();
-        bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
-        homeFragment.setArguments(bundle);
+    public void openFragmentWithResult(Fragment fragment, Bundle bundle) {
 
+        if(bundle != null){
+            fragment.setArguments(bundle);
+        }
 
         getSupportFragmentManager().beginTransaction()
-                .replace(getContainerId(), homeFragment)
+                .replace(getContainerId(), fragment)
                         //important to avoid IllegalStateException
                 .commitAllowingStateLoss();
+    }
+
+    /**
+     * This will instruct the activity to get the listing of the subreddit
+     *
+     * NOTE: this is a new instance of MainActivity, the navdrawer should be disabled
+     * @param subredditName
+     */
+    public void openActivityForSubreddit(String subredditName) {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
+        openIntent(intent, 0, 0);
+    }
+
+    /**
+     * This will instruct the activity to open the profile fragment
+     *
+     * NOTE: this is a new instance of MainActivity, the navdrawer should be disabled
+     * @param username
+     */
+    public void openActivityForProfile(String username) {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME, username);
+//        openIntent(intent, R.anim.enter, R.anim.exit);
     }
 
 }

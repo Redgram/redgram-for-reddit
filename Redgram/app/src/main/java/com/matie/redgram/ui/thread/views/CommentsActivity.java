@@ -1,26 +1,32 @@
 package com.matie.redgram.ui.thread.views;
 
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 
 
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
@@ -28,9 +34,11 @@ import com.matie.redgram.data.managers.media.video.ImageManager;
 import com.matie.redgram.data.managers.presenters.ThreadPresenterImpl;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
+import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.thread.components.DaggerThreadComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
 import com.matie.redgram.ui.thread.modules.ThreadModule;
@@ -39,6 +47,7 @@ import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.previews.ImagePreviewFragment;
 import com.matie.redgram.ui.common.previews.WebPreviewFragment;
+import com.matie.redgram.ui.thread.views.widgets.OptionsView;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 
@@ -53,14 +62,10 @@ import butterknife.OnLongClick;
 
 public class CommentsActivity extends BaseActivity implements ThreadView{
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+    public static final int REQ_CODE = 99;
+    public static final String RESULT_POST_CHANGE = "result_post_change";
+    public static final String RESULT_POST_POS = "post_position";
+
     private CommentsPagerAdapter commentsPagerAdapter;
 
     @InjectView(R.id.app_bar)
@@ -73,10 +78,16 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     Toolbar toolbar;
     @InjectView(R.id.commentsFab)
     FloatingActionButton commentsFab;
+    @InjectView(R.id.upFab)
+    FloatingActionButton upFab;
+    @InjectView(R.id.downFab)
+    FloatingActionButton downFab;
     @InjectView(R.id.image)
     SimpleDraweeView imageView;
     @InjectView(R.id.title)
     TextView title;
+    @InjectView(R.id.details_card)
+    OptionsView optionsView;
     @InjectView(R.id.comments_swipe_container)
     SwipeRefreshLayout commentsSwipeContainer;
 
@@ -89,6 +100,8 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     //dagger
     ThreadComponent threadComponent;
 
+    @Inject
+    App app;
     @Inject
     ThreadPresenterImpl threadPresenter;
     @Inject
@@ -104,6 +117,8 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
             postItem = new Gson().fromJson(getIntent().getStringExtra(key), PostItem.class);
             isSelf = (postItem.getType() == PostItem.Type.SELF) ? true : false;
             title.setText(postItem.getTitle());
+            //if position is passed, call other method with position as param
+            optionsView.setup(postItem, this);
         }
 
         //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
@@ -111,7 +126,7 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(getResources().getColor(R.color.material_red600));
+            window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_900));
         }
 
         setupToolbar();
@@ -119,11 +134,12 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
         setupToolbarImage();
         setToolbarTitle(0);
         setupSwipeLayout();
+        setupFabs();
 
-//        resolveAppBarHeight();
         mSlidrInterface = Slidr.attach(this);
         threadPresenter.getThread(postItem.getId());
     }
+
 
     @Override
     protected void onStart() {
@@ -162,11 +178,31 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
         builder.build();
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void setupToolbar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setShowHideAnimationEnabled(true);
+
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            FrameLayout toolbarContent = (FrameLayout) collapsingToolbarLayout.findViewById(R.id.toolbar_layout_content);
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (toolbarContent.getHeight() + verticalOffset < 2 * ViewCompat.getMinimumHeight(toolbarContent)) {
+                    //gone
+                    upFab.hide();
+                    downFab.hide();
+                    commentsFab.hide();
+                } else {
+                    //shown
+                    upFab.show();
+                    downFab.show();
+                    commentsFab.show();
+                }
+            }
+        });
     }
 
     private void setupViewPager() {
@@ -203,9 +239,16 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
                 android.R.color.holo_red_dark,
                 android.R.color.holo_blue_dark,
                 android.R.color.holo_orange_dark);
+
+        TypedValue tv = new TypedValue();
+        if (getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        {
+            int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
+                    getContext().getResources().getDisplayMetrics());
+            //push it down to the same position as the first item to be loaded
+            commentsSwipeContainer.setProgressViewOffset(false, 0 , actionBarHeight);
+        }
     }
-
-
 
     @Override
     protected void setupComponent(AppComponent appComponent) {
@@ -236,7 +279,6 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
         return 0;
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -249,9 +291,18 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
         if(isSelf && mViewPager.getCurrentItem() > 0){
             mViewPager.setCurrentItem(0, true);
         }else{
+            setResult();
             super.onBackPressed();
             overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
         }
+    }
+
+    // set the changes before closing the activity
+    private void setResult() {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra(RESULT_POST_CHANGE, new Gson().toJson(postItem));
+        resultIntent.putExtra(RESULT_POST_POS, getIntent().getIntExtra(getResources().getString(R.string.main_data_position), -1));
+        setResult(RESULT_OK, resultIntent);
     }
 
     @Override
@@ -274,16 +325,6 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public BasePreviewFragment providePreviewFragment() {
-        if(isWebPreview(postItem)){
-            return new WebPreviewFragment();
-        }
-        if(isImagePreview(postItem)){
-            return new ImagePreviewFragment();
-        }
-        return new WebPreviewFragment();
     }
 
     private Bundle provideFragmentBundle() {
@@ -314,6 +355,14 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
         getSupportActionBar().setTitle(commentsPagerAdapter.getPageTitle(position));
     }
 
+    private void setupFabs() {
+        if(TRUE.equalsIgnoreCase(postItem.getLikes())){
+            upFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_green700)));
+        }else if(FALSE.equalsIgnoreCase(postItem.getLikes())){
+            downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_red700)));
+        }
+    }
+
     @OnClick(R.id.commentsFab)
     public void onCommentsClick(){
         onCommentsFabClicked(false);
@@ -325,13 +374,36 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
         return true;
     }
 
+    @OnClick(R.id.upFab)
+    public void onUpVote(){
+        if (!TRUE.equalsIgnoreCase(postItem.getLikes())){
+            upFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_green700)));
+            downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_bluegrey900)));
+            threadPresenter.vote(postItem, UP_VOTE);
+        }else{
+            upFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_bluegrey900)));
+            threadPresenter.vote(postItem, UN_VOTE);
+        }
+    }
+
+    @OnClick(R.id.downFab)
+    public void onDownVote(){
+        if (!FALSE.equalsIgnoreCase(postItem.getLikes())){
+            downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_red700)));
+            upFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_bluegrey900)));
+            threadPresenter.vote(postItem, DOWN_VOTE);
+        }else{
+            downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_bluegrey900)));
+            threadPresenter.vote(postItem, UN_VOTE);
+        }
+    }
+
     private void onCommentsFabClicked(boolean longClick) {
         if(longClick){
             onCommentsLongClicked();
         }else{
             onCommentsClicked();
         }
-
     }
 
     private void onCommentsLongClicked() {
@@ -340,7 +412,6 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
 
     private void onCommentsClicked() {
         if(isSelf){
-            //if already in comments section, could never happen since it is collapsed automatically
             if(mViewPager.getCurrentItem() == 1){
                 // TODO: 2016-01-27 focus on comments edit box
             }else{
@@ -380,17 +451,70 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
 
     @Override
     public void toggleVote(@Nullable int direction) {
-
-    }
-
-    @Override
-    public void commentIndicator(boolean commentExists) {
-
+        if(direction == UP_VOTE){
+            upFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_green700)));
+        }else if(direction == DOWN_VOTE){
+            downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_red700)));
+        }else{
+            downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_bluegrey900)));
+        }
     }
 
     @Override
     public void passDataToCommentsView(List<CommentBaseItem> commentItems) {
         commentsView.setItems(commentItems);
+    }
+
+    //presenter
+    @Override
+    public void savePost(){
+
+    }
+    //presenter
+    @Override
+    public void hidePost(){
+
+    }
+
+    @Override
+    public void viewMedia() {
+
+    }
+
+    //options, presenter
+    @Override
+    public void reportPost(){
+
+    }
+
+    //options, presenter, oauth post
+    @Override
+    public void deletePost(){
+
+    }
+
+    @Override
+    public void sharePost() {
+        MaterialDialog.ListCallback callback = LinksHelper.getShareCallback(this, postItem);
+        LinksHelper.showExternalDialog(dialogUtil, "Share" , callback);
+    }
+    @Override
+    public void visitSubreddit() {
+        LinksHelper.openResult(this, postItem.getSubreddit(), LinksHelper.SUB);
+    }
+    @Override
+    public void visitProfile() {
+        LinksHelper.openResult(this, postItem.getAuthor(), LinksHelper.PROFILE);
+    }
+    @Override
+    public void openInBrowser() {
+        MaterialDialog.ListCallback callback = LinksHelper.getBrowseCallback(this, postItem);
+        LinksHelper.showExternalDialog(dialogUtil, "Open in Browser" ,callback);
+    }
+    @Override
+    public void copyItemLink() {
+        MaterialDialog.ListCallback callback = LinksHelper.getCopyCallback(this, app.getToastHandler(), postItem);
+        LinksHelper.showExternalDialog(dialogUtil, "Copy" ,callback);
     }
 
     @Override
@@ -407,5 +531,6 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     public BaseFragment getBaseFragment() {
         return null;
     }
+
 
 }

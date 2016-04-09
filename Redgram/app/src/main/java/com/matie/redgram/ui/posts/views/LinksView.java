@@ -32,12 +32,13 @@ public interface LinksView extends ContentView{
     void hidePost(int position);
     void reportPost(int position);
     void deletePost(int position);
+    void loadCommentsForPost(int position);
+
     void sharePost(int position);
     void visitSubreddit(String subredditName);
     void visitProfile(int position);
     void openInBrowser(int position);
     void copyItemLink(int position);
-    void loadCommentsForPost(int position);
     void viewWebMedia(int position);
     void viewImageMedia(int position, boolean loaded);
 }

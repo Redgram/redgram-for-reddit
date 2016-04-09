@@ -144,13 +144,11 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
 
     @Override
     public void showLoading() {
-        //// TODO: 2015-11-30
         subredditRecyclerView.setVisibility(View.GONE);
     }
 
     @Override
     public void hideLoading() {
-        //// TODO: 2015-11-30
         subredditRecyclerView.setVisibility(View.VISIBLE);
     }
 

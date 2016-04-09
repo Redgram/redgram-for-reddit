@@ -10,12 +10,12 @@
     <style name="ToolbarTheme" parent="AppTheme">
         <!-- android:textColorPrimary is the  color of the title text
              in the Toolbar, in the Theme.AppCompat theme:  -->
-        <!--<item name="android:textColorPrimary">@color/material_white</item>-->
+        <item name="android:textColorPrimary">@color/material_white</item>
 
         <!-- Set proper title size -->
         <item name="android:textSize">@dimen/abc_text_size_title_material_toolbar</item>
         <!-- Set title color -->
-        <item name="android:textColor">@color/material_white</item>
+        <item name="android:textColor">@color/material_blue_grey_900</item>
 
         <!-- android:textColorPrimaryInverse is the  color of the title
              text in the Toolbar, in the Theme.AppCompat.Light theme:  -->
@@ -33,44 +33,10 @@
              overflow icon (three vertical dots) -->
         <item name="android:textColorSecondary">@color/material_white</item>
 
-        <!-- This would set the toolbar's background color,
-              but setting this also changes the popup menu's background,
-              even if we define popupTheme for our <Toolbar> -->
-         <!--<item name="android:background">@color/blue_light</item>-->
+        <item name="android:actionMenuTextColor">@color/material_blue_grey_900</item>
     </style>
 
-    <style name="CommentsToolbarTheme" parent="AppTheme">
-        <!-- android:textColorPrimary is the  color of the title text
-             in the Toolbar, in the Theme.AppCompat theme:  -->
-        <item name="android:textColorPrimary">@color/material_white</item>
-
-        <!-- Set proper title size -->
-        <item name="android:textSize">@dimen/abc_text_size_title_material_toolbar</item>
-        <!-- Set title color -->
-        <item name="android:textColor">@color/material_white</item>
-
-        <!-- android:textColorPrimaryInverse is the  color of the title
-             text in the Toolbar, in the Theme.AppCompat.Light theme:  -->
-        <item name="android:textColorPrimaryInverse">@color/material_white</item>
-
-        <!-- android:actionMenuTextColor is the color of the text of
-              action (menu) items in the Toolbar, at least in the
-              Theme.AppCompat theme.
-              For some reason, they already get the textColorPrimary
-              when running on API 21, but not on older versions of
-              Android, so this is only necessary to support older
-              Android versions.-->
-        <item name="actionMenuTextColor">@color/material_blue_grey_900</item>
-        <!-- android:textColorSecondary is the color of the menu
-             overflow icon (three vertical dots) -->
-        <item name="android:textColorSecondary">@color/material_white</item>
-
-        <!-- This would set the toolbar's background color,
-              but setting this also changes the popup menu's background,
-              even if we define popupTheme for our <Toolbar> -->
-        <!--<item name="android:background">@color/blue_light</item>-->
-    </style>v
-
+    <style name="CommentsToolbarTheme" parent="ToolbarTheme"/>
 
     <style name="Match">
         <item name="android:layout_width">match_parent</item>
@@ -97,6 +63,11 @@
     <style name="Separator" parent="Match">
         <item name="android:layout_height">@dimen/separator_height</item>
         <item name="android:background">@color/material_grey200</item>
+    </style>
+
+    <style name="default_icon" parent="ActionPostItemIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <!--HEADER VIEW-->
@@ -255,16 +226,11 @@
         <item name="contentInsetLeft">@dimen/content_inset</item>
         <item name="contentInsetStart">@dimen/content_inset</item>
     </style>
-    <style name="MainActivityScrimInsetsFrameLayout"></style>
-    <style name="MainActivityLinearDrawer"></style>
-    <style name="MainActivityLinearDrawerHeader"></style>
-    <style name="MainActivityLinearDrawerHeaderImage"></style>
-    <style name="MainActivityLinearDrawerHeaderUsername"></style>
-    <style name="MainActivityLinearDrawerHeaderUserInfo"></style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="AppTheme.Slider" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Slider" parent="AppTheme">
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
