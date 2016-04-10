@@ -1,0 +1,10 @@
+language: android
+android: 
+	components: 
+		- platform-tools
+		- build-tools-23.0.3
+		- android-23
+		- extra-android-m2repository
+before_install: cd Redgram
+script:
+	- ./gradlew build connectedCheck
