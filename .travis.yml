@@ -17,4 +17,4 @@ before_script:
  - adb shell input keyevent 82 &
 script:
  - android list target
- - ./gradlew build connectedCheck
+ - ./gradlew build connectedCheck --debug
