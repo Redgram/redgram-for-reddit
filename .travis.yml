@@ -17,4 +17,5 @@ before_script:
  - adb shell input keyevent 82 &
 script:
  - android list target
+ - android list sdk -a
  - ./gradlew build connectedCheck 2>&1 | tee gradleLogs.txt
