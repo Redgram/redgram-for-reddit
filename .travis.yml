@@ -9,7 +9,9 @@ android:
 env:
  global:
   - ADB_INSTALL_TIMEOUT=8
-before_install: cd Redgram
+before_install: 
+ - cd Redgram
+ - android update sdk --no-ui --all --filter "tools"
 before_script:
  - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
  - emulator -avd test -no-skin -no-audio -no-window &
