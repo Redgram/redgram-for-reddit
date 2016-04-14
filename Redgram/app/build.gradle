@@ -9,6 +9,7 @@ buildscript {
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt' //dagger 2
+apply plugin: 'me.tatarka.retrolambda'
 
 repositories {
     mavenCentral()
