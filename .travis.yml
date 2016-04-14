@@ -1,5 +1,4 @@
 language: android
-jdk: oraclejdk8
 android: 
  components: 
   - platform-tools
@@ -11,6 +10,7 @@ android:
 env:
  global:
   - ADB_INSTALL_TIMEOUT=8
+  - JAVA8_HOME=/usr/lib/jvm/java-8-oracle
 before_install: 
  - cd Redgram
 before_script:
