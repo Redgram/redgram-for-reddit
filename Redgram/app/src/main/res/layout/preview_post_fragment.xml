@@ -10,10 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
             <TextView
                 android:id="@+id/content"
                 android:layout_width="wrap_content"
@@ -24,9 +20,6 @@
                 android:layout_marginTop="@dimen/activity_horizontal_margin"
                 android:text="@string/no_text"
                 xmlns:android="http://schemas.android.com/apk/res/android" />
-
-        </RelativeLayout>
-
 
     </FrameLayout>
 

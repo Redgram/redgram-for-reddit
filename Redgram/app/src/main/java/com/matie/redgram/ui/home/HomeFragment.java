@@ -182,7 +182,9 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                     if(!getResources().getString(R.string.frontpage).equalsIgnoreCase(toolbarTitle.getText().toString())){
                         subreddits.add(0, "Return to Frontpage");
                     }else{
-                        subreddits.remove(0);
+                        if(!subreddits.isEmpty()){
+                            subreddits.remove(0);
+                        }
                     }
 
                     dialogUtil.build()
@@ -231,7 +233,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                                     } else {
                                         if(!homeSwipeContainer.isRefreshing()){
                                             String filterChoice = charSequence.toString();
-                                            linksContainerView.sortView(filterChoice.toLowerCase());
+                                            linksContainerView.sortView(filterChoice.toLowerCase(), null);
                                             toolbarSubtitle.setText(filterChoice);
                                         }
                                     }
@@ -285,7 +287,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                             params.put("t", charSequence.toString().toLowerCase());
 
                             //perform network call
-                            linksContainerView.refreshView(null, query.toString().toLowerCase(), params);
+                            linksContainerView.sortView(query.toString().toLowerCase(), params);
 
                             //change subtitle only
                             String bullet = getContext().getResources().getString(R.string.text_bullet);

@@ -23,7 +23,7 @@ public interface LinksView extends ContentView{
     void updateList(List<PostItem> items);
     void refreshView();
     void refreshView(@Nullable String subredditChoice, @NonNull String filterChoice, @NonNull Map<String, String> params);
-    void sortView(@NonNull String filterChoice);
+    void sortView(@NonNull String filterChoice, @Nullable Map<String, String> params);
     void search(String subredditChoice, @NonNull Map<String, String> params);
 
     void showHideUndoOption();
