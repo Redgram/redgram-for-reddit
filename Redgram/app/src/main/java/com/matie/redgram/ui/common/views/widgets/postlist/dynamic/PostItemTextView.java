@@ -71,6 +71,8 @@ public class PostItemTextView extends PostItemSubView {
             }
 
             textContentView.setVisibility(VISIBLE);
+        }else{
+            textContentView.setVisibility(GONE);
         }
 
         if(item.getType().equals(PostItem.Type.SELF)){
@@ -95,6 +97,7 @@ public class PostItemTextView extends PostItemSubView {
 
     @OnClick(R.id.text_title_view)
     public void onTitleClick(){
+        // TODO: 2016-04-14 check for NSFW
         listener.loadCommentsForPost(position);
     }
 

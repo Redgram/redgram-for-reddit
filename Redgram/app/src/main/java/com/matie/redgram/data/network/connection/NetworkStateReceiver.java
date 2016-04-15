@@ -6,6 +6,10 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.matie.redgram.R;
+import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
 /**
  * Created by matie on 2015-11-17.

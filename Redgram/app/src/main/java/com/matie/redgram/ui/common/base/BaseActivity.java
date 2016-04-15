@@ -41,7 +41,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         //onResume of any activity, show connection status
         ((App)getApplication()).getConnectionManager().showConnectionStatus(true);
-
     }
     protected abstract void setupComponent(AppComponent appComponent);
     public abstract AppComponent component();
