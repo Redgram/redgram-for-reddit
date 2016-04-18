@@ -127,7 +127,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.container,
-                    Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment())).commit();
+                    Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment()), Fragments.HOME.toString()).commit();
             selectItem(currentSelectedMenuId);
         } else {
             currentSelectedMenuId = savedInstanceState.getInt(STATE_SELECTED_POSITION);

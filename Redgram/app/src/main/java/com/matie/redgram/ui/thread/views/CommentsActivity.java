@@ -49,7 +49,9 @@ import com.matie.redgram.ui.common.previews.ImagePreviewFragment;
 import com.matie.redgram.ui.common.previews.WebPreviewFragment;
 import com.matie.redgram.ui.thread.views.widgets.OptionsView;
 import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrInterface;
+import com.r0adkll.slidr.model.SlidrListener;
 
 import java.util.List;
 
@@ -136,7 +138,28 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
         setupSwipeLayout();
         setupFabs();
 
-        mSlidrInterface = Slidr.attach(this);
+        SlidrConfig config = new SlidrConfig.Builder().listener(new SlidrListener() {
+            @Override
+            public void onSlideStateChanged(int state) {
+            }
+
+            @Override
+            public void onSlideChange(float percent) {
+
+            }
+
+            @Override
+            public void onSlideOpened() {
+
+            }
+
+            @Override
+            public void onSlideClosed() {
+                setResult();
+            }
+        }).build();
+
+        mSlidrInterface = Slidr.attach(this, config);
         threadPresenter.getThread(postItem.getId());
     }
 
@@ -298,12 +321,14 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     }
 
     // set the changes before closing the activity
+    // TODO: 2016-04-17 move this to post fragment
     private void setResult() {
         Intent resultIntent = new Intent();
         resultIntent.putExtra(RESULT_POST_CHANGE, new Gson().toJson(postItem));
         resultIntent.putExtra(RESULT_POST_POS, getIntent().getIntExtra(getResources().getString(R.string.main_data_position), -1));
         setResult(RESULT_OK, resultIntent);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

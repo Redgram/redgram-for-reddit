@@ -1,6 +1,7 @@
 package com.matie.redgram.ui.common.previews;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
@@ -16,6 +17,7 @@ import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.thread.views.CommentsActivity;
 import com.matie.redgram.ui.thread.views.PostView;
 import com.matie.redgram.ui.common.base.BaseActivity;
 

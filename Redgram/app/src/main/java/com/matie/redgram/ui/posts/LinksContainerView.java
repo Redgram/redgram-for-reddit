@@ -1,7 +1,5 @@
 package com.matie.redgram.ui.posts;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -70,6 +68,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     private RecyclerView.OnScrollListener loadMoreListener;
     private LinearLayoutManager mLayoutManager;
     private LinksComponent component;
+    String hostingFragmentTag;
     private final Context context;
 
     private String subredditChoice = null;
@@ -125,6 +124,25 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     @Override
     public void updateList() {
         containerRecyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    @Override
+    public void updateItem(int position, PostItem postItem) {
+        getItems().set(position, postItem);
+        containerRecyclerView.getAdapter().notifyItemChanged(position);
+    }
+
+    @Override
+    public PostItem removeItem(int position) {
+        PostItem removedItem = getItems().remove(position);
+        containerRecyclerView.getAdapter().notifyItemRemoved(position);
+        return removedItem;
+    }
+
+    @Override
+    public void insertItem(int position, PostItem removedPost) {
+        getItems().add(position, removedPost);
+        containerRecyclerView.getAdapter().notifyItemInserted(position);
     }
 
     @Override
@@ -253,7 +271,16 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         String posKey = getResources().getString(R.string.main_data_position);
         intent.putExtra(key, new Gson().toJson(getItem(position)));
         intent.putExtra(posKey, position);
-        ((BaseActivity)context).openIntentForResult(intent, CommentsActivity.REQ_CODE, R.anim.enter, R.anim.exit);
+
+        Fragment hostingFragment =
+                ((BaseActivity) context).getSupportFragmentManager().findFragmentByTag(getHostingFragmentTag());
+        if(hostingFragment != null){
+            ((BaseFragment)hostingFragment)
+                    .openIntentForResult(intent, CommentsActivity.REQ_CODE, R.anim.enter, R.anim.exit);
+        }else{
+            ((BaseActivity) context)
+                    .openIntentForResult(intent, CommentsActivity.REQ_CODE, R.anim.enter, R.anim.exit);
+        }
     }
 
     @Override
@@ -336,6 +363,16 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         this.component.inject(this);
     }
 
+    public void setHostingFragmentTag(String hostingFragmentTag) {
+        this.hostingFragmentTag = hostingFragmentTag;
+    }
+
+    public String getHostingFragmentTag() {
+        if(hostingFragmentTag != null){
+            return hostingFragmentTag;
+        }
+        return "";
+    }
 
     @Override
     public void showLoading() {

@@ -2,6 +2,7 @@ package com.matie.redgram.ui.home;
 
 
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -154,6 +155,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         component.inject(this);
         linksComponent = component.getLinksComponent(linksModule);
         linksContainerView.setComponent(linksComponent);
+        linksContainerView.setHostingFragmentTag(Fragments.HOME.toString());
     }
     @Override
     protected void setupToolbar() {
@@ -308,13 +310,13 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == CommentsActivity.REQ_CODE){
-            if(resultCode == getActivity().RESULT_OK){
-                PostItem postItem = new Gson().fromJson(data.getStringExtra(CommentsActivity.RESULT_POST_CHANGE), PostItem.class);
+            if(resultCode == Activity.RESULT_OK){
+                PostItem postItem = new Gson()
+                        .fromJson(data.getStringExtra(CommentsActivity.RESULT_POST_CHANGE), PostItem.class);
                 int pos = data.getIntExtra(CommentsActivity.RESULT_POST_POS, -1);
                 if(linksContainerView.getItems().contains(postItem) && pos >= 0){
-                    linksContainerView.getItems().remove(pos);
-                    linksContainerView.getItems().add(pos, postItem);
-                    linksContainerView.refreshView();
+                    // TODO: 2016-04-18 override hashcode to check whether item has actually changed before calling update
+                    linksContainerView.updateItem(pos, postItem);
                 }
             }
         }

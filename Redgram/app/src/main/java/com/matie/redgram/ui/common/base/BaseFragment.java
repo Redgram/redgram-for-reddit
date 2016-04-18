@@ -36,6 +36,16 @@ public abstract class BaseFragment extends Fragment {
         setupToolbar();
     }
 
+    public void openIntent(Intent intent, int enterAnim, int exitAnim){
+        startActivity(intent);
+        getActivity().overridePendingTransition(enterAnim, exitAnim);
+    }
+
+    public void openIntentForResult(Intent intent, int requestCode, int enterAnim, int exitAnim){
+        startActivityForResult(intent, requestCode);
+        getActivity().overridePendingTransition(enterAnim, exitAnim);
+    }
+
     protected abstract void setupComponent();
 
     protected abstract void setupToolbar();

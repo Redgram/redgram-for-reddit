@@ -16,6 +16,10 @@ public abstract class BasePreviewFragment extends BaseFragment {
         return getResources().getString(R.string.main_data_key);
     }
 
+    public String getMainPos(){
+        return getResources().getString(R.string.main_data_position);
+    }
+
     public String getLocalCacheKey(){
         return getResources().getString(R.string.local_cache_key);
     }

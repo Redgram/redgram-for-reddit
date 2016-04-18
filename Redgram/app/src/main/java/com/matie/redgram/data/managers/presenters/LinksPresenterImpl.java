@@ -157,9 +157,8 @@ public class LinksPresenterImpl implements LinksPresenter {
                     @Override
                     public void onCompleted() {
                         if(showUndo){
-                            removedItem = linksView.getItems().remove(position);
                             removedItemPosition = position;
-                            linksView.updateList();
+                            removedItem = linksView.removeItem(position);
                             linksView.showHideUndoOption();
                         } //else already removed and updated list
                     }
@@ -190,8 +189,7 @@ public class LinksPresenterImpl implements LinksPresenter {
                 .subscribe(new Subscriber<JsonElement>() {
                     @Override
                     public void onCompleted() {
-                        linksView.getItems().add(removedItemPos, removedPost);
-                        linksView.updateList();
+                        linksView.insertItem(removedItemPos, removedPost);
                     }
 
                     @Override
@@ -249,8 +247,7 @@ public class LinksPresenterImpl implements LinksPresenter {
                 .subscribe(new Subscriber<JsonElement>() {
                     @Override
                     public void onCompleted() {
-                        linksView.getItems().remove(position);
-                        linksView.updateList();
+                        linksView.removeItem(position);
                         hide(position, name, false);
                         toastHandler.showBackgroundToast("Reported", Toast.LENGTH_LONG);
                     }
