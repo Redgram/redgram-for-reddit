@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -58,16 +59,21 @@ public abstract class BaseActivity extends AppCompatActivity {
         overridePendingTransition(enterAnim, exitAnim);
     }
 
-    public void openFragmentWithResult(Fragment fragment, Bundle bundle) {
+    public void openFragmentWithResult(Fragment fragment, Bundle bundle, String tag) {
 
         if(bundle != null){
             fragment.setArguments(bundle);
         }
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(getContainerId(), fragment)
-                        //important to avoid IllegalStateException
-                .commitAllowingStateLoss();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if(tag != null){
+            transaction = transaction.replace(getContainerId(), fragment, tag);
+        }else{
+            transaction = transaction.replace(getContainerId(), fragment);
+        }
+
+        //important to avoid IllegalStateException
+        transaction.commitAllowingStateLoss();
     }
 
     /**

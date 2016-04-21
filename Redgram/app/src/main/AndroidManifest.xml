@@ -24,23 +24,19 @@
             android:launchMode="standard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
              </intent-filter>
 
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <action android:name="android.intent.action.VIEW" />
-
                 <data android:scheme="com.matie.redgram" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.subcription.SubscriptionActivity"
-            android:label="@string/fragment_subreddits"
-            android:noHistory="true" >
+            android:label="@string/fragment_subreddits">
         </activity>
         <activity
             android:name=".ui.thread.views.CommentsActivity"

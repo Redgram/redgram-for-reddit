@@ -39,6 +39,7 @@ import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.ui.search.SearchFragment;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
@@ -236,37 +237,43 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        if(getIntent().getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME) != null){
-            disableDrawer();
-            String subredditName = getIntent().getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
-
-            Bundle bundle = new Bundle();
-            bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
-
-            HomeFragment homeFragment = (HomeFragment) Fragment
-                    .instantiate(activity(), Fragments.HOME.getFragment());
-
-            openFragmentWithResult(homeFragment, bundle);
-        } // TODO: 2016-04-08 do the same for profile
-
+        checkIntentStatus(getIntent());
     }
 
     private boolean checkIntentStatus(Intent intent){
-        Uri data = intent.getData();
-        if(data != null){
-            Log.d("INTENT_DATA", data.toString());
+        if(getIntent().getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME) != null){
+            String subredditName = getIntent().getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
+            launchFragmentForSubreddit(subredditName);
+            return true;
+
+        }else if(intent.getData() != null){
+            Uri data = intent.getData();
             if(data.getPath().contains("/r/")){
                 //open subreddit
                 String path = data.getPath();
                 String subredditName = path.substring(path.lastIndexOf('/')+1, path.length());
-                // TODO: 2016-04-06 open another activity and check intent to hide navbar
-                openActivityForSubreddit(subredditName);
+                launchFragmentForSubreddit(subredditName);
+                return true;
             }else if(data.getPath().contains("/u/")){
                 //open user
+                // TODO: 2016-04-08 do the same for profile
+//                String path = data.getPath();
+//                String profile = path.substring(path.lastIndexOf('/')+1, path.length());
+                return true;
             }
-            return true;
         }
         return false;
+    }
+
+    private void launchFragmentForSubreddit(String subredditName) {
+        disableDrawer();
+        Bundle bundle = new Bundle();
+        bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
+
+        HomeFragment homeFragment = (HomeFragment) Fragment
+                .instantiate(activity(), Fragments.HOME.getFragment());
+
+        openFragmentWithResult(homeFragment, bundle, Fragments.HOME.toString());
     }
 
     private void setUpPanel() {
@@ -362,7 +369,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                     HomeFragment homeFragment = (HomeFragment) Fragment
                             .instantiate(activity(), Fragments.HOME.getFragment());
 
-                    openFragmentWithResult(homeFragment, bundle);
+                    openFragmentWithResult(homeFragment, bundle, Fragments.HOME.toString());
                 }
             }
             return;
@@ -419,7 +426,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             }
         } else if(id == R.id.nav_subs){
             Intent intent = new Intent(this, SubscriptionActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivityForResult(intent, SUBSCRIPTION_REQUEST_CODE);
         } else if(id == R.id.nav_logout){
             app.getToastHandler().showToast("Logout", Toast.LENGTH_SHORT);
