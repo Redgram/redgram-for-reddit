@@ -131,7 +131,7 @@ public class LinksPresenterImpl implements LinksPresenter {
                         }else{
                             linksView.getItem(position).setLikes(null);
                         }
-                        linksView.updateList();
+                        linksView.updateItem(position, linksView.getItem(position));
                     }
 
                     @Override
@@ -215,7 +215,7 @@ public class LinksPresenterImpl implements LinksPresenter {
                     @Override
                     public void onCompleted() {
                         linksView.getItem(position).setSaved(save);
-                        linksView.updateList();
+                        linksView.updateItem(position, linksView.getItem(position));
                     }
 
                     @Override
@@ -281,6 +281,7 @@ public class LinksPresenterImpl implements LinksPresenter {
         return buildSubscription(targetObservable, isNew);
     }
 
+    // TODO: 2016-04-21 share Subscriber with getSearchSubscription
     private Subscription buildSubscription(Observable<RedditListing<PostItem>> observable, boolean isNew){
         return (Subscription)bindFragment(containerView.getBaseFragment(), observable)
                 .subscribeOn(Schedulers.io())
@@ -317,7 +318,6 @@ public class LinksPresenterImpl implements LinksPresenter {
                     }
                 });
     }
-
     private Subscription getSearchSubscription(String subreddit, Map<String, String> params, boolean isNew) {
         return bindFragment(containerView.getBaseFragment(), redditClient.executeSearch(subreddit, params, ((!isNew) ? linksView.getItems() : null)))
                 .subscribeOn(Schedulers.io())
