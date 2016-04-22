@@ -77,10 +77,11 @@ public class PostItemTextView extends PostItemSubView {
 
         if(item.getType().equals(PostItem.Type.SELF)){
             textTitleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, res.getDimension(R.dimen.text_size_large));
-        }
-
-        if(item.getType().equals(PostItem.Type.DEFAULT)) {
+        }else if(item.getType().equals(PostItem.Type.DEFAULT) || item.getType().equals(PostItem.Type.IMGUR)) {
+            // TODO: 2016-04-21 IMGUR type should be later look like IMAGE, YOUTUBE, etc
             textTitleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, res.getDimension(R.dimen.text_size_small));
+        }else{
+            textTitleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, res.getDimension(R.dimen.text_size_medium));
         }
 
     }
