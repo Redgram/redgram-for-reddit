@@ -272,8 +272,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         HomeFragment homeFragment = (HomeFragment) Fragment
                 .instantiate(activity(), Fragments.HOME.getFragment());
+        homeFragment.setArguments(bundle);
 
-        openFragmentWithResult(homeFragment, bundle, Fragments.HOME.toString());
+        openFragmentWithResult(homeFragment, Fragments.HOME.toString());
     }
 
     private void setUpPanel() {
@@ -343,9 +344,11 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if(getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED){
+            hidePanel();
+        }else if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             closeDrawer();
-        } else {
+        }else {
 //            Log.d("back-stack", getSupportFragmentManager().getBackStackEntryCount()+"");
             super.onBackPressed();
 //            Log.d("back-stack-after", getSupportFragmentManager().getBackStackEntryCount()+"");
@@ -358,6 +361,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == SUBSCRIPTION_REQUEST_CODE){
             if(resultCode == RESULT_OK){
                 String subredditName = data.getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
@@ -368,13 +372,20 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
                     HomeFragment homeFragment = (HomeFragment) Fragment
                             .instantiate(activity(), Fragments.HOME.getFragment());
+                    homeFragment.setArguments(bundle);
 
-                    openFragmentWithResult(homeFragment, bundle, Fragments.HOME.toString());
+                    //makes sure only one fragment is in the stack
+                    if(!getSupportFragmentManager().findFragmentByTag(Fragments.HOME.toString()).isVisible()){
+                        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        currentSelectedMenuId = R.id.nav_home;
+                        selectItem(currentSelectedMenuId);
+                    }
+
+                    openFragmentWithResult(homeFragment, Fragments.HOME.toString());
                 }
             }
             return;
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

@@ -59,12 +59,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         overridePendingTransition(enterAnim, exitAnim);
     }
 
-    public void openFragmentWithResult(Fragment fragment, Bundle bundle, String tag) {
-
-        if(bundle != null){
-            fragment.setArguments(bundle);
-        }
-
+    public void openFragmentWithResult(Fragment fragment, String tag) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if(tag != null){
             transaction = transaction.replace(getContainerId(), fragment, tag);
