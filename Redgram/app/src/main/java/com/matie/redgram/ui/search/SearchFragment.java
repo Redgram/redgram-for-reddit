@@ -143,7 +143,11 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                     // TODO: 2016-04-18 override hashcode to check whether item has actually changed before calling update
                     // TODO: 2016-04-18 Also, use the same mechanism for single item operations in LinkContainerView
                     // TODO: 2016-04-18 handle 400 errors - some posts cannot be modified (archived)
-                    linksContainerView.updateItem(pos, postItem);
+                    if(postItem.isHidden()){
+                        linksContainerView.removeItem(pos);
+                    }else{
+                        linksContainerView.updateItem(pos, postItem);
+                    }
                 }
             }
         }

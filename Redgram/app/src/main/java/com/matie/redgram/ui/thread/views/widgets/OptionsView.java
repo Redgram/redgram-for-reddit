@@ -1,6 +1,7 @@
 package com.matie.redgram.ui.thread.views.widgets;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
@@ -72,6 +73,7 @@ public class OptionsView extends RelativeLayout implements CustomSpanListener {
         this.listener = listener;
         userNameView.setText(postItem.getAuthor());
         scoreView.setText(postItem.getScore()+"");
+        toggleSave(postItem.isSaved());
         setupInfo(postItem);
     }
 
@@ -97,6 +99,14 @@ public class OptionsView extends RelativeLayout implements CustomSpanListener {
         String target = targetString.toString();
         if(target.contains("/r/")){
             listener.visitSubreddit();
+        }
+    }
+
+    public void toggleSave(boolean save){
+        if(save){
+            favView.setColorFilter(getResources().getColor(R.color.material_red400));
+        }else{
+            favView.setColorFilter(getResources().getColor(R.color.material_grey600));
         }
     }
 

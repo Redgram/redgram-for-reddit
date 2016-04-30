@@ -316,7 +316,11 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                 int pos = data.getIntExtra(CommentsActivity.RESULT_POST_POS, -1);
                 if(linksContainerView.getItems().contains(postItem) && pos >= 0){
                     // TODO: 2016-04-18 override hashcode to check whether item has actually changed before calling update
-                    linksContainerView.updateItem(pos, postItem);
+                    if(postItem.isHidden()){
+                        linksContainerView.removeItem(pos);
+                    }else{
+                        linksContainerView.updateItem(pos, postItem);
+                    }
                 }
             }
         }

@@ -11,4 +11,6 @@ public interface ThreadPresenter {
 
     void getThread(String id );
     void vote(PostItem item, int dir);
+    void save(PostItem postItem, boolean save);
+    void hide(PostItem postItem, boolean hide);
 }

@@ -116,4 +116,35 @@ public class ThreadPresenterImpl implements ThreadPresenter {
             subscriptions.add(voteSubscription);
         }
     }
+
+    @Override
+    public void save(PostItem item, boolean save) {
+        Subscription saveSubscription = bindActivity(threadView.getBaseActivity(), redditClient.save(item.getName(), save))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<JsonElement>() {
+                    @Override
+                    public void onCompleted() {
+                        item.setSaved(save);
+                        threadView.toggleSave(save);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        threadView.showErrorMessage(e.toString());
+                    }
+
+                    @Override
+                    public void onNext(JsonElement redditObject) {
+                    }
+                });
+        if(!subscriptions.isUnsubscribed()){
+            subscriptions.add(saveSubscription);
+        }
+    }
+
+    @Override
+    public void hide(PostItem postItem, boolean hide) {
+
+    }
 }

@@ -486,6 +486,11 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     }
 
     @Override
+    public void toggleSave(boolean save) {
+        optionsView.toggleSave(save);
+    }
+
+    @Override
     public void passDataToCommentsView(List<CommentBaseItem> commentItems) {
         commentsView.setItems(commentItems);
     }
@@ -493,8 +498,13 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     //presenter
     @Override
     public void savePost(){
-
+        if(postItem.isSaved()){
+            threadPresenter.save(postItem, false);
+        }else{
+            threadPresenter.save(postItem, true);
+        }
     }
+
     //presenter
     @Override
     public void hidePost(){
