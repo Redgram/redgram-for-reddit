@@ -9,7 +9,9 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +23,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -37,8 +40,11 @@ import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
+import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
+import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.thread.components.DaggerThreadComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
 import com.matie.redgram.ui.thread.modules.ThreadModule;
@@ -62,7 +68,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
-public class CommentsActivity extends BaseActivity implements ThreadView{
+public class CommentsActivity extends BaseActivity implements ThreadView, CoordinatorLayoutInterface{
 
     public static final int REQ_CODE = 99;
     public static final String RESULT_POST_CHANGE = "result_post_change";
@@ -72,6 +78,8 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
 
     @InjectView(R.id.app_bar)
     AppBarLayout appBarLayout;
+    @InjectView(R.id.coordinator_layout)
+    CoordinatorLayout coordinatorLayout;
     @InjectView(R.id.toolbar_layout)
     CollapsingToolbarLayout collapsingToolbarLayout;
     @InjectView(R.id.container)
@@ -491,6 +499,19 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     }
 
     @Override
+    public void toggleUnHide() {
+        String msg = getResources().getString(R.string.item_hidden);
+        String actionMsg = getResources().getString(R.string.undo);
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                threadPresenter.hide(postItem, false);
+            }
+        };
+        showSnackBar(msg, Snackbar.LENGTH_LONG, actionMsg, onClickListener, null);
+    }
+
+    @Override
     public void passDataToCommentsView(List<CommentBaseItem> commentItems) {
         commentsView.setItems(commentItems);
     }
@@ -508,7 +529,7 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     //presenter
     @Override
     public void hidePost(){
-
+        threadPresenter.hide(postItem, true);
     }
 
     @Override
@@ -568,4 +589,26 @@ public class CommentsActivity extends BaseActivity implements ThreadView{
     }
 
 
+    @Override
+    public CoordinatorLayout getCoordinatorLayout() {
+        return coordinatorLayout;
+    }
+
+    @Override
+    public void showSnackBar(String msg, int length, @Nullable String actionText, @Nullable View.OnClickListener onClickListener, @Nullable Snackbar.Callback callback) {
+        if(getCoordinatorLayout() != null){
+
+            Snackbar snackbar = Snackbar.make(getCoordinatorLayout(), msg, length);
+
+            if(actionText != null && onClickListener != null){
+                snackbar.setAction(actionText, onClickListener);
+            }
+
+            if(callback != null) {
+                snackbar.setCallback(callback);
+            }
+            //hide the panel before showing the snack bar
+            snackbar.show();
+        }
+    }
 }
