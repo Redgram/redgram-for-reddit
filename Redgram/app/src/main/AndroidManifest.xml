@@ -21,7 +21,8 @@
         <activity
             android:name=".ui.common.main.MainActivity"
             android:label="@string/app_name"
-            android:launchMode="standard">
+            android:launchMode="standard"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,18 +37,21 @@
         </activity>
         <activity
             android:name=".ui.subcription.SubscriptionActivity"
-            android:label="@string/fragment_subreddits">
+            android:label="@string/fragment_subreddits"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.thread.views.CommentsActivity"
             android:label="@string/title_activity_comments"
-            android:theme="@style/Slider" >
+            android:theme="@style/Slider"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.common.auth.AuthActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_auth"
-            android:theme="@style/FullscreenTheme" >
+            android:theme="@style/FullscreenTheme"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 
