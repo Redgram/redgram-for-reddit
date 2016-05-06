@@ -44,6 +44,7 @@ public class SessionHelper {
         User user = new User();
         user.setId(wrapper.getAuthUser().getId());
         user.setUserName(wrapper.getAuthUser().getName());
+        user.setInboxCount(wrapper.getAuthUser().getInboxCount());
         user.setTokenInfo(token);
 
         session.setId(SessionManager.id());

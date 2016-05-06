@@ -11,6 +11,7 @@ public class User extends RealmObject {
     @PrimaryKey
     private String id;
     private String userName;
+    private int inboxCount;
     private Token tokenInfo;
     //add other stuff like settings and the like
 
@@ -38,4 +39,11 @@ public class User extends RealmObject {
         this.tokenInfo = tokenInfo;
     }
 
+    public int getInboxCount() {
+        return inboxCount;
+    }
+
+    public void setInboxCount(int inboxCount) {
+        this.inboxCount = inboxCount;
+    }
 }

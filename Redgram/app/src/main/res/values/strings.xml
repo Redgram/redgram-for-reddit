@@ -178,5 +178,6 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="item_hidden">Item Hidden</string>
     <string name="undo">Undo</string>
+    <string name="add_an_account">Add an Account +</string>
 
 </resources>

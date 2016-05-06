@@ -24,13 +24,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.storage.db.session.SessionHelper;
 import com.matie.redgram.data.managers.storage.db.session.SessionManager;
+import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.User;
+import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
@@ -39,11 +43,14 @@ import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
+import com.matie.redgram.ui.common.views.widgets.drawer.UserRecyclerView;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.ui.search.SearchFragment;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -51,6 +58,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.Optional;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 
 public class MainActivity extends SlidingUpPanelActivity implements CoordinatorLayoutInterface, NavigationView.OnNavigationItemSelectedListener{
@@ -81,6 +89,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     BasePreviewFragment previewFragment;
     Fragments currentPreviewFragment;
+    LinearLayout userListLayout;
 
     @Inject
     App app;
@@ -138,6 +147,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         setup();
         setUpPanel();
         setUpRealm();
+        setUpNavUserList();
     }
 
     @Override
@@ -163,10 +173,74 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         realm = sessionManager.getInstance();
         User user = SessionHelper.getSessionUser(realm);
         if(user != null){
-//            navigationView.get(0)
-//            drawerUserName.setText(user.getUserName());
-        }
+            FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);
+            ((TextView)headerView.findViewById(R.id.drawerUserName)).setText(user.getUserName());
 
+            ImageView accountsView = ((ImageView) headerView.findViewById(R.id.drawerAccounts));
+            accountsView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(userListLayout.getParent() != null){
+                        return;
+                    }
+                    modifyNavDrawer(userListLayout, R.color.material_bluegrey900);
+                    userListLayout.findViewById(R.id.go_back).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            resetNavDrawer();
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    private void setUpNavUserList() {
+        userListLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.nav_user_list, navigationView, false);
+        // TODO: 2016-05-05 move to manager
+        RealmResults<User> result = realm.where(User.class).findAll();
+        List<UserItem> userItems = new ArrayList<>();
+        for(User user : result){
+            UserItem userItem = new UserItem(user.getUserName());
+            userItems.add(userItem);
+        }
+        UserRecyclerView userRecyclerView = (UserRecyclerView) userListLayout.findViewById(R.id.user_recycler_view);
+        userRecyclerView.replaceWith(userItems);
+
+        //make global?
+        User sessionUser = SessionHelper.getSessionUser(realm);
+        if(sessionUser != null){
+            /** TODO: 2016-05-05 set user in session to selected state in list.
+             *  todo: UserItemView should have a custom drawable as background for selected state color
+             */
+        }
+    }
+
+    /**
+     * Adds a view to the navDrawer and changes status color
+     * @param view
+     * @param colorId
+     */
+    private void modifyNavDrawer(View view, int colorId) {
+        navigationView.addView(view);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(getResources().getColor(colorId));
+        }
+    }
+
+    /**
+     * Resets Drawer to initial state
+     */
+    private void resetNavDrawer() {
+        if(navigationView.getChildCount() > 1){
+            for(int i = 1; i <= navigationView.getChildCount(); i++){
+                navigationView.removeViewAt(i);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.setStatusBarColor(getResources().getColor(R.color.material_red600));
+            }
+        }
     }
 
 
@@ -196,7 +270,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 supportInvalidateOptionsMenu();
-
                 isDrawerOpen = false;
             }
 
@@ -221,6 +294,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
                             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
                         }
+                        resetNavDrawer();
                         setPanelHeight(48);
                     }
                     supportInvalidateOptionsMenu();

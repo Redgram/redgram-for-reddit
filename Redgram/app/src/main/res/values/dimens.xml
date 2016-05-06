@@ -19,9 +19,7 @@
     <dimen name="navigation_drawer_header_image_view_size">40dp</dimen>
     <dimen name="navigation_drawer_image_view_size">24dp</dimen>
     <dimen name="navigation_drawer_item_height">48dp</dimen>
-    <!--<dimen name="navigation_drawer_item_height">48dp</dimen>    -->
-
-    <dimen name="navigation_drawer_personal_data_layout_height">150dp</dimen>
+    <dimen name="navigation_drawer_personal_data_layout_height">80dp</dimen>
 
     <!-- Circle size -->
     <dimen name="circle_width">240dp</dimen>

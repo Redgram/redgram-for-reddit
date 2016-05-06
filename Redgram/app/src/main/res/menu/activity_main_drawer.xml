@@ -10,7 +10,7 @@
             android:title="@string/fragment_subreddits" />
     </group>
 
-    <item android:title="">
+    <item android:title="Preferences">
         <menu>
             <item android:id="@+id/nav_settings" android:title="@string/fragment_settings" />
             <item android:id="@+id/nav_logout" android:title="@string/fragment_logout" />
