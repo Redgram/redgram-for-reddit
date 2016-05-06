@@ -2,7 +2,7 @@
 <com.matie.redgram.ui.common.views.widgets.subreddit.SubredditItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/subreddit_text"
