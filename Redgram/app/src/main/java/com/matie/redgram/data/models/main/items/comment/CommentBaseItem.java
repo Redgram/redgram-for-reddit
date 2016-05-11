@@ -68,4 +68,23 @@ public class CommentBaseItem extends RedditObject {
     public void setIsGrouped(boolean isGrouped) {
         this.isGrouped = isGrouped;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        boolean flag = false;
+
+        if(o instanceof CommentBaseItem){
+            CommentBaseItem item = (CommentBaseItem) o;
+            flag = this.id.equalsIgnoreCase(item.getId());
+        }
+
+        return flag;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 17 * hash + (this.id != null ? this.id.hashCode() : 0);
+        return hash;
+    }
 }

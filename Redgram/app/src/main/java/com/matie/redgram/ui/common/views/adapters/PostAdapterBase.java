@@ -101,7 +101,7 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return getItem(position).hashCode();
     }
 
     @Override

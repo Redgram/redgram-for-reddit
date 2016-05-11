@@ -37,6 +37,7 @@ public class PostRecyclerView extends RecyclerView {
         ButterKnife.inject(this);
 
         setLayoutManager(layoutManager);
+        postAdapter.setHasStableIds(true);
         setAdapter(postAdapter);
     }
 

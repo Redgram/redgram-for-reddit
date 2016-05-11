@@ -101,8 +101,6 @@ public class HomePresenterImpl implements HomePresenter{
         //make sure it is a new set of items
         homeView.showLoading();
 
-        Map<String,String> params = new HashMap<String, String>();
-
         Map<String,String> subparams = new HashMap<String, String>();
         subparams.put("limit", "100");
 

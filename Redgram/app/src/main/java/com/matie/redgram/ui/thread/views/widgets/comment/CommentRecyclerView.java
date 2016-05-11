@@ -5,14 +5,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import com.matie.redgram.R;
-import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
-import com.matie.redgram.ui.common.previews.CommentsPreviewFragment;
-import com.matie.redgram.ui.common.views.adapters.PostAdapter;
 import com.matie.redgram.ui.thread.views.CommentsView;
 import com.matie.redgram.ui.thread.views.adapters.CommentsAdapter;
-import com.matie.redgram.ui.thread.views.adapters.CommentsPagerAdapter;
 
 import java.util.List;
 
@@ -41,6 +36,7 @@ public class CommentRecyclerView extends RecyclerView {
         ButterKnife.inject(this);
 
         setLayoutManager(layoutManager);
+        commentsAdapter.setHasStableIds(true);
         setAdapter(commentsAdapter);
     }
 

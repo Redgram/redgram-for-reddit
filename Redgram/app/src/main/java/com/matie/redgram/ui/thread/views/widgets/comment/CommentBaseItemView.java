@@ -64,11 +64,11 @@ public class CommentBaseItemView extends RelativeLayout{
         baseItem = item;
         itemPosition = position;
         //resolve the following only if this view is visible/not grouped - it is not grouped by default
-        if(!resolveGroupState(item.isGrouped(), position)){
+//        if(!resolveGroupState(item.isGrouped(), position)){
             resolveLevelDimension(item.getLevel());
             resolveLevelColor(item.getLevel(), levelToColorMap);
             ((CommentItemView)dynamicView).setUpView(item);
-        }
+//        }
         requestLayout();
     }
 
