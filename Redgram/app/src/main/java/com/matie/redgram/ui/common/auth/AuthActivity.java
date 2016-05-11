@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.AuthPresenterImpl;
-import com.matie.redgram.data.managers.storage.db.session.SessionManager;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
@@ -19,6 +19,7 @@ import com.matie.redgram.ui.common.auth.views.AuthView;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
+import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 
 import javax.inject.Inject;
 
@@ -37,7 +38,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
     @Inject
     App app;
     @Inject
-    SessionManager sessionManager;
+    DatabaseManager databaseManager;
     @Inject
     AuthPresenterImpl authPresenter;
 
@@ -79,6 +80,16 @@ public class AuthActivity extends BaseActivity implements AuthView {
     @Override
     protected BaseActivity activity() {
         return getBaseActivity();
+    }
+
+    @Override
+    public App app() {
+        return app;
+    }
+
+    @Override
+    public DialogUtil getDialogUtil() {
+        return null;
     }
 
     @Override

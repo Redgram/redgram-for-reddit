@@ -301,6 +301,16 @@ public class CommentsActivity extends BaseActivity implements ThreadView, Coordi
     }
 
     @Override
+    public App app() {
+        return app;
+    }
+
+    @Override
+    public DialogUtil getDialogUtil() {
+        return dialogUtil;
+    }
+
+    @Override
     protected int getLayoutId() {
         return R.layout.activity_comments;
     }

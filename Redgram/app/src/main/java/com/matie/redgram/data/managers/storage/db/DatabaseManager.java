@@ -1,22 +1,28 @@
-package com.matie.redgram.data.managers.storage.db.session;
+package com.matie.redgram.data.managers.storage.db;
 
 import android.content.Context;
 
 import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
+import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
+import com.matie.redgram.data.models.db.Settings;
+import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
+import com.matie.redgram.data.models.main.items.SubredditItem;
+import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.ui.App;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import java.util.Collections;
+import java.util.List;
 
-import dagger.Provides;
+import javax.inject.Inject;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.annotations.RealmModule;
-import retrofit2.Response;
 
 /**
  * Session is only concerned with current user flow and credentials. The reason we are closing the
@@ -30,8 +36,8 @@ import retrofit2.Response;
  *
  * Created by matie on 2016-02-26.
  */
-@RealmModule(classes = {Session.class, User.class, Token.class})
-public class SessionManager  {
+@RealmModule(classes = {Session.class, User.class, Token.class, Settings.class, Prefs.class, Subreddit.class})
+public class DatabaseManager {
 
 //    public static final String DB_NAME = "redgram.realm.session";
     public static final Integer SESSION_DEFAULT_ID = 69;
@@ -41,7 +47,7 @@ public class SessionManager  {
     private String currentAccessToken;
 
     @Inject
-    public SessionManager(App app) {
+    public DatabaseManager(App app) {
         this.context = app.getApplicationContext();
         this.configuration = new RealmConfiguration.Builder(context)
 //                .name(DB_NAME)
@@ -73,17 +79,17 @@ public class SessionManager  {
     }
 
     public void close(Realm realm){
-        SessionHelper.close(realm);
+        DatabaseHelper.close(realm);
     }
 
     public void deleteSession(Realm realm) {
-        SessionHelper.deleteSession(realm);
+        DatabaseHelper.deleteSession(realm);
         setCurrentToken(null);
     }
 
     public void setSession(AuthWrapper wrapper){
         Realm realm = getInstance();
-        SessionHelper.setSession(realm, wrapper);
+        DatabaseHelper.setSession(realm, wrapper);
         close(realm);
 
         setCurrentToken(wrapper.getAccessToken().getAccessToken());
@@ -91,7 +97,7 @@ public class SessionManager  {
 
     public void setTokenInfo(AccessToken accessToken) {
         Realm realm = getInstance();
-        SessionHelper.setTokenInfo(realm, accessToken);
+        DatabaseHelper.setTokenInfo(realm, accessToken);
         close(realm);
 
         setCurrentToken(accessToken.getAccessToken());
@@ -99,7 +105,7 @@ public class SessionManager  {
 
     public Session getSession(){
         Realm realm = getInstance();
-        Session session = SessionHelper.getSession(realm);
+        Session session = DatabaseHelper.getSession(realm);
         Session usableSession = realm.copyFromRealm(session);
         close(realm);
         return usableSession;
@@ -107,15 +113,18 @@ public class SessionManager  {
 
     public User getSessionUser(){
         Realm realm = getInstance();
-        User user = SessionHelper.getSessionUser(realm);
-        User usableUser = realm.copyFromRealm(user);
+        User user = DatabaseHelper.getSessionUser(realm);
+        User usableUser = null;
+        if(user != null){
+            usableUser = realm.copyFromRealm(user);
+        }
         close(realm);
         return usableUser;
     }
 
     public String getToken(){
         Realm realm = getInstance();
-        Token token = SessionHelper.getSessionToken(realm);
+        Token token = DatabaseHelper.getSessionToken(realm);
 
         if(token != null){
             return token.getToken();
@@ -127,7 +136,7 @@ public class SessionManager  {
 
     public String getRefreshToken(){
         Realm realm = getInstance();
-        Token token = SessionHelper.getSessionToken(realm);
+        Token token = DatabaseHelper.getSessionToken(realm);
 
         if(token != null){
             return token.getRefreshToken();
@@ -137,4 +146,60 @@ public class SessionManager  {
         return null;
     }
 
+    public void setSubreddits(List<SubredditItem> items){
+        Realm realm = getInstance();
+        User user = DatabaseHelper.getSessionUser(realm);
+        if(user != null){
+            realm.beginTransaction();
+            if(user.getSubreddits() != null){
+                user.getSubreddits().clear();
+            }else{
+                user.setSubreddits(new RealmList<>());
+            }
+            for(SubredditItem item : items){
+                Subreddit subreddit = new Subreddit();
+                subreddit.setName(item.getName());
+                user.getSubreddits().add(subreddit);
+            }
+            realm.copyToRealmOrUpdate(user);
+            realm.commitTransaction();
+        }
+        close(realm);
+    }
+
+    public void setSubreddits(List<SubredditItem> items, String userId){
+        Realm realm = getInstance();
+        User user = realm.where(User.class).equalTo("id", userId).findFirst();
+        if(user != null){
+            //duplicate
+            realm.beginTransaction();
+            if(user.getSubreddits() != null){
+                user.getSubreddits().clear();
+            }else{
+                user.setSubreddits(new RealmList<>());
+            }
+            for(SubredditItem item : items){
+                Subreddit subreddit = new Subreddit();
+                subreddit.setName(item.getName());
+                user.getSubreddits().add(subreddit);
+            }
+            realm.copyToRealmOrUpdate(user);
+            realm.commitTransaction();
+        }
+        close(realm);
+    }
+
+    public RedditListing<SubredditItem> getSubreddits() {
+        Realm realm = getInstance();
+        RedditListing<SubredditItem> subreddits = DatabaseHelper.getSubreddits(realm);
+        close(realm);
+        return subreddits;
+    }
+
+    public RedditListing<SubredditItem> getSubreddits(String userId) {
+        Realm realm = getInstance();
+        RedditListing<SubredditItem> subreddits = DatabaseHelper.getSubreddits(realm, userId);
+        close(realm);
+        return subreddits;
+    }
 }

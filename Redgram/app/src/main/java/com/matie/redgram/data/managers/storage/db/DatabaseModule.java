@@ -1,4 +1,4 @@
-package com.matie.redgram.data.managers.storage.db.session;
+package com.matie.redgram.data.managers.storage.db;
 
 import com.matie.redgram.ui.App;
 
@@ -12,10 +12,10 @@ import dagger.Provides;
  * Created by matie on 2016-02-26.
  */
 @Module
-public class SessionModule {
+public class DatabaseModule {
     @Singleton
     @Provides
-    public SessionManager provideSessionManager(App app){
-        return new SessionManager(app);
+    public DatabaseManager provideSessionManager(App app){
+        return new DatabaseManager(app);
     }
 }

@@ -177,9 +177,8 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         titleWrapper.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(homeRecyclerView.getVisibility() == View.VISIBLE && homePresenter.getSubreddits() != null){
-
-                    List<String> subreddits = homePresenter.getSubreddits();
+                List<String> subreddits = homePresenter.getSubreddits();;
+                if(homeRecyclerView.getVisibility() == View.VISIBLE && subreddits != null){
                     //if a subreddit was selected before, add an option to return to home
                     if(!getResources().getString(R.string.frontpage).equalsIgnoreCase(toolbarTitle.getText().toString())){
                         subreddits.add(0, "Return to Frontpage");
@@ -190,7 +189,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                     }
 
                     dialogUtil.build()
-                            .title("Subreddits")
+                            .title("Subreddit")
                             .items(subreddits.toArray(new CharSequence[subreddits.size()]))
                             .itemsCallback(new MaterialDialog.ListCallback() {
                                 @Override
