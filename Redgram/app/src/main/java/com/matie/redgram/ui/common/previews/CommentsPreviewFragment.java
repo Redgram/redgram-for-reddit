@@ -27,7 +27,10 @@ import com.matie.redgram.ui.thread.views.CommentsView;
 import com.matie.redgram.ui.thread.views.adapters.CommentsAdapter;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -52,6 +55,7 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
     DialogUtil dialogUtil;
 
     List<CommentBaseItem> commentItems;
+    Map<String, List<CommentBaseItem>> collapsedComments = new HashMap<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -117,17 +121,15 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
         CommentItem item = (CommentItem)getItem(position);
         if(item.hasReplies() && !item.isExpanded()){
             item.setIsExpanded(true);
+            int start = position+1;
             int count = (position+item.getChildCount());
-            for(int i = position+1; i <= count; i++){
-                getItem(i).setIsGrouped(false);
-                if(!getItem(i).isExpanded()){ //means children are grouped, leave them
-                    i += ((CommentItem)getItem(i)).getChildCount();
-                }
-            }
+            getCommentItems().addAll(start, collapsedComments.get(item.getId()));
+            collapsedComments.remove(item.getId());
+            commentRecyclerView.getAdapter().notifyItemRangeInserted(start, count);
+            commentRecyclerView.getAdapter().notifyItemChanged(position);
         }else{
             app.getToastHandler().showToast("do nothing", Toast.LENGTH_SHORT);
         }
-        commentRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
@@ -135,24 +137,21 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
         CommentItem item = (CommentItem)getItem(position);
         if(item.hasReplies() && item.isExpanded()){
             item.setIsExpanded(false);
-            /**
-             * pos = 4
-             * children = 3
-             * count = 7
-             * i = 5, 6, 7
-             */
+            int start = position + 1;
             int count = (position+item.getChildCount());
-            for(int i = position+1; (i <= count && (getItem(i).getLevel() > item.getLevel())); i++){
-                CommentBaseItem child = getItem(i);
-                child.setIsGrouped(true);
-                if(!child.isExpanded()){
-                    i += ((CommentItem)child).getChildCount();
-                }
+            List<CommentBaseItem> targetItems = new ArrayList<>();
+            for(int i = start; (i <= count && (getItem(i).getLevel() > item.getLevel())); i++){
+                targetItems.add(getItem(i));
             }
+            //add removed items into map
+            collapsedComments.put(item.getId(), targetItems);
+            //remove items and notify adapter
+            getCommentItems().removeAll(targetItems);
+            commentRecyclerView.getAdapter().notifyItemRangeRemoved(start, count);
+            commentRecyclerView.getAdapter().notifyItemChanged(position);
         }else{
             app.getToastHandler().showToast("do nothing", Toast.LENGTH_SHORT);
         }
-        commentRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
@@ -180,7 +179,6 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
         if(commentItems.get(position) instanceof CommentMoreItem){
             app.getToastHandler().showToast("load more", Toast.LENGTH_SHORT);
         }
-
     }
 
     @Override

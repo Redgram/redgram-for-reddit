@@ -90,7 +90,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return getItem(position).hashCode();
     }
 
     @Override

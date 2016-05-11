@@ -63,27 +63,10 @@ public class CommentBaseItemView extends RelativeLayout{
     public void setUp(CommentBaseItem item, int position, Map<Integer, Integer> levelToColorMap){
         baseItem = item;
         itemPosition = position;
-        //resolve the following only if this view is visible/not grouped - it is not grouped by default
-        if(!resolveGroupState(item.isGrouped(), position)){
-            resolveLevelDimension(item.getLevel());
-            resolveLevelColor(item.getLevel(), levelToColorMap);
-            ((CommentItemView)dynamicView).setUpView(item);
-        }
+        resolveLevelDimension(item.getLevel());
+        resolveLevelColor(item.getLevel(), levelToColorMap);
+        ((CommentItemView)dynamicView).setUpView(item);
         requestLayout();
-    }
-
-    private boolean resolveGroupState(boolean isGrouped, int position) {
-        RelativeLayout.LayoutParams lp = null;
-
-        if(isGrouped){
-            lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 0);
-        }else{
-            lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                                        RelativeLayout.LayoutParams.WRAP_CONTENT);
-        }
-
-        setLayoutParams(lp);
-        return isGrouped;
     }
 
     private void resolveLevelColor(int level, Map<Integer, Integer> levelToColorMap) {

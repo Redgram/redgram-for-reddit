@@ -1,9 +1,7 @@
 package com.matie.redgram.ui;
 
-import com.matie.redgram.data.managers.storage.db.session.SessionManager;
-import com.matie.redgram.data.managers.storage.db.session.SessionModule;
-import com.matie.redgram.data.managers.storage.preferences.PreferenceManager;
-import com.matie.redgram.data.managers.storage.preferences.PreferenceModule;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.managers.storage.db.DatabaseModule;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.data.network.api.reddit.RedditModule;
 import com.matie.redgram.data.network.connection.ConnectionManager;
@@ -13,7 +11,6 @@ import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import io.realm.Realm;
 
 /**
  * Created by matie on 06/06/15.
@@ -26,8 +23,7 @@ import io.realm.Realm;
                 AppModule.class,
                 ConnectionModule.class,
                 RedditModule.class,
-                PreferenceModule.class,
-                SessionModule.class
+                DatabaseModule.class
         }
 )
 public interface AppComponent {
@@ -39,6 +35,5 @@ public interface AppComponent {
     ToastHandler getToastHandler();
     ConnectionManager getConnectionStatus();
     RedditClient getRedditClient();
-    PreferenceManager getPreferenceManager();
-    SessionManager getSessionManager();
+    DatabaseManager getSessionManager();
 }

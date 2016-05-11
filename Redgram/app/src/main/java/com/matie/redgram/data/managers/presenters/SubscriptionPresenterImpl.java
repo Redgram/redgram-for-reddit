@@ -1,11 +1,8 @@
 package com.matie.redgram.data.managers.presenters;
 
-import android.content.SharedPreferences;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.matie.redgram.R;
-import com.matie.redgram.data.managers.storage.preferences.PreferenceManager;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.models.db.Subreddit;
+import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
@@ -13,7 +10,6 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView;
 import com.matie.redgram.ui.subcription.views.SubscriptionView;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +19,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.realm.RealmList;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -39,7 +36,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
     final private SubscriptionView subscriptionView;
     final private SubredditRecyclerView subredditRecyclerView;
     final private RedditClient redditClient;
-    final private PreferenceManager preferenceManager;
+    final private DatabaseManager databaseManager;
 
     private List<SubredditItem> subredditItems;
     private String loadMoreId = "";
@@ -52,8 +49,8 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         this.subscriptionView = subscriptionView;
         this.subredditRecyclerView = subscriptionView.getRecyclerView();
         this.redditClient = app.getRedditClient();
-        this.preferenceManager = app.getPreferenceManager();
         this.subredditItems = new ArrayList<SubredditItem>();
+        this.databaseManager = app.getDatabaseManager();
     }
 
     @Override
@@ -81,19 +78,11 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         Map<String,String> params = new HashMap<String, String>();
         params.put("limit", "100");
 
-        //check if subreddits are in shared preferences
-        SharedPreferences sharedPreferences = preferenceManager
-                .getSharedPreferences(PreferenceManager.SUBREDDIT_PREF);
-        Observable<RedditListing<SubredditItem>> subredditsObservable = null;
-        boolean isSubredditsCached = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null) != null;
-        if(isSubredditsCached && !forceNetwork){
-            String storedListingObject = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null);
-
-            Type listType = new TypeToken<RedditListing<SubredditItem>>(){}.getType();
-            RedditListing<SubredditItem> storedListing = new Gson().fromJson(storedListingObject, listType);
-
+        //check if subreddits are in db
+        Observable<RedditListing<SubredditItem>> subredditsObservable;
+        RedditListing<SubredditItem> storedListing = getSubredditsFromCache();
+        if(storedListing != null && !forceNetwork){
             subredditsObservable = Observable.just(storedListing);
-
         }else{
             subredditsObservable = redditClient.getSubscriptions(params);
         }
@@ -125,8 +114,18 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
                         });
 
                         subredditRecyclerView.replaceWith(subredditItems);
-                        loadMoreId = subredditListing.getAfter(); //if needed
+                        if(subredditListing.getAfter() != null){
+                            loadMoreId = subredditListing.getAfter(); //if needed
+                        }
+                        //add to db if from network
+                        if(forceNetwork){
+                            databaseManager.setSubreddits(subredditItems);
+                        }
                     }
                 });
+    }
+
+    public RedditListing<SubredditItem> getSubredditsFromCache() {
+        return databaseManager.getSubreddits();
     }
 }

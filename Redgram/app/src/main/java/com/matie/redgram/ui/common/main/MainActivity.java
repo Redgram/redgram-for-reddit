@@ -30,9 +30,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.storage.db.session.SessionHelper;
-import com.matie.redgram.data.managers.storage.db.session.SessionManager;
-import com.matie.redgram.data.models.db.Session;
+import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.ui.App;
@@ -169,9 +168,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     private void setUpRealm() {
-        SessionManager sessionManager = app.getSessionManager();
-        realm = sessionManager.getInstance();
-        User user = SessionHelper.getSessionUser(realm);
+        DatabaseManager databaseManager = app.getDatabaseManager();
+        realm = databaseManager.getInstance();
+        User user = DatabaseHelper.getSessionUser(realm);
         if(user != null){
             FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);
             ((TextView)headerView.findViewById(R.id.drawerUserName)).setText(user.getUserName());
@@ -208,7 +207,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         userRecyclerView.replaceWith(userItems);
 
         //make global?
-        User sessionUser = SessionHelper.getSessionUser(realm);
+        User sessionUser = DatabaseHelper.getSessionUser(realm);
         if(sessionUser != null){
             /** TODO: 2016-05-05 set user in session to selected state in list.
              *  todo: UserItemView should have a custom drawable as background for selected state color
@@ -261,6 +260,11 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     @Override
     public BaseActivity activity() {
         return this;
+    }
+
+    @Override
+    public App app() {
+        return app;
     }
 
     private void setup(){
@@ -368,7 +372,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     protected void onDestroy() {
         super.onDestroy();
         ButterKnife.reset(this);
-        SessionHelper.close(realm);
+        DatabaseHelper.close(realm);
     }
 
     @Override
@@ -522,18 +526,13 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     private void logoutCurrentUser() {
-        app.getSessionManager().deleteSession(realm);
+        app.getDatabaseManager().deleteSession(realm);
         app.startAuthActivity();
-    }
-
-    public App getApp() {
-        return app;
     }
 
     public DialogUtil getDialogUtil() {
         return dialogUtil;
     }
-
 
     @Override
     public void togglePanel() {

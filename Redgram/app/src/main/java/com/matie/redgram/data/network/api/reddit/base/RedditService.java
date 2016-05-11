@@ -6,7 +6,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.matie.redgram.data.managers.storage.db.session.SessionManager;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.utils.reddit.BooleanDateDeserializer;
@@ -54,7 +54,7 @@ public class RedditService extends RedditServiceBase {
     private final Context mContext;
     private final ConnectionManager connectionManager;
     private final Retrofit.Builder retrofitBuilder;
-    private final SessionManager sm;
+    private final DatabaseManager sm;
     private final RedditAuthProvider authProvider;
 
     @Inject
@@ -62,7 +62,7 @@ public class RedditService extends RedditServiceBase {
         app = application;
         mContext = app.getApplicationContext();
         connectionManager = app.getConnectionManager();
-        sm = app.getSessionManager();
+        sm = app.getDatabaseManager();
         retrofitBuilder = getRetrofitBuilder();
         authProvider = buildRetrofit(REDDIT_HOST_ABSOLUTE).create(RedditAuthProvider.class);
     }

@@ -12,6 +12,7 @@ import com.matie.redgram.R;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.main.MainActivity;
+import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 
 import icepick.Icepick;
@@ -46,6 +47,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract void setupComponent(AppComponent appComponent);
     public abstract AppComponent component();
     protected abstract BaseActivity activity();
+    public abstract App app();
+    public abstract DialogUtil getDialogUtil();
     protected abstract int getLayoutId();
     protected abstract int getContainerId();
 

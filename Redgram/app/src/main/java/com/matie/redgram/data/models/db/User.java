@@ -1,8 +1,8 @@
 package com.matie.redgram.data.models.db;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
 
 /**
  * Created by matie on 2016-02-25.
@@ -13,6 +13,8 @@ public class User extends RealmObject {
     private String userName;
     private int inboxCount;
     private Token tokenInfo;
+    private Prefs prefs;
+    private RealmList<Subreddit> subreddits;
     //add other stuff like settings and the like
 
     public String getId() {
@@ -45,5 +47,21 @@ public class User extends RealmObject {
 
     public void setInboxCount(int inboxCount) {
         this.inboxCount = inboxCount;
+    }
+
+    public Prefs getPrefs() {
+        return prefs;
+    }
+
+    public void setPrefs(Prefs prefs) {
+        this.prefs = prefs;
+    }
+
+    public RealmList<Subreddit> getSubreddits() {
+        return subreddits;
+    }
+
+    public void setSubreddits(RealmList<Subreddit> subreddits) {
+        this.subreddits = subreddits;
     }
 }

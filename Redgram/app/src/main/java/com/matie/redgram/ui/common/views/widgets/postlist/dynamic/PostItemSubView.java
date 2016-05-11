@@ -6,8 +6,10 @@ import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.matie.redgram.data.managers.storage.preferences.PreferenceManager;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.common.base.BaseActivity;
+import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.posts.views.LinksView;
@@ -22,31 +24,34 @@ import com.matie.redgram.ui.posts.views.LinksView;
  */
 public abstract class PostItemSubView extends RelativeLayout {
 
-    private MainActivity mainActivity;
+    private BaseActivity baseActivity;
     private SharedPreferences postPreferences;
+    private DatabaseManager databaseManager;
     private HomeView listener;
 
     public PostItemSubView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mainActivity = (MainActivity)getContext();
-        postPreferences = (mainActivity.getApp()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
+        baseActivity = (BaseActivity) getContext();
+        databaseManager = baseActivity.app().getDatabaseManager();
     }
 
     public abstract void setupView(PostItem item, int position, LinksView listener);
     public abstract void handleNsfwUpdate(boolean disabled);
 
     public boolean isNsfwDisabled(){
-        return postPreferences.getBoolean(PreferenceManager.POSTS_NSFW_KEY, false);
+        //todo
+        return true;
     }
 
     public void disableNsfw(){
-        postPreferences.edit().putBoolean(PreferenceManager.POSTS_NSFW_KEY, true).commit();
         handleNsfwUpdate(true);
         // TODO: 09/10/15 notify data set changed
     }
 
     public void callNsfwDialog(){
-        mainActivity.getDialogUtil().build()
+        DialogUtil dialogUtil = baseActivity.getDialogUtil();
+        if(dialogUtil != null){
+            dialogUtil.build()
                 .title("Disable NSFW setting?")
                 .positiveText("Yes")
                 .negativeText("Cancel")
@@ -62,6 +67,8 @@ public abstract class PostItemSubView extends RelativeLayout {
                     }
                 })
                 .show();
+        }
+
     }
 
 

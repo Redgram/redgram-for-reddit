@@ -15,6 +15,7 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
+import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 
 import java.util.List;
 
@@ -116,6 +117,16 @@ public class SubscriptionActivity extends BaseActivity{
     @Override
     protected BaseActivity activity() {
         return this;
+    }
+
+    @Override
+    public App app() {
+        return app;
+    }
+
+    @Override
+    public DialogUtil getDialogUtil() {
+        return null;
     }
 
     @Override

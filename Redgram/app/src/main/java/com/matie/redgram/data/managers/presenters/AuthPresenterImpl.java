@@ -4,20 +4,14 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 
-import com.matie.redgram.data.managers.storage.db.session.SessionManager;
-import com.matie.redgram.data.managers.storage.preferences.PreferenceManager;
-import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
-import com.matie.redgram.data.models.db.Session;
-import com.matie.redgram.data.models.db.Token;
-import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.auth.views.AuthView;
 
 import javax.inject.Inject;
 
-import io.realm.Realm;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -34,8 +28,7 @@ public class AuthPresenterImpl implements AuthPresenter {
 
     private final AuthView authView;
     private final RedditClient redditClient;
-    private final SharedPreferences sp;
-    private final SessionManager sessionManager;
+    private final DatabaseManager databaseManager;
     private Subscription authSubscription;
     private CompositeSubscription subscriptions;
     private String authCode = "";
@@ -44,8 +37,7 @@ public class AuthPresenterImpl implements AuthPresenter {
     public AuthPresenterImpl(AuthView authView, App app) {
         this.authView = authView;
         this.redditClient = app.getRedditClient();
-        this.sp = app.getPreferenceManager().getSharedPreferences(PreferenceManager.OAUTH_PREF);
-        this.sessionManager = app.getSessionManager();
+        this.databaseManager = app.getDatabaseManager();
     }
 
     @Override
@@ -101,7 +93,7 @@ public class AuthPresenterImpl implements AuthPresenter {
 
                     @Override
                     public void onNext(AuthWrapper wrapper) {
-                        sessionManager.setSession(wrapper);
+                        databaseManager.setSession(wrapper);
                     }
                 });
     }

@@ -71,7 +71,7 @@ public interface RedditProvider {
     Observable<AuthPrefs> getUserPrefs(@Header("Authorization") String accessToken);
 
     /**
-     * @see <a href="https://www.reddit.com/dev/api#GET_subreddits_{where}">Subreddits Listing Section</a>
+     * @see <a href="https://www.reddit.com/dev/api#GET_subreddits_{where}">Subreddit Listing Section</a>
      *
      * @param filter
      * @param params

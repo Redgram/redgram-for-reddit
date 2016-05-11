@@ -5,16 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 
-import com.matie.redgram.data.managers.storage.db.session.SessionManager;
-import com.matie.redgram.data.managers.storage.preferences.PreferenceManager;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
 import javax.inject.Inject;
-
-import io.realm.Realm;
 
 /**
  * Created by matie on 21/05/15.
@@ -31,10 +28,7 @@ public class App extends Application {
     String connectionMsg;
 
     @Inject
-    PreferenceManager preferenceManager;
-
-    @Inject
-    SessionManager sessionManager;
+    DatabaseManager databaseManager;
 
     @Inject
     RedditClient redditClient;
@@ -71,12 +65,8 @@ public class App extends Application {
         return connectionManager;
     }
 
-    public PreferenceManager getPreferenceManager() {
-        return preferenceManager;
-    }
-
-    public SessionManager getSessionManager() {
-        return sessionManager;
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 
     public RedditClient getRedditClient() {
