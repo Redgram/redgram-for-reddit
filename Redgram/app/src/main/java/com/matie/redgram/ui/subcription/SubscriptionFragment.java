@@ -2,7 +2,6 @@ package com.matie.redgram.ui.subcription;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -180,7 +179,7 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
         bundle.putString("subreddit_type", item.getSubredditType());
         bundle.putString("submission_type", item.getSubmissionType());
         bundle.putLong("subscribers_count", item.getSubscribersCount());
-        bundle.putInt("accounts_active", item.getAccountActive());
+        bundle.putInt("accounts_active", item.getAccountsActive());
         activity.openDetailsFragment(bundle);
     }
 }

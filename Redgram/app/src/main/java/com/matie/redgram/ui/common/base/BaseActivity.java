@@ -46,9 +46,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
     protected abstract void setupComponent(AppComponent appComponent);
     public abstract AppComponent component();
-    protected abstract BaseActivity activity();
     public abstract App app();
     public abstract DialogUtil getDialogUtil();
+    protected abstract BaseActivity activity();
     protected abstract int getLayoutId();
     protected abstract int getContainerId();
 

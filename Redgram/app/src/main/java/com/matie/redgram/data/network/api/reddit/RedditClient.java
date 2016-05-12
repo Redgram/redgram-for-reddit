@@ -31,9 +31,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Func2;
 import rx.functions.Func3;
@@ -420,7 +417,7 @@ public class RedditClient extends RedditService {
         SubredditItem subredditItem = new SubredditItem();
         subredditItem.setName(item.getDisplayName());
         // TODO: 2015-12-04 HTML DESCRIPTION
-        subredditItem.setAccountActive(item.getAccountsActive());
+        subredditItem.setAccountsActive(item.getAccountsActive());
         subredditItem.setDescription(item.getDescription());
         subredditItem.setDescriptionHtml(item.getDescriptionHtml());
         subredditItem.setSubscribersCount(item.getSubscribers());

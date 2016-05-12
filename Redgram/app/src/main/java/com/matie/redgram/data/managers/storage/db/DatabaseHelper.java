@@ -10,9 +10,7 @@ import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.SubredditItem;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -73,6 +71,10 @@ public class DatabaseHelper {
         return null;
     }
 
+    public static User getUserById(Realm realm, String userId) {
+        return realm.where(User.class).equalTo("id", userId).findFirst();
+    }
+
     public static Token getSessionToken(Realm instance) {
         User user = getSessionUser(instance);
         if(user != null){
@@ -90,22 +92,50 @@ public class DatabaseHelper {
         }
     }
 
-    public static RedditListing<SubredditItem> getSubreddits(Realm realm) {
+    public static RealmList<Subreddit> getSubreddits(Realm realm) {
         User user = getSessionUser(realm);
         if(user != null){
-            RealmList<Subreddit> subreddits = user.getSubreddits();
-            if(!subreddits.isEmpty()){
-                RedditListing<SubredditItem> listing = buildSubredditListing(subreddits);
-                if(!listing.getItems().isEmpty()){
-                    return listing;
-                }
-            }
+            return user.getSubreddits();
         }
         return null;
     }
 
-    public static RedditListing<SubredditItem> getSubreddits(Realm realm, String userId) {
+    public static RealmList<Subreddit> getSubreddits(Realm realm, String userId) {
+        User user = getUserById(realm, userId);
+        if(user != null){
+            return user.getSubreddits();
+        }
         return null;
+    }
+
+    public static void setSubreddits(Realm realm, List<SubredditItem> items) {
+        User user = getSessionUser(realm);
+        if(user != null){
+            setSubreddits(realm, user, items);
+        }
+    }
+
+    public static void setSubreddits(Realm realm, List<SubredditItem> items, String userId) {
+        User user = getUserById(realm, userId);
+        if(user != null){
+            setSubreddits(realm, user, items);
+        }
+    }
+
+    public static void setSubreddits(Realm realm, User user, List<SubredditItem> items) {
+        realm.beginTransaction();
+
+        if(user.getSubreddits() != null){
+            user.getSubreddits().clear();
+        }else{
+            user.setSubreddits(new RealmList<>());
+        }
+        for(SubredditItem item : items){
+            user.getSubreddits().add(buildSubreddit(item));
+        }
+
+        realm.copyToRealmOrUpdate(user);
+        realm.commitTransaction();
     }
 
     public static Session buildSession(User user){
@@ -151,15 +181,14 @@ public class DatabaseHelper {
         return prefs;
     }
 
-    private static RedditListing<SubredditItem> buildSubredditListing(RealmList<Subreddit> subreddits) {
-        RedditListing<SubredditItem> listing = new RedditListing<>();
-        List<SubredditItem> items = new ArrayList<>();
-        for(Subreddit subreddit : subreddits){
-            SubredditItem item = new SubredditItem();
-            item.setName(subreddit.getName());
-            items.add(item);
-        }
-        listing.setItems(items);
-        return listing;
+    public static Subreddit buildSubreddit(SubredditItem item) {
+        Subreddit subreddit = new Subreddit();
+        subreddit.setName(item.getName());
+        subreddit.setDescription(item.getDescriptionHtml());
+        subreddit.setSubscribersCount(item.getSubscribersCount());
+        subreddit.setAccountsActive(item.getAccountsActive());
+        subreddit.setSubredditType(item.getSubredditType());
+        subreddit.setSubmissionType(item.getSubmissionType());
+        return subreddit;
     }
 }

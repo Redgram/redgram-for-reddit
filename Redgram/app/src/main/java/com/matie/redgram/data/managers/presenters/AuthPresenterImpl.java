@@ -26,6 +26,7 @@ import static rx.android.app.AppObservable.bindActivity;
  */
 public class AuthPresenterImpl implements AuthPresenter {
 
+    private final App app;
     private final AuthView authView;
     private final RedditClient redditClient;
     private final DatabaseManager databaseManager;
@@ -35,6 +36,7 @@ public class AuthPresenterImpl implements AuthPresenter {
 
     @Inject
     public AuthPresenterImpl(AuthView authView, App app) {
+        this.app = app;
         this.authView = authView;
         this.redditClient = app.getRedditClient();
         this.databaseManager = app.getDatabaseManager();
@@ -80,6 +82,7 @@ public class AuthPresenterImpl implements AuthPresenter {
                 .subscribe(new Subscriber<AuthWrapper>() {
                     @Override
                     public void onCompleted() {
+                        app.setupUserPrefs();
                         authView.transitionToMainActivity();
                         authView.hideLoading();
                     }

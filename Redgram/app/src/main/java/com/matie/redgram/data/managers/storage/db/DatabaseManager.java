@@ -125,81 +125,52 @@ public class DatabaseManager {
     public String getToken(){
         Realm realm = getInstance();
         Token token = DatabaseHelper.getSessionToken(realm);
-
+        String usableToken = null;
         if(token != null){
-            return token.getToken();
+            usableToken = token.getToken();
         }
 
         close(realm);
-        return null;
+        return usableToken;
     }
 
     public String getRefreshToken(){
         Realm realm = getInstance();
         Token token = DatabaseHelper.getSessionToken(realm);
-
+        String refreshToken = null;
         if(token != null){
-            return token.getRefreshToken();
+            refreshToken = token.getRefreshToken();
         }
 
         close(realm);
-        return null;
+        return refreshToken;
     }
 
     public void setSubreddits(List<SubredditItem> items){
         Realm realm = getInstance();
-        User user = DatabaseHelper.getSessionUser(realm);
-        if(user != null){
-            realm.beginTransaction();
-            if(user.getSubreddits() != null){
-                user.getSubreddits().clear();
-            }else{
-                user.setSubreddits(new RealmList<>());
-            }
-            for(SubredditItem item : items){
-                Subreddit subreddit = new Subreddit();
-                subreddit.setName(item.getName());
-                user.getSubreddits().add(subreddit);
-            }
-            realm.copyToRealmOrUpdate(user);
-            realm.commitTransaction();
-        }
+        DatabaseHelper.setSubreddits(realm, items);
         close(realm);
     }
 
     public void setSubreddits(List<SubredditItem> items, String userId){
         Realm realm = getInstance();
-        User user = realm.where(User.class).equalTo("id", userId).findFirst();
-        if(user != null){
-            //duplicate
-            realm.beginTransaction();
-            if(user.getSubreddits() != null){
-                user.getSubreddits().clear();
-            }else{
-                user.setSubreddits(new RealmList<>());
-            }
-            for(SubredditItem item : items){
-                Subreddit subreddit = new Subreddit();
-                subreddit.setName(item.getName());
-                user.getSubreddits().add(subreddit);
-            }
-            realm.copyToRealmOrUpdate(user);
-            realm.commitTransaction();
-        }
+        DatabaseHelper.setSubreddits(realm, items, userId);
         close(realm);
     }
 
-    public RedditListing<SubredditItem> getSubreddits() {
+    public List<Subreddit> getSubreddits() {
         Realm realm = getInstance();
-        RedditListing<SubredditItem> subreddits = DatabaseHelper.getSubreddits(realm);
+        RealmList<Subreddit> subreddits = DatabaseHelper.getSubreddits(realm);
+        List<Subreddit> usableList = realm.copyFromRealm(subreddits);
         close(realm);
-        return subreddits;
+        return usableList;
     }
 
-    public RedditListing<SubredditItem> getSubreddits(String userId) {
+    public List<Subreddit> getSubreddits(String userId) {
         Realm realm = getInstance();
-        RedditListing<SubredditItem> subreddits = DatabaseHelper.getSubreddits(realm, userId);
+        RealmList<Subreddit> subreddits = DatabaseHelper.getSubreddits(realm, userId);
+        List<Subreddit> usableList = realm.copyFromRealm(subreddits);
         close(realm);
-        return subreddits;
+        return usableList;
     }
 }

@@ -83,7 +83,6 @@ public class LinksPresenterImpl implements LinksPresenter {
         if(params.containsKey("after")){
             params.remove("after");
         }
-        linksView.getItems().clear();
         containerView.showLoading();
         listingSubscription = getListingSubscription(subreddit, front, params, true);
     }
@@ -309,6 +308,7 @@ public class LinksPresenterImpl implements LinksPresenter {
                     @Override
                     public void onNext(RedditListing wrapper) {
                         if(isNew){
+                            linksView.getItems().clear();
                             linksView.updateList(wrapper.getItems());
                         }else{
                             linksView.getItems().addAll(wrapper.getItems());
@@ -346,6 +346,7 @@ public class LinksPresenterImpl implements LinksPresenter {
                     @Override
                     public void onNext(RedditListing wrapper) {
                         if(isNew){
+                            linksView.getItems().clear();
                             linksView.updateList(wrapper.getItems());
                         }else{
                             linksView.getItems().addAll(wrapper.getItems());

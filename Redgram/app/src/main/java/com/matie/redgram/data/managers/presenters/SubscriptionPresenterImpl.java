@@ -80,8 +80,12 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
 
         //check if subreddits are in db
         Observable<RedditListing<SubredditItem>> subredditsObservable;
-        RedditListing<SubredditItem> storedListing = getSubredditsFromCache();
-        if(storedListing != null && !forceNetwork){
+        RedditListing<SubredditItem> storedListing = null;
+        if(!forceNetwork){
+            storedListing = getSubredditsFromCache();
+        }
+
+        if(storedListing != null){
             subredditsObservable = Observable.just(storedListing);
         }else{
             subredditsObservable = redditClient.getSubscriptions(params);
@@ -126,6 +130,29 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
     }
 
     public RedditListing<SubredditItem> getSubredditsFromCache() {
-        return databaseManager.getSubreddits();
+        List<Subreddit> subreddits = databaseManager.getSubreddits();
+        if(!subreddits.isEmpty()){
+            RedditListing<SubredditItem> listing = buildSubredditListing(subreddits);
+            return listing;
+        }
+        return null;
+    }
+
+    private RedditListing<SubredditItem> buildSubredditListing(List<Subreddit> subreddits) {
+        RedditListing<SubredditItem> listing = new RedditListing<>();
+        List<SubredditItem> items = new ArrayList<>();
+        for(Subreddit subreddit : subreddits){
+            SubredditItem sbItem = new SubredditItem();
+            sbItem.setName(subreddit.getName());
+            sbItem.setAccountsActive(subreddit.getAccountsActive());
+            sbItem.setDescription(subreddit.getDescription());
+            sbItem.setDescriptionHtml(subreddit.getDescription());
+            sbItem.setSubscribersCount(subreddit.getSubscribersCount());
+            sbItem.setSubredditType(subreddit.getSubredditType());
+            sbItem.setSubmissionType(subreddit.getSubmissionType());
+            items.add(sbItem);
+        }
+        listing.setItems(items);
+        return listing;
     }
 }

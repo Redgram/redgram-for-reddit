@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.User;
@@ -98,8 +99,8 @@ public class HomePresenterImpl implements HomePresenter{
      */
     @Override
     public void getHomeViewWrapper() {
-        //make sure it is a new set of items
-        homeView.showLoading();
+        // TODO: 2016-05-11 find a way to make this wrapper subscribe on the links container call
+        //homeView.showLoading();
 
         Map<String,String> subparams = new HashMap<String, String>();
         subparams.put("limit", "100");
@@ -127,12 +128,12 @@ public class HomePresenterImpl implements HomePresenter{
                 .subscribe(new Subscriber<HomeViewWrapper>() {
                     @Override
                     public void onCompleted() {
-                        homeView.hideLoading();
+                        //homeView.hideLoading();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        homeView.hideLoading();
+                        //homeView.hideLoading();
                         homeView.showErrorMessage(e.toString());
                     }
 
@@ -176,10 +177,26 @@ public class HomePresenterImpl implements HomePresenter{
     }
 
     public RedditListing<SubredditItem> getSubredditsFromCache() {
-        return databaseManager.getSubreddits();
+        List<Subreddit> subreddits = databaseManager.getSubreddits();
+        if(!subreddits.isEmpty()){
+            return buildSubredditListing(subreddits);
+        }
+        return null;
     }
 
     private void setSubredditsInCache(RedditListing<SubredditItem> listing) {
         databaseManager.setSubreddits(listing.getItems());
+    }
+
+    private RedditListing<SubredditItem> buildSubredditListing(List<Subreddit> subreddits) {
+        RedditListing<SubredditItem> listing = new RedditListing<>();
+        List<SubredditItem> items = new ArrayList<>();
+        for(Subreddit subreddit : subreddits){
+            SubredditItem item = new SubredditItem();
+            item.setName(subreddit.getName());
+            items.add(item);
+        }
+        listing.setItems(items);
+        return listing;
     }
 }

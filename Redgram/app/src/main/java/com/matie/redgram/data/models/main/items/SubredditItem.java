@@ -7,7 +7,7 @@ import com.matie.redgram.data.models.main.reddit.RedditObject;
  */
 public class SubredditItem extends RedditObject{
     String name;
-    private int accountActive;
+    private int accountsActive;
     private String description;
     private long subscribersCount;
     private String url;
@@ -27,8 +27,8 @@ public class SubredditItem extends RedditObject{
         this.name = name;
     }
 
-    public void setAccountActive(int accountActive) {
-        this.accountActive = accountActive;
+    public void setAccountsActive(int accountActive) {
+        this.accountsActive = accountActive;
     }
 
     public void setDescription(String description) {
@@ -67,8 +67,8 @@ public class SubredditItem extends RedditObject{
         this.submissionType = submissionType;
     }
 
-    public int getAccountActive() {
-        return accountActive;
+    public int getAccountsActive() {
+        return accountsActive;
     }
 
     public String getDescription() {
