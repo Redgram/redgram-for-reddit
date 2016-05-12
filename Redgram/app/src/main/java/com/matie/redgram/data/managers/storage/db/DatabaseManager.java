@@ -51,6 +51,7 @@ public class DatabaseManager {
         this.context = app.getApplicationContext();
         this.configuration = new RealmConfiguration.Builder(context)
 //                .name(DB_NAME)
+                .deleteRealmIfMigrationNeeded()
                 .setModules(this)
                 .build();
         Realm.setDefaultConfiguration(configuration);
