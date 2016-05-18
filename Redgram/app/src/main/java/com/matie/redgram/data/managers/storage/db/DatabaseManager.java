@@ -3,6 +3,7 @@ package com.matie.redgram.data.managers.storage.db;
 import android.content.Context;
 
 import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
+import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
@@ -20,6 +21,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
 import io.realm.annotations.RealmModule;
@@ -42,12 +44,14 @@ public class DatabaseManager {
 //    public static final String DB_NAME = "redgram.realm.session";
     public static final Integer SESSION_DEFAULT_ID = 69;
     private RealmConfiguration configuration;
+    private final App app;
     private final Context context;
 
     private String currentAccessToken;
 
     @Inject
     public DatabaseManager(App app) {
+        this.app = app;
         this.context = app.getApplicationContext();
         this.configuration = new RealmConfiguration.Builder(context)
 //                .name(DB_NAME)
@@ -101,6 +105,12 @@ public class DatabaseManager {
         close(realm);
 
         setCurrentToken(accessToken.getAccessToken());
+    }
+
+    public void setPrefs(AuthPrefs prefs) {
+        Realm realm = getInstance();
+        DatabaseHelper.setPrefs(realm, prefs);
+        close(realm);
     }
 
     public Session getSession(){

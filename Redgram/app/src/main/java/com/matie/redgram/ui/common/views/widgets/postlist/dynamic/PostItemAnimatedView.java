@@ -103,21 +103,12 @@ public class PostItemAnimatedView extends PostItemSubView {
         return controller;
     }
 
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-        // TODO: 2016-03-09 handle NSFW from UI
-        if(disabled){
-            listener.viewWebMedia(position);
-        }
-    }
-
-
     @OnClick({R.id.animated_overlay, R.id.overlay_image, R.id.overlay_text})
     public void onGalleryClick(){
-        if(postItem != null && isNsfwDisabled()){
-            listener.viewWebMedia(position);
+        if(postItem.isAdult() && !getUserPrefs().isOver18()){
+            listener.callAgeConfirmDialog();
         }else{
-            callNsfwDialog();
+            listener.viewWebMedia(position);
         }
     }
 

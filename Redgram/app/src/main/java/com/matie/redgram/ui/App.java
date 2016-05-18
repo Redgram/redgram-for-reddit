@@ -96,10 +96,6 @@ public class App extends Application {
         return authUserPrefs;
     }
 
-    public void setAuthUserPrefs(Prefs authUserPrefs) {
-        this.authUserPrefs = authUserPrefs;
-    }
-
     public void startAuthActivity(){
         Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

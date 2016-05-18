@@ -28,12 +28,17 @@ import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
+import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
+import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
+import com.matie.redgram.data.models.db.Prefs;
+import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
+import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
@@ -51,6 +56,8 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
 
 /**
  * Created by matie on 2016-03-16.
@@ -74,7 +81,9 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     private String subredditChoice = null;
     private String filterChoice = null;
     private Map<String,String> params = new HashMap<>();
-    private int hiddenItemPos = -1;
+
+    private Prefs prefs;
+    private RealmChangeListener prefsChangeListener;
 
     @Inject
     App app;
@@ -317,6 +326,18 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         }
     }
 
+    @Override
+    public void callAgeConfirmDialog() {
+        MaterialDialog.SingleButtonCallback callback = new MaterialDialog.SingleButtonCallback() {
+            @Override
+            public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
+                linksPresenter.confirmAge();
+            }
+        };
+
+        LinksHelper.callAgeConfirmDialog(dialogUtil, callback);
+    }
+
     public LinearLayout getContainerLinearLayout() {
         return containerLinearLayout;
     }
@@ -349,7 +370,6 @@ public class LinksContainerView extends FrameLayout implements LinksView {
                 }
             }
         };
-
     }
 
     private void setupRecyclerView(){
@@ -426,6 +446,30 @@ public class LinksContainerView extends FrameLayout implements LinksView {
                 .showSnackBar(msg, Snackbar.LENGTH_LONG, actionMsg, onClickListener, new UnHidePanelSnackBarCallback());
         }
 
+    }
+
+    public void addChangeListeners() {
+        // TODO: 2016-05-18 add Realm in base activity
+        if(context instanceof MainActivity){
+            Realm realm = ((MainActivity) context).getRealm();
+            User user = DatabaseHelper.getSessionUser(realm);
+            if(user != null){
+                prefs = user.getPrefs();
+                if(prefs != null){
+                    prefsChangeListener = () -> {
+                        app.setupUserPrefs();
+                        updateList();
+                    };
+                    prefs.addChangeListener(prefsChangeListener);
+                }
+            }
+        }
+    }
+
+    public void removeChangeListeners() {
+        if(prefs != null){
+            prefs.removeChangeListener(prefsChangeListener);
+        }
     }
 
     public class UnHidePanelSnackBarCallback extends Snackbar.Callback{

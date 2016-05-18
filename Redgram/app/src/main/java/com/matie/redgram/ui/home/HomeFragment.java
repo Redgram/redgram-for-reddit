@@ -331,6 +331,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         super.onResume();
         homePresenter.registerForEvents();
         linksContainerView.getLinksPresenter().registerForEvents();
+        linksContainerView.addChangeListeners();
     }
 
     @Override
@@ -338,6 +339,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         super.onPause();
         homePresenter.unregisterForEvents();
         linksContainerView.getLinksPresenter().unregisterForEvents();
+        linksContainerView.removeChangeListeners();
     }
 
 

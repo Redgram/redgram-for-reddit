@@ -102,11 +102,6 @@ public class PostItemHeaderView extends PostItemSubView implements CustomSpanLis
         });
     }
 
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-
-    }
-
     @OnClick(R.id.header_more_view)
     public void onHeaderMoreClick(){
         popupMenu.show();

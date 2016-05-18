@@ -18,6 +18,11 @@ public class AuthPrefs {
     private int min_link_score;
 //    private String media; // TODO: 2016-03-01
     private int num_comments;
+    private int numsites;
+
+    public int getNumSites() {
+        return numsites;
+    }
 
     public String getDefault_comment_sort() {
         return default_comment_sort;
@@ -67,6 +72,10 @@ public class AuthPrefs {
         return num_comments;
     }
 
+    public void setOver18(boolean over18) {
+        this.over_18 = over18;
+    }
+
     //    {
 //        "beta": boolean value,
 //        "clickgadget": boolean value,
@@ -96,8 +105,8 @@ public class AuthPrefs {
 //        "newwindow": boolean value,
 //        "no_profanity": boolean value,
 //        "num_comments": an integer between 1 and 500,
-//            "numsites": an integer between 1 and 100,
-//            "organic": boolean value,
+//        "numsites": an integer between 1 and 100,
+//        "organic": boolean value,
 //        "other_theme": subreddit name,
 //        "over_18": boolean value,
 //        "private_feeds": boolean value,

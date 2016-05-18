@@ -87,21 +87,12 @@ public class PostItemDefaultView extends PostItemSubView {
         thumbnailView.setController(controller);
     }
 
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-        if(disabled){
-            listener.viewWebMedia(position);
-        }
-    }
-
-
-
     @OnClick(R.id.default_wrapper)
     public void onDefaultWrapperClick(){
-        if(postItem != null && isNsfwDisabled()){
-            listener.viewWebMedia(position);
+        if(postItem.isAdult() && !getUserPrefs().isOver18()){
+            listener.callAgeConfirmDialog();
         }else{
-            callNsfwDialog();
+            listener.viewWebMedia(position);
         }
     }
 }

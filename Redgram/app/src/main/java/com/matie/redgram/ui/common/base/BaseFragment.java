@@ -5,10 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
-import com.matie.redgram.ui.posts.LinksContainerView;
-import com.matie.redgram.ui.search.SearchFragment;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
-
 import icepick.Icepick;
 
 /**

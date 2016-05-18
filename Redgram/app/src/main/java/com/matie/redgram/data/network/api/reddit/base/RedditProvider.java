@@ -13,10 +13,12 @@ import java.util.Map;
 
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
@@ -69,6 +71,9 @@ public interface RedditProvider {
 
     @GET(PREFS)
     Observable<AuthPrefs> getUserPrefs(@Header("Authorization") String accessToken);
+
+    @PATCH(PREFS)
+    Observable<AuthPrefs> updatePrefs(@Body AuthPrefs prefs);
 
     /**
      * @see <a href="https://www.reddit.com/dev/api#GET_subreddits_{where}">Subreddit Listing Section</a>

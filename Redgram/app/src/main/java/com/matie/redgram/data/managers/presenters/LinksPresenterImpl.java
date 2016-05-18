@@ -4,24 +4,19 @@ import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.google.gson.JsonElement;
+import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
-import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.views.LinksView;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import icepick.State;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -39,6 +34,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     final private ContentView containerView; //parent
     final private RedditClient redditClient;
     final private ToastHandler toastHandler;
+    final private App app;
 
     private CompositeSubscription subscriptions;
     //global subscriptions
@@ -52,6 +48,7 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     @Inject
     public LinksPresenterImpl(LinksView linksView, ContentView containerView, App app) {
+        this.app = app;
         this.linksView = linksView;
         this.containerView = containerView;
         this.redditClient = app.getRedditClient();
@@ -64,8 +61,8 @@ public class LinksPresenterImpl implements LinksPresenter {
         if(subscriptions == null)
             subscriptions = new CompositeSubscription();
 
-        if(!subscriptions.isUnsubscribed()){
-            if(listingSubscription != null){
+        if(!subscriptions.isUnsubscribed()) {
+            if (listingSubscription != null) {
                 subscriptions.add(listingSubscription);
             }
         }
@@ -258,10 +255,41 @@ public class LinksPresenterImpl implements LinksPresenter {
 
                     @Override
                     public void onNext(JsonElement redditObject) {
+
                     }
                 });
         if(!subscriptions.isUnsubscribed()){
             subscriptions.add(reportSubscription);
+        }
+    }
+
+    @Override
+    public void confirmAge() {
+
+        AuthPrefs prefs = new AuthPrefs();
+        prefs.setOver18(true);
+
+        Subscription subscription = bindFragment(containerView.getBaseFragment(), redditClient.updatePrefs(prefs))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<AuthPrefs>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        linksView.showErrorMessage(e.toString());
+                    }
+
+                    @Override
+                    public void onNext(AuthPrefs prefs) {
+                        app.getDatabaseManager().setPrefs(prefs);
+                        //realm Prefs object will recognize a change a refresh the list in the UI
+                    }
+                });
+        if(!subscriptions.isUnsubscribed()){
+            subscriptions.add(subscription);
         }
     }
 

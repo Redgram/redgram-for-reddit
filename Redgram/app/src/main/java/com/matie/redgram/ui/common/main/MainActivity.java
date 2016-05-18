@@ -57,6 +57,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.Optional;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 
@@ -96,8 +97,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     DialogUtil dialogUtil;
 
     private ActionBarDrawerToggle mDrawerToggle;
-    private CharSequence mTitle;
-    private CharSequence mDrawerTitle;
     private MainComponent mainComponent;
 
     private Window window;
@@ -108,8 +107,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.inject(this);
-
-        mTitle = mDrawerTitle = getTitle();
 
         mDrawerLayout.setStatusBarBackgroundColor(
                 getResources().getColor(R.color.material_red600));
@@ -172,26 +169,30 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         realm = databaseManager.getInstance();
         User user = DatabaseHelper.getSessionUser(realm);
         if(user != null){
-            FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);
-            ((TextView)headerView.findViewById(R.id.drawerUserName)).setText(user.getUserName());
-
-            ImageView accountsView = ((ImageView) headerView.findViewById(R.id.drawerAccounts));
-            accountsView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(userListLayout.getParent() != null){
-                        return;
-                    }
-                    modifyNavDrawer(userListLayout, R.color.material_bluegrey900);
-                    userListLayout.findViewById(R.id.go_back).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            resetNavDrawer();
-                        }
-                    });
-                }
-            });
+            setupNavUserLayout(user);
         }
+    }
+
+    private void setupNavUserLayout(User user){
+        FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);
+        ((TextView)headerView.findViewById(R.id.drawerUserName)).setText(user.getUserName());
+
+        ImageView accountsView = ((ImageView) headerView.findViewById(R.id.drawerAccounts));
+        accountsView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(userListLayout.getParent() != null){
+                    return;
+                }
+                modifyNavDrawer(userListLayout, R.color.material_bluegrey900);
+                userListLayout.findViewById(R.id.go_back).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        resetNavDrawer();
+                    }
+                });
+            }
+        });
     }
 
     private void setUpNavUserList() {
@@ -656,6 +657,10 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     public void disableDrawer(){
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mDrawerToggle.setDrawerIndicatorEnabled(false);
+    }
+
+    public Realm getRealm(){
+        return realm;
     }
 }
 

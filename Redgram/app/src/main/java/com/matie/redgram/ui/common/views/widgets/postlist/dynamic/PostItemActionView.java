@@ -74,11 +74,6 @@ public class PostItemActionView extends PostItemSubView {
 
     }
 
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-
-    }
-
     @OnClick(R.id.action_share)
     public void onActionShare(){
         listener.sharePost(position);

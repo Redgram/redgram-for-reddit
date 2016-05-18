@@ -44,4 +44,5 @@ public interface LinksView extends ContentView{
     void copyItemLink(int position);
     void viewWebMedia(int position);
     void viewImageMedia(int position, boolean loaded);
+    void callAgeConfirmDialog();
 }

@@ -1,13 +1,17 @@
 package com.matie.redgram.data.models.db;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Reddit preferences - bound to the user
  * Created by matie on 2016-05-07.
  */
 public class Prefs extends RealmObject {
+    @PrimaryKey
+    private String id;
     private String defaultCommentSort;
+    private boolean hideUps;
     private boolean hideDowns;
     private boolean labelNsfw;
     private boolean over18;
@@ -18,6 +22,15 @@ public class Prefs extends RealmObject {
     private int minCommentsScore;
     private int minLinkScore;
     private int numComments;
+    private int numSites;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getDefaultCommentSort() {
         return defaultCommentSort;
@@ -33,6 +46,14 @@ public class Prefs extends RealmObject {
 
     public void setHideDowns(boolean hideDowns) {
         this.hideDowns = hideDowns;
+    }
+
+    public boolean isHideUps() {
+        return hideUps;
+    }
+
+    public void setHideUps(boolean hideUps) {
+        this.hideUps = hideUps;
     }
 
     public boolean isLabelNsfw() {
@@ -83,7 +104,7 @@ public class Prefs extends RealmObject {
         this.storeVisits = storeVisits;
     }
 
-    public int isMinCommentsScore() {
+    public int getMinCommentsScore() {
         return minCommentsScore;
     }
 
@@ -91,7 +112,7 @@ public class Prefs extends RealmObject {
         this.minCommentsScore = minCommentsScore;
     }
 
-    public int isMinLinkScore() {
+    public int getMinLinkScore() {
         return minLinkScore;
     }
 
@@ -99,11 +120,19 @@ public class Prefs extends RealmObject {
         this.minLinkScore = minLinkScore;
     }
 
-    public int isNumComments() {
+    public int getNumComments() {
         return numComments;
     }
 
     public void setNumComments(int numComments) {
         this.numComments = numComments;
+    }
+
+    public void setNumSites(int numSites) {
+        this.numSites = numSites;
+    }
+
+    public int getNumSites() {
+        return numSites;
     }
 }

@@ -359,6 +359,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         super.onResume();
         searchPresenter.registerForEvents();
         linksContainerView.getLinksPresenter().registerForEvents();
+        linksContainerView.addChangeListeners();
     }
 
     @Override
@@ -369,6 +370,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         toggleKeyboard(false);
         searchPresenter.unregisterForEvents();
         linksContainerView.getLinksPresenter().unregisterForEvents();
+        linksContainerView.removeChangeListeners();
     }
 
 

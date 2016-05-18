@@ -75,11 +75,6 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
     }
 
     @Override
-    public void handleNsfwUpdate(boolean disabled) {
-
-    }
-
-    @Override
     public void onClickableEvent(CharSequence targetString) {
         if(targetString.toString().startsWith("[ ") && targetString.toString().endsWith(" ]")){
             //open webview

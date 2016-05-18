@@ -7,7 +7,6 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentItem;
-import com.matie.redgram.ui.common.views.widgets.ExpandableIndicator;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

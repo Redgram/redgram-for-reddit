@@ -62,12 +62,10 @@ public class PostItemTextView extends PostItemSubView {
 
         if(item.getText().length() > 0){
 
-            textContentView.setText(item.getText());
-
-            if(item.isAdult() && !isNsfwDisabled()){
+            if(item.isAdult() && !getUserPrefs().isOver18()){
                 textContentView.setText(res.getString(R.string.nsfw_material));
             }else{
-                textContentView.setText(textContentView.getText());
+                textContentView.setText(item.getText());
             }
 
             textContentView.setVisibility(VISIBLE);
@@ -86,29 +84,10 @@ public class PostItemTextView extends PostItemSubView {
 
     }
 
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-        if(disabled){
-            textContentView.setText(textContentView.getText());
-        }else{
-            textContentView.setText(res.getString(R.string.nsfw_material));
-        }
-    }
-
-
-    @OnClick(R.id.text_title_view)
-    public void onTitleClick(){
-        // TODO: 2016-04-14 check for NSFW
-        listener.loadCommentsForPost(position);
-    }
-
-    @OnClick(R.id.text_content_view)
-    public void onContentClick(){
-        if(textContentView.getText().equals(res.getString(R.string.nsfw_material))){
-            // TODO: 09/10/15 Formatted view of content
-            if(!isNsfwDisabled()){
-                callNsfwDialog();
-            }
+    @OnClick({R.id.text_title_view, R.id.text_content_view})
+    public void onClick(){
+        if(postItem.isAdult() && !getUserPrefs().isOver18()){
+            listener.callAgeConfirmDialog();
         }else{
             listener.loadCommentsForPost(position);
         }
