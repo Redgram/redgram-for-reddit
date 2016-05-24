@@ -148,32 +148,6 @@ public class RedditClient extends RedditService {
                 .filter(link -> filterHidden(link)) //filters hidden posts
                 .map(this::mapLinkToPostItem)
                 .filter(item -> (postItems != null ? filterExistingItems(postItems, item) : true))
-//                .concatMap(postItem -> {
-//
-//                    //todo: convert to MP4 and set new link
-//                    Observable<PostItem> mp4Observable = Observable.just(postItem)
-//                            .filter(item -> item.getType() == PostItem.Type.GIF
-//                                    || item.getType() == PostItem.Type.YOUTUBE
-//                                    || item.getType() == PostItem.Type.GFYCAT);
-//                    //leave out to render
-//                    Observable<PostItem> imageObservable = Observable.just(postItem)
-//                            .filter(item -> item.getType() == PostItem.Type.IMAGE);
-//                    //todo: render new view for text only
-//                    Observable<PostItem> selfObservable = Observable.just(postItem)
-//                            .filter(item -> item.getType() == PostItem.Type.SELF);
-//                    //todo: display new fragment with gridview
-//                    Observable<PostItem> galleryObservable = Observable.just(postItem)
-//                            .filter(item -> item.getType() == PostItem.Type.IMGUR_GALLERY
-//                                    || item.getType() == PostItem.Type.IMGUR_ALBUM
-//                                    || item.getType() == PostItem.Type.IMGUR_CUSTOM_GALLERY);
-//                    //todo: display thumbnail with link to view full source along with ant self text
-//                    Observable<PostItem> defaultObservable = Observable.just(postItem)
-//                            .filter(item -> item.getType() == PostItem.Type.DEFAULT
-//                                    || item.getType() == PostItem.Type.IMGUR);
-//
-//                    return Observable.merge(imageObservable, mp4Observable, galleryObservable,
-//                            selfObservable, defaultObservable);
-//                })
                 .toList();
     }
 

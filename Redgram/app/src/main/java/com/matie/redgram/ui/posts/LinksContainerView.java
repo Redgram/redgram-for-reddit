@@ -29,7 +29,6 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
-import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.PostItem;
@@ -137,6 +136,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     @Override
     public void updateItem(int position, PostItem postItem) {
+        // TODO: 2016-05-22 do we need to set an item?
         getItems().set(position, postItem);
         containerRecyclerView.getAdapter().notifyItemChanged(position);
     }
