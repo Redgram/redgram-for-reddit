@@ -88,10 +88,10 @@ public class PostItemActionView extends PostItemSubView {
         if (!TRUE.equalsIgnoreCase(postItem.getLikes())){
             voteUp.setColorFilter(getResources().getColor(R.color.material_green700));
             voteDown.setColorFilter(null);
-            listener.votePost(position, listener.UP_VOTE);
+            listener.votePost(position, LinksView.UP_VOTE);
         }else{
             voteUp.setColorFilter(null);
-            listener.votePost(position, listener.UN_VOTE);
+            listener.votePost(position, LinksView.UP_VOTE);
         }
     }
 
@@ -100,10 +100,10 @@ public class PostItemActionView extends PostItemSubView {
         if (!FALSE.equalsIgnoreCase(postItem.getLikes())){
             voteDown.setColorFilter(R.color.material_red700);
             voteUp.setColorFilter(null);
-            listener.votePost(position, listener.DOWN_VOTE);
+            listener.votePost(position, LinksView.UP_VOTE);
         }else{
             voteDown.setColorFilter(null);
-            listener.votePost(position, listener.UN_VOTE);
+            listener.votePost(position, LinksView.UP_VOTE);
         }
     }
 

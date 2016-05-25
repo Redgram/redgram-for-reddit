@@ -74,7 +74,7 @@ public class AuthPresenterImpl implements AuthPresenter {
     }
 
     private void bindAuthSubscription() {
-        authSubscription = (Subscription)bindActivity(authView.getBaseActivity(),
+        authSubscription = bindActivity(authView.getBaseActivity(),
                 redditClient.getAuthWrapper(authCode))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())

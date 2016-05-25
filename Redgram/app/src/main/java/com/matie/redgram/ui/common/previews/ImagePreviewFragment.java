@@ -113,11 +113,6 @@ public class ImagePreviewFragment extends BasePreviewFragment {
             }
         });
     }
-
-    @Override public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
     @Override
     protected void setupComponent() {
 

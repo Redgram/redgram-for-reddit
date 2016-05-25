@@ -276,7 +276,7 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     // TODO: 2016-04-21 share Subscriber with getSearchSubscription
     private Subscription buildSubscription(Observable<RedditListing<PostItem>> observable, boolean isNew){
-        return (Subscription)bindFragment(containerView.getBaseFragment(), observable)
+        return bindFragment(containerView.getBaseFragment(), observable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing>() {

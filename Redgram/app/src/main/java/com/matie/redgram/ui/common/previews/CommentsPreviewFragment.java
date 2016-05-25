@@ -67,10 +67,6 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
         return view;
     }
 
-    @Override public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
     @Override
     protected void setupComponent() {
         AppComponent appComponent = ((BaseActivity)getActivity()).component();

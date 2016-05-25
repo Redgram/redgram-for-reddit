@@ -9,5 +9,5 @@
     <com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView
         android:id="@+id/comment_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView>
+        android:layout_height="match_parent"/>
 </LinearLayout>

@@ -60,10 +60,6 @@ public abstract class PostItemSubView extends RelativeLayout {
                         super.onPositive(dialog);
                         disableNsfw();
                     }
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        super.onNegative(dialog);
-                    }
                 })
                 .show();
         }

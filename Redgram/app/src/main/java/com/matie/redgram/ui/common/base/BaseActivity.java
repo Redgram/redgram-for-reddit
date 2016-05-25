@@ -27,7 +27,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(getLayoutId());
 
-        AppComponent appComponent = (AppComponent) App.get(this).component();
+        AppComponent appComponent = App.get(this).component();
         setupComponent(appComponent);
     }
 

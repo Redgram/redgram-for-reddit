@@ -13,8 +13,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -149,11 +147,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
     protected void setupComponent() {
         AppComponent appComponent = ((BaseActivity)getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
@@ -256,10 +249,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                                     performPositiveEvent(dialog);
                                 }
 
-                                @Override
-                                public void onNegative(MaterialDialog dialog) {
-                                    super.onNegative(dialog);
-                                }
                             })
                             .show();
                 } catch (NullPointerException e) {
@@ -301,6 +290,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         filterContentLayout = (RelativeLayout)mInflater.inflate(R.layout.fragment_search_toolbar_filter, null);
         fromSpinner = (Spinner)filterContentLayout.findViewById(R.id.spinner_from);
         sortSpinner = (Spinner)filterContentLayout.findViewById(R.id.spinner_sort);
+        limitToView = (EditText)filterContentLayout.findViewById(R.id.limit_view);
 
         ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(
                 getActivity(), R.layout.support_simple_spinner_dropdown_item, fromArray);
@@ -312,7 +302,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         fromSpinner.setAdapter(fromAdapter);
         sortSpinner.setAdapter(sortAdapter);
 
-        limitToView = (EditText)filterContentLayout.findViewById(R.id.limit_view);
     }
 
     private void performPositiveEvent(MaterialDialog dialog) {

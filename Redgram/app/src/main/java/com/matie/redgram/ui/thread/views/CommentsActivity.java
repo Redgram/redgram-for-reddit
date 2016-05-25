@@ -163,12 +163,6 @@ public class CommentsActivity extends BaseActivity implements ThreadView, Coordi
         threadPresenter.getThread(postItem.getId());
     }
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
     @Override
     protected void onResume() {
         super.onResume();

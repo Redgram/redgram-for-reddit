@@ -168,8 +168,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     private void setUpRealm() {
-        DatabaseManager databaseManager = app.getDatabaseManager();
-        realm = databaseManager.getInstance();
+        realm = DatabaseManager.getInstance();
         User user = DatabaseHelper.getSessionUser(realm);
         if(user != null){
             FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);

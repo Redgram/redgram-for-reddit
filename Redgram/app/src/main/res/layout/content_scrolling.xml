@@ -8,6 +8,6 @@
     android:layout_height="match_parent">
 
     <TextView android:id="@+id/title" android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin" android:text="@string/large_text" />
+        android:layout_margin="@dimen/activity_horizontal_margin" tools:text="@string/large_text" />
 
 </android.support.v4.widget.NestedScrollView>

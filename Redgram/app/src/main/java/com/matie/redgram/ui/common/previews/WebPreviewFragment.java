@@ -77,10 +77,6 @@ public class WebPreviewFragment extends BasePreviewFragment{
         return view;
     }
 
-    @Override public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
     @Override
     protected void setupComponent() {
 

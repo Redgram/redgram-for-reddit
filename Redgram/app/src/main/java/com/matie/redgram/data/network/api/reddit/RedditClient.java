@@ -323,7 +323,7 @@ public class RedditClient extends RedditService {
 
     private Map<String, String> mapFieldsToHashMap(RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing> listing) {
         Map<String, String> map = new HashMap<String,String>();
-        com.matie.redgram.data.models.api.reddit.main.RedditListing listingData = (com.matie.redgram.data.models.api.reddit.main.RedditListing)listing.getData();
+        com.matie.redgram.data.models.api.reddit.main.RedditListing listingData = listing.getData();
 
         map.put(AFTER, listingData.getAfter());
         map.put(BEFORE, listingData.getBefore());

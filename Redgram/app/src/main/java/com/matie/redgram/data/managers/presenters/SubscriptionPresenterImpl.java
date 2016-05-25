@@ -89,7 +89,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
             subredditsObservable = redditClient.getSubscriptions(params);
         }
 
-        subredditSubscription = (Subscription)bindFragment(subscriptionView.getBaseFragment(), subredditsObservable)
+        subredditSubscription = bindFragment(subscriptionView.getBaseFragment(), subredditsObservable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing<SubredditItem>>() {

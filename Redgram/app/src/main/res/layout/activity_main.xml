@@ -39,7 +39,7 @@
 
                             <FrameLayout
                                 style="@style/Match"
-                                android:id="@+id/toolbar_child_view"></FrameLayout>
+                                android:id="@+id/toolbar_child_view"/>
 
                         </android.support.v7.widget.Toolbar>
 

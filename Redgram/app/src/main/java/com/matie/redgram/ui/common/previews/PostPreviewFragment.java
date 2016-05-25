@@ -55,7 +55,7 @@ public class PostPreviewFragment extends BasePreviewFragment implements PostView
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        this.activity = (BaseActivity)getActivity();
+        this.activity = getActivity();
     }
 
     @Override
