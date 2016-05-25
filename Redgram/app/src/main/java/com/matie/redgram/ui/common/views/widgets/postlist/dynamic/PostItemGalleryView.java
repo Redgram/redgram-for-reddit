@@ -105,9 +105,7 @@ public class PostItemGalleryView extends PostItemSubView {
         PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
                 .setImageRequest(thumbnail)
                 .setOldController(thumbnailView.getController());
-
-        DraweeController controller = builder.build();
-        return controller;
+        return builder.build();
     }
 
 

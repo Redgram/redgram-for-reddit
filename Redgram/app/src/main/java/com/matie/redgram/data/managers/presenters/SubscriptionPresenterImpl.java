@@ -130,8 +130,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
     public RedditListing<SubredditItem> getSubredditsFromCache() {
         List<Subreddit> subreddits = databaseManager.getSubreddits();
         if(!subreddits.isEmpty()){
-            RedditListing<SubredditItem> listing = buildSubredditListing(subreddits);
-            return listing;
+            return buildSubredditListing(subreddits);
         }
         return null;
     }

@@ -114,9 +114,8 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                 boolean enable = false;
                 if (homeRecyclerView != null && homeRecyclerView.getChildCount() > 0) {
                     // check if the first item of the list is visible
-                    boolean firstItemVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
                     // enabling or disabling the refresh layout
-                    enable = firstItemVisible;
+                    enable = mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;;
                 }
                 homeSwipeContainer.setEnabled(enable);
             }

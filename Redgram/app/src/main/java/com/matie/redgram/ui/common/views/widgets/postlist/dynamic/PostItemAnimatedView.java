@@ -98,8 +98,7 @@ public class PostItemAnimatedView extends PostItemSubView {
                 .setImageRequest(thumbnail)
                 .setOldController(thumbnailView.getController());
 
-        DraweeController controller = builder.build();
-        return controller;
+        return builder.build();
     }
 
     @Override

@@ -54,8 +54,7 @@ public class CommentsPagerAdapter extends SectionsPagerAdapter {
                 postPreviewFragment.setArguments(bundle);
                 return postPreviewFragment;
             case 2:
-                CommentsPreviewFragment commentsPreviewFragment = new CommentsPreviewFragment();
-                return commentsPreviewFragment;
+                return new CommentsPreviewFragment();
         }
         return null;
     }
