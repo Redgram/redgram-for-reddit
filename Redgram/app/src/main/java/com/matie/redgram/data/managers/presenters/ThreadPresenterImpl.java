@@ -19,7 +19,6 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 import static rx.android.app.AppObservable.bindActivity;
-import static rx.android.app.AppObservable.bindFragment;
 
 /**
  * Created by matie on 2016-02-10.

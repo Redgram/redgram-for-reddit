@@ -1,7 +1,5 @@
 package com.matie.redgram.data.models.api.reddit.auth;
 
-import com.matie.redgram.data.models.api.reddit.base.RedditObject;
-
 import org.joda.time.DateTime;
 
 

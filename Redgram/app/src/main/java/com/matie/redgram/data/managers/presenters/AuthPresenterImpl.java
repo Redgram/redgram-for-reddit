@@ -1,6 +1,5 @@
 package com.matie.redgram.data.managers.presenters;
 
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 

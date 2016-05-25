@@ -1,8 +1,5 @@
 package com.matie.redgram.data.models.main.reddit;
 
-import com.matie.redgram.data.models.main.items.PostItem;
-
-import java.util.Collections;
 import java.util.List;
 
 /**

@@ -12,7 +12,6 @@ import com.facebook.imagepipeline.image.ImageInfo;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.media.video.ImageManager;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;

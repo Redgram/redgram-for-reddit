@@ -1,19 +1,14 @@
 package com.matie.redgram.ui.thread.views.widgets.comment;
 
 import android.content.Context;
-import android.os.Build;
-import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
-import com.matie.redgram.data.models.main.items.comment.CommentItem;
-
 
 import java.util.Map;
 

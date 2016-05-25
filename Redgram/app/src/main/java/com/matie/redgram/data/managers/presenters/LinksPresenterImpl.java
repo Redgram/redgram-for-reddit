@@ -5,23 +5,17 @@ import android.widget.Toast;
 
 import com.google.gson.JsonElement;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
-import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.views.LinksView;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import icepick.State;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;

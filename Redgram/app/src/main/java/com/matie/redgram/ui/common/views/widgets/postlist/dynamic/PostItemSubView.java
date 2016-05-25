@@ -11,7 +11,6 @@ import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.home.views.HomeView;
-import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.posts.views.LinksView;
 
 /**

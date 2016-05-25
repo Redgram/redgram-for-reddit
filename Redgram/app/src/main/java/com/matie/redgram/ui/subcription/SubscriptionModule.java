@@ -1,12 +1,9 @@
 package com.matie.redgram.ui.subcription;
 
-import com.matie.redgram.data.managers.presenters.SearchPresenter;
-import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
 import com.matie.redgram.data.managers.presenters.SubscriptionPresenter;
 import com.matie.redgram.data.managers.presenters.SubscriptionPresenterImpl;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.FragmentScope;
-import com.matie.redgram.ui.search.views.SearchView;
 import com.matie.redgram.ui.subcription.views.SubscriptionView;
 
 import dagger.Module;

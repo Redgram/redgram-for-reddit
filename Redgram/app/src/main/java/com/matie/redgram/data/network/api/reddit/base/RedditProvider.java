@@ -3,16 +3,13 @@ package com.matie.redgram.data.network.api.reddit.base;
 
 import com.google.gson.JsonElement;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
-import com.matie.redgram.data.models.api.reddit.base.RedditObject;
-import com.matie.redgram.data.models.api.reddit.main.RedditListing;
-import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
+import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
+import com.matie.redgram.data.models.api.reddit.main.RedditListing;
 
 import java.util.List;
 import java.util.Map;
 
-
-import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
