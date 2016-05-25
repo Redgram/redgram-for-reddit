@@ -36,4 +36,12 @@ public class Session extends RealmObject{
     public void setRecentPost(String recentPost) {
         this.recentPost = recentPost;
     }
+
+//    public void cascadeDelete(){
+//        // TODO: 2016-05-24 updgrade realm and use deleteFromRealm instead. Also deleteAllFromRealm was added
+//        user.getPrefs().removeFromRealm();
+//        user.getTokenInfo().removeFromRealm();
+//        user.removeFromRealm();
+//        removeFromRealm();
+//    }
 }

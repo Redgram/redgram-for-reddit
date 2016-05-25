@@ -15,6 +15,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 /**
  * Created by matie on 2016-02-26.
@@ -90,6 +91,10 @@ public class DatabaseHelper {
         return null;
     }
 
+    public static RealmResults<User> getUsers(Realm realm) {
+        return realm.where(User.class).findAll();
+    }
+
     public static User getUserById(Realm realm, String userId) {
         return realm.where(User.class).equalTo("id", userId).findFirst();
     }
@@ -110,6 +115,10 @@ public class DatabaseHelper {
         Session session = getSession(realm);
         if(session != null){
             realm.beginTransaction();
+            //// TODO: 2016-05-24 update realm and use a built-in function
+            session.getUser().getPrefs().removeFromRealm();
+            session.getUser().getTokenInfo().removeFromRealm();
+            session.getUser().removeFromRealm();
             session.removeFromRealm();
             realm.commitTransaction();
         }

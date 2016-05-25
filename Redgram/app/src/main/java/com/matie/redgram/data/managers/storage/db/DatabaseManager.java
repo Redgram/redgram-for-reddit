@@ -15,6 +15,7 @@ import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.ui.App;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 import io.realm.annotations.RealmModule;
 
 /**
@@ -73,7 +75,7 @@ public class DatabaseManager {
         this.currentAccessToken = currentAccessToken;
     }
 
-    public static Realm getInstance(){
+    public Realm getInstance(){
         return Realm.getDefaultInstance();
     }
 
@@ -130,6 +132,19 @@ public class DatabaseManager {
         }
         close(realm);
         return usableUser;
+    }
+
+    public List<User> getUsers(){
+        Realm realm = getInstance();
+        RealmResults<User> users = DatabaseHelper.getUsers(realm);
+        List<User> usableUsers = new ArrayList<>();
+        if(users != null && !users.isEmpty()){
+            for(User user : users){
+                usableUsers.add(realm.copyFromRealm(user));
+            }
+        }
+        close(realm);
+        return usableUsers;
     }
 
     public String getToken(){
