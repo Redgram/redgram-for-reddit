@@ -1,7 +1,6 @@
 package com.matie.redgram.ui.common.views.widgets.drawer;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 /**
  * Created by matie on 2016-05-04.

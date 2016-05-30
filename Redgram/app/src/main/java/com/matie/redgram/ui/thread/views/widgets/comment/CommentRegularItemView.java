@@ -3,6 +3,7 @@ package com.matie.redgram.ui.thread.views.widgets.comment;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;

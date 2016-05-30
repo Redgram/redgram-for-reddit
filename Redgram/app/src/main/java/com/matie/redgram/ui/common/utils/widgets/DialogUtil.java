@@ -1,6 +1,7 @@
 package com.matie.redgram.ui.common.utils.widgets;
 
 import android.content.Context;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import javax.inject.Inject;

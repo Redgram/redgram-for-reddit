@@ -1,6 +1,5 @@
 package com.matie.redgram.data.models.main.home;
 
-import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 

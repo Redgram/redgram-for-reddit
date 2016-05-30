@@ -2,7 +2,6 @@ package com.matie.redgram.data.managers.presenters;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Subreddit;
-import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
@@ -19,7 +18,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.realm.RealmList;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -91,7 +89,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
             subredditsObservable = redditClient.getSubscriptions(params);
         }
 
-        subredditSubscription = (Subscription)bindFragment(subscriptionView.getBaseFragment(), subredditsObservable)
+        subredditSubscription = bindFragment(subscriptionView.getBaseFragment(), subredditsObservable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing<SubredditItem>>() {
@@ -132,8 +130,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
     public RedditListing<SubredditItem> getSubredditsFromCache() {
         List<Subreddit> subreddits = databaseManager.getSubreddits();
         if(!subreddits.isEmpty()){
-            RedditListing<SubredditItem> listing = buildSubredditListing(subreddits);
-            return listing;
+            return buildSubredditListing(subreddits);
         }
         return null;
     }

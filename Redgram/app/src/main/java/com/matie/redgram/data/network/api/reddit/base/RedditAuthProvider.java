@@ -2,7 +2,6 @@ package com.matie.redgram.data.network.api.reddit.base;
 
 import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 
-
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;

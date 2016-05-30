@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -13,16 +14,12 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
-
-
-import android.support.v4.view.ViewPager;
-import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -39,20 +36,15 @@ import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
+import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
-import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
-import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.thread.components.DaggerThreadComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
 import com.matie.redgram.ui.thread.modules.ThreadModule;
 import com.matie.redgram.ui.thread.views.adapters.CommentsPagerAdapter;
-import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.previews.BasePreviewFragment;
-import com.matie.redgram.ui.common.previews.ImagePreviewFragment;
-import com.matie.redgram.ui.common.previews.WebPreviewFragment;
 import com.matie.redgram.ui.thread.views.widgets.OptionsView;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrConfig;
@@ -169,12 +161,6 @@ public class CommentsActivity extends BaseActivity implements ThreadView, Coordi
 
         mSlidrInterface = Slidr.attach(this, config);
         threadPresenter.getThread(postItem.getId());
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     @Override

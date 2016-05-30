@@ -5,17 +5,17 @@ import android.support.annotation.Nullable;
 import com.google.gson.JsonElement;
 import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
+import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
+import com.matie.redgram.data.models.api.reddit.base.RedditObject;
+import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.api.reddit.main.RedditComment;
+import com.matie.redgram.data.models.api.reddit.main.RedditLink;
 import com.matie.redgram.data.models.api.reddit.main.RedditMore;
 import com.matie.redgram.data.models.api.reddit.main.RedditSubreddit;
-import com.matie.redgram.data.models.api.reddit.base.RedditObject;
-import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
-import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.api.reddit.main.RedditLink;
-import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.main.items.SubredditItem;
+import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentItem;
 import com.matie.redgram.data.models.main.items.comment.CommentMoreItem;
 import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
@@ -323,7 +323,7 @@ public class RedditClient extends RedditService {
 
     private Map<String, String> mapFieldsToHashMap(RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing> listing) {
         Map<String, String> map = new HashMap<String,String>();
-        com.matie.redgram.data.models.api.reddit.main.RedditListing listingData = (com.matie.redgram.data.models.api.reddit.main.RedditListing)listing.getData();
+        com.matie.redgram.data.models.api.reddit.main.RedditListing listingData = listing.getData();
 
         map.put(AFTER, listingData.getAfter());
         map.put(BEFORE, listingData.getBefore());

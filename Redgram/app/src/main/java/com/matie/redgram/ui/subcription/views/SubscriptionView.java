@@ -1,10 +1,6 @@
 package com.matie.redgram.ui.subcription.views;
 
-import android.content.Context;
-import android.support.v4.app.Fragment;
-
 import com.matie.redgram.ui.common.views.BaseContextView;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView;
 
 /**

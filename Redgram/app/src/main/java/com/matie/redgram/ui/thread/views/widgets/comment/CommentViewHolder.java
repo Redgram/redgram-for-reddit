@@ -2,13 +2,7 @@ package com.matie.redgram.ui.thread.views.widgets.comment;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
-import com.matie.redgram.R;
-import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
-import com.matie.redgram.data.models.main.items.comment.CommentItem;
-import com.matie.redgram.ui.common.views.widgets.ExpandableIndicator;
 import com.matie.redgram.ui.thread.views.CommentsView;
 
 /**

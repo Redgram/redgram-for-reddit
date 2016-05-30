@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.CommentsPresenterImpl;
-import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentItem;
 import com.matie.redgram.data.models.main.items.comment.CommentMoreItem;
@@ -66,10 +65,6 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
 
         commentRecyclerView.setAdapterListener(this);
         return view;
-    }
-
-    @Override public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 
     @Override

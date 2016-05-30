@@ -1,14 +1,11 @@
 package com.matie.redgram.ui.search;
 
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,8 +13,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -27,7 +22,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -52,7 +46,6 @@ import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.search.views.SearchView;
 import com.matie.redgram.ui.thread.views.CommentsActivity;
-import com.nineoldandroids.view.ViewHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.Arrays;
@@ -151,11 +144,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                 }
             }
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -261,10 +249,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                                     performPositiveEvent(dialog);
                                 }
 
-                                @Override
-                                public void onNegative(MaterialDialog dialog) {
-                                    super.onNegative(dialog);
-                                }
                             })
                             .show();
                 } catch (NullPointerException e) {
@@ -306,6 +290,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         filterContentLayout = (RelativeLayout)mInflater.inflate(R.layout.fragment_search_toolbar_filter, null);
         fromSpinner = (Spinner)filterContentLayout.findViewById(R.id.spinner_from);
         sortSpinner = (Spinner)filterContentLayout.findViewById(R.id.spinner_sort);
+        limitToView = (EditText)filterContentLayout.findViewById(R.id.limit_view);
 
         ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(
                 getActivity(), R.layout.support_simple_spinner_dropdown_item, fromArray);
@@ -317,7 +302,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         fromSpinner.setAdapter(fromAdapter);
         sortSpinner.setAdapter(sortAdapter);
 
-        limitToView = (EditText)filterContentLayout.findViewById(R.id.limit_view);
     }
 
     private void performPositiveEvent(MaterialDialog dialog) {

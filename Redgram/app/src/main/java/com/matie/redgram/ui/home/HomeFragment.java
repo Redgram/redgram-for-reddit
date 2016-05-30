@@ -1,7 +1,6 @@
 package com.matie.redgram.ui.home;
 
 
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -34,14 +33,13 @@ import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.LinksComponent;
 import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.matie.redgram.ui.thread.views.CommentsActivity;
-import com.nineoldandroids.view.ViewHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.HashMap;
@@ -116,9 +114,8 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                 boolean enable = false;
                 if (homeRecyclerView != null && homeRecyclerView.getChildCount() > 0) {
                     // check if the first item of the list is visible
-                    boolean firstItemVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
                     // enabling or disabling the refresh layout
-                    enable = firstItemVisible;
+                    enable = mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;;
                 }
                 homeSwipeContainer.setEnabled(enable);
             }

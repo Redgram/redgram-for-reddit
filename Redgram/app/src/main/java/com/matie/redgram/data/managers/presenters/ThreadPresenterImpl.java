@@ -19,7 +19,6 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 import static rx.android.app.AppObservable.bindActivity;
-import static rx.android.app.AppObservable.bindFragment;
 
 /**
  * Created by matie on 2016-02-10.
@@ -60,7 +59,7 @@ public class ThreadPresenterImpl implements ThreadPresenter {
     @Override
     public void getThread(String id) {
         threadView.showLoading();
-        threadSubscription = (Subscription)bindActivity(threadView.getBaseActivity(), redditClient.getCommentsByArticle(id, null))
+        threadSubscription = bindActivity(threadView.getBaseActivity(), redditClient.getCommentsByArticle(id, null))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<CommentsWrapper>() {

@@ -1,7 +1,5 @@
 package com.matie.redgram.data.managers.presenters;
 
-import java.util.List;
-
 /**
  * Created by matie on 2015-11-29.
  */

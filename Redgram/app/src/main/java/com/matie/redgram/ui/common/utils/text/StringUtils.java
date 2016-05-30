@@ -2,18 +2,12 @@ package com.matie.redgram.ui.common.utils.text;
 
 import android.content.Context;
 import android.os.Build;
-import android.text.Html;
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.widget.TextView;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.regex.Pattern;
 
 /**
  * Created by matie on 2015-11-22.

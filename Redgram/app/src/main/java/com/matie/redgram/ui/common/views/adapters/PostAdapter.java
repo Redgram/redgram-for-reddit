@@ -75,7 +75,7 @@ public class PostAdapter extends PostAdapterBase {
     @Override
     public int getItemType(int position) {
         int id = 0; //default
-        PostItem item = ((PostItem)getItem(position));
+        PostItem item = getItem(position);
 
         if(item.getType() == PostItem.Type.DEFAULT) {
             id = TYPE_DEFAULT;

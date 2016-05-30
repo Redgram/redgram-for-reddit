@@ -1,6 +1,5 @@
 package com.matie.redgram.data.managers.presenters;
 
-import java.util.List;
 import java.util.Map;
 
 /**

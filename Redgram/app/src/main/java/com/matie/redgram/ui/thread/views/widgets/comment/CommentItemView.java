@@ -5,10 +5,6 @@ import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
-import com.matie.redgram.data.models.main.items.comment.CommentItem;
-import com.matie.redgram.data.models.main.items.comment.CommentMoreItem;
-
-import butterknife.ButterKnife;
 
 /**
  * Created by matie on 2016-02-12.

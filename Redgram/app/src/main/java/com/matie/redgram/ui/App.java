@@ -28,7 +28,6 @@ public class App extends Application {
 
     @Inject
     ConnectionManager connectionManager;
-    String connectionMsg;
 
     @Inject
     DatabaseManager databaseManager;

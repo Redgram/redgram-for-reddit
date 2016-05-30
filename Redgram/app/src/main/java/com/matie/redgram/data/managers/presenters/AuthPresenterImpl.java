@@ -1,6 +1,5 @@
 package com.matie.redgram.data.managers.presenters;
 
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 
@@ -75,7 +74,7 @@ public class AuthPresenterImpl implements AuthPresenter {
     }
 
     private void bindAuthSubscription() {
-        authSubscription = (Subscription)bindActivity(authView.getBaseActivity(),
+        authSubscription = bindActivity(authView.getBaseActivity(),
                 redditClient.getAuthWrapper(authCode))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())

@@ -103,11 +103,6 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         ButterKnife.reset(this);

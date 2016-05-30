@@ -23,7 +23,7 @@
             android:layout_above="@+id/container_load_more_bar">
 
             <include android:id="@+id/container_recycler_view"
-                layout="@layout/post_recycler_view"></include>
+                layout="@layout/post_recycler_view"/>
 
         </LinearLayout>
 
