@@ -22,11 +22,8 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
-
-import static rx.android.app.AppObservable.bindFragment;
 
 
 /**
@@ -102,16 +99,14 @@ public class HomePresenterImpl implements HomePresenter{
             subredditsObservable = redditClient.getSubscriptions(subparams);
         }
 
-        homeWrapperSubscription = bindFragment(homeView.getBaseFragment(), Observable
-                .zip(subredditsObservable, Observable.just((storedListing != null)), new Func2<RedditListing<SubredditItem>, Boolean, HomeViewWrapper>() {
-                            @Override
-                            public HomeViewWrapper call(RedditListing<SubredditItem> subredditListing, Boolean inStore) {
-                                HomeViewWrapper homeViewWrapper = new HomeViewWrapper();
-                                homeViewWrapper.setSubreddits(subredditListing);
-                                homeViewWrapper.setIsSubredditsCached(inStore);
-                                return homeViewWrapper;
-                            }
-                        }))
+        Observable
+                .zip(subredditsObservable, Observable.just((storedListing != null)), (subredditListing, inStore) -> {
+                    HomeViewWrapper homeViewWrapper = new HomeViewWrapper();
+                    homeViewWrapper.setSubreddits(subredditListing);
+                    homeViewWrapper.setIsSubredditsCached(inStore);
+                    return homeViewWrapper;
+                })
+                .compose(homeView.getBaseFragment().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<HomeViewWrapper>() {

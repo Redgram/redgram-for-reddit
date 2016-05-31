@@ -25,8 +25,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static rx.android.app.AppObservable.bindFragment;
-
 /**
  * Created by matie on 2015-11-29.
  */
@@ -89,7 +87,8 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
             subredditsObservable = redditClient.getSubscriptions(params);
         }
 
-        subredditSubscription = bindFragment(subscriptionView.getBaseFragment(), subredditsObservable)
+        subredditSubscription = subredditsObservable
+                .compose(subscriptionView.getBaseFragment().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing<SubredditItem>>() {

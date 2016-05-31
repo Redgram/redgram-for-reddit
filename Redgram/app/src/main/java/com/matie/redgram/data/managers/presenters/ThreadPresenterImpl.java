@@ -18,8 +18,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static rx.android.app.AppObservable.bindActivity;
-
 /**
  * Created by matie on 2016-02-10.
  */
@@ -59,7 +57,8 @@ public class ThreadPresenterImpl implements ThreadPresenter {
     @Override
     public void getThread(String id) {
         threadView.showLoading();
-        threadSubscription = bindActivity(threadView.getBaseActivity(), redditClient.getCommentsByArticle(id, null))
+        threadSubscription = redditClient.getCommentsByArticle(id, null)
+                .compose(threadView.getBaseActivity().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<CommentsWrapper>() {
@@ -86,7 +85,8 @@ public class ThreadPresenterImpl implements ThreadPresenter {
 
     @Override
     public void vote(PostItem item, int dir) {
-        Subscription voteSubscription = bindActivity(threadView.getBaseActivity(), redditClient.voteFor(item.getName(), dir))
+        Subscription voteSubscription = redditClient.voteFor(item.getName(), dir)
+                .compose(threadView.getBaseActivity().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
@@ -118,7 +118,8 @@ public class ThreadPresenterImpl implements ThreadPresenter {
 
     @Override
     public void save(PostItem item, boolean save) {
-        Subscription saveSubscription = bindActivity(threadView.getBaseActivity(), redditClient.save(item.getName(), save))
+        Subscription saveSubscription = redditClient.save(item.getName(), save)
+                .compose(threadView.getBaseActivity().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
@@ -144,7 +145,8 @@ public class ThreadPresenterImpl implements ThreadPresenter {
 
     @Override
     public void hide(PostItem item, boolean hide) {
-        Subscription hideSubscription = bindActivity(threadView.getBaseActivity(), redditClient.hide(item.getName(), hide))
+        Subscription hideSubscription = redditClient.hide(item.getName(), hide)
+                .compose(threadView.getBaseActivity().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
