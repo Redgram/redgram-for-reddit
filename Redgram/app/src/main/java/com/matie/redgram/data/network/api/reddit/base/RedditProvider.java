@@ -87,7 +87,6 @@ public interface RedditProvider {
             @Path("filter") String filter, @QueryMap Map<String, String> params);
 
 
-
     @GET(SUBREDDITS+MINE+SUBSCRIBER)
     Observable<RedditResponse<RedditListing>> getSubscriptions(@QueryMap Map<String, String> params);
 

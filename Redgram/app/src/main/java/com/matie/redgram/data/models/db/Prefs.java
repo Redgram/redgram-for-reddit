@@ -23,6 +23,9 @@ public class Prefs extends RealmObject {
     private int minLinkScore;
     private int numComments;
     private int numSites;
+    private boolean highlightControversial;
+    private boolean ignoreSuggestedSort;
+    private String media;
 
     public String getId() {
         return id;
@@ -134,5 +137,30 @@ public class Prefs extends RealmObject {
 
     public int getNumSites() {
         return numSites;
+    }
+
+
+    public boolean isHighlightControversial() {
+        return highlightControversial;
+    }
+
+    public void setHighlightControversial(boolean highlightControversial) {
+        this.highlightControversial = highlightControversial;
+    }
+
+    public boolean isIgnoreSuggestedSort() {
+        return ignoreSuggestedSort;
+    }
+
+    public void setIgnoreSuggestedSort(boolean ignoreSuggestedSort) {
+        this.ignoreSuggestedSort = ignoreSuggestedSort;
+    }
+
+    public String getMedia() {
+        return media;
+    }
+
+    public void setMedia(String media) {
+        this.media = media;
     }
 }

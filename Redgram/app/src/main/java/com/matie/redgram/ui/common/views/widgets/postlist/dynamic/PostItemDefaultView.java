@@ -75,7 +75,24 @@ public class PostItemDefaultView extends PostItemSubView {
         postSourceText.setText(item.getDomain());
         postLinkText.setText(item.getUrl());
 
-        Uri thumbnailUri = Uri.parse(item.getThumbnail());
+        if(getUserPrefs().getMedia().equalsIgnoreCase("on") && !isNsfw()){
+            setupThumbnail();
+        }else if(getUserPrefs().getMedia().equalsIgnoreCase("subreddit")){
+            if(!postItem.getThumbnail().isEmpty() && !isNsfw()){
+                setupThumbnail();
+            }else{
+                thumbnailView.setVisibility(GONE);
+            }
+        }else{
+            //no
+            thumbnailView.setVisibility(GONE);
+        }
+
+    }
+
+    private void setupThumbnail() {
+        thumbnailView.setVisibility(VISIBLE);
+        Uri thumbnailUri = Uri.parse(postItem.getThumbnail());
         ImageRequest request = ImageRequestBuilder.newBuilderWithSource(thumbnailUri)
                 .build();
         PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
@@ -89,10 +106,17 @@ public class PostItemDefaultView extends PostItemSubView {
 
     @OnClick(R.id.default_wrapper)
     public void onDefaultWrapperClick(){
-        if(postItem.isAdult() && !getUserPrefs().isOver18()){
+        if(isNsfw()){
             listener.callAgeConfirmDialog();
         }else{
             listener.viewWebMedia(position);
         }
+    }
+
+    private boolean isNsfw(){
+        if(postItem.isAdult() && !getUserPrefs().isOver18()){
+            return true;
+        }
+        return false;
     }
 }

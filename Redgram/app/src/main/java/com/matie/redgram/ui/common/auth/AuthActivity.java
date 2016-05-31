@@ -16,7 +16,9 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.AuthPresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
+import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
 import com.matie.redgram.ui.App;
@@ -48,6 +50,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
     private AuthComponent authComponent;
     private Realm realm;
     private RealmChangeListener realmChangeListener;
+    private RealmResults<User> users;
 
     @Inject
     App app;
@@ -57,6 +60,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
     AuthPresenterImpl authPresenter;
     @Inject
     DialogUtil dialogUtil;
+
 
 
     @Override
@@ -227,7 +231,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
     @Override
     public void showPreferencesOptions(AuthWrapper wrapper) {
         if(realm !=null && !realm.isClosed()){
-            RealmResults<User> users = DatabaseHelper.getUsers(realm);
+            users = DatabaseHelper.getUsers(realm);
             List<String> userNames = new ArrayList<>();
             for(User user : users){
                 userNames.add(user.getUserName());
@@ -249,7 +253,28 @@ public class AuthActivity extends BaseActivity implements AuthView {
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
-                        // TODO: 2016-05-24 find user, get Preferences and update wrapper (except for over_18) then:
+                        for(User user : users){
+                            if(user.getUserName().equalsIgnoreCase(text.toString())){
+                                Prefs prefs = DatabaseHelper.getPrefsByUserId(realm, user.getId());
+
+                                AuthPrefs authPrefs = new AuthPrefs();
+                                authPrefs.setDefaultCommentSort(prefs.getDefaultCommentSort());
+                                authPrefs.setMinCommentScore(prefs.getMinCommentsScore());
+                                authPrefs.setMinLinkScore(prefs.getMinLinkScore());
+                                authPrefs.setNumComments(prefs.getNumComments());
+                                authPrefs.setNumsites(prefs.getNumSites());
+                                authPrefs.setShowFlair(prefs.isShowFlair());
+                                authPrefs.setShowLinkFlair(prefs.isShowLinkFlair());
+                                authPrefs.setShowTrending(prefs.isShowTrending());
+                                authPrefs.setStoreVisits(prefs.isStoreVisits());
+                                authPrefs.setMedia(prefs.getMedia());
+                                authPrefs.setHighlightControversial(prefs.isHighlightControversial());
+                                authPrefs.setIgnoreSuggestedSort(prefs.isIgnoreSuggestedSort());
+
+                                wrapper.setAuthPrefs(authPrefs);
+                                break;
+                            }
+                        }
                         app.getDatabaseManager().setSession(wrapper);
                     }
                 })
@@ -279,7 +304,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        // TODO: 2016-05-24 set to default settings in wrapper except for over_18
+                        wrapper.getAuthPrefs().setToDefault();
                         app.getDatabaseManager().setSession(wrapper);
                     }
                 })

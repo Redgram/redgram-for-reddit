@@ -115,7 +115,7 @@ public class DatabaseHelper {
         Session session = getSession(realm);
         if(session != null){
             realm.beginTransaction();
-            //// TODO: 2016-05-24 update realm and use a built-in function
+            //// TODO: 2016-05-24 update realm and use a user-defined function in Session.class
             session.getUser().getPrefs().removeFromRealm();
             session.getUser().getTokenInfo().removeFromRealm();
             session.getUser().removeFromRealm();
@@ -199,19 +199,22 @@ public class DatabaseHelper {
 
     public static Prefs buildPrefs(AuthPrefs authPrefs) {
         Prefs prefs = new Prefs();
-        prefs.setDefaultCommentSort(authPrefs.getDefault_comment_sort());
-        prefs.setHideDowns(authPrefs.isHide_downs());
-        prefs.setHideUps(authPrefs.isHide_ups());
-        prefs.setLabelNsfw(authPrefs.isLabel_nsfw());
-        prefs.setMinCommentsScore(authPrefs.getMin_comment_score());
-        prefs.setMinLinkScore(authPrefs.getMin_link_score());
-        prefs.setNumComments(authPrefs.getNum_comments());
+        prefs.setDefaultCommentSort(authPrefs.getDefaultCommentSort());
+        prefs.setHideDowns(authPrefs.isHideDowns());
+        prefs.setHideUps(authPrefs.isHideUps());
+        prefs.setLabelNsfw(authPrefs.isLabelNsfw());
+        prefs.setMinCommentsScore(authPrefs.getMinCommentScore());
+        prefs.setMinLinkScore(authPrefs.getMinLinkScore());
+        prefs.setNumComments(authPrefs.getNumComments());
         prefs.setNumSites(authPrefs.getNumSites());
-        prefs.setOver18(authPrefs.isOver_18());
-        prefs.setShowFlair(authPrefs.isShow_flair());
-        prefs.setShowLinkFlair(authPrefs.isShow_link_flair());
-        prefs.setShowTrending(authPrefs.isShow_trending());
-        prefs.setStoreVisits(authPrefs.isStore_visits());
+        prefs.setOver18(authPrefs.isOver18());
+        prefs.setShowFlair(authPrefs.isShowFlair());
+        prefs.setShowLinkFlair(authPrefs.isShowLinkFlair());
+        prefs.setShowTrending(authPrefs.isShowTrending());
+        prefs.setStoreVisits(authPrefs.isStoreVisits());
+        prefs.setMedia(authPrefs.getMedia());
+        prefs.setHighlightControversial(authPrefs.isHighlightControversial());
+        prefs.setIgnoreSuggestedSort(authPrefs.getIgnoreSuggestedSort());
         return prefs;
     }
 
