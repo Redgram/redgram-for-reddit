@@ -28,19 +28,14 @@ import butterknife.InjectView;
 
 public class AuthActivity extends BaseActivity implements AuthView {
 
-    @InjectView(R.id.web_view)
-    WebView mContentView;
-    @InjectView(R.id.loading_view)
-    FrameLayout loadingLayout;
+    @InjectView(R.id.web_view) WebView mContentView;
+    @InjectView(R.id.loading_view) FrameLayout loadingLayout;
 
     private AuthComponent authComponent;
 
-    @Inject
-    App app;
-    @Inject
-    DatabaseManager databaseManager;
-    @Inject
-    AuthPresenterImpl authPresenter;
+    @Inject App app;
+    @Inject DatabaseManager databaseManager;
+    @Inject AuthPresenterImpl authPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

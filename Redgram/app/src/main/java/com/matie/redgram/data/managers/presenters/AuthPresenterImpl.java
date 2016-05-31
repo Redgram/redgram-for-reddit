@@ -17,8 +17,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static rx.android.app.AppObservable.bindActivity;
-
 
 /**
  * Created by matie on 2016-02-21.
@@ -74,8 +72,8 @@ public class AuthPresenterImpl implements AuthPresenter {
     }
 
     private void bindAuthSubscription() {
-        authSubscription = bindActivity(authView.getBaseActivity(),
-                redditClient.getAuthWrapper(authCode))
+        redditClient.getAuthWrapper(authCode)
+                .compose(authView.getBaseActivity().bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AuthWrapper>() {

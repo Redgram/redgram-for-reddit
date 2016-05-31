@@ -23,8 +23,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static rx.android.app.AppObservable.bindFragment;
-
 /**
  * Created by matie on 2016-03-15.
  */
@@ -109,7 +107,8 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     @Override
     public void voteFor(int position, String name, Integer dir) {
-        Subscription voteSubscription = bindFragment(containerView.getBaseFragment(), redditClient.voteFor(name, dir))
+        Subscription voteSubscription = redditClient.voteFor(name, dir)
+                .compose(containerView.getBaseFragment().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
@@ -143,7 +142,8 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     @Override
     public void hide(int position, String name, boolean showUndo) {
-        Subscription hideSubscription = bindFragment(containerView.getBaseFragment(), redditClient.hide(name, true))
+        Subscription hideSubscription = redditClient.hide(name, true)
+                .compose(containerView.getBaseFragment().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
@@ -176,8 +176,8 @@ public class LinksPresenterImpl implements LinksPresenter {
         int removedItemPos = removedItemPosition;
         PostItem removedPost = removedItem;
 
-        Subscription unHideSubscription = bindFragment(containerView.getBaseFragment(), redditClient.hide(removedPost.getName(), false))
-                .subscribeOn(Schedulers.io())
+        Subscription unHideSubscription = redditClient.hide(removedPost.getName(), true)
+                .compose(containerView.getBaseFragment().bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
                     @Override
@@ -201,7 +201,8 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     @Override
     public void save(int position, String name, boolean save) {
-        Subscription saveSubscription = bindFragment(containerView.getBaseFragment(), redditClient.save(name, save))
+        Subscription saveSubscription = redditClient.save(name, save)
+                .compose(containerView.getBaseFragment().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
@@ -234,7 +235,8 @@ public class LinksPresenterImpl implements LinksPresenter {
     @Override
     public void report(int position) {
         final String name = linksView.getItem(position).getName();
-        Subscription reportSubscription = bindFragment(containerView.getBaseFragment(), redditClient.report(name))
+        Subscription reportSubscription = redditClient.report(name)
+                .compose(containerView.getBaseFragment().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
@@ -276,7 +278,8 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     // TODO: 2016-04-21 share Subscriber with getSearchSubscription
     private Subscription buildSubscription(Observable<RedditListing<PostItem>> observable, boolean isNew){
-        return bindFragment(containerView.getBaseFragment(), observable)
+        return observable
+                .compose(containerView.getBaseFragment().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing>() {
@@ -313,7 +316,8 @@ public class LinksPresenterImpl implements LinksPresenter {
                 });
     }
     private Subscription getSearchSubscription(String subreddit, Map<String, String> params, boolean isNew) {
-        return bindFragment(containerView.getBaseFragment(), redditClient.executeSearch(subreddit, params, ((!isNew) ? linksView.getItems() : null)))
+        return redditClient.executeSearch(subreddit, params, ((!isNew) ? linksView.getItems() : null))
+                .compose(containerView.getBaseFragment().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing>() {
