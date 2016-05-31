@@ -19,7 +19,7 @@ import rx.subscriptions.CompositeSubscription;
 
 
 /**
- * Created by matie on 2016-02-21.
+ * Presenter implementation for the Authentication View.
  */
 public class AuthPresenterImpl implements AuthPresenter {
 
@@ -72,7 +72,7 @@ public class AuthPresenterImpl implements AuthPresenter {
     }
 
     private void bindAuthSubscription() {
-        redditClient.getAuthWrapper(authCode)
+        authSubscription = redditClient.getAuthWrapper(authCode)
                 .compose(authView.getBaseActivity().bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())

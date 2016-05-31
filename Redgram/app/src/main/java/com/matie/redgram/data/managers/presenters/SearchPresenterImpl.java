@@ -9,14 +9,14 @@ import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Created by matie on 28/06/15.
+ * Search Presenter Implementation
  */
 public class SearchPresenterImpl implements SearchPresenter {
 
     private final SearchView searchView;
     private final RedditClient redditClient;
 
-    CompositeSubscription subscriptions;
+    private CompositeSubscription subscriptions;
 
     @Inject
     public SearchPresenterImpl(SearchView searchView, App app) {

@@ -11,7 +11,6 @@ import com.matie.redgram.ui.subcription.views.SubscriptionView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,7 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Created by matie on 2015-11-29.
+ * Subscription Presenter Implementation
  */
 public class SubscriptionPresenterImpl implements SubscriptionPresenter {
     final private SubscriptionView subscriptionView;
@@ -45,7 +44,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         this.subscriptionView = subscriptionView;
         this.subredditRecyclerView = subscriptionView.getRecyclerView();
         this.redditClient = app.getRedditClient();
-        this.subredditItems = new ArrayList<SubredditItem>();
+        this.subredditItems = new ArrayList<>();
         this.databaseManager = app.getDatabaseManager();
     }
 
@@ -71,7 +70,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         subredditItems.clear();
         subscriptionView.showLoading();
 
-        Map<String,String> params = new HashMap<String, String>();
+        Map<String,String> params = new HashMap<>();
         params.put("limit", "100");
 
         //check if subreddits are in db
@@ -107,12 +106,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
                         subredditItems.addAll(subredditListing.getItems());
 
                         //todo optimize
-                        Collections.sort(subredditItems, new Comparator<SubredditItem>() {
-                            @Override
-                            public int compare(SubredditItem lhs, SubredditItem rhs) {
-                                return lhs.getName().compareToIgnoreCase(rhs.getName());
-                            }
-                        });
+                        Collections.sort(subredditItems, (lhs, rhs) -> lhs.getName().compareToIgnoreCase(rhs.getName()));
 
                         subredditRecyclerView.replaceWith(subredditItems);
                         if(subredditListing.getAfter() != null){
@@ -126,7 +120,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
                 });
     }
 
-    public RedditListing<SubredditItem> getSubredditsFromCache() {
+    private RedditListing<SubredditItem> getSubredditsFromCache() {
         List<Subreddit> subreddits = databaseManager.getSubreddits();
         if(!subreddits.isEmpty()){
             return buildSubredditListing(subreddits);

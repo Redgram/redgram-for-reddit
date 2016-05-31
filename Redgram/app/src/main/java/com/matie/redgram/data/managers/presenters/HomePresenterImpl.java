@@ -11,7 +11,6 @@ import com.matie.redgram.ui.home.views.HomeView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,7 @@ import rx.subscriptions.CompositeSubscription;
 
 
 /**
- * Created by matie on 12/04/15.
+ * Home Presenter Implementation
  */
 
 public class HomePresenterImpl implements HomePresenter{
@@ -35,7 +34,7 @@ public class HomePresenterImpl implements HomePresenter{
     final private RedditClient redditClient;
     final private DatabaseManager databaseManager;
 
-    private LinksPresenter linksPresenter;
+    //private LinksPresenter linksPresenter;
     private CompositeSubscription subscriptions;
 
     private List<SubredditItem> subredditItems;
@@ -46,14 +45,14 @@ public class HomePresenterImpl implements HomePresenter{
 
     /**
      * Called onCreate(View) of MainActivity/Fragment
-     * @param homeView
+     * @param homeView View for presenter to interact with
      */
     @Inject
     public HomePresenterImpl(HomeView homeView, App app) {
         this.homeView = homeView;
         this.redditClient = app.getRedditClient();
         this.databaseManager = app.getDatabaseManager();
-        this.subredditItems = new ArrayList<SubredditItem>();
+        this.subredditItems = new ArrayList<>();
     }
 
     /**
@@ -88,7 +87,7 @@ public class HomePresenterImpl implements HomePresenter{
         // TODO: 2016-05-11 find a way to make this wrapper subscribe on the links container call
         //homeView.showLoading();
 
-        Map<String,String> subparams = new HashMap<String, String>();
+        Map<String,String> subparams = new HashMap<>();
         subparams.put("limit", "100");
 
         RedditListing<SubredditItem> storedListing =  getSubredditsFromCache();
@@ -99,7 +98,7 @@ public class HomePresenterImpl implements HomePresenter{
             subredditsObservable = redditClient.getSubscriptions(subparams);
         }
 
-        Observable
+        homeWrapperSubscription = Observable
                 .zip(subredditsObservable, Observable.just((storedListing != null)), (subredditListing, inStore) -> {
                     HomeViewWrapper homeViewWrapper = new HomeViewWrapper();
                     homeViewWrapper.setSubreddits(subredditListing);
@@ -126,12 +125,7 @@ public class HomePresenterImpl implements HomePresenter{
                         //dealing with the subreddits
                         RedditListing<SubredditItem> subredditListing = homeViewWrapper.getSubreddits();
                         subredditItems.addAll(subredditListing.getItems());
-                        Collections.sort(subredditItems, new Comparator<SubredditItem>() {
-                            @Override
-                            public int compare(SubredditItem lhs, SubredditItem rhs) {
-                                return lhs.getName().compareToIgnoreCase(rhs.getName());
-                            }
-                        });
+                        Collections.sort(subredditItems, (lhs, rhs) -> lhs.getName().compareToIgnoreCase(rhs.getName()));
                         //add to db
                         if(!homeViewWrapper.getIsSubredditsCached()){
                             setSubredditsInCache(homeViewWrapper.getSubreddits());
@@ -160,7 +154,7 @@ public class HomePresenterImpl implements HomePresenter{
         return subredditNames;
     }
 
-    public RedditListing<SubredditItem> getSubredditsFromCache() {
+    private RedditListing<SubredditItem> getSubredditsFromCache() {
         List<Subreddit> subreddits = databaseManager.getSubreddits();
         if(!subreddits.isEmpty()){
             return buildSubredditListing(subreddits);

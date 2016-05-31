@@ -1,11 +1,11 @@
 package com.matie.redgram.data.managers.presenters;
 
 /**
- * Created by matie on 2015-11-29.
+ * Subscription Presenter Interface
  */
 public interface SubscriptionPresenter {
-    public void registerForEvents();
-    public void unregisterForEvents();
+    void registerForEvents();
+    void unregisterForEvents();
 
-    public void getSubreddits(boolean forceNetwork);
+    void getSubreddits(boolean forceNetwork);
 }

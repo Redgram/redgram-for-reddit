@@ -24,7 +24,7 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Created by matie on 2016-03-15.
+ * Links Presenter Implementation
  */
 public class LinksPresenterImpl implements LinksPresenter {
     final private LinksView linksView;
@@ -262,7 +262,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     }
 
     private Subscription getListingSubscription(@Nullable String subreddit, @Nullable String filter, Map<String,String> params, boolean isNew){
-        Observable<RedditListing<PostItem>> targetObservable = null;
+        Observable<RedditListing<PostItem>> targetObservable;
 
         if(subreddit != null){
             if(filter != null)
@@ -275,7 +275,7 @@ public class LinksPresenterImpl implements LinksPresenter {
 
         return buildSubscription(targetObservable, isNew);
     }
-
+    @SuppressWarnings("unchecked")
     // TODO: 2016-04-21 share Subscriber with getSearchSubscription
     private Subscription buildSubscription(Observable<RedditListing<PostItem>> observable, boolean isNew){
         return observable
@@ -315,6 +315,8 @@ public class LinksPresenterImpl implements LinksPresenter {
                     }
                 });
     }
+
+    @SuppressWarnings("unchecked")
     private Subscription getSearchSubscription(String subreddit, Map<String, String> params, boolean isNew) {
         return redditClient.executeSearch(subreddit, params, ((!isNew) ? linksView.getItems() : null))
                 .compose(containerView.getBaseFragment().bindToLifecycle())

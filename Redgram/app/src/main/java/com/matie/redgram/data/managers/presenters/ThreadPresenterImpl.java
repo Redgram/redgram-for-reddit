@@ -19,7 +19,7 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Created by matie on 2016-02-10.
+ * Thread Presenter Implementation
  */
 public class ThreadPresenterImpl implements ThreadPresenter {
 
