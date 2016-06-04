@@ -23,5 +23,4 @@ public abstract class BasePreviewFragment extends BaseFragment {
         return getResources().getString(R.string.local_cache_key);
     }
 
-
 }

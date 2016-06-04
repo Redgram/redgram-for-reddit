@@ -362,4 +362,8 @@ public class LinksPresenterImpl implements LinksPresenter {
     public void setRemovedItemPosition(int removedItemPosition) {
         this.removedItemPosition = removedItemPosition;
     }
+
+    public void setLoadMoreId(String loadMoreId) {
+        this.loadMoreId = loadMoreId;
+    }
 }

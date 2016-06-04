@@ -1,8 +1,10 @@
 package com.matie.redgram.data.managers.presenters;
 
+import com.matie.redgram.R;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.main.home.HomeViewWrapper;
+import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
@@ -31,9 +33,10 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class HomePresenterImpl implements HomePresenter{
-    final private HomeView homeView;
-    final private RedditClient redditClient;
-    final private DatabaseManager databaseManager;
+    private final App app;
+    private final HomeView homeView;
+    private final RedditClient redditClient;
+    private final DatabaseManager databaseManager;
 
     private LinksPresenter linksPresenter;
     private CompositeSubscription subscriptions;
@@ -50,6 +53,7 @@ public class HomePresenterImpl implements HomePresenter{
      */
     @Inject
     public HomePresenterImpl(HomeView homeView, App app) {
+        this.app = app;
         this.homeView = homeView;
         this.redditClient = app.getRedditClient();
         this.databaseManager = app.getDatabaseManager();
@@ -85,8 +89,12 @@ public class HomePresenterImpl implements HomePresenter{
      */
     @Override
     public void getHomeViewWrapper() {
-        // TODO: 2016-05-11 find a way to make this wrapper subscribe on the links container call
-        //homeView.showLoading();
+        homeView.showLoading();
+
+        //todo: get filter from settings
+        Observable<RedditListing<PostItem>> linksObservable =
+                redditClient.getListing(app.getResources().getString(R.string.default_filter).toLowerCase(),
+                        new HashMap<String, String>(), null);
 
         Map<String,String> subparams = new HashMap<String, String>();
         subparams.put("limit", "100");
@@ -100,10 +108,11 @@ public class HomePresenterImpl implements HomePresenter{
         }
 
         Observable
-                .zip(subredditsObservable, Observable.just((storedListing != null)), (subredditListing, inStore) -> {
+                .zip(linksObservable, subredditsObservable, Observable.just((storedListing != null)), (links, subredditListing, inStore) -> {
                     HomeViewWrapper homeViewWrapper = new HomeViewWrapper();
                     homeViewWrapper.setSubreddits(subredditListing);
                     homeViewWrapper.setIsSubredditsCached(inStore);
+                    homeViewWrapper.setLinks(links);
                     return homeViewWrapper;
                 })
                 .compose(homeView.getBaseFragment().bindToLifecycle())
@@ -112,7 +121,7 @@ public class HomePresenterImpl implements HomePresenter{
                 .subscribe(new Subscriber<HomeViewWrapper>() {
                     @Override
                     public void onCompleted() {
-                        //homeView.hideLoading();
+                        homeView.hideLoading();
                     }
 
                     @Override
@@ -123,6 +132,9 @@ public class HomePresenterImpl implements HomePresenter{
 
                     @Override
                     public void onNext(HomeViewWrapper homeViewWrapper) {
+                        //dealing with links
+                        homeView.loadLinksContainer(homeViewWrapper.getLinks());
+
                         //dealing with the subreddits
                         RedditListing<SubredditItem> subredditListing = homeViewWrapper.getSubreddits();
                         subredditItems.addAll(subredditListing.getItems());
