@@ -3,7 +3,7 @@ package com.matie.redgram.data.managers.presenters;
 import java.util.List;
 
 /**
- * Created by matie on 12/04/15.
+ * Home Presenter Interface
  */
 public interface HomePresenter {
     void registerForEvents();

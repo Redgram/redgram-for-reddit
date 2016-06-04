@@ -8,7 +8,8 @@ import java.util.Map;
 import javax.inject.Inject;
 
 /**
- * Created by matie on 2016-02-11.
+ * Comments Presenter Implementation
+ * TODO Actually implement
  */
 public class CommentsPresenterImpl implements CommentsPresenter {
 

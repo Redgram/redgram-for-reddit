@@ -1,7 +1,7 @@
 package com.matie.redgram.data.managers.presenters;
 
 /**
- * Created by matie on 2016-02-21.
+ * Authentication Presenter Interface
  */
 public interface AuthPresenter {
     void registerForEvents();

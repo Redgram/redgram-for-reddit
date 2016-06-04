@@ -3,7 +3,7 @@ package com.matie.redgram.data.managers.presenters;
 import java.util.Map;
 
 /**
- * Created by matie on 2016-03-15.
+ * Links Presenter Interface.
  */
 public interface LinksPresenter {
     void registerForEvents();
