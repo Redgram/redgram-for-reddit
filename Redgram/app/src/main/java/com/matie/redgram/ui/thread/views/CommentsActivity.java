@@ -363,23 +363,6 @@ public class CommentsActivity extends BaseActivity implements ThreadView, Coordi
         return bundle;
     }
 
-    private boolean isImagePreview(PostItem postItem) {
-        PostItem.Type type = postItem.getType();
-        if(type == PostItem.Type.IMAGE)
-            return true;
-        else
-            return false;
-    }
-
-    // TODO: 2016-01-06 For now, provide only WebPreview for anything that is NOT an image
-    private boolean isWebPreview(PostItem postItem) {
-        PostItem.Type type = postItem.getType();
-        if(type != PostItem.Type.IMAGE)
-            return true;
-        else
-            return false;
-    }
-
     private void setToolbarTitle(int position) {
         getSupportActionBar().setTitle(commentsPagerAdapter.getPageTitle(position));
     }

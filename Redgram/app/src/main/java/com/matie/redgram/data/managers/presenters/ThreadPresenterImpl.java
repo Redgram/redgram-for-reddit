@@ -40,7 +40,7 @@ public class ThreadPresenterImpl implements ThreadPresenter {
         if(subscriptions == null)
             subscriptions = new CompositeSubscription();
 
-        if(subscriptions.isUnsubscribed()){
+        if(!subscriptions.hasSubscriptions()){
             if(threadSubscription != null){
                 subscriptions.add(threadSubscription);
             }
@@ -49,7 +49,7 @@ public class ThreadPresenterImpl implements ThreadPresenter {
 
     @Override
     public void unregisterForEvents() {
-        if(subscriptions.hasSubscriptions() || subscriptions != null){
+        if(subscriptions != null && subscriptions.hasSubscriptions()){
             subscriptions.unsubscribe();
         }
     }

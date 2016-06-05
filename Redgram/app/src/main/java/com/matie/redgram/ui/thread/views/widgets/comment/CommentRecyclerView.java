@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.ui.thread.views.CommentsView;
@@ -26,7 +27,7 @@ public class CommentRecyclerView extends RecyclerView {
         super(context, attrs);
 
         this.context = context;
-        this.layoutManager = new LinearLayoutManager(context);
+        this.layoutManager = new WrapContentLinearLayoutManager(context);
         this.commentsAdapter = new CommentsAdapter(context);
     }
 
@@ -57,4 +58,26 @@ public class CommentRecyclerView extends RecyclerView {
     public void setAdapterListener(CommentsView listener) {
         commentsAdapter.setCommentListener(listener);
     }
+
+    /**
+     * Based on http://stackoverflow.com/a/33822747/2898754
+     *
+     * This prevents IndexOutOfBoundException when notifyItemRangeInserted is called
+     */
+    private class WrapContentLinearLayoutManager extends LinearLayoutManager{
+
+        public WrapContentLinearLayoutManager(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void onLayoutChildren(Recycler recycler, State state) {
+            try{
+                super.onLayoutChildren(recycler, state);
+            }catch (IndexOutOfBoundsException e){
+                Log.e("probe", "meet a IOOBE in RecyclerView");
+            }
+        }
+    }
+
 }
