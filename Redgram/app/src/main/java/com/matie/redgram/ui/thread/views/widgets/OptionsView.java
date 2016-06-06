@@ -1,7 +1,6 @@
 package com.matie.redgram.ui.thread.views.widgets;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
@@ -16,7 +15,6 @@ import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.utils.text.CustomClickable;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 import com.matie.redgram.ui.common.utils.text.StringUtils;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
 import com.matie.redgram.ui.thread.views.ThreadView;
 
 import butterknife.ButterKnife;

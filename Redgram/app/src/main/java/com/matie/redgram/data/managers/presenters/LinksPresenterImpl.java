@@ -80,6 +80,7 @@ public class LinksPresenterImpl implements LinksPresenter {
         if(params.containsKey("after")){
             params.remove("after");
         }
+        params.put("limit", app.getAuthUserPrefs().getNumSites()+"");
         containerView.showLoading();
         listingSubscription = getListingSubscription(subreddit, front, params, true);
     }
@@ -87,6 +88,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     @Override
     public void getMoreListing(String subreddit, @Nullable String front, Map<String, String> params) {
         params.put("after", loadMoreId);
+        params.put("limit", app.getAuthUserPrefs().getNumSites()+"");
         linksView.showLoading();
         if(front != null){
             listingSubscription = getListingSubscription(subreddit, front, params, false);

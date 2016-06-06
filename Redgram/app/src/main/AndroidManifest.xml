@@ -41,7 +41,7 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".ui.thread.views.CommentsActivity"
+            android:name=".ui.thread.views.ThreadActivity"
             android:label="@string/title_activity_comments"
             android:theme="@style/Slider"
             android:screenOrientation="portrait">

@@ -7,7 +7,7 @@ import com.matie.redgram.data.managers.presenters.ThreadPresenterImpl;
 import com.matie.redgram.ui.ActivityScope;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
+import com.matie.redgram.ui.thread.views.ThreadActivity;
 import com.matie.redgram.ui.thread.views.ThreadView;
 
 import dagger.Module;
@@ -29,8 +29,8 @@ public class ThreadModule {
 
     @ActivityScope
     @Provides
-    CommentsActivity activity(){
-        return (CommentsActivity)activity;
+    ThreadActivity activity(){
+        return (ThreadActivity)activity;
     }
 
     @ActivityScope

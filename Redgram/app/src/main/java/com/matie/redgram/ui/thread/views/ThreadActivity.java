@@ -59,6 +59,7 @@ import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.r0adkll.slidr.model.SlidrListener;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -68,7 +69,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
-public class CommentsActivity extends BaseActivity implements ThreadView, CoordinatorLayoutInterface{
+public class ThreadActivity extends BaseActivity implements ThreadView, CoordinatorLayoutInterface{
 
     public static final int REQ_CODE = 99;
     public static final String RESULT_POST_CHANGE = "result_post_change";
@@ -168,7 +169,7 @@ public class CommentsActivity extends BaseActivity implements ThreadView, Coordi
         }).build();
 
         mSlidrInterface = Slidr.attach(this, config);
-        threadPresenter.getThread(postItem.getId());
+        threadPresenter.getThread(postItem.getId(), new HashMap<>());
     }
 
 

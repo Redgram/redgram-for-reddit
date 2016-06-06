@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.CommentsPresenterImpl;
-import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentItem;
 import com.matie.redgram.data.models.main.items.comment.CommentMoreItem;
@@ -22,7 +21,7 @@ import com.matie.redgram.ui.thread.components.CommentsComponent;
 import com.matie.redgram.ui.thread.components.DaggerCommentsComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
 import com.matie.redgram.ui.thread.modules.CommentsModule;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
+import com.matie.redgram.ui.thread.views.ThreadActivity;
 import com.matie.redgram.ui.thread.views.CommentsView;
 import com.matie.redgram.ui.thread.views.adapters.CommentsAdapter;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView;
@@ -103,7 +102,7 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        ((CommentsActivity)context).commentsView = this;
+        ((ThreadActivity)context).commentsView = this;
     }
 
     private void refreshComments(List<CommentBaseItem> items){

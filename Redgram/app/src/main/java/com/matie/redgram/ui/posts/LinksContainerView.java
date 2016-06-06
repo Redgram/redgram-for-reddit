@@ -44,7 +44,7 @@ import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.posts.views.LinksView;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
+import com.matie.redgram.ui.thread.views.ThreadActivity;
 
 import java.io.File;
 import java.util.HashMap;
@@ -175,7 +175,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         if(params != null){
             this.params = urlParams;
         }
-        linksPresenter.getListing(subredditChoice, filterChoice, params);
+        refreshView();
     }
 
     @Override
@@ -275,7 +275,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     @Override
     public void loadCommentsForPost(int position) {
-        Intent intent = new Intent(context, CommentsActivity.class);
+        Intent intent = new Intent(context, ThreadActivity.class);
         String key = getResources().getString(R.string.main_data_key);
         String posKey = getResources().getString(R.string.main_data_position);
         intent.putExtra(key, new Gson().toJson(getItem(position)));
@@ -285,10 +285,10 @@ public class LinksContainerView extends FrameLayout implements LinksView {
                 ((BaseActivity) context).getSupportFragmentManager().findFragmentByTag(getHostingFragmentTag());
         if(hostingFragment != null){
             ((BaseFragment)hostingFragment)
-                    .openIntentForResult(intent, CommentsActivity.REQ_CODE, R.anim.enter, R.anim.exit);
+                    .openIntentForResult(intent, ThreadActivity.REQ_CODE, R.anim.enter, R.anim.exit);
         }else{
             ((BaseActivity) context)
-                    .openIntentForResult(intent, CommentsActivity.REQ_CODE, R.anim.enter, R.anim.exit);
+                    .openIntentForResult(intent, ThreadActivity.REQ_CODE, R.anim.enter, R.anim.exit);
         }
     }
 

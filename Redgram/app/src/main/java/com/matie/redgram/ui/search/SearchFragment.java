@@ -1,14 +1,11 @@
 package com.matie.redgram.ui.search;
 
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,7 +24,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -51,8 +47,7 @@ import com.matie.redgram.ui.posts.LinksComponent;
 import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.search.views.SearchView;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
-import com.nineoldandroids.view.ViewHelper;
+import com.matie.redgram.ui.thread.views.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.Arrays;
@@ -134,11 +129,11 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == CommentsActivity.REQ_CODE){
+        if(requestCode == ThreadActivity.REQ_CODE){
             if(resultCode == Activity.RESULT_OK){
                 PostItem postItem = new Gson()
-                        .fromJson(data.getStringExtra(CommentsActivity.RESULT_POST_CHANGE), PostItem.class);
-                int pos = data.getIntExtra(CommentsActivity.RESULT_POST_POS, -1);
+                        .fromJson(data.getStringExtra(ThreadActivity.RESULT_POST_CHANGE), PostItem.class);
+                int pos = data.getIntExtra(ThreadActivity.RESULT_POST_POS, -1);
                 if(linksContainerView.getItems().contains(postItem) && pos >= 0){
                     // TODO: 2016-04-18 override hashcode to check whether item has actually changed before calling update
                     // TODO: 2016-04-18 Also, use the same mechanism for single item operations in LinkContainerView

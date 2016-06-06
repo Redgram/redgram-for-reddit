@@ -1,7 +1,6 @@
 package com.matie.redgram.ui.home;
 
 
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -40,8 +39,7 @@ import com.matie.redgram.ui.posts.LinksComponent;
 import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
-import com.nineoldandroids.view.ViewHelper;
+import com.matie.redgram.ui.thread.views.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.HashMap;
@@ -309,11 +307,11 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == CommentsActivity.REQ_CODE){
+        if(requestCode == ThreadActivity.REQ_CODE){
             if(resultCode == Activity.RESULT_OK){
                 PostItem postItem = new Gson()
-                        .fromJson(data.getStringExtra(CommentsActivity.RESULT_POST_CHANGE), PostItem.class);
-                int pos = data.getIntExtra(CommentsActivity.RESULT_POST_POS, -1);
+                        .fromJson(data.getStringExtra(ThreadActivity.RESULT_POST_CHANGE), PostItem.class);
+                int pos = data.getIntExtra(ThreadActivity.RESULT_POST_POS, -1);
                 if(linksContainerView.getItems().contains(postItem) && pos >= 0){
                     // TODO: 2016-04-18 override hashcode to check whether item has actually changed before calling update
                     if(postItem.isHidden()){
