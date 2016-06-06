@@ -273,7 +273,8 @@ public class LinksPresenterImpl implements LinksPresenter {
         AuthPrefs prefs = new AuthPrefs();
         prefs.setOver18(true);
 
-        Subscription subscription = bindFragment(containerView.getBaseFragment(), redditClient.updatePrefs(prefs))
+        Subscription subscription = redditClient.updatePrefs(prefs)
+                .compose(containerView.getBaseFragment().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<AuthPrefs>() {
