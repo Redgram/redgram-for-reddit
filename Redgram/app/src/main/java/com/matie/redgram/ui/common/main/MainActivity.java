@@ -45,6 +45,7 @@ import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.widgets.drawer.UserRecyclerView;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.ui.search.SearchFragment;
+import com.matie.redgram.ui.settings.SettingsActivity;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -463,7 +464,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                     openFragmentWithResult(homeFragment, Fragments.HOME.toString());
                 }
             }
-            return;
         }
     }
 
@@ -517,6 +517,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         } else if(id == R.id.nav_subs){
             Intent intent = new Intent(this, SubscriptionActivity.class);
             startActivityForResult(intent, SUBSCRIPTION_REQUEST_CODE);
+        } else if(id == R.id.nav_settings){
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         } else if(id == R.id.nav_logout){
             app.getToastHandler().showToast("Logout", Toast.LENGTH_SHORT);
             logoutCurrentUser();

@@ -93,7 +93,10 @@ public class App extends Application {
     }
 
     public Prefs getAuthUserPrefs() {
-        return authUserPrefs;
+        if(authUserPrefs != null){
+            return authUserPrefs;
+        }
+        return new Prefs();
     }
 
     public void startAuthActivity(){
