@@ -8,19 +8,20 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.matie.redgram.R;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
+import com.trello.rxlifecycle.components.RxActivity;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import icepick.Icepick;
 
 /**
  * Created by matie on 09/06/15.
  */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends RxAppCompatActivity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,7 +29,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(getLayoutId());
 
-        AppComponent appComponent = (AppComponent) App.get(this).component();
+        AppComponent appComponent = App.get(this).component();
         setupComponent(appComponent);
     }
 

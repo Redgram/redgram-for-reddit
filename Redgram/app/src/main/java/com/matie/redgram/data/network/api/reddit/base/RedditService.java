@@ -9,12 +9,12 @@ import com.google.gson.GsonBuilder;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
-import com.matie.redgram.data.utils.reddit.BooleanDateDeserializer;
-import com.matie.redgram.ui.App;
-import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
+import com.matie.redgram.data.network.connection.ConnectionManager;
+import com.matie.redgram.data.utils.reddit.BooleanDateDeserializer;
 import com.matie.redgram.data.utils.reddit.DateTimeDeserializer;
 import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
+import com.matie.redgram.ui.App;
 
 import org.joda.time.DateTime;
 
@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
-
 
 import okhttp3.Authenticator;
 import okhttp3.Cache;

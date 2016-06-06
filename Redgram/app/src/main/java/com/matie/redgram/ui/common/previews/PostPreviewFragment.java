@@ -12,9 +12,9 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.thread.views.PostView;
-import com.matie.redgram.ui.common.base.BaseActivity;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -55,7 +55,7 @@ public class PostPreviewFragment extends BasePreviewFragment implements PostView
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        this.activity = (BaseActivity)getActivity();
+        this.activity = getActivity();
     }
 
     @Override

@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.trello.rxlifecycle.components.support.RxFragment;
+
 import icepick.Icepick;
 
 /**
  * Created by matie on 09/06/15.
  */
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends RxFragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

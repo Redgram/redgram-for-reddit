@@ -1,9 +1,6 @@
 package com.matie.redgram.data.models.main.items.comment;
 
 import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
-
-import java.util.List;
 
 /**
  * Created by matie on 2016-02-08.

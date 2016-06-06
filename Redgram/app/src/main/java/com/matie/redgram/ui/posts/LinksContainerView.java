@@ -484,4 +484,8 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         }
     }
 
+    public void setLoadMoreId(String id){
+        ((LinksPresenterImpl)linksPresenter).setLoadMoreId(id);
+    }
+
 }

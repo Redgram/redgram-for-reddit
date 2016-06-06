@@ -30,11 +30,11 @@ public class DatabaseHelper {
         }
     }
 
-    public static Session getSession(Realm realm){
+    static Session getSession(Realm realm){
         return realm.where(Session.class).findFirst();
     }
 
-    public static void setSession(Realm realm, Session session) {
+    private static void setSession(Realm realm, Session session) {
         realm.beginTransaction();
         realm.copyToRealmOrUpdate(session);
         realm.commitTransaction();

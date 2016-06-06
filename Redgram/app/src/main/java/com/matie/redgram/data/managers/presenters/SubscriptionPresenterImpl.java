@@ -2,7 +2,6 @@ package com.matie.redgram.data.managers.presenters;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Subreddit;
-import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
@@ -12,14 +11,12 @@ import com.matie.redgram.ui.subcription.views.SubscriptionView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.realm.RealmList;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -27,10 +24,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static rx.android.app.AppObservable.bindFragment;
-
 /**
- * Created by matie on 2015-11-29.
+ * Subscription Presenter Implementation
  */
 public class SubscriptionPresenterImpl implements SubscriptionPresenter {
     final private SubscriptionView subscriptionView;
@@ -49,7 +44,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         this.subscriptionView = subscriptionView;
         this.subredditRecyclerView = subscriptionView.getRecyclerView();
         this.redditClient = app.getRedditClient();
-        this.subredditItems = new ArrayList<SubredditItem>();
+        this.subredditItems = new ArrayList<>();
         this.databaseManager = app.getDatabaseManager();
     }
 
@@ -75,7 +70,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         subredditItems.clear();
         subscriptionView.showLoading();
 
-        Map<String,String> params = new HashMap<String, String>();
+        Map<String,String> params = new HashMap<>();
         params.put("limit", "100");
 
         //check if subreddits are in db
@@ -91,7 +86,8 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
             subredditsObservable = redditClient.getSubscriptions(params);
         }
 
-        subredditSubscription = (Subscription)bindFragment(subscriptionView.getBaseFragment(), subredditsObservable)
+        subredditSubscription = subredditsObservable
+                .compose(subscriptionView.getBaseFragment().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing<SubredditItem>>() {
@@ -110,12 +106,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
                         subredditItems.addAll(subredditListing.getItems());
 
                         //todo optimize
-                        Collections.sort(subredditItems, new Comparator<SubredditItem>() {
-                            @Override
-                            public int compare(SubredditItem lhs, SubredditItem rhs) {
-                                return lhs.getName().compareToIgnoreCase(rhs.getName());
-                            }
-                        });
+                        Collections.sort(subredditItems, (lhs, rhs) -> lhs.getName().compareToIgnoreCase(rhs.getName()));
 
                         subredditRecyclerView.replaceWith(subredditItems);
                         if(subredditListing.getAfter() != null){
@@ -129,11 +120,10 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
                 });
     }
 
-    public RedditListing<SubredditItem> getSubredditsFromCache() {
+    private RedditListing<SubredditItem> getSubredditsFromCache() {
         List<Subreddit> subreddits = databaseManager.getSubreddits();
         if(!subreddits.isEmpty()){
-            RedditListing<SubredditItem> listing = buildSubredditListing(subreddits);
-            return listing;
+            return buildSubredditListing(subreddits);
         }
         return null;
     }

@@ -1,10 +1,7 @@
 package com.matie.redgram.ui.common.main;
 
-import android.app.Activity;
-
 import com.matie.redgram.ui.ActivityScope;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 
 import dagger.Component;

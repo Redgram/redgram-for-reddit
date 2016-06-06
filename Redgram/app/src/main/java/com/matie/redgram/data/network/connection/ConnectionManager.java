@@ -57,7 +57,7 @@ public class ConnectionManager {
     }
 
     private boolean isNetworkActive() {
-        cm = (ConnectivityManager)mContext.getSystemService(mContext.CONNECTIVITY_SERVICE);
+        cm = (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         netInfo = cm.getActiveNetworkInfo();
         return (netInfo != null && netInfo.isConnectedOrConnecting());
     }

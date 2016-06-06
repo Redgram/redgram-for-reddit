@@ -5,7 +5,7 @@ import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import java.util.Map;
 
 /**
- * Created by matie on 2016-03-15.
+ * Links Presenter Interface.
  */
 public interface LinksPresenter {
     void registerForEvents();

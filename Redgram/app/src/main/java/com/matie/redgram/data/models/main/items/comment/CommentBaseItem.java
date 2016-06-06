@@ -2,8 +2,6 @@ package com.matie.redgram.data.models.main.items.comment;
 
 import com.matie.redgram.data.models.main.reddit.RedditObject;
 
-import java.util.List;
-
 /**
  * Created by matie on 2016-01-31.
  */

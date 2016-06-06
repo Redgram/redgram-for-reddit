@@ -2,7 +2,6 @@ package com.matie.redgram.data.models.db;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
 
 /**
  * Created by matie on 2016-02-26.
