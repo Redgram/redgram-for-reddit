@@ -3,7 +3,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-
     <dimen name="action_bar_height">48dp</dimen>
     <dimen name="app_bar_height">400dp</dimen>
     <dimen name="default_horizontal_margin">16dp</dimen>
@@ -15,7 +14,7 @@
     <dimen name="reset_dimen">0dp</dimen>
 
     <!-- Navigation Drawer -->
-    <dimen name="navigation_drawer_width">280dp</dimen>
+    <dimen name="navigation_drawer_width">300dp</dimen>
     <dimen name="navigation_drawer_header_image_view_size">40dp</dimen>
     <dimen name="navigation_drawer_image_view_size">24dp</dimen>
     <dimen name="navigation_drawer_item_height">48dp</dimen>

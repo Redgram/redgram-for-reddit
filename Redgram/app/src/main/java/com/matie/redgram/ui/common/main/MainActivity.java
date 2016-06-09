@@ -413,7 +413,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         } else if (item.getItemId() == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }else if(item.getItemId() == android.R.id.home){
             //only when back button enabled for this activity
             finish();

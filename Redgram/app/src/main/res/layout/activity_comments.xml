@@ -19,7 +19,6 @@
         android:fitsSystemWindows="true" android:layout_height="@dimen/app_bar_height"
         android:layout_width="match_parent"
         style="@style/MainActivityToolbar"
-        android:theme="@style/CommentsToolbarTheme"
         android:background="@color/material_bluegrey700">
 
         <android.support.design.widget.CollapsingToolbarLayout android:id="@+id/toolbar_layout"

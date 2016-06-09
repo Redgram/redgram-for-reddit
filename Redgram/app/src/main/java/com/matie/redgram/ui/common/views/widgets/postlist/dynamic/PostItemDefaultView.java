@@ -14,6 +14,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.media.video.ImageManager;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.posts.views.LinksView;
 
@@ -79,7 +80,7 @@ public class PostItemDefaultView extends PostItemSubView {
         }else if(getUserPrefs().getMedia().equalsIgnoreCase("subreddit")){
             if(!postItem.getThumbnail().isEmpty() && !isNsfw()){
                 setupThumbnail();
-            }else{
+            }else if(isNsfw()){
                 thumbnailView.setVisibility(GONE);
             }
         }else{
@@ -91,16 +92,11 @@ public class PostItemDefaultView extends PostItemSubView {
 
     private void setupThumbnail() {
         thumbnailView.setVisibility(VISIBLE);
-        Uri thumbnailUri = Uri.parse(postItem.getThumbnail());
-        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(thumbnailUri)
+        ImageManager.newImageBuilder(getContext())
+                .setThumbnail(postItem.getThumbnail())
+                .includeOldController()
+                .setImageView(thumbnailView)
                 .build();
-        PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
-                .setImageRequest(request)
-                .setOldController(thumbnailView.getController());
-
-        DraweeController controller = builder.build();
-        thumbnailView.getHierarchy().setActualImageFocusPoint(new PointF(0.5f, 0f));
-        thumbnailView.setController(controller);
     }
 
     @OnClick(R.id.default_wrapper)
