@@ -10,7 +10,6 @@ public class Session extends RealmObject{
     @PrimaryKey
     private Integer id;
     private User user; //current selected user
-    private String recentPost;
 
     public Integer getId() {
         return id;
@@ -26,14 +25,6 @@ public class Session extends RealmObject{
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public String getRecentPost() {
-        return recentPost;
-    }
-
-    public void setRecentPost(String recentPost) {
-        this.recentPost = recentPost;
     }
 
 //    public void cascadeDelete(){

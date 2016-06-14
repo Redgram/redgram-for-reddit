@@ -10,22 +10,30 @@ import io.realm.annotations.PrimaryKey;
 public class Prefs extends RealmObject {
     @PrimaryKey
     private String id;
+
+    //general
+    private boolean showTrending;
+    private boolean storeVisits; //where?
+    private boolean over18;
+    private boolean labelNsfw;
+    //general - app only
+    private boolean enableRecentPost;
+
+    //comments
     private String defaultCommentSort;
+    private boolean ignoreSuggestedSort;
+    private boolean highlightControversial;
+    private boolean showFlair;
+    private int numComments;
+    private int minCommentsScore;
+
+    //posts
+    private int numSites;
+    private int minLinkScore;
+    private boolean showLinkFlair;
+    private String media;
     private boolean hideUps;
     private boolean hideDowns;
-    private boolean labelNsfw;
-    private boolean over18;
-    private boolean showTrending;
-    private boolean showFlair;
-    private boolean showLinkFlair;
-    private boolean storeVisits;
-    private int minCommentsScore;
-    private int minLinkScore;
-    private int numComments;
-    private int numSites;
-    private boolean highlightControversial;
-    private boolean ignoreSuggestedSort;
-    private String media;
 
     public String getId() {
         return id;
@@ -162,5 +170,13 @@ public class Prefs extends RealmObject {
 
     public void setMedia(String media) {
         this.media = media;
+    }
+
+    public boolean isEnableRecentPost() {
+        return enableRecentPost;
+    }
+
+    public void setEnableRecentPost(boolean enableRecentPost) {
+        this.enableRecentPost = enableRecentPost;
     }
 }

@@ -14,6 +14,7 @@ public class User extends RealmObject {
     private int inboxCount;
     private Token tokenInfo;
     private Prefs prefs;
+    private State state;
     private RealmList<Subreddit> subreddits;
     //add other stuff like settings and the like
 
@@ -55,6 +56,14 @@ public class User extends RealmObject {
 
     public void setPrefs(Prefs prefs) {
         this.prefs = prefs;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 
     public RealmList<Subreddit> getSubreddits() {

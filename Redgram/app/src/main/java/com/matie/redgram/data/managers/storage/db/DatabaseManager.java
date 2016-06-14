@@ -8,6 +8,7 @@ import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Settings;
+import com.matie.redgram.data.models.db.State;
 import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
@@ -40,7 +41,7 @@ import io.realm.annotations.RealmModule;
  *
  * Created by matie on 2016-02-26.
  */
-@RealmModule(classes = {Session.class, User.class, Token.class, Settings.class, Prefs.class, Subreddit.class})
+@RealmModule(classes = {Session.class, User.class, Token.class, Settings.class, Prefs.class, State.class, Subreddit.class})
 public class DatabaseManager {
 
 //    public static final String DB_NAME = "redgram.realm.session";
