@@ -167,16 +167,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-//            bindPreferenceSummaryToValue(findPreference("general_show_trending"));
-//            bindPreferenceSummaryToValue(findPreference("general_store_visits"));
-//            bindPreferenceSummaryToValue(findPreference("general_over_18"));
-//            bindPreferenceSummaryToValue(findPreference("general_label_nsfw"));
-//            bindPreferenceSummaryToValue(findPreference("general_recent_post"));
         }
 
         @Override
@@ -208,10 +198,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("pref_posts_num_display"));
             bindPreferenceSummaryToValue(findPreference("pref_posts_min_score"));
-//            bindPreferenceSummaryToValue(findPreference("pref_posts_show_flair"));
             bindPreferenceSummaryToValue(findPreference("pref_posts_media"));
-//            bindPreferenceSummaryToValue(findPreference("pref_posts_hide_ups"));
-//            bindPreferenceSummaryToValue(findPreference("pref_posts_hide_downs"));
         }
 
         @Override
@@ -242,9 +229,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("pref_comments_sort"));
-//            bindPreferenceSummaryToValue(findPreference("pref_comments_ignore_suggested"));
-//            bindPreferenceSummaryToValue(findPreference("pref_comments_hightlight_controversial"));
-//            bindPreferenceSummaryToValue(findPreference("pref_comments_show_flair"));
             bindPreferenceSummaryToValue(findPreference("pref_comments_num_display"));
             bindPreferenceSummaryToValue(findPreference("pref_comments_min_score"));
         }

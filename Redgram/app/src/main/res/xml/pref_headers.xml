@@ -1,29 +1,29 @@
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <!--You can add key value pairs to the fragments-->
     <!-- These settings headers are only used on tablets. -->
     <header
         android:fragment="com.matie.redgram.ui.settings.SettingsActivity$GeneralPreferenceFragment"
-        android:icon="@drawable/ic_info_black_24dp"
-        android:title="@string/pref_header_general"/>
+        android:title="@string/pref_header_general"
+        android:summary="Configure general application behavior"/>
 
     <header
         android:fragment="com.matie.redgram.ui.settings.SettingsActivity$PostPreferenceFragment"
-        android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="@string/pref_header_posts" />
+        android:title="@string/pref_header_posts"
+        android:summary="Configure post-related activity"/>
 
     <header
         android:fragment="com.matie.redgram.ui.settings.SettingsActivity$CommentsPreferenceFragment"
-        android:icon="@drawable/ic_sync_black_24dp"
-        android:title="@string/pref_header_comments" />
+        android:title="@string/pref_header_comments"
+        android:summary="Configure comments-related activity"/>
 
     <header
         android:fragment="com.matie.redgram.ui.settings.SettingsActivity$NotificationPreferenceFragment"
-        android:icon="@drawable/ic_sync_black_24dp"
-        android:title="@string/pref_header_notifications" />
+        android:title="@string/pref_header_notifications"
+        android:summary="Enable/Disable various notifications"/>
 
     <header
         android:fragment="com.matie.redgram.ui.settings.SettingsActivity$SyncPreferenceFragment"
-        android:icon="@drawable/ic_sync_black_24dp"
-        android:title="@string/pref_header_sync" />
+        android:title="@string/pref_header_sync"
+        android:summary="Choose what preferences to sync with Reddit"/>
 
 </preference-headers>
