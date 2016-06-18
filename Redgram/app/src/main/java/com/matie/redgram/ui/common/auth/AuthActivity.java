@@ -82,7 +82,6 @@ public class AuthActivity extends BaseActivity implements AuthView {
                 transitionToMainActivity();
             }
         };
-
         realm.addChangeListener(realmChangeListener);
     }
 

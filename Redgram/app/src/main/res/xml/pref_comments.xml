@@ -20,14 +20,14 @@
         android:key="pref_comments_show_flair"
         android:title="Show comment flair"
         android:defaultValue="true"/>
-    <ListPreference
+    <EditTextPreference
         android:key="pref_comments_num_display"
-        android:defaultValue="100"
-        android:entries="@array/pref_comments_num"
-        android:entryValues="@array/pref_comments_num"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"
-        android:title="Comment count"/>
+        android:defaultValue="200"
+        android:inputType="number"
+        android:title="Comment count"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:maxLines="1" />
     <EditTextPreference
         android:key="pref_comments_min_score"
         android:defaultValue="-4"

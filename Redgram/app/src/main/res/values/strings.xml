@@ -230,13 +230,6 @@
         <item>Q/A</item>
         <item>Suggested</item>
     </string-array>
-    <string-array name="pref_comments_num">
-        <item>25</item>
-        <item>50</item>
-        <item>100</item>
-        <item>200</item>
-        <item>All</item>
-    </string-array>
 
 
     <!-- Example settings for Notifications -->
