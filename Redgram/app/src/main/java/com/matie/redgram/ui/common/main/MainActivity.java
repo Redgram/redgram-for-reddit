@@ -36,6 +36,7 @@ import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
+import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
@@ -132,16 +133,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             }
         }
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container,
-                    Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment()), Fragments.HOME.toString()).commit();
-            selectItem(currentSelectedMenuId);
-        } else {
-            currentSelectedMenuId = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-        }
-
         setUpToolbar();
-        setup();
+        setup(savedInstanceState);
         setUpPanel();
         setUpRealm();
         setUpNavUserList();
@@ -269,7 +262,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         return app;
     }
 
-    private void setup(){
+    private void setup(Bundle savedInstanceState){
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close) {
@@ -317,7 +310,15 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        checkIntentStatus(getIntent());
+        if(!checkIntentStatus(getIntent())){
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction().add(R.id.container,
+                        Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment()), Fragments.HOME.toString()).commit();
+                selectItem(currentSelectedMenuId);
+            } else {
+                currentSelectedMenuId = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+            }
+        }
     }
 
     private boolean checkIntentStatus(Intent intent){
@@ -325,7 +326,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             String subredditName = getIntent().getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
             launchFragmentForSubreddit(subredditName);
             return true;
-
         }else if(intent.getData() != null){
             Uri data = intent.getData();
             if(data.getPath().contains("/r/")){
@@ -532,7 +532,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     private void logoutCurrentUser() {
         app.getDatabaseManager().deleteSession(realm);
-        app.startAuthActivity();
+        startActivity(AuthActivity.intent(this));
     }
 
     public DialogUtil getDialogUtil() {

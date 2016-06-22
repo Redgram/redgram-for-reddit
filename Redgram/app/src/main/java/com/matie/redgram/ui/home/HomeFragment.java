@@ -135,7 +135,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
             toolbarTitle.setText(subredditChoice);
             toolbarSubtitle.setText(filter);
         } else{
-            // TODO: 2016-05-11 the next two calls should be combined into one somehow
             homePresenter.getHomeViewWrapper();
             toolbarSubtitle.setText(filter);
         }

@@ -98,15 +98,6 @@ public class App extends Application {
         return new Prefs();
     }
 
-    public void startAuthActivity(){
-        Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(intent);
-    }
-
     public void setupUserPrefs() {
         User sessionUser = databaseManager.getSessionUser();
         if(sessionUser != null){
@@ -114,5 +105,8 @@ public class App extends Application {
         }
     }
 
+    public void setUserPrefs(Prefs prefs) {
+        authUserPrefs = prefs;
+    }
 
 }

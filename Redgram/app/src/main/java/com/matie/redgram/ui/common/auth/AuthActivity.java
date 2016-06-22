@@ -28,6 +28,7 @@ import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.views.ContentView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -310,5 +311,15 @@ public class AuthActivity extends BaseActivity implements AuthView {
                 .cancelable(false)
                 .canceledOnTouchOutside(false)
                 .show();
+    }
+
+
+    public static Intent intent(Context context){
+        Intent intent = new Intent(context, AuthActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        return intent;
     }
 }

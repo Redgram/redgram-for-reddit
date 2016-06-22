@@ -94,7 +94,7 @@ public class ImageManager {
             Uri uri = Uri.parse(url);
             ImageRequest request = getRequest(uri, progressive);
             mainImageRequest = request;
-            controllerBuilder.setLowResImageRequest(request);
+            controllerBuilder.setImageRequest(request);
             return this;
         }
 

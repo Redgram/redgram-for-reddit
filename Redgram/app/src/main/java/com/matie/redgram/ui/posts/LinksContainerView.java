@@ -82,6 +82,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     private Map<String,String> params = new HashMap<>();
 
     private Prefs prefs;
+    private Gson gson;
     private RealmChangeListener prefsChangeListener;
 
     @Inject
@@ -109,6 +110,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     private void init(){
         filterChoice = getResources().getString(R.string.default_filter).toLowerCase();
+        gson = new Gson();
         setupListeners();
         setupRecyclerView();
     }
@@ -136,7 +138,6 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     @Override
     public void updateItem(int position, PostItem postItem) {
-        // TODO: 2016-05-22 do we need to set an item?
         getItems().set(position, postItem);
         containerRecyclerView.getAdapter().notifyItemChanged(position);
     }
@@ -278,7 +279,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         Intent intent = new Intent(context, ThreadActivity.class);
         String key = getResources().getString(R.string.main_data_key);
         String posKey = getResources().getString(R.string.main_data_position);
-        intent.putExtra(key, new Gson().toJson(getItem(position)));
+        intent.putExtra(key, gson.toJson(getItem(position)));
         intent.putExtra(posKey, position);
 
         Fragment hostingFragment =
@@ -296,7 +297,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     public void viewWebMedia(int position) {
         Bundle bundle = new Bundle();
         String key = getResources().getString(R.string.main_data_key);
-        bundle.putString(key, new Gson().toJson(getItem(position)));
+        bundle.putString(key, gson.toJson(getItem(position)));
         ((SlidingUpPanelActivity)context).setPanelView(Fragments.WEB_PREVIEW, bundle);
     }
 
@@ -318,7 +319,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
                     bundle.putString(getResources().getString(R.string.local_cache_key), localFile.getPath());
 
-                    bundle.putString(getResources().getString(R.string.main_data_key), new Gson().toJson(item));
+                    bundle.putString(getResources().getString(R.string.main_data_key), gson.toJson(item));
 
                     ((SlidingUpPanelActivity)context).setPanelView(Fragments.IMAGE_PREVIEW, bundle);
                 }
@@ -373,6 +374,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     }
 
     private void setupRecyclerView(){
+        containerRecyclerView.getItemAnimator().setChangeDuration(0);
         mLayoutManager = (LinearLayoutManager)containerRecyclerView.getLayoutManager();
         containerRecyclerView.addOnScrollListener(loadMoreListener);
         containerRecyclerView.setListener(this);

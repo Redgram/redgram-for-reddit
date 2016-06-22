@@ -82,6 +82,8 @@ public class PostItemDefaultView extends PostItemSubView {
                 setupThumbnail();
             }else if(isNsfw()){
                 thumbnailView.setVisibility(GONE);
+            }else{
+                setupDefaultThumbnail(); // TODO: 2016-06-21 replace with default one from asset folder
             }
         }else{
             //no
@@ -93,9 +95,19 @@ public class PostItemDefaultView extends PostItemSubView {
     private void setupThumbnail() {
         thumbnailView.setVisibility(VISIBLE);
         ImageManager.newImageBuilder(getContext())
+                .setImageView(thumbnailView)
                 .setThumbnail(postItem.getThumbnail())
                 .includeOldController()
+                .build();
+    }
+
+    private void setupDefaultThumbnail() {
+        thumbnailView.setVisibility(VISIBLE);
+        ImageManager.newImageBuilder(getContext())
                 .setImageView(thumbnailView)
+                // TODO: 2016-06-21 find a better default photo
+                .setImageFromRes(R.drawable.reddit_nf_cropped, false)
+                .includeOldController()
                 .build();
     }
 

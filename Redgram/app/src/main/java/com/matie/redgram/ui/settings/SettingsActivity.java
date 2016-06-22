@@ -42,6 +42,7 @@ import io.realm.Realm;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends AppCompatPreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+
     //general
     public static final String general_show_trending = "general_show_trending";
     public static final String general_store_visits = "general_store_visits";
@@ -209,6 +210,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         super.onPause();
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
+        if(user != null){
+            ((App)getApplication()).setUserPrefs(realm.copyFromRealm(user).getPrefs());
+        }
     }
 
     @Override

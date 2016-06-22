@@ -105,7 +105,7 @@ public class LinksPresenterImpl implements LinksPresenter {
         containerView.showLoading();
         listingSubscription = getSearchSubscription(subreddit, params, true);
 
-        if(!listingSubscription.isUnsubscribed()){
+        if(!subscriptions.isUnsubscribed()){
             subscriptions.add(listingSubscription);
         }
     }
@@ -342,7 +342,6 @@ public class LinksPresenterImpl implements LinksPresenter {
                     @Override
                     public void onNext(RedditListing wrapper) {
                         if(isNew){
-                            linksView.getItems().clear();
                             linksView.updateList(wrapper.getItems());
                         }else{
                             linksView.getItems().addAll(wrapper.getItems());
