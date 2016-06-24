@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.support.annotation.LayoutRes;
@@ -58,12 +59,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public static final String pref_posts_hide_ups = "pref_posts_hide_ups";
     public static final String pref_posts_hide_downs = "pref_posts_hide_downs";
     //comments
-    public static final String pref_comments_default_sort = "pref_comments_default_sort";
+    public static final String pref_comments_sort = "pref_comments_sort";
     public static final String pref_comments_ignore_suggested = "pref_comments_ignore_suggested";
-    public static final String pref_comments_hightlight_controversial = "pref_comments_hightlight_controversial";
+    public static final String pref_comments_highlight_controversial = "pref_comments_hightlight_controversial";
     public static final String pref_comments_show_flair = "pref_comments_show_flair";
     public static final String pref_comments_num_display = "pref_comments_num_display";
     public static final String pref_comments_min_score = "pref_comments_min_score";
+
+    //sync
+    public static final String pref_sync_period = "pref_sync_period";
+
 
     private Realm realm;
     private User user;
@@ -90,6 +95,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                 }else if(Integer.parseInt(stringValue) > 500){
                     stringValue = "500";
                 }
+            }else if(preference.getKey().equalsIgnoreCase(pref_sync_period)){
+                stringValue = ((ListPreference)preference).getEntry().toString();
             }
 
             preference.setSummary(stringValue);
@@ -279,11 +286,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                     }else{
                         prefs.setNumComments(Integer.parseInt(val));
                     }
-                }else if(key.equalsIgnoreCase(pref_comments_default_sort)){
+                }else if(key.equalsIgnoreCase(pref_comments_sort)){
                     prefs.setDefaultCommentSort(sharedPreferences.getString(key, prefs.getDefaultCommentSort()));
                 }else if(key.equalsIgnoreCase(pref_comments_show_flair)){
                     prefs.setShowFlair(sharedPreferences.getBoolean(key, prefs.isShowFlair()));
-                }else if(key.equalsIgnoreCase(pref_comments_hightlight_controversial)){
+                }else if(key.equalsIgnoreCase(pref_comments_highlight_controversial)){
                     prefs.setHighlightControversial(sharedPreferences.getBoolean(key, prefs.isHighlightControversial()));
                 }else if(key.equalsIgnoreCase(pref_comments_ignore_suggested)){
                     prefs.setIgnoreSuggestedSort(sharedPreferences.getBoolean(key, prefs.isIgnoreSuggestedSort()));
@@ -398,11 +405,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             if(prefs != null){
                 SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
 
-                editor.putBoolean(pref_comments_hightlight_controversial, prefs.isHighlightControversial());
+                editor.putBoolean(pref_comments_highlight_controversial, prefs.isHighlightControversial());
                 editor.putBoolean(pref_comments_ignore_suggested, prefs.isIgnoreSuggestedSort());
                 editor.putBoolean(pref_comments_show_flair, prefs.isShowFlair());
 
-                editor.putString(pref_comments_default_sort, prefs.getDefaultCommentSort());
+                editor.putString(pref_comments_sort, prefs.getDefaultCommentSort());
                 editor.putString(pref_comments_min_score, prefs.getMinCommentsScore() == 0 ? "" : prefs.getMinCommentsScore()+"");
                 editor.putString(pref_comments_num_display, prefs.getNumComments()+"");
 
@@ -415,9 +422,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("pref_comments_sort"));
-            bindPreferenceSummaryToValue(findPreference("pref_comments_num_display"));
-            bindPreferenceSummaryToValue(findPreference("pref_comments_min_score"));
+            bindPreferenceSummaryToValue(findPreference(pref_comments_sort));
+            bindPreferenceSummaryToValue(findPreference(pref_comments_num_display));
+            bindPreferenceSummaryToValue(findPreference(pref_comments_min_score));
         }
 
         @Override
@@ -466,6 +473,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_sync);
             setHasOptionsMenu(true);
+
+            bindPreferenceSummaryToValue(findPreference(pref_sync_period));
         }
 
         @Override

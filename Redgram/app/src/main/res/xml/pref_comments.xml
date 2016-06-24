@@ -13,7 +13,7 @@
         android:title="Ignore suggested sort"
         android:defaultValue="true"/>
     <SwitchPreference
-        android:key="pref_comments_hightlight_controversial"
+        android:key="pref_comments_highlight_controversial"
         android:title="Highlght controversial"
         android:defaultValue="true"/>
     <SwitchPreference

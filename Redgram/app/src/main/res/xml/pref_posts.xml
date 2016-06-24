@@ -7,18 +7,18 @@
         android:entryValues="@array/pref_posts_num"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
-        android:title="Link count"/>
+        android:title="@string/pref_posts_num_title"/>
     <EditTextPreference
         android:key="pref_posts_min_score"
         android:defaultValue="-4"
         android:inputType="numberDecimal|numberSigned"
-        android:title="Minimum post score"
+        android:title="@string/pref_posts_min_score_title"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:maxLines="1" />
     <SwitchPreference
         android:key="pref_posts_show_flair"
-        android:title="Show post flair"
+        android:title="@string/pref_posts_show_flair_title"
         android:defaultValue="true"/>
     <ListPreference
         android:key="pref_posts_media"
@@ -27,13 +27,13 @@
         android:entryValues="@array/pref_posts_media"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
-        android:title="Media" />
+        android:title="@string/pref_posts_media_title" />
     <SwitchPreference
         android:key="pref_posts_hide_ups"
-        android:title="Hide upvoted links"
+        android:title="@string/pref_posts_hide_ups_title"
         android:defaultValue="false"/>
     <SwitchPreference
         android:key="pref_posts_hide_downs"
-        android:title="Hide downvoted links"
+        android:title="@string/pref_posts_hide_downs_title"
         android:defaultValue="false"/>
 </PreferenceScreen>
