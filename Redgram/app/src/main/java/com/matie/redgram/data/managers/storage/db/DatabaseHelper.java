@@ -215,6 +215,9 @@ public class DatabaseHelper {
         prefs.setMedia(authPrefs.getMedia());
         prefs.setHighlightControversial(authPrefs.isHighlightControversial());
         prefs.setIgnoreSuggestedSort(authPrefs.getIgnoreSuggestedSort());
+        //app-only
+        prefs.setEnableRecentPost(true);
+        prefs.setDisableNsfwPreview(true);
         return prefs;
     }
 

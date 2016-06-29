@@ -41,6 +41,7 @@
             android:summary="Syncs always"
             android:title="Age"/>
     </PreferenceCategory>
+
     <!--posts-->
     <PreferenceCategory
         android:title="Links Options"
@@ -70,7 +71,6 @@
             android:summary="Syncs always"
             android:title="Hide Downvoted Links"/>
     </PreferenceCategory>
-
 
     <!--comments-->
     <PreferenceCategory

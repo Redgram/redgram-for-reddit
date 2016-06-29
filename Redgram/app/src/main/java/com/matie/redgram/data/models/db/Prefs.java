@@ -17,6 +17,7 @@ public class Prefs extends RealmObject {
     private boolean over18;
     private boolean labelNsfw;
     //general - app only
+    private boolean disableNsfwPreview;
     private boolean enableRecentPost;
 
     //comments
@@ -178,5 +179,13 @@ public class Prefs extends RealmObject {
 
     public void setEnableRecentPost(boolean enableRecentPost) {
         this.enableRecentPost = enableRecentPost;
+    }
+
+    public boolean isDisableNsfwPreview() {
+        return disableNsfwPreview;
+    }
+
+    public void setDisableNsfwPreview(boolean disableNsfwPreview) {
+        this.disableNsfwPreview = disableNsfwPreview;
     }
 }

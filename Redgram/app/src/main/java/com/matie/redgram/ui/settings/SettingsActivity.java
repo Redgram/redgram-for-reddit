@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.SwitchPreference;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
@@ -30,6 +31,7 @@ import com.matie.redgram.ui.App;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -49,6 +51,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public static final String general_store_visits = "general_store_visits";
     public static final String general_over_18 = "general_over_18";
     public static final String general_label_nsfw = "general_label_nsfw";
+    public static final String general_preview_nsfw = "general_preview_nsfw";
     public static final String general_recent_post = "general_recent_post";
 
     //posts
@@ -58,6 +61,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
     public static final String pref_posts_media = "pref_posts_media";
     public static final String pref_posts_hide_ups = "pref_posts_hide_ups";
     public static final String pref_posts_hide_downs = "pref_posts_hide_downs";
+
     //comments
     public static final String pref_comments_sort = "pref_comments_sort";
     public static final String pref_comments_ignore_suggested = "pref_comments_ignore_suggested";
@@ -72,6 +76,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
     private Realm realm;
     private User user;
+    private boolean userChanged = false;
 
     /**
      * A preference value change listener that updates the preference's summary
@@ -143,6 +148,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         realm = ((App)getApplication()).getDatabaseManager().getInstance();
         Log.d("REALM_PATH", realm.getPath());
         user = DatabaseHelper.getSessionUser(realm);
+
+        user.addChangeListener(new RealmChangeListener() {
+            @Override
+            public void onChange() {
+                if(!userChanged){
+                    userChanged = true;
+                }
+            }
+        });
+
     }
 
     @Override
@@ -217,8 +232,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
         super.onPause();
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
-        if(user != null){
+        if(user != null && userChanged){
             ((App)getApplication()).setUserPrefs(realm.copyFromRealm(user).getPrefs());
+
+            realm.beginTransaction();
+            realm.copyToRealmOrUpdate(user);
+            realm.commitTransaction();
+
+            userChanged = false;
         }
     }
 
@@ -239,7 +260,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                     prefs.setOver18(sharedPreferences.getBoolean(key,prefs.isOver18()));
                 }else if(key.equalsIgnoreCase(general_label_nsfw)){
                     prefs.setLabelNsfw(sharedPreferences.getBoolean(key,prefs.isLabelNsfw()));
-                }else if(key.equalsIgnoreCase(general_recent_post)){
+                }else if(key.equalsIgnoreCase(general_preview_nsfw)){
+                    prefs.setLabelNsfw(sharedPreferences.getBoolean(key, prefs.isDisableNsfwPreview()));
+                } else if(key.equalsIgnoreCase(general_recent_post)){
                     prefs.setEnableRecentPost(sharedPreferences.getBoolean(key, prefs.isEnableRecentPost()));
                 }else if(key.equalsIgnoreCase(general_show_trending)){
                     prefs.setShowTrending(sharedPreferences.getBoolean(key, prefs.isShowTrending()));
@@ -318,8 +341,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             if(prefs != null){
                 SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
 
-                editor.putBoolean(general_label_nsfw, prefs.isLabelNsfw());
                 editor.putBoolean(general_over_18, prefs.isOver18());
+                if(!prefs.isOver18()){
+                    editor.putBoolean(general_label_nsfw, true);
+                    editor.putBoolean(general_preview_nsfw, true); //app-only
+                }else{
+                    editor.putBoolean(general_label_nsfw, prefs.isLabelNsfw());
+                    editor.putBoolean(general_preview_nsfw, prefs.isDisableNsfwPreview());
+                }
                 editor.putBoolean(general_recent_post, prefs.isEnableRecentPost());
                 editor.putBoolean(general_show_trending, prefs.isShowTrending());
                 editor.putBoolean(general_store_visits, prefs.isStoreVisits());
@@ -329,6 +358,37 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
             addPreferencesFromResource(R.xml.pref_general);
 
+            getPreferenceManager().findPreference(general_over_18).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    boolean flag = (boolean)newValue;
+
+                    if(!flag){ //unchecked - false - if user is under 18
+
+                        SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
+                        editor.putBoolean(general_label_nsfw, !flag); //false
+                        editor.putBoolean(general_preview_nsfw, !flag);
+                        editor.commit();
+
+                        toggleOver18Dependants(!flag);
+
+                    }
+
+                    return true;
+                }
+            });
+
+        }
+
+        private void toggleOver18Dependants(boolean flag){
+            SwitchPreference labelPref = (SwitchPreference) getPreferenceManager().findPreference(general_label_nsfw);
+            if(labelPref.isChecked() != flag){
+                labelPref.setChecked(flag);
+            }
+            SwitchPreference prevPref = (SwitchPreference) getPreferenceManager().findPreference(general_preview_nsfw);
+            if(prevPref.isChecked() != flag){
+                prevPref.setChecked(flag);
+            }
         }
 
         @Override
