@@ -27,6 +27,11 @@ import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.settings.fragments.CommentsPreferenceFragment;
+import com.matie.redgram.ui.settings.fragments.GeneralPreferenceFragment;
+import com.matie.redgram.ui.settings.fragments.NotificationPreferenceFragment;
+import com.matie.redgram.ui.settings.fragments.PostPreferenceFragment;
+import com.matie.redgram.ui.settings.fragments.SyncPreferenceFragment;
 
 import java.util.List;
 
@@ -128,7 +133,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
      *
      * @see #sBindPreferenceSummaryToValueListener
      */
-    private static void bindPreferenceSummaryToValue(Preference preference) {
+    public static void bindPreferenceSummaryToValue(Preference preference) {
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 
@@ -261,7 +266,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
                 }else if(key.equalsIgnoreCase(general_label_nsfw)){
                     prefs.setLabelNsfw(sharedPreferences.getBoolean(key,prefs.isLabelNsfw()));
                 }else if(key.equalsIgnoreCase(general_preview_nsfw)){
-                    prefs.setLabelNsfw(sharedPreferences.getBoolean(key, prefs.isDisableNsfwPreview()));
+                    prefs.setDisableNsfwPreview(sharedPreferences.getBoolean(key, prefs.isDisableNsfwPreview()));
                 } else if(key.equalsIgnoreCase(general_recent_post)){
                     prefs.setEnableRecentPost(sharedPreferences.getBoolean(key, prefs.isEnableRecentPost()));
                 }else if(key.equalsIgnoreCase(general_show_trending)){
@@ -324,228 +329,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 
     public User getUser() {
         return user;
-    }
-
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setHasOptionsMenu(true);
-
-            Prefs prefs = ((App)getActivity().getApplication()).getDatabaseManager().getSessionUser().getPrefs();
-            if(prefs != null){
-                SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
-
-                editor.putBoolean(general_over_18, prefs.isOver18());
-                if(!prefs.isOver18()){
-                    editor.putBoolean(general_label_nsfw, true);
-                    editor.putBoolean(general_preview_nsfw, true); //app-only
-                }else{
-                    editor.putBoolean(general_label_nsfw, prefs.isLabelNsfw());
-                    editor.putBoolean(general_preview_nsfw, prefs.isDisableNsfwPreview());
-                }
-                editor.putBoolean(general_recent_post, prefs.isEnableRecentPost());
-                editor.putBoolean(general_show_trending, prefs.isShowTrending());
-                editor.putBoolean(general_store_visits, prefs.isStoreVisits());
-
-                editor.commit();
-            }
-
-            addPreferencesFromResource(R.xml.pref_general);
-
-            getPreferenceManager().findPreference(general_over_18).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    boolean flag = (boolean)newValue;
-
-                    if(!flag){ //unchecked - false - if user is under 18
-
-                        SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
-                        editor.putBoolean(general_label_nsfw, !flag); //false
-                        editor.putBoolean(general_preview_nsfw, !flag);
-                        editor.commit();
-
-                        toggleOver18Dependants(!flag);
-
-                    }
-
-                    return true;
-                }
-            });
-
-        }
-
-        private void toggleOver18Dependants(boolean flag){
-            SwitchPreference labelPref = (SwitchPreference) getPreferenceManager().findPreference(general_label_nsfw);
-            if(labelPref.isChecked() != flag){
-                labelPref.setChecked(flag);
-            }
-            SwitchPreference prevPref = (SwitchPreference) getPreferenceManager().findPreference(general_preview_nsfw);
-            if(prevPref.isChecked() != flag){
-                prevPref.setChecked(flag);
-            }
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
-     * This fragment shows posts preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class PostPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setHasOptionsMenu(true);
-
-            Prefs prefs = ((App)getActivity().getApplication()).getDatabaseManager().getSessionUser().getPrefs();
-            if(prefs != null){
-                SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
-
-                editor.putBoolean(pref_posts_show_flair, prefs.isShowLinkFlair());
-                editor.putBoolean(pref_posts_hide_ups, prefs.isHideUps());
-                editor.putBoolean(pref_posts_hide_downs, prefs.isHideDowns());
-
-                editor.putString(pref_posts_media, prefs.getMedia());
-                editor.putString(pref_posts_min_score, prefs.getMinLinkScore() == 0 ? "" : prefs.getMinLinkScore()+"");
-                editor.putString(pref_posts_num_display, prefs.getNumSites()+"");
-
-                editor.commit();
-            }
-
-            addPreferencesFromResource(R.xml.pref_posts);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference(pref_posts_num_display));
-            bindPreferenceSummaryToValue(findPreference(pref_posts_min_score));
-            bindPreferenceSummaryToValue(findPreference(pref_posts_media));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
-     * This fragment shows comments preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class CommentsPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setHasOptionsMenu(true);
-
-            Prefs prefs = ((App)getActivity().getApplication()).getDatabaseManager().getSessionUser().getPrefs();
-            if(prefs != null){
-                SharedPreferences.Editor editor = getPreferenceManager().getSharedPreferences().edit();
-
-                editor.putBoolean(pref_comments_highlight_controversial, prefs.isHighlightControversial());
-                editor.putBoolean(pref_comments_ignore_suggested, prefs.isIgnoreSuggestedSort());
-                editor.putBoolean(pref_comments_show_flair, prefs.isShowFlair());
-
-                editor.putString(pref_comments_sort, prefs.getDefaultCommentSort());
-                editor.putString(pref_comments_min_score, prefs.getMinCommentsScore() == 0 ? "" : prefs.getMinCommentsScore()+"");
-                editor.putString(pref_comments_num_display, prefs.getNumComments()+"");
-
-                editor.commit();
-            }
-
-            addPreferencesFromResource(R.xml.pref_comments);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference(pref_comments_sort));
-            bindPreferenceSummaryToValue(findPreference(pref_comments_num_display));
-            bindPreferenceSummaryToValue(findPreference(pref_comments_min_score));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
-     * This fragment shows notification preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class NotificationPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_notification);
-            setHasOptionsMenu(true);
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
-     * This fragment shows notification preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class SyncPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_sync);
-            setHasOptionsMenu(true);
-
-            bindPreferenceSummaryToValue(findPreference(pref_sync_period));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
     }
 
 }

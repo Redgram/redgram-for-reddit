@@ -2,9 +2,9 @@ package com.matie.redgram.ui.common.base;
 
 import android.support.v4.app.Fragment;
 
-import com.matie.redgram.ui.common.previews.CommentsPreviewFragment;
+import com.matie.redgram.ui.thread.views.CommentsFragment;
 import com.matie.redgram.ui.common.previews.ImagePreviewFragment;
-import com.matie.redgram.ui.common.previews.PostPreviewFragment;
+import com.matie.redgram.ui.thread.views.PostFragment;
 import com.matie.redgram.ui.common.previews.WebPreviewFragment;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.ui.search.SearchFragment;
@@ -20,8 +20,8 @@ public enum Fragments {
 
     SUBREDDITS_DETAILS(SubscriptionDetailsFragment.class),
 
-    COMMENTS_PREVIEW(CommentsPreviewFragment.class),
-    POST_PREVIEW(PostPreviewFragment.class) ,IMAGE_PREVIEW(ImagePreviewFragment.class), WEB_PREVIEW(WebPreviewFragment.class);
+    COMMENTS_PREVIEW(CommentsFragment.class),
+    POST_PREVIEW(PostFragment.class) ,IMAGE_PREVIEW(ImagePreviewFragment.class), WEB_PREVIEW(WebPreviewFragment.class);
 
     final Class<? extends Fragment> fragment;
 

@@ -121,7 +121,7 @@ public class PostItemDefaultView extends PostItemSubView {
     }
 
     private boolean isNsfw(){
-        if(postItem.isAdult() && !getUserPrefs().isOver18()){
+        if(postItem.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
             return true;
         }
         return false;

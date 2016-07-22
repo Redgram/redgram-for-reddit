@@ -101,7 +101,7 @@ public class App extends Application {
     public void setupUserPrefs() {
         User sessionUser = databaseManager.getSessionUser();
         if(sessionUser != null){
-            authUserPrefs = databaseManager.getSessionUser().getPrefs();
+            authUserPrefs = sessionUser.getPrefs();
         }
     }
 

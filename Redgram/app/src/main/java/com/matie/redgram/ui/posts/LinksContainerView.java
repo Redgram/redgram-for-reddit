@@ -332,7 +332,12 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         MaterialDialog.SingleButtonCallback callback = new MaterialDialog.SingleButtonCallback() {
             @Override
             public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-                linksPresenter.confirmAge();
+                if(!app.getAuthUserPrefs().isOver18()){
+                    linksPresenter.confirmAge();
+                }else if(app.getAuthUserPrefs().isDisableNsfwPreview()){
+                    //change preferences
+                    linksPresenter.enableNsfwPreview();
+                }
             }
         };
 

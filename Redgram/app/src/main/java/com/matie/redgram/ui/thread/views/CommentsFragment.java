@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.previews;
+package com.matie.redgram.ui.thread.views;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -39,7 +39,7 @@ import butterknife.InjectView;
 /**
  * Created by matie on 2016-01-07.
  */
-public class CommentsPreviewFragment extends BasePreviewFragment implements CommentsView{
+public class CommentsFragment extends BaseFragment implements CommentsView{
 
     @InjectView(R.id.comment_recycler_view)
     CommentRecyclerView commentRecyclerView;
@@ -81,11 +81,6 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
 
     @Override
     protected void setupToolbar() {
-        return;
-    }
-
-    @Override
-    public void refreshPreview(Bundle bundle) {
         return;
     }
 

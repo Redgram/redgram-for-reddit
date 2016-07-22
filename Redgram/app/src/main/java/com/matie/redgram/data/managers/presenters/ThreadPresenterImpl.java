@@ -63,7 +63,7 @@ public class ThreadPresenterImpl implements ThreadPresenter {
         //todo display the sort in action bar
         params.put("sort", app.getAuthUserPrefs().getDefaultCommentSort());
         threadView.showLoading();
-        threadSubscription = redditClient.getCommentsByArticle(id, null)
+        threadSubscription = redditClient.getCommentsByArticle(id, params)
                 .compose(threadView.getBaseActivity().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

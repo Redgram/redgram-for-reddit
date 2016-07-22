@@ -7,26 +7,9 @@ For collaborations, please view [this issue](https://github.com/Redgram/redgram-
 
 After this branch is merged to `dev`, it will remain active and updated in order to consider all possible changes to user preferences and global settings.
 
-###Todo:
-
-- **Always** - Follow the Program to Interface approach. [Read More](http://stackoverflow.com/questions/383947/what-does-it-mean-to-program-to-an-interface).
-- Change the implementation to ask the users whether they want to use their Reddit preferences.
-- Configure Realm throughout app.
-- Implement Settings and a way to integrate it with Realm and throughout the app.
-
 ### Implementation
 
-When users authenticate for the first time, they shall be prompted an option to use their Reddit preferences in the app.
-The only preference that is forcefully synced is the age indication field, `over_18`. 
 
-The update is only made once when the user logs in.
-
-If the user skipped the update, the app settings shall be set to the default values. The user can always sync with the
-Reddit preferences from the Settings activity later on.
-
-Each account in the application have the same flow as above. Each user shall have their unique set of settings unless specified to use the same settings from an existing account, which can also be modified (this exception is only made when one or more accounts were previously authenticated).
-
-The user shall be able to set periodic updates from their Reddit preferences in the Settings Activity. If the target account was chosen as a candidate by another one (or more), the target account shall update that one as well.
 
 ### Breakdown of [User Preferences](https://www.reddit.com/r/redditdev/comments/21jh28/oauth_2_new_preferences_endpoints_get_patch/) used in the app
 

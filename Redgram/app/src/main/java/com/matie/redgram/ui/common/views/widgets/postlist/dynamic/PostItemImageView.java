@@ -69,7 +69,7 @@ public class PostItemImageView extends PostItemSubView{
                 .setListener(getControllerListener())
                 .build();
 
-        if(item.isAdult() && !getUserPrefs().isOver18()){
+        if(item.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
             imageOverlay.setVisibility(VISIBLE);
         }else{
             imageOverlay.setVisibility(GONE);

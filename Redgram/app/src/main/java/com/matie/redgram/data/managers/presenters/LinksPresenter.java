@@ -19,5 +19,7 @@ public interface LinksPresenter {
     void save(int position, String name, boolean save);
     void delete(int position);
     void report(int position);
+    //dealing with settings
     void confirmAge();
+    void enableNsfwPreview();
 }

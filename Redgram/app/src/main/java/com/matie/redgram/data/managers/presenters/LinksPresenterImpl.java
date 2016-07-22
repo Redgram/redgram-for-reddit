@@ -1,10 +1,15 @@
 package com.matie.redgram.data.managers.presenters;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.google.gson.JsonElement;
+import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
+import com.matie.redgram.data.models.db.Prefs;
+import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
@@ -12,11 +17,13 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
 import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.settings.SettingsActivity;
 
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.realm.Realm;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -298,6 +305,25 @@ public class LinksPresenterImpl implements LinksPresenter {
         }
     }
 
+    @Override
+    public void enableNsfwPreview() {
+
+        Realm realm = app.getDatabaseManager().getInstance();
+        if(realm != null){
+            User user = DatabaseHelper.getSessionUser(realm);
+            if(user != null){
+                user.getPrefs().setDisableNsfwPreview(false);
+
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(user);
+                realm.commitTransaction();
+
+                DatabaseHelper.close(realm);
+            }
+        }
+
+    }
+
     private Subscription getListingSubscription(@Nullable String subreddit, @Nullable String filter, Map<String,String> params, boolean isNew){
         Observable<RedditListing<PostItem>> targetObservable;
 
@@ -312,6 +338,7 @@ public class LinksPresenterImpl implements LinksPresenter {
 
         return buildSubscription(targetObservable, isNew);
     }
+
     @SuppressWarnings("unchecked")
     // TODO: 2016-04-21 share Subscriber with getSearchSubscription
     private Subscription buildSubscription(Observable<RedditListing<PostItem>> observable, boolean isNew){

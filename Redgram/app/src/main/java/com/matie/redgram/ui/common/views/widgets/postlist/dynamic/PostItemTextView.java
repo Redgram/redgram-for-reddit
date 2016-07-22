@@ -61,7 +61,7 @@ public class PostItemTextView extends PostItemSubView {
 
         if(item.getText().length() > 0){
 
-            if(item.isAdult() && !getUserPrefs().isOver18()){
+            if(isNsfw()){
                 textContentView.setText(res.getString(R.string.nsfw_material));
             }else{
                 textContentView.setText(item.getText());
@@ -85,12 +85,18 @@ public class PostItemTextView extends PostItemSubView {
 
     @OnClick({R.id.text_title_view, R.id.text_content_view})
     public void onClick(){
-        if(postItem.isAdult() && !getUserPrefs().isOver18()){
+        if(isNsfw()){
             listener.callAgeConfirmDialog();
         }else{
             listener.loadCommentsForPost(position);
         }
     }
 
+    private boolean isNsfw(){
+        if(postItem.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
+            return true;
+        }
+        return false;
+    }
 
 }

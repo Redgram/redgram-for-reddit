@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.previews;
+package com.matie.redgram.ui.thread.views;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -22,7 +22,7 @@ import butterknife.InjectView;
 /**
  * Created by matie on 2016-01-06.
  */
-public class PostPreviewFragment extends BasePreviewFragment implements PostView{
+public class PostFragment extends BaseFragment implements PostView{
 
     Activity activity;
     PostItem postItem;
@@ -37,7 +37,7 @@ public class PostPreviewFragment extends BasePreviewFragment implements PostView
         View view = inflater.inflate(R.layout.preview_post_fragment, container, false);
         ButterKnife.inject(this, view);
 
-        String json = getArguments().getString(getMainKey());
+        String json = getArguments().getString(getResources().getString(R.string.main_data_key));
         postItem = new Gson().fromJson(json, PostItem.class);
         String content = postItem.getText();
 
@@ -67,13 +67,6 @@ public class PostPreviewFragment extends BasePreviewFragment implements PostView
     protected void setupToolbar() {
 
     }
-
-
-    @Override
-    public void refreshPreview(Bundle bundle) {
-        return;
-    }
-
 
     @Override
     public BaseActivity getBaseActivity() {
