@@ -82,13 +82,6 @@ public class PostItemGalleryView extends PostItemSubView {
         overlayImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_photo_library));
     }
 
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-        if(disabled){
-            listener.viewWebMedia(position);
-        }
-    }
-
     private GenericDraweeHierarchy getDraweeHierarchy(PostItem item) {
         GenericDraweeHierarchyBuilder builder =
                 new GenericDraweeHierarchyBuilder(getResources())
@@ -111,10 +104,10 @@ public class PostItemGalleryView extends PostItemSubView {
 
     @OnClick({R.id.gallery_overlay, R.id.overlay_image, R.id.overlay_text})
     public void onGalleryClick(){
-        if(postItem != null && isNsfwDisabled()){
-            listener.viewWebMedia(position);
+        if(postItem.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
+            listener.callAgeConfirmDialog();
         }else{
-            callNsfwDialog();
+            listener.viewWebMedia(position);
         }
     }
 }

@@ -22,7 +22,7 @@
             android:textColor="@color/material_black"
             android:text="atioxx"/>
 
-        <com.matie.redgram.ui.common.views.widgets.ExpandableIndicator
+        <com.matie.redgram.ui.thread.views.widgets.comment.ExpandableIndicator
             android:id="@+id/indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

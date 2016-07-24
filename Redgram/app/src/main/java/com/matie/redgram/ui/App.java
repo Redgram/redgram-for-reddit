@@ -92,28 +92,21 @@ public class App extends Application {
     }
 
     public Prefs getAuthUserPrefs() {
-        return authUserPrefs;
-    }
-
-    public void setAuthUserPrefs(Prefs authUserPrefs) {
-        this.authUserPrefs = authUserPrefs;
-    }
-
-    public void startAuthActivity(){
-        Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(intent);
+        if(authUserPrefs != null){
+            return authUserPrefs;
+        }
+        return new Prefs();
     }
 
     public void setupUserPrefs() {
         User sessionUser = databaseManager.getSessionUser();
         if(sessionUser != null){
-            authUserPrefs = databaseManager.getSessionUser().getPrefs();
+            authUserPrefs = sessionUser.getPrefs();
         }
     }
 
+    public void setUserPrefs(Prefs prefs) {
+        authUserPrefs = prefs;
+    }
 
 }

@@ -9,6 +9,7 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.thread.views.ThreadView;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -23,14 +24,16 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class ThreadPresenterImpl implements ThreadPresenter {
 
-    final private ThreadView threadView;
-    final private RedditClient redditClient;
+    private final App app;
+    private final ThreadView threadView;
+    private final RedditClient redditClient;
 
     private CompositeSubscription subscriptions;
     private Subscription threadSubscription;
 
     @Inject
     public ThreadPresenterImpl(ThreadView threadView, App app) {
+        this.app = app;
         this.threadView = threadView;
         this.redditClient = app.getRedditClient();
     }
@@ -55,9 +58,12 @@ public class ThreadPresenterImpl implements ThreadPresenter {
     }
 
     @Override
-    public void getThread(String id) {
+    public void getThread(String id, Map<String, String> params) {
+        params.put("limit", app.getAuthUserPrefs().getNumComments()+"");
+        //todo display the sort in action bar
+        params.put("sort", app.getAuthUserPrefs().getDefaultCommentSort());
         threadView.showLoading();
-        threadSubscription = redditClient.getCommentsByArticle(id, null)
+        threadSubscription = redditClient.getCommentsByArticle(id, params)
                 .compose(threadView.getBaseActivity().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -76,7 +82,7 @@ public class ThreadPresenterImpl implements ThreadPresenter {
 
                     @Override
                     public void onNext(CommentsWrapper wrapper) {
-//                        PostPreviewFragment postFragment = threadView.getAdapter().getPostPreviewFragment();
+                        //todo: update post too?
                         List<CommentBaseItem> commentItems = wrapper.getCommentItems();
                         threadView.passDataToCommentsView(commentItems);
                     }

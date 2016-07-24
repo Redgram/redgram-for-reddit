@@ -34,13 +34,13 @@ import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.posts.LinksComponent;
 import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
+import com.matie.redgram.ui.thread.views.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.HashMap;
@@ -115,8 +115,9 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                 boolean enable = false;
                 if (homeRecyclerView != null && homeRecyclerView.getChildCount() > 0) {
                     // check if the first item of the list is visible
+                    boolean firstItemVisible = mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;
                     // enabling or disabling the refresh layout
-                    enable = mLayoutManager.findFirstCompletelyVisibleItemPosition() == 0;;
+                    enable = firstItemVisible;
                 }
                 homeSwipeContainer.setEnabled(enable);
             }
@@ -305,11 +306,11 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == CommentsActivity.REQ_CODE){
+        if(requestCode == ThreadActivity.REQ_CODE){
             if(resultCode == Activity.RESULT_OK){
                 PostItem postItem = new Gson()
-                        .fromJson(data.getStringExtra(CommentsActivity.RESULT_POST_CHANGE), PostItem.class);
-                int pos = data.getIntExtra(CommentsActivity.RESULT_POST_POS, -1);
+                        .fromJson(data.getStringExtra(ThreadActivity.RESULT_POST_CHANGE), PostItem.class);
+                int pos = data.getIntExtra(ThreadActivity.RESULT_POST_POS, -1);
                 if(linksContainerView.getItems().contains(postItem) && pos >= 0){
                     // TODO: 2016-04-18 override hashcode to check whether item has actually changed before calling update
                     if(postItem.isHidden()){
@@ -327,6 +328,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         super.onResume();
         homePresenter.registerForEvents();
         linksContainerView.getLinksPresenter().registerForEvents();
+        linksContainerView.addChangeListeners();
     }
 
     @Override
@@ -334,6 +336,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         super.onPause();
         homePresenter.unregisterForEvents();
         linksContainerView.getLinksPresenter().unregisterForEvents();
+        linksContainerView.removeChangeListeners();
     }
 
 

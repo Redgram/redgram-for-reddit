@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -14,12 +13,16 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
+
+
+import android.support.v4.view.ViewPager;
+import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -36,7 +39,6 @@ import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
@@ -45,12 +47,14 @@ import com.matie.redgram.ui.thread.components.DaggerThreadComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
 import com.matie.redgram.ui.thread.modules.ThreadModule;
 import com.matie.redgram.ui.thread.views.adapters.CommentsPagerAdapter;
+import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.thread.views.widgets.OptionsView;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.r0adkll.slidr.model.SlidrListener;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -60,7 +64,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
-public class CommentsActivity extends BaseActivity implements ThreadView, CoordinatorLayoutInterface{
+public class ThreadActivity extends BaseActivity implements ThreadView, CoordinatorLayoutInterface{
 
     public static final int REQ_CODE = 99;
     public static final String RESULT_POST_CHANGE = "result_post_change";
@@ -160,7 +164,13 @@ public class CommentsActivity extends BaseActivity implements ThreadView, Coordi
         }).build();
 
         mSlidrInterface = Slidr.attach(this, config);
-        threadPresenter.getThread(postItem.getId());
+        threadPresenter.getThread(postItem.getId(), new HashMap<>());
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -361,6 +371,23 @@ public class CommentsActivity extends BaseActivity implements ThreadView, Coordi
         Bundle bundle = new Bundle();
         bundle.putString(getResources().getString(R.string.main_data_key), new Gson().toJson(postItem));
         return bundle;
+    }
+
+    private boolean isImagePreview(PostItem postItem) {
+        PostItem.Type type = postItem.getType();
+        if(type == PostItem.Type.IMAGE)
+            return true;
+        else
+            return false;
+    }
+
+    // TODO: 2016-01-06 For now, provide only WebPreview for anything that is NOT an image
+    private boolean isWebPreview(PostItem postItem) {
+        PostItem.Type type = postItem.getType();
+        if(type != PostItem.Type.IMAGE)
+            return true;
+        else
+            return false;
     }
 
     private void setToolbarTitle(int position) {

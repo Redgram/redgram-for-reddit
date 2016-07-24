@@ -179,5 +179,88 @@
     <string name="item_hidden">Item Hidden</string>
     <string name="undo">Undo</string>
     <string name="add_an_account">Add an Account +</string>
+    <string name="title_activity_settings">Settings</string>
+
+
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <string name="pref_header_posts">Posts</string>
+    <string-array name="pref_posts_num">
+        <item>10</item>
+        <item>25</item>
+        <item>50</item>
+        <item>100</item>
+    </string-array>
+    <string-array name="pref_posts_media">
+        <item>Subreddit</item>
+        <item>On</item>
+        <item>Off</item>
+    </string-array>
+
+
+    <string name="pref_header_comments">Comments</string>
+    <string-array name="pref_comments_default_sort">
+        <item>Top</item>
+        <item>Best</item>
+        <item>New</item>
+        <item>Old</item>
+        <item>Controversial</item>
+        <item>Q/A</item>
+        <item>Suggested</item>
+    </string-array>
+
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_header_sync">Sync Options</string>
+    <string-array name="pref_sync_period">
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>6 hours</item>
+        <item>24 hours</item>
+    </string-array>
+    <string-array name="pref_sync_period_values">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>360</item>
+        <item>1440</item>
+    </string-array>
+
+
+    <string name="pref_posts_min_score_title">Minimum post score</string>
+    <string name="pref_posts_show_flair_title">Show post flair</string>
+    <string name="pref_posts_num_title">Link count</string>
+    <string name="pref_posts_media_title">Media</string>
+    <string name="pref_posts_hide_ups_title">Hide upvoted links</string>
+    <string name="pref_posts_hide_downs_title">Hide downvoted links</string>
+
 
 </resources>

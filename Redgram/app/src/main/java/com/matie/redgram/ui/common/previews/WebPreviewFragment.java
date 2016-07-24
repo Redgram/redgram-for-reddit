@@ -18,7 +18,7 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.main.MainActivity;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
+import com.matie.redgram.ui.thread.views.ThreadActivity;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -61,7 +61,7 @@ public class WebPreviewFragment extends BasePreviewFragment{
             mainActivity.setDraggable(topBanner);
         }
 
-        if(getContext() instanceof CommentsActivity){
+        if(getContext() instanceof ThreadActivity){
             topBanner.setVisibility(View.GONE);
         }
 
@@ -75,6 +75,10 @@ public class WebPreviewFragment extends BasePreviewFragment{
         }
 
         return view;
+    }
+
+    @Override public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override

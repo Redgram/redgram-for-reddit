@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.previews;
+package com.matie.redgram.ui.thread.views;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -21,7 +21,7 @@ import com.matie.redgram.ui.thread.components.CommentsComponent;
 import com.matie.redgram.ui.thread.components.DaggerCommentsComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
 import com.matie.redgram.ui.thread.modules.CommentsModule;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
+import com.matie.redgram.ui.thread.views.ThreadActivity;
 import com.matie.redgram.ui.thread.views.CommentsView;
 import com.matie.redgram.ui.thread.views.adapters.CommentsAdapter;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView;
@@ -39,7 +39,7 @@ import butterknife.InjectView;
 /**
  * Created by matie on 2016-01-07.
  */
-public class CommentsPreviewFragment extends BasePreviewFragment implements CommentsView{
+public class CommentsFragment extends BaseFragment implements CommentsView{
 
     @InjectView(R.id.comment_recycler_view)
     CommentRecyclerView commentRecyclerView;
@@ -85,11 +85,6 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
     }
 
     @Override
-    public void refreshPreview(Bundle bundle) {
-        return;
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.reset(this);
@@ -98,7 +93,7 @@ public class CommentsPreviewFragment extends BasePreviewFragment implements Comm
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        ((CommentsActivity)context).commentsView = this;
+        ((ThreadActivity)context).commentsView = this;
     }
 
     private void refreshComments(List<CommentBaseItem> items){

@@ -1,11 +1,13 @@
 package com.matie.redgram.data.models.db;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by matie on 2016-05-08.
  */
 public class Subreddit extends RealmObject {
+    @PrimaryKey
     private String name;
     private boolean subscribed;
     private String description;

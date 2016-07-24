@@ -78,11 +78,7 @@ public class AuthPresenterImpl implements AuthPresenter {
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AuthWrapper>() {
                     @Override
-                    public void onCompleted() {
-                        app.setupUserPrefs();
-                        authView.transitionToMainActivity();
-                        authView.hideLoading();
-                    }
+                    public void onCompleted() {}
 
                     @Override
                     public void onError(Throwable e) {
@@ -93,7 +89,7 @@ public class AuthPresenterImpl implements AuthPresenter {
 
                     @Override
                     public void onNext(AuthWrapper wrapper) {
-                        databaseManager.setSession(wrapper);
+                        authView.showPreferencesOptions(wrapper);
                     }
                 });
     }

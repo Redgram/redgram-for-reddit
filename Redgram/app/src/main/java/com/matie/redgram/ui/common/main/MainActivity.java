@@ -36,6 +36,7 @@ import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
+import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
@@ -45,6 +46,7 @@ import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.widgets.drawer.UserRecyclerView;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.ui.search.SearchFragment;
+import com.matie.redgram.ui.settings.SettingsActivity;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -57,6 +59,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.Optional;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 
@@ -96,8 +99,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     DialogUtil dialogUtil;
 
     private ActionBarDrawerToggle mDrawerToggle;
-    private CharSequence mTitle;
-    private CharSequence mDrawerTitle;
     private MainComponent mainComponent;
 
     private Window window;
@@ -108,8 +109,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.inject(this);
-
-        mTitle = mDrawerTitle = getTitle();
 
         mDrawerLayout.setStatusBarBackgroundColor(
                 getResources().getColor(R.color.material_red600));
@@ -134,16 +133,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             }
         }
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container,
-                    Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment()), Fragments.HOME.toString()).commit();
-            selectItem(currentSelectedMenuId);
-        } else {
-            currentSelectedMenuId = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-        }
-
         setUpToolbar();
-        setup();
+        setup(savedInstanceState);
         setUpPanel();
         setUpRealm();
         setUpNavUserList();
@@ -168,29 +159,34 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     private void setUpRealm() {
-        realm = DatabaseManager.getInstance();
+        DatabaseManager databaseManager = app.getDatabaseManager();
+        realm = databaseManager.getInstance();
         User user = DatabaseHelper.getSessionUser(realm);
         if(user != null){
-            FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);
-            ((TextView)headerView.findViewById(R.id.drawerUserName)).setText(user.getUserName());
-
-            ImageView accountsView = ((ImageView) headerView.findViewById(R.id.drawerAccounts));
-            accountsView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(userListLayout.getParent() != null){
-                        return;
-                    }
-                    modifyNavDrawer(userListLayout, R.color.material_bluegrey900);
-                    userListLayout.findViewById(R.id.go_back).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            resetNavDrawer();
-                        }
-                    });
-                }
-            });
+            setupNavUserLayout(user);
         }
+    }
+
+    private void setupNavUserLayout(User user){
+        FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);
+        ((TextView)headerView.findViewById(R.id.drawerUserName)).setText(user.getUserName());
+
+        ImageView accountsView = ((ImageView) headerView.findViewById(R.id.drawerAccounts));
+        accountsView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(userListLayout.getParent() != null){
+                    return;
+                }
+                modifyNavDrawer(userListLayout, R.color.material_bluegrey900);
+                userListLayout.findViewById(R.id.go_back).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        resetNavDrawer();
+                    }
+                });
+            }
+        });
     }
 
     private void setUpNavUserList() {
@@ -266,7 +262,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         return app;
     }
 
-    private void setup(){
+    private void setup(Bundle savedInstanceState){
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close) {
@@ -314,7 +310,15 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        checkIntentStatus(getIntent());
+        if(!checkIntentStatus(getIntent())){
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction().add(R.id.container,
+                        Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment()), Fragments.HOME.toString()).commit();
+                selectItem(currentSelectedMenuId);
+            } else {
+                currentSelectedMenuId = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+            }
+        }
     }
 
     private boolean checkIntentStatus(Intent intent){
@@ -322,7 +326,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             String subredditName = getIntent().getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
             launchFragmentForSubreddit(subredditName);
             return true;
-
         }else if(intent.getData() != null){
             Uri data = intent.getData();
             if(data.getPath().contains("/r/")){
@@ -410,7 +413,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         } else if (item.getItemId() == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }else if(item.getItemId() == android.R.id.home){
             //only when back button enabled for this activity
             finish();
@@ -461,7 +465,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                     openFragmentWithResult(homeFragment, Fragments.HOME.toString());
                 }
             }
-            return;
         }
     }
 
@@ -515,6 +518,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         } else if(id == R.id.nav_subs){
             Intent intent = new Intent(this, SubscriptionActivity.class);
             startActivityForResult(intent, SUBSCRIPTION_REQUEST_CODE);
+        } else if(id == R.id.nav_settings){
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         } else if(id == R.id.nav_logout){
             app.getToastHandler().showToast("Logout", Toast.LENGTH_SHORT);
             logoutCurrentUser();
@@ -526,7 +532,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     private void logoutCurrentUser() {
         app.getDatabaseManager().deleteSession(realm);
-        app.startAuthActivity();
+        startActivity(AuthActivity.intent(this));
     }
 
     public DialogUtil getDialogUtil() {
@@ -655,6 +661,10 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     public void disableDrawer(){
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mDrawerToggle.setDrawerIndicatorEnabled(false);
+    }
+
+    public Realm getRealm(){
+        return realm;
     }
 }
 

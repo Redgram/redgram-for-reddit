@@ -1,9 +1,15 @@
 package com.matie.redgram.data.managers.presenters;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.google.gson.JsonElement;
+import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
+import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
+import com.matie.redgram.data.models.db.Prefs;
+import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
@@ -11,11 +17,13 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
 import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.settings.SettingsActivity;
 
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.realm.Realm;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -31,6 +39,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     final private ContentView containerView; //parent
     final private RedditClient redditClient;
     final private ToastHandler toastHandler;
+    final private App app;
 
     private CompositeSubscription subscriptions;
     //global subscriptions
@@ -44,6 +53,7 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     @Inject
     public LinksPresenterImpl(LinksView linksView, ContentView containerView, App app) {
+        this.app = app;
         this.linksView = linksView;
         this.containerView = containerView;
         this.redditClient = app.getRedditClient();
@@ -56,8 +66,8 @@ public class LinksPresenterImpl implements LinksPresenter {
         if(subscriptions == null)
             subscriptions = new CompositeSubscription();
 
-        if(!subscriptions.isUnsubscribed()){
-            if(listingSubscription != null){
+        if(!subscriptions.isUnsubscribed()) {
+            if (listingSubscription != null) {
                 subscriptions.add(listingSubscription);
             }
         }
@@ -75,6 +85,7 @@ public class LinksPresenterImpl implements LinksPresenter {
         if(params.containsKey("after")){
             params.remove("after");
         }
+        params.put("limit", app.getAuthUserPrefs().getNumSites()+"");
         containerView.showLoading();
         listingSubscription = getListingSubscription(subreddit, front, params, true);
     }
@@ -82,6 +93,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     @Override
     public void getMoreListing(String subreddit, @Nullable String front, Map<String, String> params) {
         params.put("after", loadMoreId);
+        params.put("limit", app.getAuthUserPrefs().getNumSites()+"");
         linksView.showLoading();
         if(front != null){
             listingSubscription = getListingSubscription(subreddit, front, params, false);
@@ -100,7 +112,7 @@ public class LinksPresenterImpl implements LinksPresenter {
         containerView.showLoading();
         listingSubscription = getSearchSubscription(subreddit, params, true);
 
-        if(!listingSubscription.isUnsubscribed()){
+        if(!subscriptions.isUnsubscribed()){
             subscriptions.add(listingSubscription);
         }
     }
@@ -254,11 +266,62 @@ public class LinksPresenterImpl implements LinksPresenter {
 
                     @Override
                     public void onNext(JsonElement redditObject) {
+
                     }
                 });
         if(!subscriptions.isUnsubscribed()){
             subscriptions.add(reportSubscription);
         }
+    }
+
+    @Override
+    public void confirmAge() {
+
+        AuthPrefs prefs = new AuthPrefs();
+        prefs.setOver18(true);
+
+        Subscription subscription = redditClient.updatePrefs(prefs)
+                .compose(containerView.getBaseFragment().bindToLifecycle())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<AuthPrefs>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        linksView.showErrorMessage(e.toString());
+                    }
+
+                    @Override
+                    public void onNext(AuthPrefs prefs) {
+                        app.getDatabaseManager().setPrefs(prefs);
+                        //realm Prefs object will recognize a change a refresh the list in the UI
+                    }
+                });
+        if(!subscriptions.isUnsubscribed()){
+            subscriptions.add(subscription);
+        }
+    }
+
+    @Override
+    public void enableNsfwPreview() {
+
+        Realm realm = app.getDatabaseManager().getInstance();
+        if(realm != null){
+            User user = DatabaseHelper.getSessionUser(realm);
+            if(user != null){
+                user.getPrefs().setDisableNsfwPreview(false);
+
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(user);
+                realm.commitTransaction();
+
+                DatabaseHelper.close(realm);
+            }
+        }
+
     }
 
     private Subscription getListingSubscription(@Nullable String subreddit, @Nullable String filter, Map<String,String> params, boolean isNew){
@@ -275,6 +338,7 @@ public class LinksPresenterImpl implements LinksPresenter {
 
         return buildSubscription(targetObservable, isNew);
     }
+
     @SuppressWarnings("unchecked")
     // TODO: 2016-04-21 share Subscriber with getSearchSubscription
     private Subscription buildSubscription(Observable<RedditListing<PostItem>> observable, boolean isNew){
@@ -305,7 +369,6 @@ public class LinksPresenterImpl implements LinksPresenter {
                     @Override
                     public void onNext(RedditListing wrapper) {
                         if(isNew){
-                            linksView.getItems().clear();
                             linksView.updateList(wrapper.getItems());
                         }else{
                             linksView.getItems().addAll(wrapper.getItems());

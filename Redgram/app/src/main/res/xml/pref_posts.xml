@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="pref_posts_num_display"
+        android:defaultValue="25"
+        android:entries="@array/pref_posts_num"
+        android:entryValues="@array/pref_posts_num"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_posts_num_title"/>
+    <EditTextPreference
+        android:key="pref_posts_min_score"
+        android:defaultValue="-4"
+        android:inputType="numberDecimal|numberSigned"
+        android:title="@string/pref_posts_min_score_title"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:maxLines="1" />
+    <SwitchPreference
+        android:key="pref_posts_show_flair"
+        android:title="@string/pref_posts_show_flair_title"
+        android:defaultValue="true"/>
+    <ListPreference
+        android:key="pref_posts_media"
+        android:defaultValue="Subreddit"
+        android:entries="@array/pref_posts_media"
+        android:entryValues="@array/pref_posts_media"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_posts_media_title" />
+    <SwitchPreference
+        android:key="pref_posts_hide_ups"
+        android:title="@string/pref_posts_hide_ups_title"
+        android:defaultValue="false"/>
+    <SwitchPreference
+        android:key="pref_posts_hide_downs"
+        android:title="@string/pref_posts_hide_downs_title"
+        android:defaultValue="false"/>
+</PreferenceScreen>

@@ -18,7 +18,7 @@ public class RedditServiceBase extends ApiBase {
     public static final String OAUTH_HOST_ABSOLUTE = SSL+OAUTH_HOST+SEP;
     public static final String NAMESPACE = "api/v1/";
     public static final String OAUTH_URL = "authorize.compact?client_id={client_id}&response_type=code&state=TEST&redirect_uri={redirect_uri}&duration={duration}&scope={scope}";
-    public static final String scopeList = "identity,edit,history,mysubreddits,privatemessages," +
+    public static final String scopeList = "account,identity,edit,history,mysubreddits,privatemessages," +
             "read,report,save,submit,subscribe,vote,wikiread";
     public static final String REDIRECT_URI = "http://localhost";
     public static final String DURATION = "permanent";

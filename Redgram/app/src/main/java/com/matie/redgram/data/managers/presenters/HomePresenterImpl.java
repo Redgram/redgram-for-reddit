@@ -107,7 +107,7 @@ public class HomePresenterImpl implements HomePresenter{
             subredditsObservable = redditClient.getSubscriptions(subparams);
         }
 
-        Observable
+        homeWrapperSubscription = Observable
                 .zip(linksObservable, subredditsObservable, Observable.just((storedListing != null)), (links, subredditListing, inStore) -> {
                     HomeViewWrapper homeViewWrapper = new HomeViewWrapper();
                     homeViewWrapper.setSubreddits(subredditListing);

@@ -1,6 +1,7 @@
 package com.matie.redgram.data.network.api.reddit.base;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import com.matie.redgram.data.utils.reddit.BooleanDateDeserializer;
 import com.matie.redgram.data.utils.reddit.DateTimeDeserializer;
 import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.auth.AuthActivity;
 
 import org.joda.time.DateTime;
 
@@ -98,7 +100,7 @@ public class RedditService extends RedditServiceBase {
                     if(sm.getCurrentToken() != null){
                         requestBuilder.addHeader("Authorization", "bearer "+ sm.getCurrentToken());
                     }else if(authHeader == null){
-                        app.startAuthActivity();
+                        app.startActivity(AuthActivity.intent(app));
                         return null;
                     }
                     if(!isOnline){
@@ -161,7 +163,7 @@ public class RedditService extends RedditServiceBase {
                             }
                         }else{
                             //start auth activity and return null
-                            app.startAuthActivity();
+                            app.startActivity(AuthActivity.intent(app));
                             return null;
                         }
 
@@ -173,7 +175,7 @@ public class RedditService extends RedditServiceBase {
                         if (response.request().header(REFRESH_HEADER_TAG).equalsIgnoreCase(REFRESH_HEADER_TAG)){
                             //if refresh token mechanism is unauthorized return a message
                             app.getToastHandler().showBackgroundToast("401 Unauthorized Refresh Token", Toast.LENGTH_LONG);
-                            app.startAuthActivity();
+                            app.startActivity(AuthActivity.intent(app));
                         }
                         return null;
                     }

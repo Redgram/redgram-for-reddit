@@ -14,6 +14,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.media.video.ImageManager;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.posts.views.LinksView;
 
@@ -74,33 +75,55 @@ public class PostItemDefaultView extends PostItemSubView {
         postSourceText.setText(item.getDomain());
         postLinkText.setText(item.getUrl());
 
-        Uri thumbnailUri = Uri.parse(item.getThumbnail());
-        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(thumbnailUri)
-                .build();
-        PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
-                .setImageRequest(request)
-                .setOldController(thumbnailView.getController());
-
-        DraweeController controller = builder.build();
-        thumbnailView.getHierarchy().setActualImageFocusPoint(new PointF(0.5f, 0f));
-        thumbnailView.setController(controller);
-    }
-
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-        if(disabled){
-            listener.viewWebMedia(position);
+        if(getUserPrefs().getMedia().equalsIgnoreCase("on") && !isNsfw()){
+            setupThumbnail();
+        }else if(getUserPrefs().getMedia().equalsIgnoreCase("subreddit")){
+            if(!postItem.getThumbnail().isEmpty() && !isNsfw()){
+                setupThumbnail();
+            }else if(isNsfw()){
+                thumbnailView.setVisibility(GONE);
+            }else{
+                setupDefaultThumbnail(); // TODO: 2016-06-21 replace with default one from asset folder
+            }
+        }else{
+            //no
+            thumbnailView.setVisibility(GONE);
         }
+
     }
 
+    private void setupThumbnail() {
+        thumbnailView.setVisibility(VISIBLE);
+        ImageManager.newImageBuilder(getContext())
+                .setImageView(thumbnailView)
+                .setThumbnail(postItem.getThumbnail())
+                .includeOldController()
+                .build();
+    }
 
+    private void setupDefaultThumbnail() {
+        thumbnailView.setVisibility(VISIBLE);
+        ImageManager.newImageBuilder(getContext())
+                .setImageView(thumbnailView)
+                // TODO: 2016-06-21 find a better default photo
+                .setImageFromRes(R.drawable.reddit_nf_cropped, false)
+                .includeOldController()
+                .build();
+    }
 
     @OnClick(R.id.default_wrapper)
     public void onDefaultWrapperClick(){
-        if(postItem != null && isNsfwDisabled()){
-            listener.viewWebMedia(position);
+        if(isNsfw()){
+            listener.callAgeConfirmDialog();
         }else{
-            callNsfwDialog();
+            listener.viewWebMedia(position);
         }
+    }
+
+    private boolean isNsfw(){
+        if(postItem.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
+            return true;
+        }
+        return false;
     }
 }

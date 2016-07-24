@@ -1,5 +1,7 @@
 package com.matie.redgram.data.managers.presenters;
 
+import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
+
 import java.util.Map;
 
 /**
@@ -17,4 +19,7 @@ public interface LinksPresenter {
     void save(int position, String name, boolean save);
     void delete(int position);
     void report(int position);
+    //dealing with settings
+    void confirmAge();
+    void enableNsfwPreview();
 }

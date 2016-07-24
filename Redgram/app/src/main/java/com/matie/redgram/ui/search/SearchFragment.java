@@ -13,6 +13,8 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -45,7 +47,7 @@ import com.matie.redgram.ui.posts.LinksComponent;
 import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.search.views.SearchView;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
+import com.matie.redgram.ui.thread.views.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.Arrays;
@@ -127,11 +129,11 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == CommentsActivity.REQ_CODE){
+        if(requestCode == ThreadActivity.REQ_CODE){
             if(resultCode == Activity.RESULT_OK){
                 PostItem postItem = new Gson()
-                        .fromJson(data.getStringExtra(CommentsActivity.RESULT_POST_CHANGE), PostItem.class);
-                int pos = data.getIntExtra(CommentsActivity.RESULT_POST_POS, -1);
+                        .fromJson(data.getStringExtra(ThreadActivity.RESULT_POST_CHANGE), PostItem.class);
+                int pos = data.getIntExtra(ThreadActivity.RESULT_POST_POS, -1);
                 if(linksContainerView.getItems().contains(postItem) && pos >= 0){
                     // TODO: 2016-04-18 override hashcode to check whether item has actually changed before calling update
                     // TODO: 2016-04-18 Also, use the same mechanism for single item operations in LinkContainerView
@@ -144,6 +146,11 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                 }
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -249,6 +256,10 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                                     performPositiveEvent(dialog);
                                 }
 
+                                @Override
+                                public void onNegative(MaterialDialog dialog) {
+                                    super.onNegative(dialog);
+                                }
                             })
                             .show();
                 } catch (NullPointerException e) {
@@ -290,7 +301,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         filterContentLayout = (RelativeLayout)mInflater.inflate(R.layout.fragment_search_toolbar_filter, null);
         fromSpinner = (Spinner)filterContentLayout.findViewById(R.id.spinner_from);
         sortSpinner = (Spinner)filterContentLayout.findViewById(R.id.spinner_sort);
-        limitToView = (EditText)filterContentLayout.findViewById(R.id.limit_view);
 
         ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(
                 getActivity(), R.layout.support_simple_spinner_dropdown_item, fromArray);
@@ -302,6 +312,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         fromSpinner.setAdapter(fromAdapter);
         sortSpinner.setAdapter(sortAdapter);
 
+        limitToView = (EditText)filterContentLayout.findViewById(R.id.limit_view);
     }
 
     private void performPositiveEvent(MaterialDialog dialog) {
@@ -343,6 +354,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         super.onResume();
         searchPresenter.registerForEvents();
         linksContainerView.getLinksPresenter().registerForEvents();
+        linksContainerView.addChangeListeners();
     }
 
     @Override
@@ -353,6 +365,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         toggleKeyboard(false);
         searchPresenter.unregisterForEvents();
         linksContainerView.getLinksPresenter().unregisterForEvents();
+        linksContainerView.removeChangeListeners();
     }
 
 

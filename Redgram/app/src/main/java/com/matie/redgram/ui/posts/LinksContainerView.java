@@ -28,19 +28,23 @@ import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
+import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
+import com.matie.redgram.data.models.db.Prefs;
+import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
+import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.posts.views.LinksView;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
+import com.matie.redgram.ui.thread.views.ThreadActivity;
 
 import java.io.File;
 import java.util.HashMap;
@@ -51,6 +55,8 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
 
 /**
  * Created by matie on 2016-03-16.
@@ -74,7 +80,10 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     private String subredditChoice = null;
     private String filterChoice = null;
     private Map<String,String> params = new HashMap<>();
-    private int hiddenItemPos = -1;
+
+    private Prefs prefs;
+    private Gson gson;
+    private RealmChangeListener prefsChangeListener;
 
     @Inject
     App app;
@@ -101,6 +110,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     private void init(){
         filterChoice = getResources().getString(R.string.default_filter).toLowerCase();
+        gson = new Gson();
         setupListeners();
         setupRecyclerView();
     }
@@ -166,7 +176,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         if(params != null){
             this.params = urlParams;
         }
-        linksPresenter.getListing(subredditChoice, filterChoice, params);
+        refreshView();
     }
 
     @Override
@@ -266,20 +276,20 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     @Override
     public void loadCommentsForPost(int position) {
-        Intent intent = new Intent(context, CommentsActivity.class);
+        Intent intent = new Intent(context, ThreadActivity.class);
         String key = getResources().getString(R.string.main_data_key);
         String posKey = getResources().getString(R.string.main_data_position);
-        intent.putExtra(key, new Gson().toJson(getItem(position)));
+        intent.putExtra(key, gson.toJson(getItem(position)));
         intent.putExtra(posKey, position);
 
         Fragment hostingFragment =
                 ((BaseActivity) context).getSupportFragmentManager().findFragmentByTag(getHostingFragmentTag());
         if(hostingFragment != null){
             ((BaseFragment)hostingFragment)
-                    .openIntentForResult(intent, CommentsActivity.REQ_CODE, R.anim.enter, R.anim.exit);
+                    .openIntentForResult(intent, ThreadActivity.REQ_CODE, R.anim.enter, R.anim.exit);
         }else{
             ((BaseActivity) context)
-                    .openIntentForResult(intent, CommentsActivity.REQ_CODE, R.anim.enter, R.anim.exit);
+                    .openIntentForResult(intent, ThreadActivity.REQ_CODE, R.anim.enter, R.anim.exit);
         }
     }
 
@@ -287,7 +297,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     public void viewWebMedia(int position) {
         Bundle bundle = new Bundle();
         String key = getResources().getString(R.string.main_data_key);
-        bundle.putString(key, new Gson().toJson(getItem(position)));
+        bundle.putString(key, gson.toJson(getItem(position)));
         ((SlidingUpPanelActivity)context).setPanelView(Fragments.WEB_PREVIEW, bundle);
     }
 
@@ -309,12 +319,29 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
                     bundle.putString(getResources().getString(R.string.local_cache_key), localFile.getPath());
 
-                    bundle.putString(getResources().getString(R.string.main_data_key), new Gson().toJson(item));
+                    bundle.putString(getResources().getString(R.string.main_data_key), gson.toJson(item));
 
                     ((SlidingUpPanelActivity)context).setPanelView(Fragments.IMAGE_PREVIEW, bundle);
                 }
             }
         }
+    }
+
+    @Override
+    public void callAgeConfirmDialog() {
+        MaterialDialog.SingleButtonCallback callback = new MaterialDialog.SingleButtonCallback() {
+            @Override
+            public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
+                if(!app.getAuthUserPrefs().isOver18()){
+                    linksPresenter.confirmAge();
+                }else if(app.getAuthUserPrefs().isDisableNsfwPreview()){
+                    //change preferences
+                    linksPresenter.enableNsfwPreview();
+                }
+            }
+        };
+
+        LinksHelper.callAgeConfirmDialog(dialogUtil, callback);
     }
 
     public LinearLayout getContainerLinearLayout() {
@@ -349,10 +376,10 @@ public class LinksContainerView extends FrameLayout implements LinksView {
                 }
             }
         };
-
     }
 
     private void setupRecyclerView(){
+        containerRecyclerView.getItemAnimator().setChangeDuration(0);
         mLayoutManager = (LinearLayoutManager)containerRecyclerView.getLayoutManager();
         containerRecyclerView.addOnScrollListener(loadMoreListener);
         containerRecyclerView.setListener(this);
@@ -426,6 +453,30 @@ public class LinksContainerView extends FrameLayout implements LinksView {
                 .showSnackBar(msg, Snackbar.LENGTH_LONG, actionMsg, onClickListener, new UnHidePanelSnackBarCallback());
         }
 
+    }
+
+    public void addChangeListeners() {
+        // TODO: 2016-05-18 add Realm in base activity
+        if(context instanceof MainActivity){
+            Realm realm = ((MainActivity) context).getRealm();
+            User user = DatabaseHelper.getSessionUser(realm);
+            if(user != null){
+                prefs = user.getPrefs();
+                if(prefs != null){
+                    prefsChangeListener = () -> {
+                        app.setupUserPrefs();
+                        updateList();
+                    };
+                    prefs.addChangeListener(prefsChangeListener);
+                }
+            }
+        }
+    }
+
+    public void removeChangeListeners() {
+        if(prefs != null){
+            prefs.removeChangeListener(prefsChangeListener);
+        }
     }
 
     public class UnHidePanelSnackBarCallback extends Snackbar.Callback{

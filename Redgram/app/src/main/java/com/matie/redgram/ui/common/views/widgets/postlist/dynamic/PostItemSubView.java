@@ -7,10 +7,14 @@ import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.models.db.Prefs;
+import com.matie.redgram.data.models.db.Settings;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.posts.views.LinksView;
 
 /**
@@ -24,47 +28,22 @@ import com.matie.redgram.ui.posts.views.LinksView;
 public abstract class PostItemSubView extends RelativeLayout {
 
     private BaseActivity baseActivity;
-    private SharedPreferences postPreferences;
-    private DatabaseManager databaseManager;
-    private HomeView listener;
+    private App app;
 
     public PostItemSubView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        baseActivity = (BaseActivity) getContext();
-        databaseManager = baseActivity.app().getDatabaseManager();
+        this.baseActivity = (BaseActivity) getContext();
+        this.app = baseActivity.app();
     }
 
     public abstract void setupView(PostItem item, int position, LinksView listener);
-    public abstract void handleNsfwUpdate(boolean disabled);
 
-    public boolean isNsfwDisabled(){
-        //todo
-        return true;
+    public Settings getSettings() {
+        return app.getSettings();
     }
 
-    public void disableNsfw(){
-        handleNsfwUpdate(true);
-        // TODO: 09/10/15 notify data set changed
+    public Prefs getUserPrefs() {
+        return app.getAuthUserPrefs();
     }
-
-    public void callNsfwDialog(){
-        DialogUtil dialogUtil = baseActivity.getDialogUtil();
-        if(dialogUtil != null){
-            dialogUtil.build()
-                .title("Disable NSFW setting?")
-                .positiveText("Yes")
-                .negativeText("Cancel")
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        disableNsfw();
-                    }
-                })
-                .show();
-        }
-
-    }
-
 
 }

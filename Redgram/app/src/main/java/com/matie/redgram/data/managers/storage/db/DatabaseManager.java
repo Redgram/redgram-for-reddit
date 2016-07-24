@@ -3,23 +3,30 @@ package com.matie.redgram.data.managers.storage.db;
 import android.content.Context;
 
 import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
+import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Settings;
+import com.matie.redgram.data.models.db.State;
 import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.SubredditItem;
+import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.ui.App;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 import io.realm.annotations.RealmModule;
 
 /**
@@ -34,18 +41,20 @@ import io.realm.annotations.RealmModule;
  *
  * Created by matie on 2016-02-26.
  */
-@RealmModule(classes = {Session.class, User.class, Token.class, Settings.class, Prefs.class, Subreddit.class})
+@RealmModule(classes = {Session.class, User.class, Token.class, Settings.class, Prefs.class, State.class, Subreddit.class})
 public class DatabaseManager {
 
 //    public static final String DB_NAME = "redgram.realm.session";
     public static final Integer SESSION_DEFAULT_ID = 69;
     private RealmConfiguration configuration;
+    private final App app;
     private final Context context;
 
     private String currentAccessToken;
 
     @Inject
     public DatabaseManager(App app) {
+        this.app = app;
         this.context = app.getApplicationContext();
         this.configuration = new RealmConfiguration.Builder(context)
 //                .name(DB_NAME)
@@ -68,7 +77,7 @@ public class DatabaseManager {
         this.currentAccessToken = currentAccessToken;
     }
 
-    public static Realm getInstance(){
+    public Realm getInstance(){
         return Realm.getDefaultInstance();
     }
 
@@ -102,6 +111,12 @@ public class DatabaseManager {
         setCurrentToken(accessToken.getAccessToken());
     }
 
+    public void setPrefs(AuthPrefs prefs) {
+        Realm realm = getInstance();
+        DatabaseHelper.setPrefs(realm, prefs);
+        close(realm);
+    }
+
     public Session getSession(){
         Realm realm = getInstance();
         Session session = DatabaseHelper.getSession(realm);
@@ -119,6 +134,19 @@ public class DatabaseManager {
         }
         close(realm);
         return usableUser;
+    }
+
+    public List<User> getUsers(){
+        Realm realm = getInstance();
+        RealmResults<User> users = DatabaseHelper.getUsers(realm);
+        List<User> usableUsers = new ArrayList<>();
+        if(users != null && !users.isEmpty()){
+            for(User user : users){
+                usableUsers.add(realm.copyFromRealm(user));
+            }
+        }
+        close(realm);
+        return usableUsers;
     }
 
     public String getToken(){

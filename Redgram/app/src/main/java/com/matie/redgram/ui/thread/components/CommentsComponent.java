@@ -2,7 +2,7 @@ package com.matie.redgram.ui.thread.components;
 
 import com.matie.redgram.data.managers.presenters.CommentsPresenter;
 import com.matie.redgram.ui.FragmentScope;
-import com.matie.redgram.ui.common.previews.CommentsPreviewFragment;
+import com.matie.redgram.ui.thread.views.CommentsFragment;
 import com.matie.redgram.ui.thread.modules.CommentsModule;
 import com.matie.redgram.ui.thread.views.CommentsView;
 
@@ -19,7 +19,7 @@ import dagger.Component;
         }
 )
 public interface CommentsComponent {
-    void inject(CommentsPreviewFragment fragment);
+    void inject(CommentsFragment fragment);
 
     CommentsView getCommentsView();
     CommentsPresenter getCommentsPresenter();
