@@ -313,7 +313,7 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
 
     @Override
     protected int getContainerId() {
-        return 0;
+        return R.id.container;
     }
 
     @Override
@@ -371,14 +371,6 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
         Bundle bundle = new Bundle();
         bundle.putString(getResources().getString(R.string.main_data_key), new Gson().toJson(postItem));
         return bundle;
-    }
-
-    private boolean isImagePreview(PostItem postItem) {
-        PostItem.Type type = postItem.getType();
-        if(type == PostItem.Type.IMAGE)
-            return true;
-        else
-            return false;
     }
 
     // TODO: 2016-01-06 For now, provide only WebPreview for anything that is NOT an image

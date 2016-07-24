@@ -39,21 +39,22 @@
         <activity
             android:name=".ui.subcription.SubscriptionActivity"
             android:label="@string/fragment_subreddits"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.thread.views.ThreadActivity"
             android:label="@string/title_activity_comments"
             android:screenOrientation="portrait"
-            android:theme="@style/Slider"></activity>
+            android:theme="@style/Slider" />
         <activity
             android:name=".ui.common.auth.AuthActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_auth"
             android:screenOrientation="portrait"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
         <activity
             android:name=".ui.settings.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
+        <activity android:name=".ui.profile.ProfileActivity"></activity>
     </application>
 
 </manifest>

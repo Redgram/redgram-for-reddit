@@ -45,6 +45,7 @@ import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.widgets.drawer.UserRecyclerView;
 import com.matie.redgram.ui.home.HomeFragment;
+import com.matie.redgram.ui.profile.ProfileActivity;
 import com.matie.redgram.ui.search.SearchFragment;
 import com.matie.redgram.ui.settings.SettingsActivity;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
@@ -169,7 +170,15 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     private void setupNavUserLayout(User user){
         FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);
-        ((TextView)headerView.findViewById(R.id.drawerUserName)).setText(user.getUserName());
+
+        TextView username = (TextView) headerView.findViewById(R.id.drawerUserName);
+        username.setText(user.getUserName());
+        username.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(ProfileActivity.intent(MainActivity.this));
+            }
+        });
 
         ImageView accountsView = ((ImageView) headerView.findViewById(R.id.drawerAccounts));
         accountsView.setOnClickListener(new View.OnClickListener() {
