@@ -11,7 +11,6 @@ import com.matie.redgram.data.models.api.reddit.main.RedditMore;
 import com.matie.redgram.data.models.api.reddit.main.RedditSubreddit;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
-import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.api.reddit.main.RedditLink;
@@ -70,9 +69,10 @@ public class RedditClient extends RedditService {
                 });
     }
 
+
     public Observable<AuthUser> getUser(@Nullable String accessToken) {
         accessToken = "bearer " + accessToken;
-        return provider.getUser(accessToken);
+        return provider.getAuthUser(accessToken);
     }
 
     public Observable<AuthPrefs> getUserPrefs(@Nullable String accessToken){

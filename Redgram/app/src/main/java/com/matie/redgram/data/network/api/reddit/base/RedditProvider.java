@@ -3,7 +3,6 @@ package com.matie.redgram.data.network.api.reddit.base;
 
 import com.google.gson.JsonElement;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
-import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.models.api.reddit.main.RedditListing;
 import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 
-import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -28,15 +26,36 @@ import rx.Observable;
  * Created by matie on 15/04/15.
  */
 public interface RedditProvider {
-
     //oauth
-    String API = "api/";
-    String NAMESPACE = API + "v1/";
-    String USER = NAMESPACE+"me";
-    String PREFS = USER+"/prefs";
+    String API = "api";
+    String NAMESPACE = API+"/v1";
+
+    //https://github.com/Redgram/redgram-for-reddit/issues/30
+    //account
+    String OAUTH_USER = NAMESPACE+"/me";
+    String PREFS = OAUTH_USER +"/prefs";
+    String FRIENDS = OAUTH_USER +"/friends"; //UserList
+    String FRIEND = FRIENDS+"/{username}";
+    String BLOCKED = OAUTH_USER +"/blocked"; //UserList
+    String KARMA = OAUTH_USER +"/karma";
+    String TROPHIES = OAUTH_USER +"/trophies";
+    //users
+    String USER = "/user/{username}"; //common prefix
+    String USER_TROPHIES = NAMESPACE+USER+"/trophies";
+    String USER_ABOUT = USER+"/about";
+    String USER_COMMENTS = USER+"/comments";
+    String USER_SUBMITTED = USER+"/submitted";
+    String USER_UPVOTED = USER+"/upvoted";
+    String USER_DOWNVOTED = USER+"/downvoted";
+    String USER_OVERVIEW = USER+"/overview";
+    String USER_SAVED = USER+"/saved";
+    String USER_GILDED = USER+"/gilded";
+    // end
+
+    //subreddits
     String MINE = "mine";
     String SUBSCRIBER = "/subscriber";
-
+    //links
     String VOTE = API+"vote";
     String COMMENT = API+"comment";
     String EDIT_TEXT = API+"editusertext";
@@ -66,14 +85,148 @@ public interface RedditProvider {
      * @param accessToken Null in the case where token is automatically included in the header
      * @return
      */
-    @GET(USER)
-    Observable<AuthUser> getUser(@Header("Authorization") String accessToken);
+    @GET(OAUTH_USER)
+    Observable<AuthUser> getAuthUser(@Header("Authorization") String accessToken);
 
+    /**
+     * Get a list of friends
+     *
+     * @return Reddit Object of type UserList
+     */
+    @GET(FRIENDS)
+    Observable<AuthUser> getFriends();
+
+    /**
+     * Get a specific user by username
+     *
+     * @param username A valid username
+     * @return Returns an AuthUser
+     */
+    @GET(FRIEND)
+    Observable<AuthUser> getFriend(@Path("username") String username);
+
+    /**
+     * Get a list of blocked users
+     *
+     * @return
+     */
+    @GET(BLOCKED)
+    Observable<AuthUser> getBlockedUsers();
+
+    /**
+     * Karma details of the authenticated user
+     *
+     * @return
+     */
+    @GET(KARMA)
+    Observable<AuthUser> getKarmaDetails();
+
+    /**
+     * Trophies of the authenticated user
+     *
+     * @return
+     */
+    @GET(TROPHIES)
+    Observable<AuthUser> getTrophies();
+
+    /**
+     * Returns user preferences
+     *
+     * @param accessToken Pass null if accessToken is automatically included in header
+     * @return
+     */
     @GET(PREFS)
     Observable<AuthPrefs> getUserPrefs(@Header("Authorization") String accessToken);
 
+    /**
+     * Update user preferences
+     *
+     * @param prefs It will update any attributes set in {@link AuthPrefs}
+     * @return
+     */
     @PATCH(PREFS)
     Observable<AuthPrefs> updatePrefs(@Body AuthPrefs prefs);
+
+    /**
+     * Get user details like username, karma, date created, etc
+     *
+     * @param username
+     * @return
+     */
+    @GET(USER_ABOUT)
+    Observable<AuthUser> getUserDetails(@Path("username") String username);
+
+    /**
+     * Overview of links and comments submitted
+     *
+     * @param username
+     * @return
+     */
+    @GET(USER_OVERVIEW)
+    Observable<AuthUser> getUserOverview(@Path("username") String username);
+
+    /**
+     * User comments
+     *
+     * @param username
+     * @return
+     */
+    @GET(USER_COMMENTS)
+    Observable<AuthUser> getUserComments(@Path("username") String username);
+
+    /**
+     * User submitted links
+     *
+     * @param username
+     * @return
+     */
+    @GET(USER_SUBMITTED)
+    Observable<AuthUser> getUserSubmitted(@Path("username") String username);
+
+    /**
+     * User saved links and comments
+     *
+     * @param username
+     * @return
+     */
+    @GET(USER_SAVED)
+    Observable<AuthUser> getUserSaved(@Path("username") String username);
+
+    /**
+     * Get an upvoted links
+     *
+     * @param username
+     * @return
+     */
+    @GET(USER_UPVOTED)
+    Observable<AuthUser> getUserUpvoted(@Path("username") String username);
+
+    /**
+     * Get downvoted links
+     *
+     * @param username
+     * @return
+     */
+    @GET(USER_DOWNVOTED)
+    Observable<AuthUser> getUserDownvoted(@Path("username") String username);
+
+    /**
+     * NOT SURE
+     *
+     * @param username
+     * @return
+     */
+    @GET(USER_GILDED)
+    Observable<AuthUser> getUserGilded(@Path("username") String username);
+
+    /**
+     * NOT SURE
+     *
+     * @param username
+     * @return
+     */
+    @GET(USER_TROPHIES)
+    Observable<AuthUser> getUserTrophies(@Path("username") String username);
 
     /**
      * @see <a href="https://www.reddit.com/dev/api#GET_subreddits_{where}">Subreddit Listing Section</a>
