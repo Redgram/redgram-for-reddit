@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.thread.views;
+package com.matie.redgram.ui.thread;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -21,7 +21,6 @@ import com.matie.redgram.ui.thread.components.CommentsComponent;
 import com.matie.redgram.ui.thread.components.DaggerCommentsComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
 import com.matie.redgram.ui.thread.modules.CommentsModule;
-import com.matie.redgram.ui.thread.views.ThreadActivity;
 import com.matie.redgram.ui.thread.views.CommentsView;
 import com.matie.redgram.ui.thread.views.adapters.CommentsAdapter;
 import com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView;

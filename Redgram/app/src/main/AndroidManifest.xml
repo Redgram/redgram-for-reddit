@@ -41,7 +41,7 @@
             android:label="@string/fragment_subreddits"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.thread.views.ThreadActivity"
+            android:name=".ui.thread.ThreadActivity"
             android:label="@string/title_activity_comments"
             android:screenOrientation="portrait"
             android:theme="@style/Slider" />

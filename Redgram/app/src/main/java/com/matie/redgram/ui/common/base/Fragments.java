@@ -2,9 +2,9 @@ package com.matie.redgram.ui.common.base;
 
 import android.support.v4.app.Fragment;
 
-import com.matie.redgram.ui.thread.views.CommentsFragment;
+import com.matie.redgram.ui.thread.CommentsFragment;
 import com.matie.redgram.ui.common.previews.ImagePreviewFragment;
-import com.matie.redgram.ui.thread.views.PostFragment;
+import com.matie.redgram.ui.thread.PostFragment;
 import com.matie.redgram.ui.common.previews.WebPreviewFragment;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.ui.search.SearchFragment;

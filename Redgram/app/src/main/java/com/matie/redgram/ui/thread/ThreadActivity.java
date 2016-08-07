@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.thread.views;
+package com.matie.redgram.ui.thread;
 
 
 import android.annotation.TargetApi;
@@ -46,6 +46,8 @@ import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.thread.components.DaggerThreadComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
 import com.matie.redgram.ui.thread.modules.ThreadModule;
+import com.matie.redgram.ui.thread.views.CommentsView;
+import com.matie.redgram.ui.thread.views.ThreadView;
 import com.matie.redgram.ui.thread.views.adapters.CommentsPagerAdapter;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.thread.views.widgets.OptionsView;
