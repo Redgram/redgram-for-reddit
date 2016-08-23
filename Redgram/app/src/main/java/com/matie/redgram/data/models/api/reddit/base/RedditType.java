@@ -5,6 +5,7 @@ import com.matie.redgram.data.models.api.reddit.main.RedditLink;
 import com.matie.redgram.data.models.api.reddit.main.RedditListing;
 import com.matie.redgram.data.models.api.reddit.main.RedditMore;
 import com.matie.redgram.data.models.api.reddit.main.RedditSubreddit;
+import com.matie.redgram.data.models.api.reddit.main.RedditUser;
 
 /**
  * Created by matie on 16/04/15.
@@ -13,6 +14,7 @@ public enum RedditType {
 
     Listing(RedditListing.class),
     more(RedditMore.class),
+    UserList(RedditListing.class),
     t1(RedditComment.class),
     t3(RedditLink.class),
     t5(RedditSubreddit.class);

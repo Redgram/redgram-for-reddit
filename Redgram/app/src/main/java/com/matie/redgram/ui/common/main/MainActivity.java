@@ -636,15 +636,15 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     //controlling the coordinator layout
     @Override
-    public CoordinatorLayout getCoordinatorLayout() {
+    public CoordinatorLayout coordinatorLayout() {
         return coordinatorLayout;
     }
 
     @Override
     public void showSnackBar(String msg, int length, @Nullable String actionText, @Nullable View.OnClickListener onClickListener, @Nullable Snackbar.Callback callback) {
-        if(getCoordinatorLayout() != null){
+        if(coordinatorLayout() != null){
 
-            Snackbar snackbar = Snackbar.make(getCoordinatorLayout(), msg, length);
+            Snackbar snackbar = Snackbar.make(coordinatorLayout(), msg, length);
 
             if(actionText != null && onClickListener != null){
                 snackbar.setAction(actionText, onClickListener);

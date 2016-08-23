@@ -27,8 +27,12 @@ import rx.Observable;
  */
 public interface RedditProvider {
     //oauth
-    String API = "api";
+    String API = "/api";
     String NAMESPACE = API+"/v1";
+
+    //common
+    String FILTER = "/{filter}";
+    String JSON = ".json";
 
     //https://github.com/Redgram/redgram-for-reddit/issues/30
     //account
@@ -53,8 +57,12 @@ public interface RedditProvider {
     // end
 
     //subreddits
-    String MINE = "mine";
+    String MINE = "/mine";
     String SUBSCRIBER = "/subscriber";
+    String SUBREDDIT = "/r/{subreddit}"; //only used in case of requesting specific subreddits
+    String SUBREDDITS = "/subreddits";
+    String SEARCH = "/search";
+
     //links
     String VOTE = API+"vote";
     String COMMENT = API+"comment";
@@ -69,15 +77,11 @@ public interface RedditProvider {
     String MARK_NSFW = API+"marknsfw";
     String UNMARK_NSFW = API+"unmarknsfw";
 
-    String SUBREDDIT = "r/{subreddit}/"; //only used in case of requesting specific subreddits
-    String SUBREDDITS = "subreddits/"; //only used in case of requesting specific subreddits
-    String SEARCH = "search";
-    String COMMENTS = "comments/";
-    String ARTICLE = "{article}";
-
-    //common
-    String FILTER = "{filter}";
-    String JSON = ".json";
+    //comments
+    String COMMENTS = "/comments";
+    String ARTICLE = "/{article}";
+    String FRIENDS_COMMENTS = "/r/friends/comments";
+    String FRIENDS_GILDED_COMMENTS = "/r/friends/gilded";
 
     /**
      * Get authenticated user information. The header is optional.
@@ -91,10 +95,10 @@ public interface RedditProvider {
     /**
      * Get a list of friends
      *
-     * @return Reddit Object of type UserList
+     * @return List with two Listings of type UserList
      */
     @GET(FRIENDS)
-    Observable<AuthUser> getFriends();
+    Observable<RedditResponse<RedditListing>> getFriends();
 
     /**
      * Get a specific user by username
@@ -103,15 +107,15 @@ public interface RedditProvider {
      * @return Returns an AuthUser
      */
     @GET(FRIEND)
-    Observable<AuthUser> getFriend(@Path("username") String username);
+    Observable<RedditResponse<RedditListing>> getFriend(@Path("username") String username);
 
     /**
      * Get a list of blocked users
      *
-     * @return
+     * @return Listing of type UserList
      */
     @GET(BLOCKED)
-    Observable<AuthUser> getBlockedUsers();
+    Observable<RedditResponse<RedditListing>> getBlockedUsers();
 
     /**
      * Karma details of the authenticated user
@@ -239,7 +243,6 @@ public interface RedditProvider {
     Observable<RedditResponse<RedditListing>> getSubredditsListing(
             @Path("filter") String filter, @QueryMap Map<String, String> params);
 
-
     @GET(SUBREDDITS+MINE+SUBSCRIBER)
     Observable<RedditResponse<RedditListing>> getSubscriptions(@QueryMap Map<String, String> params);
 
@@ -301,11 +304,18 @@ public interface RedditProvider {
     Observable<RedditResponse<RedditListing>> executeSearch(
             @Path("subreddit") String subreddit, @QueryMap Map<String, String> params);
 
+    @GET(FRIENDS_COMMENTS+JSON)
+    Observable<List<RedditResponse<RedditListing>>> getFriendsComments(@QueryMap Map<String, String> params);
+
+
+    @GET(FRIENDS_GILDED_COMMENTS+JSON)
+    Observable<List<RedditResponse<RedditListing>>> getFriendsGildedComments(@QueryMap Map<String, String> params);
+
     /**
      * get comments by link id (article)
      * @param article The link ID
      * @param params
-     * @return a array of 2 listings: the link and its comments
+     * @return an array of 2 listings: the link and its comments
      */
     @GET(COMMENTS+ARTICLE+JSON)
     Observable<List<RedditResponse<RedditListing>>> getCommentsByArticle(

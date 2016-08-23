@@ -11,6 +11,9 @@ import com.matie.redgram.data.models.api.reddit.main.RedditMore;
 import com.matie.redgram.data.models.api.reddit.main.RedditSubreddit;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
+import com.matie.redgram.data.models.api.reddit.main.RedditUser;
+import com.matie.redgram.data.models.db.User;
+import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.api.reddit.main.RedditLink;
@@ -83,6 +86,41 @@ public class RedditClient extends RedditService {
     public Observable<AuthPrefs> updatePrefs(AuthPrefs prefs) {
         return provider.updatePrefs(prefs);
     }
+
+    public Observable<RedditListing<UserItem>> getFriends(){
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>>
+                friendsObservable = provider.getFriends();
+        return getDefaultUserListObservable(friendsObservable);
+    }
+
+    public Observable<RedditListing<UserItem>> getBlockedUsers(){
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>>
+                blockedUsersObservable = provider.getBlockedUsers();
+        return getDefaultUserListObservable(blockedUsersObservable);
+    }
+
+    private Observable<RedditListing<UserItem>> getDefaultUserListObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> listing) {
+        Observable<List<UserItem>> listObservable = listing.flatMap(data -> Observable.from(data.getData().getChildren()))
+                .cast(RedditUser.class)
+                .map(redditUser -> {
+                    UserItem item = new UserItem();
+                    item.setUserName(redditUser.getName());
+                    return item;
+                }).toList();
+
+        Observable<Map<String, String>> fieldsObservable = getFieldsObservable(listing);
+
+        return Observable.zip(listObservable, fieldsObservable, (userItems, fields) -> {
+            RedditListing<UserItem> userListing = new RedditListing<UserItem>();
+            userListing.setItems(userItems);
+            userListing.setAfter(fields.get(AFTER));
+            userListing.setBefore(fields.get(BEFORE));
+            userListing.setModHash(fields.get(MODHASH));
+            return userListing;
+        });
+
+    }
+
 
     public Observable<RedditListing<PostItem>> getSubredditListing(String query, @Nullable Map<String, String> params, List<PostItem> postItems) {
 
