@@ -13,8 +13,9 @@ import com.matie.redgram.data.models.api.reddit.main.RedditUser;
 public enum RedditType {
 
     Listing(RedditListing.class),
-    more(RedditMore.class),
     UserList(RedditListing.class),
+    User(RedditUser.class),
+    more(RedditMore.class),
     t1(RedditComment.class),
     t3(RedditLink.class),
     t5(RedditSubreddit.class);

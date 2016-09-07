@@ -3,6 +3,7 @@ package com.matie.redgram.data.network.api.reddit.base;
 
 import com.google.gson.JsonElement;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
+import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.models.api.reddit.main.RedditListing;
 import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
@@ -64,18 +65,18 @@ public interface RedditProvider {
     String SEARCH = "/search";
 
     //links
-    String VOTE = API+"vote";
-    String COMMENT = API+"comment";
-    String EDIT_TEXT = API+"editusertext";
-    String DELETE = API+"del";
-    String REPORT = API+"report";
-    String SAVE = API+"save";
-    String UN_SAVE = API+"unsave";
-    String HIDE = API+"hide";
-    String UN_HIDE = API+"unhide";
-    String MORE_CHILDREN = API+"morechildren";
-    String MARK_NSFW = API+"marknsfw";
-    String UNMARK_NSFW = API+"unmarknsfw";
+    String VOTE = API+"/vote";
+    String COMMENT = API+"/comment";
+    String EDIT_TEXT = API+"/editusertext";
+    String DELETE = API+"/del";
+    String REPORT = API+"/report";
+    String SAVE = API+"/save";
+    String UN_SAVE = API+"/unsave";
+    String HIDE = API+"/hide";
+    String UN_HIDE = API+"/unhide";
+    String MORE_CHILDREN = API+"/morechildren";
+    String MARK_NSFW = API+"/marknsfw";
+    String UNMARK_NSFW = API+"/unmarknsfw";
 
     //comments
     String COMMENTS = "/comments";
@@ -98,7 +99,7 @@ public interface RedditProvider {
      * @return List with two Listings of type UserList
      */
     @GET(FRIENDS)
-    Observable<RedditResponse<RedditListing>> getFriends();
+    Observable<RedditObject> getFriends();
 
     /**
      * Get a specific user by username
@@ -115,7 +116,7 @@ public interface RedditProvider {
      * @return Listing of type UserList
      */
     @GET(BLOCKED)
-    Observable<RedditResponse<RedditListing>> getBlockedUsers();
+    Observable<RedditObject> getBlockedUsers();
 
     /**
      * Karma details of the authenticated user

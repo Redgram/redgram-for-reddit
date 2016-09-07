@@ -4,13 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
@@ -86,6 +82,9 @@ public class ProfileActivity extends ViewPagerActivity implements CoordinatorLay
         super.onDestroy();
         ButterKnife.reset(this);
     }
+
+    @Override
+    protected void checkIntent() {}
 
     @Override
     protected int getInitialPagerPosition() {

@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 /**
  * Created by matie on 2016-08-07.
  */
-public class RedditUser {
+public class RedditUser extends RedditObject {
     private DateTime date;
     private String name;
     private String id;

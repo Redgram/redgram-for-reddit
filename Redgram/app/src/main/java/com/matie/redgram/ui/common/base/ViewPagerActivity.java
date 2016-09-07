@@ -6,12 +6,8 @@ import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.widget.FrameLayout;
 
 import com.matie.redgram.R;
 import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
@@ -42,6 +38,9 @@ public abstract class ViewPagerActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.inject(this);
+        if(getIntent() != null){
+            checkIntent();
+        }
         setupViewPager();
         setupToolbar();
         setToolbarTitle(getInitialPagerPosition());
@@ -55,6 +54,7 @@ public abstract class ViewPagerActivity extends BaseActivity {
 
     protected abstract int getInitialPagerPosition();
     protected abstract SectionsPagerAdapter pagerAdapterInstance();
+    protected abstract void checkIntent();
 
     public ViewPager getViewPager(){
         return mViewPager;

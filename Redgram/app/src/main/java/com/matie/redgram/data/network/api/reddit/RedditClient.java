@@ -12,7 +12,6 @@ import com.matie.redgram.data.models.api.reddit.main.RedditSubreddit;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
 import com.matie.redgram.data.models.api.reddit.main.RedditUser;
-import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.PostItem;
@@ -88,19 +87,23 @@ public class RedditClient extends RedditService {
     }
 
     public Observable<RedditListing<UserItem>> getFriends(){
-        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>>
+        Observable<RedditObject>
                 friendsObservable = provider.getFriends();
         return getDefaultUserListObservable(friendsObservable);
     }
 
     public Observable<RedditListing<UserItem>> getBlockedUsers(){
-        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>>
+        Observable<RedditObject>
                 blockedUsersObservable = provider.getBlockedUsers();
         return getDefaultUserListObservable(blockedUsersObservable);
     }
 
-    private Observable<RedditListing<UserItem>> getDefaultUserListObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> listing) {
-        Observable<List<UserItem>> listObservable = listing.flatMap(data -> Observable.from(data.getData().getChildren()))
+    private Observable<RedditListing<UserItem>> getDefaultUserListObservable(Observable<RedditObject> listing) {
+        Observable<com.matie.redgram.data.models.api.reddit.main.RedditListing> redditListingObservable =
+                listing.map(redditObject -> (com.matie.redgram.data.models.api.reddit.main.RedditListing)redditObject);
+
+        Observable<List<UserItem>> listObservable = redditListingObservable
+                .flatMap(data -> Observable.from(data.getChildren()))
                 .cast(RedditUser.class)
                 .map(redditUser -> {
                     UserItem item = new UserItem();
@@ -108,7 +111,7 @@ public class RedditClient extends RedditService {
                     return item;
                 }).toList();
 
-        Observable<Map<String, String>> fieldsObservable = getFieldsObservable(listing);
+        Observable<Map<String, String>> fieldsObservable = redditListingObservable.map(this::buildFieldsMap);
 
         return Observable.zip(listObservable, fieldsObservable, (userItems, fields) -> {
             RedditListing<UserItem> userListing = new RedditListing<UserItem>();
@@ -335,12 +338,16 @@ public class RedditClient extends RedditService {
      * @return
      */
     private Observable<Map<String,String>> getFieldsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> responseObservable) {
-        return responseObservable.map(listing -> mapFieldsToHashMap(listing));
+        return responseObservable.map(this::mapFieldsToHashMap);
     }
 
     private Map<String, String> mapFieldsToHashMap(RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing> listing) {
+        com.matie.redgram.data.models.api.reddit.main.RedditListing listingData = listing.getData();
+        return buildFieldsMap(listingData);
+    }
+
+    private Map<String, String> buildFieldsMap(com.matie.redgram.data.models.api.reddit.main.RedditListing listingData) {
         Map<String, String> map = new HashMap<String,String>();
-        com.matie.redgram.data.models.api.reddit.main.RedditListing listingData = (com.matie.redgram.data.models.api.reddit.main.RedditListing)listing.getData();
 
         map.put(AFTER, listingData.getAfter());
         map.put(BEFORE, listingData.getBefore());

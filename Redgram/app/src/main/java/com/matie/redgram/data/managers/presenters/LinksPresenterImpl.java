@@ -312,10 +312,12 @@ public class LinksPresenterImpl implements LinksPresenter {
         if(realm != null){
             User user = DatabaseHelper.getSessionUser(realm);
             if(user != null){
-                user.getPrefs().setDisableNsfwPreview(false);
 
                 realm.beginTransaction();
+
+                user.getPrefs().setDisableNsfwPreview(false);
                 realm.copyToRealmOrUpdate(user);
+
                 realm.commitTransaction();
 
                 DatabaseHelper.close(realm);
