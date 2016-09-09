@@ -190,6 +190,7 @@ public class LinksPresenterImpl implements LinksPresenter {
 
         Subscription unHideSubscription = redditClient.hide(removedPost.getName(), true)
                 .compose(containerView.getBaseFragment().bindToLifecycle())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
                     @Override
