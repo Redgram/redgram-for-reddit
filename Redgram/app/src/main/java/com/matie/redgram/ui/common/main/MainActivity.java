@@ -104,6 +104,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     private Window window;
     private boolean isDrawerOpen = false;
     private Realm realm;
+    private String subredditToVisitOnResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -454,26 +455,40 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         if(requestCode == SUBSCRIPTION_REQUEST_CODE){
             if(resultCode == RESULT_OK){
                 String subredditName = data.getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
-                if(!subredditName.isEmpty() || subredditName != null){
-                    //select home fragment - first item
-                    Bundle bundle = new Bundle();
-                    bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
-
-                    HomeFragment homeFragment = (HomeFragment) Fragment
-                            .instantiate(activity(), Fragments.HOME.getFragment());
-                    homeFragment.setArguments(bundle);
-
-                    //makes sure only one fragment is in the stack
-                    if(!getSupportFragmentManager().findFragmentByTag(Fragments.HOME.toString()).isVisible()){
-                        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                        currentSelectedMenuId = R.id.nav_home;
-                        selectItem(currentSelectedMenuId);
-                    }
-
-                    openFragmentWithResult(homeFragment, Fragments.HOME.toString());
-                }
+                subredditToVisitOnResult = subredditName;
             }
         }
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if(subredditToVisitOnResult != null){
+            visitSubredditOnResult();
+            subredditToVisitOnResult = null;
+        }
+    }
+
+    /**
+     * Only called when onActivityResult returns the name of the subreddit
+     */
+    private void visitSubredditOnResult() {
+        //select home fragment - first item
+        Bundle bundle = new Bundle();
+        bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditToVisitOnResult);
+
+        HomeFragment homeFragment = (HomeFragment) Fragment
+                .instantiate(activity(), Fragments.HOME.getFragment());
+        homeFragment.setArguments(bundle);
+
+        //makes sure only one fragment is in the stack
+        if(!getSupportFragmentManager().findFragmentByTag(Fragments.HOME.toString()).isVisible()){
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            currentSelectedMenuId = R.id.nav_home;
+            selectItem(currentSelectedMenuId);
+        }
+
+        openFragmentWithResult(homeFragment, Fragments.HOME.toString());
     }
 
     @Override

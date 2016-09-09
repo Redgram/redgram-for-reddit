@@ -72,7 +72,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         }
 
         //important to avoid IllegalStateException
-        transaction.commitAllowingStateLoss();
+        transaction.commit();
     }
 
     /**
