@@ -88,11 +88,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     }
 
     @Override
-    public long getItemId(int position) {
-        return getItem(position).hashCode();
-    }
-
-    @Override
     public int getItemViewType(int position) {
         int id = TYPE_REGULAR; //default
         if(getItem(position).getCommentType() == CommentBaseItem.CommentType.REGULAR){

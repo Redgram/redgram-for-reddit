@@ -48,7 +48,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     //states
     private String loadMoreId;
     private PostItem removedItem;
-    private int removedItemPosition = -1;
+    private int removedItemPosition;
 
 
     @Inject
