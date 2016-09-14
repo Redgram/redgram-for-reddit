@@ -168,7 +168,7 @@ public interface RedditProvider {
      * @return
      */
     @GET(USER_OVERVIEW)
-    Observable<AuthUser> getUserOverview(@Path("username") String username);
+    Observable<RedditResponse<RedditListing>> getUserOverview(@Path("username") String username);
 
     /**
      * User comments
@@ -177,7 +177,7 @@ public interface RedditProvider {
      * @return
      */
     @GET(USER_COMMENTS)
-    Observable<AuthUser> getUserComments(@Path("username") String username);
+    Observable<RedditResponse<RedditListing>> getUserComments(@Path("username") String username);
 
     /**
      * User submitted links
@@ -186,7 +186,7 @@ public interface RedditProvider {
      * @return
      */
     @GET(USER_SUBMITTED)
-    Observable<AuthUser> getUserSubmitted(@Path("username") String username);
+    Observable<RedditResponse<RedditListing>> getUserSubmitted(@Path("username") String username);
 
     /**
      * User saved links and comments
@@ -195,7 +195,7 @@ public interface RedditProvider {
      * @return
      */
     @GET(USER_SAVED)
-    Observable<AuthUser> getUserSaved(@Path("username") String username);
+    Observable<RedditResponse<RedditListing>> getUserSaved(@Path("username") String username);
 
     /**
      * Get an upvoted links
@@ -204,7 +204,7 @@ public interface RedditProvider {
      * @return
      */
     @GET(USER_UPVOTED)
-    Observable<AuthUser> getUserUpvoted(@Path("username") String username);
+    Observable<RedditResponse<RedditListing>> getUserUpvoted(@Path("username") String username);
 
     /**
      * Get downvoted links
@@ -213,7 +213,7 @@ public interface RedditProvider {
      * @return
      */
     @GET(USER_DOWNVOTED)
-    Observable<AuthUser> getUserDownvoted(@Path("username") String username);
+    Observable<RedditResponse<RedditListing>> getUserDownvoted(@Path("username") String username);
 
     /**
      * NOT SURE
@@ -222,7 +222,7 @@ public interface RedditProvider {
      * @return
      */
     @GET(USER_GILDED)
-    Observable<AuthUser> getUserGilded(@Path("username") String username);
+    Observable<RedditResponse<RedditListing>> getUserGilded(@Path("username") String username);
 
     /**
      * NOT SURE

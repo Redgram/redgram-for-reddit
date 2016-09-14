@@ -98,6 +98,13 @@ public class RedditClient extends RedditService {
         return getDefaultUserListObservable(blockedUsersObservable);
     }
 
+    // TODO: 2016-09-09 change RedditObject and RedditListing that the main models extend from
+    public Observable<RedditListing<com.matie.redgram.data.models.main.reddit.RedditObject>> getUserOverview(String username){
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>>
+                userOverview = provider.getUserOverview(username);
+        return null;
+    }
+
     private Observable<RedditListing<UserItem>> getDefaultUserListObservable(Observable<RedditObject> listing) {
         Observable<com.matie.redgram.data.models.api.reddit.main.RedditListing> redditListingObservable =
                 listing.map(redditObject -> (com.matie.redgram.data.models.api.reddit.main.RedditListing)redditObject);
@@ -121,7 +128,6 @@ public class RedditClient extends RedditService {
             userListing.setModHash(fields.get(MODHASH));
             return userListing;
         });
-
     }
 
 

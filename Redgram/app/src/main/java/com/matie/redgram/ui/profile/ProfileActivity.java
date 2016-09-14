@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 
+import com.google.gson.JsonElement;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
@@ -46,26 +47,12 @@ public class ProfileActivity extends ViewPagerActivity implements CoordinatorLay
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.inject(this);
-        app.getRedditClient().getFriends()
-                .compose(bindToLifecycle())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<RedditListing<UserItem>>() {
-                    @Override
-                    public void onCompleted() {}
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("getFriendsError", e.toString());
-                    }
-
-                    @Override
-                    public void onNext(RedditListing<UserItem> userListing) {
-                       for(UserItem item : userListing.getItems()){
-                           Log.e("getFriendsList", item.getUserName());
-                       }
-                    }
-                });
+//        app.getRedditClient().getUserOverview("nullbell")
+//                .compose(bindToLifecycle())
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe();
     }
 
     @Override
