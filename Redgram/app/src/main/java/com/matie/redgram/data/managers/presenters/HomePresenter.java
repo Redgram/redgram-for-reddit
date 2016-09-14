@@ -10,5 +10,4 @@ public interface HomePresenter {
     void unregisterForEvents();
     void getHomeViewWrapper();
     List<String> getSubreddits();
-
 }

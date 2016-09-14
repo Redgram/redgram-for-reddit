@@ -99,11 +99,6 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
     public int getItemViewType(int position) {
         return getItemType(position);
     }

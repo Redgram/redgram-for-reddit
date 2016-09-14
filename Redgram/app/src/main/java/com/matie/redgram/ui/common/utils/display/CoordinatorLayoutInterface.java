@@ -9,6 +9,6 @@ import android.view.View;
  * Created by matie on 2016-03-29.
  */
 public interface CoordinatorLayoutInterface {
-    CoordinatorLayout getCoordinatorLayout();
+    CoordinatorLayout coordinatorLayout();
     void showSnackBar(String msg, int length, @Nullable String actionText, @Nullable View.OnClickListener onClickListener, @Nullable Snackbar.Callback callback);
 }

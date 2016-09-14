@@ -37,7 +37,6 @@ public class CommentRecyclerView extends RecyclerView {
         ButterKnife.inject(this);
 
         setLayoutManager(layoutManager);
-        commentsAdapter.setHasStableIds(true);
         setAdapter(commentsAdapter);
     }
 

@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.thread.views;
+package com.matie.redgram.ui.thread;
 
 
 import android.annotation.TargetApi;
@@ -8,14 +8,11 @@ import android.content.res.ColorStateList;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.Toolbar;
-
 
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
@@ -40,12 +37,16 @@ import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.common.base.ViewPagerActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
+import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
 import com.matie.redgram.ui.thread.components.DaggerThreadComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
 import com.matie.redgram.ui.thread.modules.ThreadModule;
+import com.matie.redgram.ui.thread.views.CommentsView;
+import com.matie.redgram.ui.thread.views.ThreadView;
 import com.matie.redgram.ui.thread.views.adapters.CommentsPagerAdapter;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.thread.views.widgets.OptionsView;
@@ -64,7 +65,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 
-public class ThreadActivity extends BaseActivity implements ThreadView, CoordinatorLayoutInterface{
+public class ThreadActivity extends ViewPagerActivity implements ThreadView, CoordinatorLayoutInterface{
 
     public static final int REQ_CODE = 99;
     public static final String RESULT_POST_CHANGE = "result_post_change";
@@ -72,16 +73,6 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
 
     private CommentsPagerAdapter commentsPagerAdapter;
 
-    @InjectView(R.id.app_bar)
-    AppBarLayout appBarLayout;
-    @InjectView(R.id.coordinator_layout)
-    CoordinatorLayout coordinatorLayout;
-    @InjectView(R.id.toolbar_layout)
-    CollapsingToolbarLayout collapsingToolbarLayout;
-    @InjectView(R.id.container)
-    ViewPager mViewPager;
-    @InjectView(R.id.toolbar)
-    Toolbar toolbar;
     @InjectView(R.id.commentsFab)
     FloatingActionButton commentsFab;
     @InjectView(R.id.upFab)
@@ -102,7 +93,6 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
     private boolean isSelf;
     private SlidrInterface mSlidrInterface;
 
-
     //dagger
     ThreadComponent threadComponent;
 
@@ -118,15 +108,6 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
         super.onCreate(savedInstanceState);
         ButterKnife.inject(this);
 
-        if (getIntent() != null) {
-            String key = getResources().getString(R.string.main_data_key);
-            postItem = new Gson().fromJson(getIntent().getStringExtra(key), PostItem.class);
-            isSelf = (postItem.getType() == PostItem.Type.SELF) ? true : false;
-            title.setText(postItem.getTitle());
-            //if position is passed, call other method with position as param
-            optionsView.setup(postItem, this);
-        }
-
         //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -135,10 +116,7 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
             window.setStatusBarColor(getResources().getColor(R.color.material_blue_grey_900));
         }
 
-        setupToolbar();
-        setupViewPager();
         setupToolbarImage();
-        setToolbarTitle(0);
         setupSwipeLayout();
         setupFabs();
 
@@ -165,6 +143,10 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
 
         mSlidrInterface = Slidr.attach(this, config);
         threadPresenter.getThread(postItem.getId(), new HashMap<>());
+
+        title.setText(postItem.getTitle());
+        //if position is passed, call other method with position as param
+        optionsView.setup(postItem, this);
     }
 
 
@@ -196,7 +178,7 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
                 .setImageView(imageView)
                 .includeOldController();
 
-        if(!postItem.getThumbnail().isEmpty() && postItem.getThumbnail().length() > 0 && !isSelf){
+        if(!postItem.getThumbnail().isEmpty() && !isSelf){
             builder.setThumbnail(postItem.getThumbnail());
         }else{
             builder.setImageFromRes(R.drawable.reddit_nf_cropped, false);
@@ -206,14 +188,10 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void setupToolbar() {
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setShowHideAnimationEnabled(true);
-
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            FrameLayout toolbarContent = (FrameLayout) collapsingToolbarLayout.findViewById(R.id.toolbar_layout_content);
+    protected void setupToolbar() {
+        super.setupToolbar();
+        getAppBarLayout().addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            FrameLayout toolbarContent = (FrameLayout) getCollapsingToolbarLayout().findViewById(R.id.toolbar_layout_content);
 
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
@@ -232,10 +210,10 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
         });
     }
 
-    private void setupViewPager() {
-        commentsPagerAdapter = new CommentsPagerAdapter(getSupportFragmentManager(), provideFragmentBundle(), isSelf);
-        mViewPager.setAdapter(commentsPagerAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+    @Override
+    protected void setupViewPager() {
+        super.setupViewPager();
+        getViewPager().addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -244,10 +222,10 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
             @Override
             public void onPageSelected(int position) {
                 if (position > 0) {
-                    appBarLayout.setExpanded(false, true);
+                    getAppBarLayout().setExpanded(false, true);
                     mSlidrInterface.lock();
                 } else {
-                    appBarLayout.setExpanded(true, true);
+                    getAppBarLayout().setExpanded(true, true);
                     mSlidrInterface.unlock();
                 }
                 setToolbarTitle(position);
@@ -258,6 +236,26 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
 
             }
         });
+    }
+
+    @Override
+    protected void checkIntent() {
+        String key = getResources().getString(R.string.main_data_key);
+        String data = getIntent().getStringExtra(key);
+        if(data != null){
+            postItem = new Gson().fromJson(data, PostItem.class);
+            isSelf = postItem.getType() == PostItem.Type.SELF;
+        }
+    }
+
+    @Override
+    protected int getInitialPagerPosition() {
+        return 0;
+    }
+
+    @Override
+    protected SectionsPagerAdapter pagerAdapterInstance() {
+        return new CommentsPagerAdapter(getSupportFragmentManager(), provideFragmentBundle(), isSelf);
     }
 
     private void setupSwipeLayout() {
@@ -325,8 +323,8 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
 
     @Override
     public void onBackPressed() {
-        if(isSelf && mViewPager.getCurrentItem() > 0){
-            mViewPager.setCurrentItem(0, true);
+        if(isSelf && getViewPager().getCurrentItem() > 0){
+            getViewPager().setCurrentItem(0, true);
         }else{
             setResult();
             super.onBackPressed();
@@ -382,15 +380,14 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
             return false;
     }
 
-    private void setToolbarTitle(int position) {
-        getSupportActionBar().setTitle(commentsPagerAdapter.getPageTitle(position));
-    }
-
     private void setupFabs() {
         if(TRUE.equalsIgnoreCase(postItem.getLikes())){
             upFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_green700)));
         }else if(FALSE.equalsIgnoreCase(postItem.getLikes())){
             downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_red700)));
+        }else{
+            upFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_bluegrey900)));
+            downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_bluegrey900)));
         }
     }
 
@@ -408,11 +405,8 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
     @OnClick(R.id.upFab)
     public void onUpVote(){
         if (!TRUE.equalsIgnoreCase(postItem.getLikes())){
-            upFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_green700)));
-            downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_bluegrey900)));
             threadPresenter.vote(postItem, UP_VOTE);
         }else{
-            upFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_bluegrey900)));
             threadPresenter.vote(postItem, UN_VOTE);
         }
     }
@@ -420,11 +414,8 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
     @OnClick(R.id.downFab)
     public void onDownVote(){
         if (!FALSE.equalsIgnoreCase(postItem.getLikes())){
-            downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_red700)));
-            upFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_bluegrey900)));
             threadPresenter.vote(postItem, DOWN_VOTE);
         }else{
-            downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_bluegrey900)));
             threadPresenter.vote(postItem, UN_VOTE);
         }
     }
@@ -443,11 +434,11 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
 
     private void onCommentsClicked() {
         if(isSelf){
-            if(mViewPager.getCurrentItem() == 1){
+            if(getViewPager().getCurrentItem() == 1){
                 // TODO: 2016-01-27 focus on comments edit box
             }else{
                 //go to comments
-                mViewPager.setCurrentItem(1, true);
+                getViewPager().setCurrentItem(1, true);
             }
 
         }else{
@@ -482,13 +473,7 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
 
     @Override
     public void toggleVote(@Nullable int direction) {
-        if(direction == UP_VOTE){
-            upFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_green700)));
-        }else if(direction == DOWN_VOTE){
-            downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_red700)));
-        }else{
-            downFab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.material_bluegrey900)));
-        }
+        setupFabs();
     }
 
     @Override
@@ -586,17 +571,16 @@ public class ThreadActivity extends BaseActivity implements ThreadView, Coordina
         return null;
     }
 
-
     @Override
-    public CoordinatorLayout getCoordinatorLayout() {
-        return coordinatorLayout;
+    public CoordinatorLayout coordinatorLayout() {
+        return getCoordinatorLayout();
     }
 
     @Override
     public void showSnackBar(String msg, int length, @Nullable String actionText, @Nullable View.OnClickListener onClickListener, @Nullable Snackbar.Callback callback) {
-        if(getCoordinatorLayout() != null){
+        if(coordinatorLayout() != null){
 
-            Snackbar snackbar = Snackbar.make(getCoordinatorLayout(), msg, length);
+            Snackbar snackbar = Snackbar.make(coordinatorLayout(), msg, length);
 
             if(actionText != null && onClickListener != null){
                 snackbar.setAction(actionText, onClickListener);

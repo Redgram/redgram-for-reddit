@@ -20,9 +20,10 @@ public interface LinksView extends ContentView{
     PostItem getItem(int position);
     List<PostItem> getItems();
     void updateList();
+    void updateRestOfList(int position);
     void updateItem(int position, PostItem postItem);
     PostItem removeItem(int position);
-    void insertItem(int position, PostItem removedPost);
+    void insertItem(int position, PostItem postItem);
     void updateList(List<PostItem> items);
     void refreshView();
     void refreshView(@Nullable String subredditChoice, @NonNull String filterChoice, @NonNull Map<String, String> params);

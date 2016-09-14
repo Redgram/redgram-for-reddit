@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.thread.views;
+package com.matie.redgram.ui.thread;
 
 import android.app.Activity;
 import android.os.Bundle;

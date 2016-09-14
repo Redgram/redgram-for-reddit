@@ -44,7 +44,7 @@ import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.posts.views.LinksView;
-import com.matie.redgram.ui.thread.views.ThreadActivity;
+import com.matie.redgram.ui.thread.ThreadActivity;
 
 import java.io.File;
 import java.util.HashMap;
@@ -137,6 +137,12 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     }
 
     @Override
+    public void updateRestOfList(int position) {
+        RecyclerView.Adapter adapter = containerRecyclerView.getAdapter();
+        adapter.notifyItemRangeChanged(position, adapter.getItemCount() - position);
+    }
+
+    @Override
     public void updateItem(int position, PostItem postItem) {
         getItems().set(position, postItem);
         containerRecyclerView.getAdapter().notifyItemChanged(position);
@@ -146,6 +152,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     public PostItem removeItem(int position) {
         PostItem removedItem = getItems().remove(position);
         containerRecyclerView.getAdapter().notifyItemRemoved(position);
+        updateRestOfList(position);
         return removedItem;
     }
 
@@ -153,6 +160,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     public void insertItem(int position, PostItem removedPost) {
         getItems().add(position, removedPost);
         containerRecyclerView.getAdapter().notifyItemInserted(position);
+        updateRestOfList(position);
     }
 
     @Override
@@ -442,15 +450,10 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         if(getContext() instanceof CoordinatorLayoutInterface){
             String msg = getResources().getString(R.string.item_hidden);
             String actionMsg = getResources().getString(R.string.undo);
-            View.OnClickListener onClickListener = new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    linksPresenter.unHide();
-                }
-            };
+            View.OnClickListener onClickListener = v -> linksPresenter.unHide();
 
             ((CoordinatorLayoutInterface) getContext())
-                .showSnackBar(msg, Snackbar.LENGTH_LONG, actionMsg, onClickListener, new UnHidePanelSnackBarCallback());
+                .showSnackBar(msg, Snackbar.LENGTH_LONG, actionMsg, onClickListener, null);
         }
 
     }
@@ -476,18 +479,6 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     public void removeChangeListeners() {
         if(prefs != null){
             prefs.removeChangeListener(prefsChangeListener);
-        }
-    }
-
-    public class UnHidePanelSnackBarCallback extends Snackbar.Callback{
-        @Override
-        public void onDismissed(Snackbar snackbar, int event) {
-
-            ((LinksPresenterImpl)linksPresenter).setRemovedItem(null);
-            ((LinksPresenterImpl)linksPresenter).setRemovedItemPosition(-1);
-
-            super.onDismissed(snackbar, event);
-            ((SlidingUpPanelActivity)getContext()).setPanelHeight(48);
         }
     }
 

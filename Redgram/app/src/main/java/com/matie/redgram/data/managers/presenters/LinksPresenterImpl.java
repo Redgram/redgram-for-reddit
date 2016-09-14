@@ -48,7 +48,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     //states
     private String loadMoreId;
     private PostItem removedItem;
-    private int removedItemPosition = -1;
+    private int removedItemPosition;
 
 
     @Inject
@@ -190,6 +190,7 @@ public class LinksPresenterImpl implements LinksPresenter {
 
         Subscription unHideSubscription = redditClient.hide(removedPost.getName(), true)
                 .compose(containerView.getBaseFragment().bindToLifecycle())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
                     @Override
@@ -312,10 +313,12 @@ public class LinksPresenterImpl implements LinksPresenter {
         if(realm != null){
             User user = DatabaseHelper.getSessionUser(realm);
             if(user != null){
-                user.getPrefs().setDisableNsfwPreview(false);
 
                 realm.beginTransaction();
+
+                user.getPrefs().setDisableNsfwPreview(false);
                 realm.copyToRealmOrUpdate(user);
+
                 realm.commitTransaction();
 
                 DatabaseHelper.close(realm);

@@ -11,7 +11,8 @@ import com.matie.redgram.data.models.api.reddit.main.RedditMore;
 import com.matie.redgram.data.models.api.reddit.main.RedditSubreddit;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
-import com.matie.redgram.data.models.db.Prefs;
+import com.matie.redgram.data.models.api.reddit.main.RedditUser;
+import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.api.reddit.main.RedditLink;
@@ -70,9 +71,10 @@ public class RedditClient extends RedditService {
                 });
     }
 
+
     public Observable<AuthUser> getUser(@Nullable String accessToken) {
         accessToken = "bearer " + accessToken;
-        return provider.getUser(accessToken);
+        return provider.getAuthUser(accessToken);
     }
 
     public Observable<AuthPrefs> getUserPrefs(@Nullable String accessToken){
@@ -83,6 +85,51 @@ public class RedditClient extends RedditService {
     public Observable<AuthPrefs> updatePrefs(AuthPrefs prefs) {
         return provider.updatePrefs(prefs);
     }
+
+    public Observable<RedditListing<UserItem>> getFriends(){
+        Observable<RedditObject>
+                friendsObservable = provider.getFriends();
+        return getDefaultUserListObservable(friendsObservable);
+    }
+
+    public Observable<RedditListing<UserItem>> getBlockedUsers(){
+        Observable<RedditObject>
+                blockedUsersObservable = provider.getBlockedUsers();
+        return getDefaultUserListObservable(blockedUsersObservable);
+    }
+
+    // TODO: 2016-09-09 change RedditObject and RedditListing that the main models extend from
+    public Observable<RedditListing<com.matie.redgram.data.models.main.reddit.RedditObject>> getUserOverview(String username){
+        Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>>
+                userOverview = provider.getUserOverview(username);
+        return null;
+    }
+
+    private Observable<RedditListing<UserItem>> getDefaultUserListObservable(Observable<RedditObject> listing) {
+        Observable<com.matie.redgram.data.models.api.reddit.main.RedditListing> redditListingObservable =
+                listing.map(redditObject -> (com.matie.redgram.data.models.api.reddit.main.RedditListing)redditObject);
+
+        Observable<List<UserItem>> listObservable = redditListingObservable
+                .flatMap(data -> Observable.from(data.getChildren()))
+                .cast(RedditUser.class)
+                .map(redditUser -> {
+                    UserItem item = new UserItem();
+                    item.setUserName(redditUser.getName());
+                    return item;
+                }).toList();
+
+        Observable<Map<String, String>> fieldsObservable = redditListingObservable.map(this::buildFieldsMap);
+
+        return Observable.zip(listObservable, fieldsObservable, (userItems, fields) -> {
+            RedditListing<UserItem> userListing = new RedditListing<UserItem>();
+            userListing.setItems(userItems);
+            userListing.setAfter(fields.get(AFTER));
+            userListing.setBefore(fields.get(BEFORE));
+            userListing.setModHash(fields.get(MODHASH));
+            return userListing;
+        });
+    }
+
 
     public Observable<RedditListing<PostItem>> getSubredditListing(String query, @Nullable Map<String, String> params, List<PostItem> postItems) {
 
@@ -297,12 +344,16 @@ public class RedditClient extends RedditService {
      * @return
      */
     private Observable<Map<String,String>> getFieldsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> responseObservable) {
-        return responseObservable.map(listing -> mapFieldsToHashMap(listing));
+        return responseObservable.map(this::mapFieldsToHashMap);
     }
 
     private Map<String, String> mapFieldsToHashMap(RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing> listing) {
+        com.matie.redgram.data.models.api.reddit.main.RedditListing listingData = listing.getData();
+        return buildFieldsMap(listingData);
+    }
+
+    private Map<String, String> buildFieldsMap(com.matie.redgram.data.models.api.reddit.main.RedditListing listingData) {
         Map<String, String> map = new HashMap<String,String>();
-        com.matie.redgram.data.models.api.reddit.main.RedditListing listingData = (com.matie.redgram.data.models.api.reddit.main.RedditListing)listing.getData();
 
         map.put(AFTER, listingData.getAfter());
         map.put(BEFORE, listingData.getBefore());
