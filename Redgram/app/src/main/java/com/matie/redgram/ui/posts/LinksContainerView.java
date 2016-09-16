@@ -249,15 +249,12 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     @Override
     public void visitSubreddit(String subredditName) {
-        filterChoice = getResources().getString(R.string.default_filter).toLowerCase();
-        params.clear();
-        subredditChoice = subredditName;
         LinksHelper.openResult(context, subredditName, LinksHelper.SUB);
     }
 
     @Override
-    public void visitProfile(int position) {
-
+    public void visitProfile(String username) {
+        LinksHelper.openResult(context, username, LinksHelper.PROFILE);
     }
 
     @Override

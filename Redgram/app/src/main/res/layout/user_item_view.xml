@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:background="@color/material_bluegrey800">
     <RelativeLayout
+        android:id="@+id/username_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/default_padding">

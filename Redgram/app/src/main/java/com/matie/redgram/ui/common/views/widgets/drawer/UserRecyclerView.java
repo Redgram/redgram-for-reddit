@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
 import com.matie.redgram.data.models.main.items.UserItem;
+import com.matie.redgram.ui.common.user.views.UserListControllerView;
 import com.matie.redgram.ui.common.views.adapters.UserAdapter;
 
 import java.util.List;
@@ -38,6 +39,10 @@ public class UserRecyclerView extends RecyclerView {
 
     public void replaceWith(List<UserItem> items){
         userAdapter.replaceWith(items);
+    }
+
+    public void setListener(UserListControllerView listener){
+        userAdapter.setListener(listener);
     }
 
     @Override

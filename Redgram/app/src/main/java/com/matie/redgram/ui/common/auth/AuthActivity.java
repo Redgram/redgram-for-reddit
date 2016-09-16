@@ -43,6 +43,8 @@ import io.realm.RealmResults;
 
 public class AuthActivity extends BaseActivity implements AuthView {
 
+    public static final String RESULT_USER_NAME = "result_user_name";
+
     @InjectView(R.id.web_view)
     WebView mContentView;
     @InjectView(R.id.loading_view)
@@ -70,6 +72,11 @@ public class AuthActivity extends BaseActivity implements AuthView {
         ButterKnife.inject(this);
         setUpWebView();
         setUpRealm();
+        checkIntent(getIntent());
+    }
+
+    private void checkIntent(Intent intent) {
+
     }
 
     private void setUpRealm() {
@@ -314,12 +321,16 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
 
-    public static Intent intent(Context context){
+    public static Intent intent(Context context, boolean strictlySingle){
         Intent intent = new Intent(context, AuthActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        //common flags
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        //only if true
+        if(strictlySingle){
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        }
         return intent;
     }
 }

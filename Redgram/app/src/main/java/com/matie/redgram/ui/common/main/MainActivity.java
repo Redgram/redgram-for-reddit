@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.common.main;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -41,8 +42,12 @@ import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
+import com.matie.redgram.ui.common.user.UserListComponent;
+import com.matie.redgram.ui.common.user.UserListModule;
+import com.matie.redgram.ui.common.user.UserListView;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.views.DrawerView;
 import com.matie.redgram.ui.common.views.widgets.drawer.UserRecyclerView;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.ui.profile.ProfileActivity;
@@ -50,6 +55,8 @@ import com.matie.redgram.ui.search.SearchFragment;
 import com.matie.redgram.ui.settings.SettingsActivity;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +70,11 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 
-public class MainActivity extends SlidingUpPanelActivity implements CoordinatorLayoutInterface, NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends SlidingUpPanelActivity implements CoordinatorLayoutInterface,
+                                                    NavigationView.OnNavigationItemSelectedListener, DrawerView{
 
     private static final int SUBSCRIPTION_REQUEST_CODE = 69;
+
     private int currentSelectedMenuId = R.id.nav_home;
 
     static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
@@ -91,7 +100,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     BasePreviewFragment previewFragment;
     Fragments currentPreviewFragment;
-    LinearLayout userListLayout;
+    UserListView userListLayout;
 
     @Inject
     App app;
@@ -105,6 +114,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     private boolean isDrawerOpen = false;
     private Realm realm;
     private String subredditToVisitOnResult;
+    private UserListComponent userListComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,87 +183,33 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         TextView username = (TextView) headerView.findViewById(R.id.drawerUserName);
         username.setText(user.getUserName());
-        username.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(ProfileActivity.intent(MainActivity.this));
-            }
-        });
+        username.setOnClickListener(v -> startActivity(ProfileActivity.intent(MainActivity.this)));
 
         ImageView accountsView = ((ImageView) headerView.findViewById(R.id.drawerAccounts));
-        accountsView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(userListLayout.getParent() != null){
-                    return;
-                }
-                modifyNavDrawer(userListLayout, R.color.material_bluegrey900);
-                userListLayout.findViewById(R.id.go_back).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        resetNavDrawer();
-                    }
-                });
+        accountsView.setOnClickListener(v -> {
+            if(userListLayout != null && userListLayout.getParent() != null){
+                return;
             }
+            modifyNavDrawer(userListLayout, R.color.material_bluegrey900);
         });
     }
 
     private void setUpNavUserList() {
-        userListLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.nav_user_list, navigationView, false);
-        // TODO: 2016-05-05 move to manager
-        RealmResults<User> result = realm.where(User.class).findAll();
-        List<UserItem> userItems = new ArrayList<>();
-        for(User user : result){
-            UserItem userItem = new UserItem(user.getUserName());
-            userItems.add(userItem);
-        }
-        UserRecyclerView userRecyclerView = (UserRecyclerView) userListLayout.findViewById(R.id.user_recycler_view);
-        userRecyclerView.replaceWith(userItems);
-
-        //make global?
-        User sessionUser = DatabaseHelper.getSessionUser(realm);
-        if(sessionUser != null){
-            /** TODO: 2016-05-05 set user in session to selected state in list.
-             *  todo: UserItemView should have a custom drawable as background for selected state color
-             */
-        }
+        userListLayout = (UserListView) getLayoutInflater().inflate(R.layout.nav_user_list, navigationView, false);
+        userListLayout.setComponent(userListComponent);
+        userListLayout.setUp(realm);
     }
-
-    /**
-     * Adds a view to the navDrawer and changes status color
-     * @param view
-     * @param colorId
-     */
-    private void modifyNavDrawer(View view, int colorId) {
-        navigationView.addView(view);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(getResources().getColor(colorId));
-        }
-    }
-
-    /**
-     * Resets Drawer to initial state
-     */
-    private void resetNavDrawer() {
-        if(navigationView.getChildCount() > 1){
-            for(int i = 1; i <= navigationView.getChildCount(); i++){
-                navigationView.removeViewAt(i);
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.setStatusBarColor(getResources().getColor(R.color.material_red600));
-            }
-        }
-    }
-
 
     @Override
     protected void setupComponent(AppComponent appComponent) {
+        UserListModule userListModule = new UserListModule(userListLayout, this);
         mainComponent = DaggerMainComponent.builder()
                         .appComponent(appComponent)
                         .mainModule(new MainModule(this))
+                        .userListModule(userListModule)
                         .build();
         mainComponent.inject(this);
+        userListComponent = mainComponent.getUserListComponent(userListModule);
     }
 
     @Override
@@ -342,12 +298,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                 String path = data.getPath();
                 String subredditName = path.substring(path.lastIndexOf('/')+1, path.length());
                 launchFragmentForSubreddit(subredditName);
-                return true;
-            }else if(data.getPath().contains("/u/")){
-                //open user
-                // TODO: 2016-04-08 do the same for profile
-//                String path = data.getPath();
-//                String profile = path.substring(path.lastIndexOf('/')+1, path.length());
                 return true;
             }
         }
@@ -457,6 +407,11 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                 String subredditName = data.getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
                 subredditToVisitOnResult = subredditName;
             }
+        }else if(requestCode == UserListView.ADD_ACCOUNT){
+            if(resultCode == RESULT_OK){
+                String username = data.getStringExtra(AuthActivity.RESULT_USER_NAME);
+                userListLayout.addAccount(username);
+            }
         }
     }
 
@@ -555,7 +510,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     private void logoutCurrentUser() {
         app.getDatabaseManager().deleteSession(realm);
-        startActivity(AuthActivity.intent(this));
+        startActivity(AuthActivity.intent(this, true));
     }
 
     public DialogUtil getDialogUtil() {
@@ -689,5 +644,51 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     public Realm getRealm(){
         return realm;
     }
+
+    @Override
+    public Context getContext() {
+        return activity().getApplicationContext();
+    }
+
+    @Override
+    public RxAppCompatActivity getBaseActivity() {
+        return activity();
+    }
+
+    @Override
+    public RxFragment getBaseFragment() {
+        return null;
+    }
+
+
+    /**
+     * Adds a view to the navDrawer and changes status color
+     * @param view
+     * @param colorId
+     */
+    @Override
+    public void modifyNavDrawer(View view, int colorId) {
+        navigationView.addView(view);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(getResources().getColor(colorId));
+        }
+    }
+
+    /**
+     * Resets Drawer to initial state
+     */
+    @Override
+    public void resetNavDrawer() {
+        if(navigationView.getChildCount() > 1){
+            for(int i = 1; i <= navigationView.getChildCount(); i++){
+                navigationView.removeViewAt(i);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.setStatusBarColor(getResources().getColor(R.color.material_red600));
+            }
+        }
+    }
+
 }
 

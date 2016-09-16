@@ -75,28 +75,4 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         transaction.commit();
     }
 
-    /**
-     * This will instruct the activity to get the listing of the subreddit
-     *
-     * NOTE: this is a new instance of MainActivity, the navdrawer should be disabled
-     * @param subredditName
-     */
-    public void openActivityForSubreddit(String subredditName) {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.putExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
-        openIntent(intent, 0, 0);
-    }
-
-    /**
-     * This will instruct the activity to open the profile fragment
-     *
-     * NOTE: this is a new instance of MainActivity, the navdrawer should be disabled
-     * @param username
-     */
-    public void openActivityForProfile(String username) {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.putExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME, username);
-//        openIntent(intent, R.anim.enter, R.anim.exit);
-    }
-
 }

@@ -100,7 +100,7 @@ public class RedditService extends RedditServiceBase {
                     if(sm.getCurrentToken() != null){
                         requestBuilder.addHeader("Authorization", "bearer "+ sm.getCurrentToken());
                     }else if(authHeader == null){
-                        app.startActivity(AuthActivity.intent(app));
+                        app.startActivity(AuthActivity.intent(app, true));
                         return null;
                     }
                     if(!isOnline){
@@ -163,7 +163,7 @@ public class RedditService extends RedditServiceBase {
                             }
                         }else{
                             //start auth activity and return null
-                            app.startActivity(AuthActivity.intent(app));
+                            app.startActivity(AuthActivity.intent(app, true));
                             return null;
                         }
 
@@ -175,7 +175,7 @@ public class RedditService extends RedditServiceBase {
                         if (response.request().header(REFRESH_HEADER_TAG).equalsIgnoreCase(REFRESH_HEADER_TAG)){
                             //if refresh token mechanism is unauthorized return a message
                             app.getToastHandler().showBackgroundToast("401 Unauthorized Refresh Token", Toast.LENGTH_LONG);
-                            app.startActivity(AuthActivity.intent(app));
+                            app.startActivity(AuthActivity.intent(app, true));
                         }
                         return null;
                     }

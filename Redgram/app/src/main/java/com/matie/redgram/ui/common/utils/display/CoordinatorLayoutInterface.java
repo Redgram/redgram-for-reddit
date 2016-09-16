@@ -5,6 +5,8 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
+import com.matie.redgram.ui.common.views.ContentView;
+
 /**
  * Created by matie on 2016-03-29.
  */

@@ -41,10 +41,12 @@
     <!--Action view height-->
     <dimen name="action_view_height">48dp</dimen>
     <!--Header height-->
-    <dimen name="header_height">72dp</dimen>
+    <dimen name="header_height">64dp</dimen>
+    <dimen name="header_text_width">250dp</dimen>
 
     <dimen name="thumbnail_size">90dp</dimen>
 
+    <dimen name="action_more_margin">9dp</dimen>
     <dimen name="action_icon_margin">12dp</dimen>
     <dimen name="content_inset">72dp</dimen>
     <dimen name="fab_margin">16dp</dimen>

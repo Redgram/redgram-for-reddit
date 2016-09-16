@@ -40,7 +40,7 @@ public interface LinksView extends ContentView{
 
     void sharePost(int position);
     void visitSubreddit(String subredditName);
-    void visitProfile(int position);
+    void visitProfile(String username);
     void openInBrowser(int position);
     void copyItemLink(int position);
     void viewWebMedia(int position);

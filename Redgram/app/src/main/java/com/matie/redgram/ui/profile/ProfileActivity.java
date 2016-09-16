@@ -2,6 +2,7 @@ package com.matie.redgram.ui.profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -16,6 +17,7 @@ import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
+import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.ViewPagerActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
@@ -25,6 +27,7 @@ import com.matie.redgram.ui.profile.components.DaggerProfileComponent;
 import com.matie.redgram.ui.profile.components.ProfileComponent;
 import com.matie.redgram.ui.profile.modules.ProfileModule;
 import com.matie.redgram.ui.profile.views.adapters.ProfilePagerAdapter;
+import com.matie.redgram.ui.subcription.SubscriptionActivity;
 
 import javax.inject.Inject;
 
@@ -36,6 +39,7 @@ import rx.schedulers.Schedulers;
 
 public class ProfileActivity extends ViewPagerActivity implements CoordinatorLayoutInterface {
 
+    public static final String RESULT_USER_NAME = "result_user_name";
     private ProfileComponent profileComponent;
 
     @Inject
@@ -71,7 +75,20 @@ public class ProfileActivity extends ViewPagerActivity implements CoordinatorLay
     }
 
     @Override
-    protected void checkIntent() {}
+    protected void checkIntent() {
+        if(getIntent().getStringExtra(RESULT_USER_NAME) != null){
+            String username = getIntent().getStringExtra(RESULT_USER_NAME);
+            Log.d("username", username);
+        }else if(getIntent().getData() != null){
+            Uri data = getIntent().getData();
+            if(data.getPath().contains("/u/")){
+                //open user
+                String path = data.getPath();
+                String username = path.substring(path.lastIndexOf('/')+1, path.length());
+                Log.d("username", username);
+            }
+        }
+    }
 
     @Override
     protected int getInitialPagerPosition() {
