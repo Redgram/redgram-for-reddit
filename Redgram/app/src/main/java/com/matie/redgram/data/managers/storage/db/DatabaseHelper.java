@@ -15,7 +15,9 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmObject;
 import io.realm.RealmResults;
+import rx.Observable;
 
 /**
  * Created by matie on 2016-02-26.
@@ -30,7 +32,7 @@ public class DatabaseHelper {
         }
     }
 
-    static Session getSession(Realm realm){
+    public static Session getSession(Realm realm){
         return realm.where(Session.class).findFirst();
     }
 
@@ -91,6 +93,12 @@ public class DatabaseHelper {
         return null;
     }
 
+    public static Observable<User> getSessionUserAsync(Realm realm){
+        return realm.where(Session.class).findFirstAsync().asObservable()
+                .filter(RealmObject::isLoaded)
+                .map((session) -> ((Session) session).getUser());
+    }
+
     public static RealmResults<User> getUsers(Realm realm) {
         return realm.where(User.class).findAll();
     }
@@ -101,6 +109,18 @@ public class DatabaseHelper {
 
     public static Prefs getPrefsByUserId(Realm realm, String userId) {
         return realm.where(Prefs.class).equalTo("id", userId).findFirst();
+    }
+
+    public static Observable<RealmResults<User>> getUsersAsync(Realm realm) {
+        return realm.where(User.class).findAllAsync().asObservable().filter(RealmResults::isLoaded);
+    }
+
+    public static Observable<User> getUserByIdAsync(Realm realm, String userId) {
+        return realm.where(User.class).equalTo("id", userId).findFirstAsync().asObservable();
+    }
+
+    public static Observable<Prefs> getPrefsByUserIdAsync(Realm realm, String userId) {
+        return realm.where(Prefs.class).equalTo("id", userId).findFirstAsync().asObservable();
     }
 
     public static Token getSessionToken(Realm instance) {

@@ -9,8 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.UserListPresenter;
-import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.ui.App;
@@ -33,7 +33,6 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
@@ -82,6 +81,12 @@ public class UserListView extends FrameLayout implements UserListControllerView 
         ButterKnife.inject(this);
         init();
     }
+
+//    @Override
+//    protected void onDetachedFromWindow() {
+//        presenter.closeConnection();
+//        super.onDetachedFromWindow();
+//    }
 
     private void init() {
         userRecyclerView.setListener(this);
@@ -140,10 +145,11 @@ public class UserListView extends FrameLayout implements UserListControllerView 
 
     @Override
     public void addAccount(String username) {
-        // TODO: 2016-09-15 happens on success - add to DB and then call selectAccount
         UserItem userItem = new UserItem(username);
         getItems().add(userItem);
         userRecyclerView.getAdapter().notifyItemInserted(getItems().size()-1);
+        //auto-select the account after updating the adapter
+        selectAccount(getItems().size()-1);
     }
 
     @Override
@@ -151,20 +157,24 @@ public class UserListView extends FrameLayout implements UserListControllerView 
         // TODO: 2016-09-15 updates session and restarts activity
         String username = getItem(position).getUserName();
         Log.d("username", username);
+
+        userRecyclerView.setSelectedItem(position);
     }
 
     @Override
     public void removeAccount(int position) {
         // TODO: 2016-09-15 removes user from local db and then from adapter on success
-        // TODO: 2016-09-15 if it's the only account, switch to Applicastion Only Auth, otherwise, prompt the user to choose a different account
+        // TODO: 2016-09-15 switch to Application Only Auth
         String username = getItem(position).getUserName();
         Log.d("username", username);
+        presenter.removeUser(username);
     }
 
     @Override
     public void close() {
-        DrawerView drawerView = (DrawerView)context;
-        drawerView.resetNavDrawer();
+        if(context instanceof DrawerView){
+            ((DrawerView)context).resetNavDrawer();
+        }
     }
 
     @Override
@@ -177,6 +187,11 @@ public class UserListView extends FrameLayout implements UserListControllerView 
         return ((UserAdapter)userRecyclerView.getAdapter()).getItems();
     }
 
+    @Override
+    public void populateView(List<UserItem> userItems) {
+        userRecyclerView.replaceWith(userItems);
+    }
+
     public void setComponent(UserListComponent component) {
         this.component = component;
         this.component.inject(this);
@@ -186,23 +201,11 @@ public class UserListView extends FrameLayout implements UserListControllerView 
         return component;
     }
 
-    public void setUp(Realm realm) {
-        RealmResults<User> result = realm.where(User.class).findAll();
-        List<UserItem> userItems = new ArrayList<>();
-        for(User user : result){
-            UserItem userItem = new UserItem(user.getUserName());
-            userItems.add(userItem);
-        }
+    public void setUp() {
+        presenter.getUsers();
+    }
 
-        userRecyclerView.replaceWith(userItems);
-
-        //make global?
-        User sessionUser = DatabaseHelper.getSessionUser(realm);
-        if(sessionUser != null){
-            /** TODO: 2016-05-05 set user in session to selected state in list.
-             *  todo: UserItemView should have a custom drawable as background for selected state color
-             */
-        }
-
+    public UserListPresenter getPresenter(){
+        return presenter;
     }
 }

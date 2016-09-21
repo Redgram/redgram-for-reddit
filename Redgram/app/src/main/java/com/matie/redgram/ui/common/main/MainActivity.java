@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.presenters.UserListPresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.User;
@@ -45,6 +46,7 @@ import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.user.UserListComponent;
 import com.matie.redgram.ui.common.user.UserListModule;
 import com.matie.redgram.ui.common.user.UserListView;
+import com.matie.redgram.ui.common.user.views.UserListControllerView;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.DrawerView;
@@ -195,13 +197,13 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     private void setUpNavUserList() {
-        userListLayout = (UserListView) getLayoutInflater().inflate(R.layout.nav_user_list, navigationView, false);
-        userListLayout.setComponent(userListComponent);
-        userListLayout.setUp(realm);
+        userListLayout.setUp();
     }
 
     @Override
     protected void setupComponent(AppComponent appComponent) {
+        userListLayout = (UserListView) getLayoutInflater().inflate(R.layout.nav_user_list, null, false);
+
         UserListModule userListModule = new UserListModule(userListLayout, this);
         mainComponent = DaggerMainComponent.builder()
                         .appComponent(appComponent)
@@ -210,6 +212,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                         .build();
         mainComponent.inject(this);
         userListComponent = mainComponent.getUserListComponent(userListModule);
+        userListLayout.setComponent(userListComponent);
     }
 
     @Override
@@ -339,7 +342,14 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     @Override
     public void onResume() {
         super.onResume();
+        userListLayout.getPresenter().registerForEvents();
         selectItem(currentSelectedMenuId);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        userListLayout.getPresenter().unregisterForEvents();
     }
 
     @Override
@@ -409,8 +419,11 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             }
         }else if(requestCode == UserListView.ADD_ACCOUNT){
             if(resultCode == RESULT_OK){
+                String userId = data.getStringExtra(AuthActivity.RESULT_USER_ID);
                 String username = data.getStringExtra(AuthActivity.RESULT_USER_NAME);
-                userListLayout.addAccount(username);
+                if(userId != null && username != null){
+                    userListLayout.addAccount(username);
+                }
             }
         }
     }

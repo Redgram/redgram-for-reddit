@@ -24,6 +24,7 @@ public class UserListModule {
         this.contextView = contextView;
     }
 
+
     @Provides
     public UserListControllerView providesUserListView(){
         return userListView;

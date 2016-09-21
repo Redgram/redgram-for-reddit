@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.AuthPresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
@@ -27,6 +28,7 @@ import com.matie.redgram.ui.common.auth.views.AuthView;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
+import com.matie.redgram.ui.common.user.UserListView;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.ContentView;
 
@@ -44,6 +46,8 @@ import io.realm.RealmResults;
 public class AuthActivity extends BaseActivity implements AuthView {
 
     public static final String RESULT_USER_NAME = "result_user_name";
+    public static final String RESULT_USER_ID = "result_user_id";
+    public static final String REQUEST_NEW_ACCOUNT = "request_new_account";
 
     @InjectView(R.id.web_view)
     WebView mContentView;
@@ -55,6 +59,10 @@ public class AuthActivity extends BaseActivity implements AuthView {
     private RealmChangeListener realmChangeListener;
     private RealmResults<User> users;
 
+    private boolean resultIncluded;
+    private String userId;
+    private String userName;
+
     @Inject
     App app;
     @Inject
@@ -63,7 +71,6 @@ public class AuthActivity extends BaseActivity implements AuthView {
     AuthPresenterImpl authPresenter;
     @Inject
     DialogUtil dialogUtil;
-
 
 
     @Override
@@ -76,34 +83,35 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
     private void checkIntent(Intent intent) {
-
+        //check whether result expected or not
+        resultIncluded = intent.getBooleanExtra(REQUEST_NEW_ACCOUNT, false);
     }
 
     private void setUpRealm() {
         realm = app.getDatabaseManager().getInstance();
 
-        realmChangeListener = new RealmChangeListener() {
-            @Override
-            public void onChange() {
-                //changes made in this context are related to the session being set
-                app.setupUserPrefs();
-                transitionToMainActivity();
-            }
+        realmChangeListener = () -> {
+            //changes made in this context are related to the session being set
+            app.setupUserPrefs();
+            transitionToMainActivity(resultIncluded, true);
         };
         realm.addChangeListener(realmChangeListener);
     }
 
-    private void setUpWebView() {
-        String url = RedditServiceBase.REDDIT_HOST_ABSOLUTE + RedditServiceBase.NAMESPACE + RedditServiceBase.OAUTH_URL
-                .replace("{client_id}", RedditServiceBase.API_KEY)
-                .replace("{redirect_uri}", RedditServiceBase.REDIRECT_URI)
-                .replace("{duration}", RedditServiceBase.DURATION)
-                .replace("{scope}", RedditServiceBase.scopeList);
+    private void setResult(boolean isSuccess) {
+        Intent resultIntent = new Intent();
+        if(userId != null && userName != null){
+            resultIntent.putExtra(RESULT_USER_NAME, userName);
+            resultIntent.putExtra(RESULT_USER_ID, userId);
+        }
+        setResult(isSuccess ? RESULT_OK : RESULT_CANCELED, resultIntent);
+    }
 
+    private void setUpWebView() {
         mContentView.getSettings().setBuiltInZoomControls(true);
         mContentView.getSettings().setDisplayZoomControls(false);
         mContentView.getSettings().setJavaScriptEnabled(true);
-        mContentView.loadUrl(url);
+        mContentView.loadUrl(getAuthUrl());
         mContentView.setWebViewClient(new WebViewCustomClient());
     }
 
@@ -191,14 +199,21 @@ public class AuthActivity extends BaseActivity implements AuthView {
     @Override
     public void showErrorMessage(String error) {
         mContentView.setVisibility(View.VISIBLE);
-        app.getToastHandler().showToast(error, Toast.LENGTH_LONG);
+        if(resultIncluded){
+            transitionToMainActivity(resultIncluded, false);
+        }else{
+            app.getToastHandler().showToast(error, Toast.LENGTH_LONG);
+        }
     }
 
     @Override
-    public void transitionToMainActivity() {
-        //go to MainActivity
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+    public void transitionToMainActivity(boolean resultIncluded, boolean isSuccess) {
+        if(resultIncluded){
+            setResult(isSuccess);
+        }else{
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
         finish();
     }
 
@@ -215,6 +230,14 @@ public class AuthActivity extends BaseActivity implements AuthView {
     @Override
     public BaseFragment getBaseFragment() {
         return null;
+    }
+
+    private static String getAuthUrl() {
+        return RedditServiceBase.REDDIT_HOST_ABSOLUTE + RedditServiceBase.NAMESPACE + RedditServiceBase.OAUTH_URL
+                .replace("{client_id}", RedditServiceBase.API_KEY)
+                .replace("{redirect_uri}", RedditServiceBase.REDIRECT_URI)
+                .replace("{duration}", RedditServiceBase.DURATION)
+                .replace("{scope}", RedditServiceBase.scopeList);
     }
 
     private class WebViewCustomClient extends WebViewClient {
@@ -237,12 +260,21 @@ public class AuthActivity extends BaseActivity implements AuthView {
 
     @Override
     public void showPreferencesOptions(AuthWrapper wrapper) {
-        if(realm !=null && !realm.isClosed()){
+        if(realm != null && !realm.isClosed()){
             users = DatabaseHelper.getUsers(realm);
             List<String> userNames = new ArrayList<>();
             for(User user : users){
-                userNames.add(user.getUserName());
+                if(wrapper.getAuthUser().getId().equalsIgnoreCase(user.getId())){
+                    showUserExistsDialog();
+                    return;
+                }else{
+                    userNames.add(user.getUserName());
+                }
             }
+
+            //add the results after making sure the new user doesn't exist
+            userId = wrapper.getAuthUser().getId();
+            userName = wrapper.getAuthUser().getName();
 
             if(!userNames.isEmpty()){
                 showExistingPreferencesDialog(userNames, wrapper);
@@ -253,45 +285,61 @@ public class AuthActivity extends BaseActivity implements AuthView {
         }
     }
 
+    private void showUserExistsDialog() {
+        MaterialDialog.Builder builder = dialogUtil.build()
+                .title("Account Exists")
+                .positiveText("Login Again")
+                .onPositive((dialog, which) -> {
+                     //open web page again
+                    mContentView.loadUrl(getAuthUrl());
+                    hideLoading();
+                });
+        if(resultIncluded){
+            builder.negativeText("Cancel")
+                .onNegative((dialog, which) -> {
+                    //close with no result
+                    setResult(true);
+                    finish();
+                });
+        }
+
+        builder.cancelable(false)
+                .canceledOnTouchOutside(false)
+                .show();
+
+    }
+
     private void showExistingPreferencesDialog(List<String> userNames, AuthWrapper wrapper) {
         dialogUtil.build()
                 .title("Would you like to use settings from an existing account?")
                 .items(userNames)
-                .itemsCallback(new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
-                        for(User user : users){
-                            if(user.getUserName().equalsIgnoreCase(text.toString())){
-                                Prefs prefs = DatabaseHelper.getPrefsByUserId(realm, user.getId());
+                .itemsCallback((dialog, itemView, which, text) -> {
+                    for(User user : users){
+                        if(user.getUserName().equalsIgnoreCase(text.toString())){
+                            Prefs prefs = DatabaseHelper.getPrefsByUserId(realm, user.getId());
 
-                                AuthPrefs authPrefs = new AuthPrefs();
-                                authPrefs.setDefaultCommentSort(prefs.getDefaultCommentSort());
-                                authPrefs.setMinCommentScore(prefs.getMinCommentsScore());
-                                authPrefs.setMinLinkScore(prefs.getMinLinkScore());
-                                authPrefs.setNumComments(prefs.getNumComments());
-                                authPrefs.setNumsites(prefs.getNumSites());
-                                authPrefs.setShowFlair(prefs.isShowFlair());
-                                authPrefs.setShowLinkFlair(prefs.isShowLinkFlair());
-                                authPrefs.setShowTrending(prefs.isShowTrending());
-                                authPrefs.setStoreVisits(prefs.isStoreVisits());
-                                authPrefs.setMedia(prefs.getMedia());
-                                authPrefs.setHighlightControversial(prefs.isHighlightControversial());
-                                authPrefs.setIgnoreSuggestedSort(prefs.isIgnoreSuggestedSort());
+                            AuthPrefs authPrefs = new AuthPrefs();
+                            authPrefs.setDefaultCommentSort(prefs.getDefaultCommentSort());
+                            authPrefs.setMinCommentScore(prefs.getMinCommentsScore());
+                            authPrefs.setMinLinkScore(prefs.getMinLinkScore());
+                            authPrefs.setNumComments(prefs.getNumComments());
+                            authPrefs.setNumsites(prefs.getNumSites());
+                            authPrefs.setShowFlair(prefs.isShowFlair());
+                            authPrefs.setShowLinkFlair(prefs.isShowLinkFlair());
+                            authPrefs.setShowTrending(prefs.isShowTrending());
+                            authPrefs.setStoreVisits(prefs.isStoreVisits());
+                            authPrefs.setMedia(prefs.getMedia());
+                            authPrefs.setHighlightControversial(prefs.isHighlightControversial());
+                            authPrefs.setIgnoreSuggestedSort(prefs.isIgnoreSuggestedSort());
 
-                                wrapper.setAuthPrefs(authPrefs);
-                                break;
-                            }
+                            wrapper.setAuthPrefs(authPrefs);
+                            break;
                         }
-                        app.getDatabaseManager().setSession(wrapper);
                     }
+                    app.getDatabaseManager().setSession(wrapper);
                 })
                 .negativeText("No, thanks")
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        showPreferencesSyncDialog(wrapper);
-                    }
-                })
+                .onNegative((dialog, which) -> showPreferencesSyncDialog(wrapper))
                 .cancelable(false)
                 .canceledOnTouchOutside(false)
                 .show();
@@ -302,18 +350,10 @@ public class AuthActivity extends BaseActivity implements AuthView {
                 .title("Use preferences from your Reddit account?")
                 .positiveText("Yes")
                 .negativeText("No")
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        app.getDatabaseManager().setSession(wrapper);
-                    }
-                })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        wrapper.getAuthPrefs().setToDefault();
-                        app.getDatabaseManager().setSession(wrapper);
-                    }
+                .onPositive((dialog, which) -> app.getDatabaseManager().setSession(wrapper))
+                .onNegative((dialog, which) -> {
+                    wrapper.getAuthPrefs().setToDefault();
+                    app.getDatabaseManager().setSession(wrapper);
                 })
                 .cancelable(false)
                 .canceledOnTouchOutside(false)
@@ -321,15 +361,17 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
 
-    public static Intent intent(Context context, boolean strictlySingle){
+    public static Intent intent(Context context, boolean isSingleTask){
         Intent intent = new Intent(context, AuthActivity.class);
         //common flags
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         //only if true
-        if(strictlySingle){
+        if(isSingleTask){
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        }else{
+            intent.putExtra(REQUEST_NEW_ACCOUNT, true);
         }
         return intent;
     }

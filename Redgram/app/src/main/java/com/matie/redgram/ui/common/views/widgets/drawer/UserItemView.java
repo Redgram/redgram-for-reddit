@@ -1,6 +1,7 @@
 package com.matie.redgram.ui.common.views.widgets.drawer;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -48,6 +49,11 @@ public class UserItemView extends FrameLayout {
         this.userItem = userItem;
         this.position = position;
         userName.setText(userItem.getUserName());
+        if(userItem.isSelected()){
+            setSelected(true);
+        }else{
+            setSelected(false);
+        }
     }
 
     @Override

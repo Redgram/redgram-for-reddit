@@ -7,6 +7,7 @@ package com.matie.redgram.data.models.main.items;
 public class UserItem {
 
     private String userName;
+    private boolean isSelected = false;
 
     public UserItem() {
     }
@@ -21,5 +22,13 @@ public class UserItem {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

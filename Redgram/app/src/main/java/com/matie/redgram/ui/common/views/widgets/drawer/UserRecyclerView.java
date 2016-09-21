@@ -21,6 +21,7 @@ public class UserRecyclerView extends RecyclerView {
 
     private final LayoutManager layoutManager;
     private final UserAdapter userAdapter;
+    private int selectedItem;
 
     public UserRecyclerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -55,4 +56,11 @@ public class UserRecyclerView extends RecyclerView {
         return userAdapter;
     }
 
+    public void setSelectedItem(int selectedItem) {
+        this.selectedItem = selectedItem;
+    }
+
+    public int getSelectedItem() {
+        return selectedItem;
+    }
 }

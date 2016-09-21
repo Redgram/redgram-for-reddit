@@ -26,7 +26,6 @@ public class AuthPresenterImpl implements AuthPresenter {
     private final App app;
     private final AuthView authView;
     private final RedditClient redditClient;
-    private final DatabaseManager databaseManager;
     private Subscription authSubscription;
     private CompositeSubscription subscriptions;
     private String authCode = "";
@@ -36,7 +35,6 @@ public class AuthPresenterImpl implements AuthPresenter {
         this.app = app;
         this.authView = authView;
         this.redditClient = app.getRedditClient();
-        this.databaseManager = app.getDatabaseManager();
     }
 
     @Override
