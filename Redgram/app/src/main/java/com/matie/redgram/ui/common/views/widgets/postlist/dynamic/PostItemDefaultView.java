@@ -1,18 +1,11 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
 import android.content.Context;
-import android.graphics.PointF;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
-import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.request.ImageRequest;
-import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.media.video.ImageManager;
 import com.matie.redgram.data.models.main.items.PostItem;

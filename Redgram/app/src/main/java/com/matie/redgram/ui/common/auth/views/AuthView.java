@@ -1,7 +1,6 @@
 package com.matie.redgram.ui.common.auth.views;
 
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.ContentView;
 
 /**

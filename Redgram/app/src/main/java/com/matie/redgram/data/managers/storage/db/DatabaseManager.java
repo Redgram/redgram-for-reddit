@@ -13,17 +13,14 @@ import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.SubredditItem;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.ui.App;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
 import io.realm.RealmResults;
