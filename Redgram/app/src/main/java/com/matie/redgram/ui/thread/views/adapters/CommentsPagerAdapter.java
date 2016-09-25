@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
+import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
 import com.matie.redgram.ui.thread.CommentsFragment;
 import com.matie.redgram.ui.thread.PostFragment;
-import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
 
 /**
  * Created by matie on 2015-12-21.

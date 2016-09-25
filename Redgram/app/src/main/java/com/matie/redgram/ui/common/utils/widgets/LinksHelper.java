@@ -10,9 +10,6 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.storage.db.DatabaseManager;
-import com.matie.redgram.data.models.db.Prefs;
-import com.matie.redgram.data.models.db.Settings;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.base.BaseActivity;
 
