@@ -14,6 +14,7 @@ import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.base.BaseActivity;
+import com.matie.redgram.ui.common.main.views.MainView;
 import com.matie.redgram.ui.common.user.views.UserListControllerView;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.BaseContextView;
@@ -156,8 +157,8 @@ public class UserListView extends FrameLayout implements UserListControllerView 
 
     @Override
     public void close() {
-        if(context instanceof DrawerView){
-            ((DrawerView)context).resetNavDrawer();
+        if(context instanceof MainView){
+            ((MainView)context).resetNavDrawer();
         }
     }
 
