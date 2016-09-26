@@ -28,11 +28,13 @@ import com.matie.redgram.ui.profile.components.ProfileComponent;
 import com.matie.redgram.ui.profile.modules.ProfileModule;
 import com.matie.redgram.ui.profile.views.adapters.ProfilePagerAdapter;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.realm.RealmChangeListener;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -129,18 +131,8 @@ public class ProfileActivity extends ViewPagerActivity implements CoordinatorLay
     }
 
     @Override
-    public App app() {
-        return null;
-    }
-
-    @Override
     public DialogUtil getDialogUtil() {
         return null;
-    }
-
-    @Override
-    protected BaseActivity activity() {
-        return this;
     }
 
     @Override
@@ -151,6 +143,11 @@ public class ProfileActivity extends ViewPagerActivity implements CoordinatorLay
     @Override
     protected int getContainerId() {
         return R.id.container;
+    }
+
+    @Override
+    protected RealmChangeListener getRealmSessionChangeListener() {
+        return null;
     }
 
     public static Intent intent(Context context){

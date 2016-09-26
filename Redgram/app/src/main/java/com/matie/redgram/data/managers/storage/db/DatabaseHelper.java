@@ -93,12 +93,6 @@ public class DatabaseHelper {
         return null;
     }
 
-    public static Observable<User> getSessionUserAsync(Realm realm){
-        return realm.where(Session.class).findFirstAsync().asObservable()
-                .filter(RealmObject::isLoaded)
-                .map((session) -> ((Session) session).getUser());
-    }
-
     public static RealmResults<User> getUsers(Realm realm) {
         return realm.where(User.class).findAll();
     }
@@ -117,10 +111,6 @@ public class DatabaseHelper {
 
     public static Observable<User> getUserByIdAsync(Realm realm, String userId) {
         return realm.where(User.class).equalTo("id", userId).findFirstAsync().asObservable();
-    }
-
-    public static Observable<Prefs> getPrefsByUserIdAsync(Realm realm, String userId) {
-        return realm.where(Prefs.class).equalTo("id", userId).findFirstAsync().asObservable();
     }
 
     public static Token getSessionToken(Realm instance) {

@@ -112,11 +112,8 @@ public class RedditClient extends RedditService {
         Observable<List<UserItem>> listObservable = redditListingObservable
                 .flatMap(data -> Observable.from(data.getChildren()))
                 .cast(RedditUser.class)
-                .map(redditUser -> {
-                    UserItem item = new UserItem();
-                    item.setUserName(redditUser.getName());
-                    return item;
-                }).toList();
+                .map(redditUser -> new UserItem(redditUser.getId(), redditUser.getName()))
+                .toList();
 
         Observable<Map<String, String>> fieldsObservable = redditListingObservable.map(this::buildFieldsMap);
 

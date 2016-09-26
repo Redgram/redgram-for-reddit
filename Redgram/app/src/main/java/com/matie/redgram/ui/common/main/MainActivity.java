@@ -1,6 +1,5 @@
 package com.matie.redgram.ui.common.main;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -26,54 +25,41 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.presenters.UserListPresenterImpl;
-import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
-import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.User;
-import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.auth.AuthActivity;
-import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
+import com.matie.redgram.ui.common.main.views.MainView;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.common.user.UserListComponent;
 import com.matie.redgram.ui.common.user.UserListModule;
 import com.matie.redgram.ui.common.user.UserListView;
-import com.matie.redgram.ui.common.user.views.UserListControllerView;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.DrawerView;
-import com.matie.redgram.ui.common.views.widgets.drawer.UserRecyclerView;
+import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.ui.profile.ProfileActivity;
 import com.matie.redgram.ui.search.SearchFragment;
 import com.matie.redgram.ui.settings.SettingsActivity;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
-import com.trello.rxlifecycle.components.support.RxFragment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.Optional;
-import io.realm.Realm;
-import io.realm.RealmResults;
+import io.realm.RealmChangeListener;
 
 
 public class MainActivity extends SlidingUpPanelActivity implements CoordinatorLayoutInterface,
-                                                    NavigationView.OnNavigationItemSelectedListener, DrawerView{
+                                                    NavigationView.OnNavigationItemSelectedListener, MainView{
 
     private static final int SUBSCRIPTION_REQUEST_CODE = 69;
 
@@ -114,9 +100,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     private Window window;
     private boolean isDrawerOpen = false;
-    private Realm realm;
     private String subredditToVisitOnResult;
-    private UserListComponent userListComponent;
+    private RealmChangeListener realmSessionListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,8 +134,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         setUpToolbar();
         setup(savedInstanceState);
         setUpPanel();
-        setUpRealm();
-        setUpNavUserList();
+        setupNavUserLayout(getSession().getUser());
     }
 
     @Override
@@ -163,6 +147,14 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         return R.id.container;
     }
 
+    @Override
+    protected RealmChangeListener getRealmSessionChangeListener() {
+        if(realmSessionListener == null){
+            realmSessionListener = this::recreate;
+        }
+        return realmSessionListener;
+    }
+
     private void setUpToolbar() {
         //ActionBar setup
         setSupportActionBar(toolbar);
@@ -171,20 +163,11 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
-    private void setUpRealm() {
-        DatabaseManager databaseManager = app.getDatabaseManager();
-        realm = databaseManager.getInstance();
-        User user = DatabaseHelper.getSessionUser(realm);
-        if(user != null){
-            setupNavUserLayout(user);
-        }
-    }
-
     private void setupNavUserLayout(User user){
         FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);
 
         TextView username = (TextView) headerView.findViewById(R.id.drawerUserName);
-        username.setText(user.getUserName());
+        username.setText(user != null ? user.getUserName() : "Guest");
         username.setOnClickListener(v -> startActivity(ProfileActivity.intent(MainActivity.this)));
 
         ImageView accountsView = ((ImageView) headerView.findViewById(R.id.drawerAccounts));
@@ -194,6 +177,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             }
             modifyNavDrawer(userListLayout, R.color.material_bluegrey900);
         });
+
+        setUpNavUserList();
     }
 
     private void setUpNavUserList() {
@@ -211,23 +196,13 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                         .userListModule(userListModule)
                         .build();
         mainComponent.inject(this);
-        userListComponent = mainComponent.getUserListComponent(userListModule);
+        UserListComponent userListComponent = mainComponent.getUserListComponent(userListModule);
         userListLayout.setComponent(userListComponent);
     }
 
     @Override
     public AppComponent component() {
         return mainComponent;
-    }
-
-    @Override
-    public BaseActivity activity() {
-        return this;
-    }
-
-    @Override
-    public App app() {
-        return app;
     }
 
     private void setup(Bundle savedInstanceState){
@@ -313,7 +288,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
 
         HomeFragment homeFragment = (HomeFragment) Fragment
-                .instantiate(activity(), Fragments.HOME.getFragment());
+                .instantiate(getBaseActivity(), Fragments.HOME.getFragment());
         homeFragment.setArguments(bundle);
 
         openFragmentWithResult(homeFragment, Fragments.HOME.toString());
@@ -336,7 +311,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     protected void onDestroy() {
         super.onDestroy();
         ButterKnife.reset(this);
-        DatabaseHelper.close(realm);
     }
 
     @Override
@@ -399,9 +373,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         }else if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             closeDrawer();
         }else {
-//            Log.d("back-stack", getSupportFragmentManager().getBackStackEntryCount()+"");
             super.onBackPressed();
-//            Log.d("back-stack-after", getSupportFragmentManager().getBackStackEntryCount()+"");
             if(getSupportFragmentManager().getBackStackEntryCount() == 0){
                 currentSelectedMenuId = R.id.nav_home;
                 selectItem(currentSelectedMenuId);
@@ -422,7 +394,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                 String userId = data.getStringExtra(AuthActivity.RESULT_USER_ID);
                 String username = data.getStringExtra(AuthActivity.RESULT_USER_NAME);
                 if(userId != null && username != null){
-                    userListLayout.addAccount(username);
+                    userListLayout.addAccount(userId, username);
                 }
             }
         }
@@ -446,7 +418,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditToVisitOnResult);
 
         HomeFragment homeFragment = (HomeFragment) Fragment
-                .instantiate(activity(), Fragments.HOME.getFragment());
+                .instantiate(getBaseActivity(), Fragments.HOME.getFragment());
         homeFragment.setArguments(bundle);
 
         //makes sure only one fragment is in the stack
@@ -466,7 +438,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     private void syncDrawerToggle(){
-        if(mDrawerToggle != null) { //create this check to prevent the call of syncState() when the user is not logged in
+        if(mDrawerToggle != null) { //create this check to prevent the call of syncState() when the session is not logged in
             mDrawerToggle.syncState();
         }
     }
@@ -521,8 +493,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         return true;
     }
 
+    // TODO: 2016-09-25 make this set the current session to Guest User and restart activity
     private void logoutCurrentUser() {
-        app.getDatabaseManager().deleteSession(realm);
+        app.getDatabaseManager().deleteSession(getRealm());
         startActivity(AuthActivity.intent(this, true));
     }
 
@@ -654,24 +627,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         mDrawerToggle.setDrawerIndicatorEnabled(false);
     }
 
-    public Realm getRealm(){
-        return realm;
-    }
-
-    @Override
-    public Context getContext() {
-        return activity().getApplicationContext();
-    }
-
-    @Override
-    public RxAppCompatActivity getBaseActivity() {
-        return activity();
-    }
-
-    @Override
-    public RxFragment getBaseFragment() {
-        return null;
-    }
 
 
     /**
@@ -703,5 +658,29 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         }
     }
 
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void showInfoMessage() {
+
+    }
+
+    @Override
+    public void showErrorMessage(String error) {
+
+    }
+
+    @Override
+    public BaseContextView getContentContext() {
+        return getBaseActivity();
+    }
 }
 

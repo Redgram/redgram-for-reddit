@@ -3,11 +3,12 @@ package com.matie.redgram.data.managers.presenters;
 import android.util.Log;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
-import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.user.UserListView;
+import com.matie.redgram.ui.common.base.BaseActivity;
+import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.user.views.UserListControllerView;
 import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.ContentView;
@@ -19,14 +20,10 @@ import javax.inject.Inject;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
-import io.realm.RealmResults;
 import rx.Observable;
-import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func2;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -35,20 +32,22 @@ import rx.subscriptions.CompositeSubscription;
 public class UserListPresenterImpl implements UserListPresenter {
 
     private UserListControllerView userListView;
-    private final BaseContextView baseContextView;
+    private final BaseContextView contextView;
+    private final ContentView contentView;
     private final Realm realm;
+    private Session session;
 
     private CompositeSubscription subscriptions;
 
     @Inject
-    public UserListPresenterImpl(UserListControllerView userListView, BaseContextView contextView, App app) {
+    public UserListPresenterImpl(UserListControllerView userListView, ContentView contentView, App app) {
         this.userListView = userListView;
-        this.baseContextView = contextView;
-        this.realm = app.getDatabaseManager().getInstance();
-    }
+        this.contentView = contentView;
+        this.contextView = contentView.getContentContext();
 
-    public void setUserListView(UserListControllerView userListView){
-        this.userListView = userListView;
+        BaseActivity activity = contextView.getBaseActivity();
+        this.realm = activity.getRealm();
+        this.session = activity.getSession();
     }
 
     @Override
@@ -65,10 +64,17 @@ public class UserListPresenterImpl implements UserListPresenter {
 
     @Override
     public void getUsers() {
+        Observable<List<UserItem>> userListObservable = getUserListObservable(realm, session.getUser());
+
+
+        if(contextView instanceof BaseActivity){
+            userListObservable = userListObservable.compose(((BaseActivity)contextView).bindToLifecycle());
+        }else if(contextView instanceof BaseFragment){
+            userListObservable = userListObservable.compose(((BaseFragment)contextView).bindToLifecycle());
+        }
+
         Subscription userListSubscription =
-                DatabaseHelper.getSessionUserAsync(realm)
-                    .flatMap(user -> getUserListObservable(realm, user))
-                    .compose(baseContextView.getBaseActivity().bindToLifecycle())
+                userListObservable
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<List<UserItem>>() {
                         @Override
@@ -97,37 +103,73 @@ public class UserListPresenterImpl implements UserListPresenter {
                     List<UserItem> userItems = new ArrayList<>();
 
                     for(User user : list){
-                        UserItem userItem = new UserItem(user.getUserName());
-                        if(sessionUser != null && user.getId().equalsIgnoreCase(sessionUser.getId())){
-                            userItem.setSelected(true);
-                        }
-                        userItems.add(userItem);
+                        userItems.add(buildUserItem(user, sessionUser));
                     }
 
                     return userItems;
                 });
     }
 
+    private UserItem buildUserItem(User user, User sessionUser) {
+        UserItem userItem = new UserItem(user.getId(), user.getUserName());
+        if(sessionUser != null && user.getId().equalsIgnoreCase(sessionUser.getId())){
+            userItem.setSelected(true);
+        }
+        return userItem;
+    }
+
 
     @Override
-    public void addUser(String username) {
+    public void removeUser(String id, int position) {
 
     }
 
     @Override
-    public void removeUser(String username) {
+    public void selectUser(String id, int position) {
+        Observable<User> userObservable = DatabaseHelper.getUserByIdAsync(realm, id)
+                .filter(RealmObject::isLoaded)
+                .filter(user -> user != null)
+                .flatMap(this::updateSessionWithSelectedUser);
 
+        if(contextView instanceof BaseActivity){
+            userObservable = userObservable.compose(((BaseActivity)contextView).bindToLifecycle());
+        }else if(contextView instanceof BaseFragment){
+            userObservable = userObservable.compose(((BaseFragment)contextView).bindToLifecycle());
+        }
+
+        Subscription selectUserSubscription = userObservable
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<User>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.d("Select User", "Could Not Select User");
+                            }
+
+                            @Override
+                            public void onNext(User user) {
+
+                            }
+                        });
+
+        if(!getSubscriptions().isUnsubscribed()){
+            subscriptions.add(selectUserSubscription);
+        }
     }
 
-    @Override
-    public void selectUser(String username) {
-
+    private Observable<User> updateSessionWithSelectedUser(User user) {
+        realm.executeTransaction(realmInstance -> {
+            if(session != null){
+                session.setUser(user);
+            }
+        });
+        return user.asObservable();
     }
 
-    @Override
-    public void closeConnection() {
-        DatabaseHelper.close(realm);
-    }
 
     private void initializeSubscriptions() {
         if(subscriptions == null){

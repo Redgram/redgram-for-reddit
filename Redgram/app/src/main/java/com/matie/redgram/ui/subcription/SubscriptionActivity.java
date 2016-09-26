@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.realm.RealmChangeListener;
 
 /**
  * Created by matie on 2015-11-24.
@@ -88,16 +89,6 @@ public class SubscriptionActivity extends BaseActivity{
     }
 
     @Override
-    protected BaseActivity activity() {
-        return this;
-    }
-
-    @Override
-    public App app() {
-        return app;
-    }
-
-    @Override
     public DialogUtil getDialogUtil() {
         return null;
     }
@@ -112,8 +103,9 @@ public class SubscriptionActivity extends BaseActivity{
         return 0;
     }
 
-    public App getApp() {
-        return app;
+    @Override
+    protected RealmChangeListener getRealmSessionChangeListener() {
+        return null;
     }
 
     public void closeActivityWithResult(String subredditName) {

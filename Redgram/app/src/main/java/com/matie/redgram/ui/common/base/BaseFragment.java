@@ -1,18 +1,23 @@
 package com.matie.redgram.ui.common.base;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.google.gson.JsonElement;
+import com.matie.redgram.ui.common.views.BaseContextView;
+import com.trello.rxlifecycle.LifecycleTransformer;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
 import icepick.Icepick;
+import rx.Observable;
 
 /**
  * Created by matie on 09/06/15.
  */
-public abstract class BaseFragment extends RxFragment {
+public abstract class BaseFragment extends RxFragment implements BaseContextView {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,5 +52,20 @@ public abstract class BaseFragment extends RxFragment {
     protected abstract void setupComponent();
 
     protected abstract void setupToolbar();
+
+    @Override
+    public Context getContext() {
+        return getBaseActivity().getContext();
+    }
+
+    @Override
+    public BaseActivity getBaseActivity() {
+        return (BaseActivity)getActivity();
+    }
+
+    @Override
+    public BaseFragment getBaseFragment() {
+        return this;
+    }
 
 }

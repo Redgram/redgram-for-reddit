@@ -68,16 +68,6 @@ public class PostFragment extends BaseFragment implements PostView{
 
     }
 
-    @Override
-    public BaseActivity getBaseActivity() {
-        return (BaseActivity)getActivity();
-    }
-
-    @Override
-    public BaseFragment getBaseFragment() {
-        return this;
-    }
-
     public void refreshPost(PostItem postItem) {
         setPostItem(postItem);
         //refresh view - regex, formatting, etc - if changed prompt user to update with remember choice??

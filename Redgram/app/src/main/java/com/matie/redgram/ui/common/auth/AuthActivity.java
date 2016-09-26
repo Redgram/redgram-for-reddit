@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -30,6 +31,7 @@ import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.user.UserListView;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.ContentView;
 
 import java.util.ArrayList;
@@ -108,6 +110,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
     private void setUpWebView() {
+        mContentView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         mContentView.getSettings().setBuiltInZoomControls(true);
         mContentView.getSettings().setDisplayZoomControls(false);
         mContentView.getSettings().setJavaScriptEnabled(true);
@@ -130,16 +133,6 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
     @Override
-    protected BaseActivity activity() {
-        return getBaseActivity();
-    }
-
-    @Override
-    public App app() {
-        return app;
-    }
-
-    @Override
     public DialogUtil getDialogUtil() {
         return null;
     }
@@ -152,6 +145,11 @@ public class AuthActivity extends BaseActivity implements AuthView {
     @Override
     protected int getContainerId() {
         return 0;
+    }
+
+    @Override
+    protected RealmChangeListener getRealmSessionChangeListener() {
+        return null;
     }
 
     @Override
@@ -207,6 +205,11 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
     @Override
+    public BaseContextView getContentContext() {
+        return getBaseActivity();
+    }
+
+    @Override
     public void transitionToMainActivity(boolean resultIncluded, boolean isSuccess) {
         if(resultIncluded){
             setResult(isSuccess);
@@ -215,21 +218,6 @@ public class AuthActivity extends BaseActivity implements AuthView {
             startActivity(intent);
         }
         finish();
-    }
-
-    @Override
-    public Context getContext() {
-        return null;
-    }
-
-    @Override
-    public BaseActivity getBaseActivity() {
-        return this;
-    }
-
-    @Override
-    public BaseFragment getBaseFragment() {
-        return null;
     }
 
     private static String getAuthUrl() {
@@ -276,6 +264,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
             userId = wrapper.getAuthUser().getId();
             userName = wrapper.getAuthUser().getName();
 
+            //preferences
             if(!userNames.isEmpty()){
                 showExistingPreferencesDialog(userNames, wrapper);
             }else{
@@ -297,7 +286,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
         if(resultIncluded){
             builder.negativeText("Cancel")
                 .onNegative((dialog, which) -> {
-                    //close with no result
+                    //close with no result - userId and userName are still null
                     setResult(true);
                     finish();
                 });

@@ -73,14 +73,14 @@ public class UserItemView extends FrameLayout {
     @OnClick({R.id.username_wrapper, R.id.username})
     public void onUserWrapperClick(View v){
         if(listener != null){
-            listener.selectAccount(position);
+            listener.selectAccount(userItem.getId(), position);
         }
     }
 
     @OnClick(R.id.delete_user)
     public void onUserRemoveClick(View v){
         if(listener != null){
-            listener.removeAccount(position);
+            listener.removeAccount(userItem.getId(), position);
         }
     }
 }

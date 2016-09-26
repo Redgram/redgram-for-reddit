@@ -41,6 +41,7 @@ import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
+import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.posts.views.LinksView;
@@ -76,6 +77,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     private LinksComponent component;
     String hostingFragmentTag;
     private final Context context;
+    private BaseContextView contextView;
 
     private String subredditChoice = null;
     private String filterChoice = null;
@@ -333,6 +335,11 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     }
 
     @Override
+    public void setBaseContextView(BaseContextView baseContextView) {
+        this.contextView = baseContextView;
+    }
+
+    @Override
     public void callAgeConfirmDialog() {
         MaterialDialog.SingleButtonCallback callback = new MaterialDialog.SingleButtonCallback() {
             @Override
@@ -349,20 +356,8 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         LinksHelper.callAgeConfirmDialog(dialogUtil, callback);
     }
 
-    public LinearLayout getContainerLinearLayout() {
-        return containerLinearLayout;
-    }
-
     public PostRecyclerView getContainerRecyclerView() {
         return containerRecyclerView;
-    }
-
-    public ProgressBar getContainerProgressBar() {
-        return containerProgressBar;
-    }
-
-    public RecyclerView.OnScrollListener getLoadMoreListener() {
-        return loadMoreListener;
     }
 
     private void setupListeners() {
@@ -429,13 +424,12 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     }
 
     @Override
-    public BaseActivity getBaseActivity() {
-        return null;
-    }
-
-    @Override
-    public BaseFragment getBaseFragment() {
-        return null;
+    public BaseContextView getContentContext() {
+        if(contextView instanceof BaseActivity){
+            return contextView.getBaseActivity();
+        }else{
+            return contextView.getBaseFragment();
+        }
     }
 
     public LinksPresenter getLinksPresenter() {
@@ -456,9 +450,8 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     }
 
     public void addChangeListeners() {
-        // TODO: 2016-05-18 add Realm in base activity
-        if(context instanceof MainActivity){
-            Realm realm = ((MainActivity) context).getRealm();
+        if(context instanceof BaseActivity){
+            Realm realm = ((BaseActivity) context).getRealm();
             User user = DatabaseHelper.getSessionUser(realm);
             if(user != null){
                 prefs = user.getPrefs();

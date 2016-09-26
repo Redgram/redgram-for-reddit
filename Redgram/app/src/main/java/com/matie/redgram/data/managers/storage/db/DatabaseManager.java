@@ -7,17 +7,14 @@ import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
-import com.matie.redgram.data.models.db.Settings;
 import com.matie.redgram.data.models.db.State;
 import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.SubredditItem;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.ui.App;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -41,7 +38,7 @@ import io.realm.annotations.RealmModule;
  *
  * Created by matie on 2016-02-26.
  */
-@RealmModule(classes = {Session.class, User.class, Token.class, Settings.class, Prefs.class, State.class, Subreddit.class})
+@RealmModule(classes = {Session.class, User.class, Token.class, Prefs.class, State.class, Subreddit.class})
 public class DatabaseManager {
 
 //    public static final String DB_NAME = "redgram.realm.session";

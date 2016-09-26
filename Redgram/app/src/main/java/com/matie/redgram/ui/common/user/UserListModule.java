@@ -17,11 +17,12 @@ import dagger.Provides;
 public class UserListModule {
 
     private UserListControllerView userListView;
-    private BaseContextView contextView;
+    private ContentView contentView;
 
-    public UserListModule(UserListControllerView userListView, BaseContextView contextView){
+    public UserListModule(UserListControllerView userListView, ContentView contentView){
         this.userListView = userListView;
-        this.contextView = contextView;
+        this.contentView = contentView;
+        this.userListView.setBaseContextView(contentView.getContentContext());
     }
 
 
@@ -32,7 +33,7 @@ public class UserListModule {
 
     @Provides
     public UserListPresenter providesUserListPresenter(App app){
-        return new UserListPresenterImpl(userListView, contextView, app);
+        return new UserListPresenterImpl(userListView, contentView, app);
     }
 
 }

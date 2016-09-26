@@ -9,6 +9,7 @@ import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.home.views.HomeView;
 
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class HomePresenterImpl implements HomePresenter{
                     homeViewWrapper.setLinks(links);
                     return homeViewWrapper;
                 })
-                .compose(homeView.getBaseFragment().bindToLifecycle())
+                .compose(((BaseFragment)homeView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<HomeViewWrapper>() {

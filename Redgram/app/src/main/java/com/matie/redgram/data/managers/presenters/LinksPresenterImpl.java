@@ -14,6 +14,7 @@ import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
 import com.matie.redgram.ui.posts.views.LinksView;
@@ -120,7 +121,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     @Override
     public void voteFor(int position, String name, Integer dir) {
         Subscription voteSubscription = redditClient.voteFor(name, dir)
-                .compose(containerView.getBaseFragment().bindToLifecycle())
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
@@ -155,7 +156,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     @Override
     public void hide(int position, String name, boolean showUndo) {
         Subscription hideSubscription = redditClient.hide(name, true)
-                .compose(containerView.getBaseFragment().bindToLifecycle())
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
@@ -189,7 +190,7 @@ public class LinksPresenterImpl implements LinksPresenter {
         PostItem removedPost = removedItem;
 
         Subscription unHideSubscription = redditClient.hide(removedPost.getName(), true)
-                .compose(containerView.getBaseFragment().bindToLifecycle())
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
@@ -215,7 +216,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     @Override
     public void save(int position, String name, boolean save) {
         Subscription saveSubscription = redditClient.save(name, save)
-                .compose(containerView.getBaseFragment().bindToLifecycle())
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
@@ -249,7 +250,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     public void report(int position) {
         final String name = linksView.getItem(position).getName();
         Subscription reportSubscription = redditClient.report(name)
-                .compose(containerView.getBaseFragment().bindToLifecycle())
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<JsonElement>() {
@@ -282,7 +283,7 @@ public class LinksPresenterImpl implements LinksPresenter {
         prefs.setOver18(true);
 
         Subscription subscription = redditClient.updatePrefs(prefs)
-                .compose(containerView.getBaseFragment().bindToLifecycle())
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<AuthPrefs>() {
@@ -346,7 +347,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     // TODO: 2016-04-21 share Subscriber with getSearchSubscription
     private Subscription buildSubscription(Observable<RedditListing<PostItem>> observable, boolean isNew){
         return observable
-                .compose(containerView.getBaseFragment().bindToLifecycle())
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing>() {
@@ -385,7 +386,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     @SuppressWarnings("unchecked")
     private Subscription getSearchSubscription(String subreddit, Map<String, String> params, boolean isNew) {
         return redditClient.executeSearch(subreddit, params, ((!isNew) ? linksView.getItems() : null))
-                .compose(containerView.getBaseFragment().bindToLifecycle())
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing>() {

@@ -21,6 +21,7 @@ public class LinksModule {
     public LinksModule(LinksView linksView, ContentView containerView) {
         this.linksView = linksView;
         this.containerView = containerView;
+        this.linksView.setBaseContextView(containerView.getContentContext());
     }
 
     @Provides
