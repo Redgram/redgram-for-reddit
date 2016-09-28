@@ -2,7 +2,7 @@
 <!--include fixed header of nav drawer-->
 <FrameLayout
     android:id="@+id/userDrawerHeader"
-    android:layout_width="@dimen/navigation_drawer_width"
+    android:layout_width="match_parent"
     android:layout_height="@dimen/navigation_drawer_personal_data_layout_height"
     android:background="@color/material_red400"
     xmlns:android="http://schemas.android.com/apk/res/android">
