@@ -1,7 +1,9 @@
 package com.matie.redgram.ui.common.views;
 
 /**
- * Created by matie on 2016-09-25.
+ * This interface is used by sub components such as custom views that are
+ * used in different parts of the application
+ *
  */
 public interface ContentSubView extends ContentView {
     void setBaseContextView(BaseContextView baseContextView);

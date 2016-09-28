@@ -164,6 +164,7 @@ public class UserListPresenterImpl implements UserListPresenter {
     private Observable<User> updateSessionWithSelectedUser(User user) {
         realm.executeTransaction(realmInstance -> {
             if(session != null){
+                //this should trigger the session listener set in the BaseActivity
                 session.setUser(user);
             }
         });
