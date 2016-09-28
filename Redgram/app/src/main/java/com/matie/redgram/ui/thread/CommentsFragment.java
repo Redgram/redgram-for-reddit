@@ -171,16 +171,6 @@ public class CommentsFragment extends BaseFragment implements CommentsView{
     }
 
     @Override
-    public BaseActivity getBaseActivity() {
-        return (BaseActivity)getActivity();
-    }
-
-    @Override
-    public BaseFragment getBaseFragment() {
-        return this;
-    }
-
-    @Override
     public void setItems(List<CommentBaseItem> items) {
         refreshComments(items);
     }

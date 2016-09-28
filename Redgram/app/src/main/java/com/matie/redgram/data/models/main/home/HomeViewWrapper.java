@@ -11,7 +11,7 @@ import com.matie.redgram.data.models.main.reddit.RedditListing;
  * Created by matie on 2015-10-27.
  */
 public class HomeViewWrapper {
-    // TODO: 2016-06-04 also get trending if enabed in settings
+    // TODO: 2016-06-04 also get trending if enabled in settings
     private RedditListing<SubredditItem> subreddits;
     private RedditListing<PostItem> links;
 

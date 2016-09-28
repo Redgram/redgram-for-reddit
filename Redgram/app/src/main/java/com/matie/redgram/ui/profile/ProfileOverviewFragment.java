@@ -3,8 +3,10 @@ package com.matie.redgram.ui.profile;
 import android.content.Context;
 
 import com.matie.redgram.data.managers.presenters.ProfileOverviewPresenterImpl;
+import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.profile.components.DaggerProfileOverviewComponent;
 import com.matie.redgram.ui.profile.components.ProfileComponent;
 import com.matie.redgram.ui.profile.components.ProfileOverviewComponent;
@@ -48,18 +50,8 @@ public class ProfileOverviewFragment extends BaseFragment implements ProfileOver
     }
 
     @Override
-    public Context getContext() {
-        return getActivity();
-    }
-
-    @Override
-    public RxAppCompatActivity getBaseActivity() {
-        return (ProfileActivity)getActivity();
-    }
-
-    @Override
-    public RxFragment getBaseFragment() {
-        return this;
+    public BaseContextView getContentContext() {
+        return getBaseFragment();
     }
 
     @Override

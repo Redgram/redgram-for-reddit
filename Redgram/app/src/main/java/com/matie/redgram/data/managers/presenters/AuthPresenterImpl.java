@@ -7,6 +7,7 @@ import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.auth.views.AuthView;
 
 import javax.inject.Inject;
@@ -26,7 +27,6 @@ public class AuthPresenterImpl implements AuthPresenter {
     private final App app;
     private final AuthView authView;
     private final RedditClient redditClient;
-    private final DatabaseManager databaseManager;
     private Subscription authSubscription;
     private CompositeSubscription subscriptions;
     private String authCode = "";
@@ -36,7 +36,6 @@ public class AuthPresenterImpl implements AuthPresenter {
         this.app = app;
         this.authView = authView;
         this.redditClient = app.getRedditClient();
-        this.databaseManager = app.getDatabaseManager();
     }
 
     @Override
@@ -73,7 +72,7 @@ public class AuthPresenterImpl implements AuthPresenter {
 
     private void bindAuthSubscription() {
         authSubscription = redditClient.getAuthWrapper(authCode)
-                .compose(authView.getBaseActivity().bindToLifecycle())
+                .compose(((AuthActivity)authView.getContentContext()).bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AuthWrapper>() {

@@ -9,5 +9,5 @@ import com.matie.redgram.ui.common.views.ContentView;
  */
 public interface AuthView extends ContentView {
     void showPreferencesOptions(AuthWrapper wrapper);
-    void transitionToMainActivity();
+    void transitionToMainActivity(boolean resultIncluded, boolean isSuccess);
 }

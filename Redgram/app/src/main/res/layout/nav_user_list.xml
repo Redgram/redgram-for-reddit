@@ -1,43 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/material_bluegrey800">
+<com.matie.redgram.ui.common.user.UserListView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Match"
+    android:id="@+id/user_list_view">
 
     <LinearLayout
-        android:id="@+id/go_back_wrapper"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/navigation_drawer_personal_data_layout_height"
-        android:orientation="horizontal"
-        android:gravity="bottom|right"
-        android:background="@color/material_bluegrey900">
-        <ImageView
-            android:id="@+id/go_back"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_action_clear"
-            android:background="@drawable/default_ripple"
-            android:layout_marginRight="@dimen/default_horizontal_margin"
-            android:layout_marginLeft="@dimen/default_horizontal_margin"
-            android:layout_marginBottom="@dimen/default_horizontal_margin"
-            android:clickable="true"/>
+        android:layout_height="match_parent"
+        android:background="@color/material_bluegrey800">
+
+        <LinearLayout
+            android:id="@+id/go_back_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/navigation_drawer_personal_data_layout_height"
+            android:orientation="horizontal"
+            android:gravity="bottom|end"
+            android:background="@color/material_bluegrey900">
+            <ImageView
+                android:id="@+id/user_cancel"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_action_clear"
+                android:background="@drawable/default_ripple"
+                android:layout_marginRight="@dimen/default_horizontal_margin"
+                android:layout_marginLeft="@dimen/default_horizontal_margin"
+                android:layout_marginBottom="@dimen/default_horizontal_margin"
+                android:clickable="true"/>
+        </LinearLayout>
+
+        <com.matie.redgram.ui.common.views.widgets.drawer.UserRecyclerView
+            android:id="@+id/user_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"/>
+
+        <TextView
+            android:id="@+id/user_add_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_an_account"
+            android:textSize="@dimen/text_size_medium"
+            android:textColor="@color/material_white"
+            android:padding="@dimen/default_padding"/>
+
     </LinearLayout>
-
-    <com.matie.redgram.ui.common.views.widgets.drawer.UserRecyclerView
-        android:id="@+id/user_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="vertical"/>
-
-    <TextView
-        android:id="@+id/add_account"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/add_an_account"
-        android:textSize="@dimen/text_size_medium"
-        android:textColor="@color/material_white"
-        android:padding="@dimen/default_padding"/>
-
-
-</LinearLayout>
+</com.matie.redgram.ui.common.user.UserListView>

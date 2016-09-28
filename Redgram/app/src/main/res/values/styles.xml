@@ -77,7 +77,7 @@
         <item name="android:background">@color/white</item>
     </style>
     <style name="HeaderPostItemTextContainer">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">@dimen/header_text_width</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
         <item name="android:background">@android:color/transparent</item>
@@ -91,7 +91,6 @@
     <style name="HeaderUsernamePostItemText" parent="Wrap">
         <item name="android:textSize">@dimen/text_size_medium</item>
         <item name="android:textColor">@color/material_blue_grey_950</item>
-        <item name="android:paddingBottom">@dimen/default_small_padding</item>
     </style>
     <style name="HeaderInfoPostItemText" parent="Wrap">
         <item name="android:textSize">@dimen/text_size_micro</item>
@@ -102,6 +101,7 @@
         <item name="android:layout_marginLeft">@dimen/default_horizontal_margin</item>
         <item name="android:layout_marginRight">@dimen/default_horizontal_margin</item>
         <item name="android:layout_marginTop">@dimen/default_vertical_margin</item>
+        <item name="android:background">@drawable/default_ripple</item>
     </style>
 
     <!--IMAGE VIEW-->
@@ -252,5 +252,4 @@
     <!--SEARCH FRAGMENT-->
 
     <!--SEARCH TOOLBAR-->
-    <!-- Todo: style the rest of XML where necessary-->
 </resources>

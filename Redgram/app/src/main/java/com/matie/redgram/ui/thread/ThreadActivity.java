@@ -41,6 +41,7 @@ import com.matie.redgram.ui.common.base.ViewPagerActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
+import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
 import com.matie.redgram.ui.thread.components.DaggerThreadComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
@@ -64,6 +65,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
+import io.realm.RealmChangeListener;
 
 public class ThreadActivity extends ViewPagerActivity implements ThreadView, CoordinatorLayoutInterface{
 
@@ -290,16 +292,6 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
     }
 
     @Override
-    protected BaseActivity activity() {
-        return getBaseActivity();
-    }
-
-    @Override
-    public App app() {
-        return app;
-    }
-
-    @Override
     public DialogUtil getDialogUtil() {
         return dialogUtil;
     }
@@ -312,6 +304,11 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
     @Override
     protected int getContainerId() {
         return R.id.container;
+    }
+
+    @Override
+    protected RealmChangeListener getRealmSessionChangeListener() {
+        return null;
     }
 
     @Override
@@ -472,6 +469,11 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
     }
 
     @Override
+    public BaseContextView getContentContext() {
+        return getBaseActivity();
+    }
+
+    @Override
     public void toggleVote(@Nullable int direction) {
         setupFabs();
     }
@@ -554,21 +556,6 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
     public void copyItemLink() {
         MaterialDialog.ListCallback callback = LinksHelper.getCopyCallback(this, app.getToastHandler(), postItem);
         LinksHelper.showExternalDialog(dialogUtil, "Copy" ,callback);
-    }
-
-    @Override
-    public Context getContext() {
-        return this.getApplicationContext();
-    }
-
-    @Override
-    public BaseActivity getBaseActivity() {
-        return this;
-    }
-
-    @Override
-    public BaseFragment getBaseFragment() {
-        return null;
     }
 
     @Override

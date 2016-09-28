@@ -34,6 +34,7 @@ import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.posts.LinksComponent;
@@ -369,6 +370,11 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     }
 
     @Override
+    public BaseContextView getContentContext() {
+        return getBaseFragment();
+    }
+
+    @Override
     public void showToolbar() {
 
     }
@@ -382,21 +388,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     public void loadLinksContainer(RedditListing<PostItem> links) {
         linksContainerView.setLoadMoreId(links.getAfter());
         linksContainerView.updateList(links.getItems());
-    }
-
-    @Override
-    public Context getContext() {
-        return getActivity().getApplicationContext();
-    }
-
-    @Override
-    public BaseActivity getBaseActivity() {
-        return (BaseActivity)getActivity();
-    }
-
-    @Override
-    public BaseFragment getBaseFragment() {
-        return this;
     }
 
 

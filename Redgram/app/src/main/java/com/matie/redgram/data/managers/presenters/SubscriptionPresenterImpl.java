@@ -6,6 +6,7 @@ import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView;
 import com.matie.redgram.ui.subcription.views.SubscriptionView;
 
@@ -87,7 +88,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         }
 
         subredditSubscription = subredditsObservable
-                .compose(subscriptionView.getBaseFragment().bindToLifecycle())
+                .compose(((BaseFragment)subscriptionView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing<SubredditItem>>() {

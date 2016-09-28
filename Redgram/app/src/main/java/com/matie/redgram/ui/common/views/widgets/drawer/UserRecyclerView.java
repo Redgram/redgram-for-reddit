@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
 import com.matie.redgram.data.models.main.items.UserItem;
+import com.matie.redgram.ui.common.user.views.UserListControllerView;
 import com.matie.redgram.ui.common.views.adapters.UserAdapter;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class UserRecyclerView extends RecyclerView {
 
     private final LayoutManager layoutManager;
     private final UserAdapter userAdapter;
+    private int selectedItem;
 
     public UserRecyclerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -40,6 +42,10 @@ public class UserRecyclerView extends RecyclerView {
         userAdapter.replaceWith(items);
     }
 
+    public void setListener(UserListControllerView listener){
+        userAdapter.setListener(listener);
+    }
+
     @Override
     public LayoutManager getLayoutManager() {
         return layoutManager;
@@ -50,4 +56,11 @@ public class UserRecyclerView extends RecyclerView {
         return userAdapter;
     }
 
+    public void setSelectedItem(int selectedItem) {
+        this.selectedItem = selectedItem;
+    }
+
+    public int getSelectedItem() {
+        return selectedItem;
+    }
 }
