@@ -2,7 +2,6 @@ package com.matie.redgram.ui.home;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -28,15 +27,14 @@ import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.BaseContextView;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.LinksComponent;
 import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.posts.LinksModule;
