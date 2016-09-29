@@ -134,7 +134,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         setUpToolbar();
         setup(savedInstanceState);
         setUpPanel();
-        setupNavUserLayout(getSession().getUser());
+        if(getSession() != null){
+            setupNavUserLayout(getSession().getUser());
+        }
     }
 
     @Override
@@ -149,9 +151,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     protected RealmChangeListener getRealmSessionChangeListener() {
-        if(realmSessionListener == null){
-            realmSessionListener = this::recreate;
-        }
+        //keep null as
         return realmSessionListener;
     }
 
@@ -394,7 +394,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                 String userId = data.getStringExtra(AuthActivity.RESULT_USER_ID);
                 String username = data.getStringExtra(AuthActivity.RESULT_USER_NAME);
                 if(userId != null && username != null){
-                    userListLayout.addAccount(userId, username);
+                    userListLayout.restartContext();
                 }
             }
         }

@@ -3,7 +3,6 @@ package com.matie.redgram.data.managers.presenters;
 import android.net.Uri;
 import android.util.Log;
 
-import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
@@ -92,6 +91,4 @@ public class AuthPresenterImpl implements AuthPresenter {
                     }
                 });
     }
-
-
 }

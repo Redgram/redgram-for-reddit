@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
-import com.matie.redgram.data.models.db.Prefs;
-import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
@@ -34,7 +32,6 @@ public class App extends Application {
 
     Resources mResources;
 
-    Prefs authUserPrefs;
 
     @Override
     public void onCreate() {
@@ -48,7 +45,6 @@ public class App extends Application {
                 .appModule(new AppModule(this))
                 .build();
         component.inject(this);
-        setupUserPrefs();
     }
 
     public AppComponent component() {
@@ -77,24 +73,6 @@ public class App extends Application {
 
     public ToastHandler getToastHandler() {
         return toastHandler;
-    }
-
-    public Prefs getAuthUserPrefs() {
-        if(authUserPrefs != null){
-            return authUserPrefs;
-        }
-        return new Prefs();
-    }
-
-    public void setupUserPrefs() {
-        User sessionUser = databaseManager.getSessionUser();
-        if(sessionUser != null){
-            authUserPrefs = sessionUser.getPrefs();
-        }
-    }
-
-    public void setUserPrefs(Prefs prefs) {
-        authUserPrefs = prefs;
     }
 
 }

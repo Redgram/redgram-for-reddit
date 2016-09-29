@@ -28,13 +28,11 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.views.BaseContextView;
-import com.matie.redgram.ui.search.views.SearchView;
 import com.matie.redgram.ui.settings.fragments.CommentsPreferenceFragment;
 import com.matie.redgram.ui.settings.fragments.GeneralPreferenceFragment;
 import com.matie.redgram.ui.settings.fragments.NotificationPreferenceFragment;
 import com.matie.redgram.ui.settings.fragments.PostPreferenceFragment;
 import com.matie.redgram.ui.settings.fragments.SyncPreferenceFragment;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.List;
 
@@ -241,8 +239,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Bas
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
         if(user != null && userChanged){
-            ((App)getApplication()).setUserPrefs(realm.copyFromRealm(user).getPrefs());
-
             realm.beginTransaction();
             realm.copyToRealmOrUpdate(user);
             realm.commitTransaction();

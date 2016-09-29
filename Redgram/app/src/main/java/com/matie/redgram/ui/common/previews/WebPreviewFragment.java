@@ -106,8 +106,7 @@ public class WebPreviewFragment extends BasePreviewFragment{
 
     @OnClick(R.id.close_fragment)
     public void OnCloseFragment(){
-        SlidingUpPanelActivity activity = (SlidingUpPanelActivity)getContext();
-        activity.hidePanel();
+        ((SlidingUpPanelActivity)getBaseActivity()).hidePanel();
     }
 
     // TODO: 2015-11-06 create a separate if needed in future
