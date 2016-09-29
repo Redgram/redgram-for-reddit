@@ -2,18 +2,16 @@ package com.matie.redgram.ui.common.auth;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.View;
-import android.webkit.WebSettings;
+import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.AuthPresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
@@ -27,12 +25,9 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.auth.views.AuthView;
 import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
-import com.matie.redgram.ui.common.user.UserListView;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.BaseContextView;
-import com.matie.redgram.ui.common.views.ContentView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +70,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
     DialogUtil dialogUtil;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,12 +106,22 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
     private void setUpWebView() {
-        mContentView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        clearCookies(CookieManager.getInstance());
         mContentView.getSettings().setBuiltInZoomControls(true);
         mContentView.getSettings().setDisplayZoomControls(false);
         mContentView.getSettings().setJavaScriptEnabled(true);
         mContentView.loadUrl(getAuthUrl());
         mContentView.setWebViewClient(new WebViewCustomClient());
+    }
+
+    private void clearCookies(CookieManager manager){
+        if(manager.getCookie(getAuthUrl()) != null){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                manager.removeSessionCookies(value -> {});
+            }else{
+                manager.removeSessionCookie();
+            }
+        }
     }
 
     @Override
@@ -186,6 +192,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
 
     @Override
     public void hideLoading() {
+        mContentView.setVisibility(View.VISIBLE);
         loadingLayout.setVisibility(View.GONE);
     }
 
@@ -280,6 +287,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
                 .positiveText("Login Again")
                 .onPositive((dialog, which) -> {
                      //open web page again
+                    clearCookies(CookieManager.getInstance());
                     mContentView.loadUrl(getAuthUrl());
                     hideLoading();
                 });

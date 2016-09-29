@@ -1,7 +1,6 @@
 package com.matie.redgram.data.network.api.reddit.base;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,7 +28,6 @@ import javax.inject.Inject;
 import okhttp3.Authenticator;
 import okhttp3.Cache;
 import okhttp3.Challenge;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -82,46 +80,46 @@ public class RedditService extends RedditServiceBase {
     private OkHttpClient myHttpClient(){
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
-        builder.addInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(Interceptor.Chain chain) throws IOException {
-                boolean isOnline = connectionManager.isOnline();
-                Request originalRequest = chain.request();
-                String authHeader = originalRequest.header("Authorization");
-                String host = originalRequest.url().host();
-                Request.Builder requestBuilder = originalRequest.newBuilder();
-                if(host.equalsIgnoreCase(REDDIT_HOST)){
-                    requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
-                    requestBuilder.addHeader("accept", "application/json");
-                    requestBuilder.addHeader("Authorization", getCredentials());
-                }else if(host.equalsIgnoreCase(OAUTH_HOST)){
-                    requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
-                    requestBuilder.addHeader("accept", "application/json");
+        builder.addInterceptor(chain -> {
+            boolean isOnline = connectionManager.isOnline();
+            Request originalRequest = chain.request();
+            String authHeader = originalRequest.header("Authorization");
+            String host = originalRequest.url().host();
+            Request.Builder requestBuilder = originalRequest.newBuilder();
+            if(host.equalsIgnoreCase(REDDIT_HOST)){
+                requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
+                requestBuilder.addHeader("accept", "application/json");
+                requestBuilder.addHeader("Authorization", getCredentials());
+            }else if(host.equalsIgnoreCase(OAUTH_HOST)){
+                requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
+                requestBuilder.addHeader("accept", "application/json");
+                if(authHeader == null){
                     if(sm.getCurrentToken() != null){
                         requestBuilder.addHeader("Authorization", "bearer "+ sm.getCurrentToken());
-                    }else if(authHeader == null){
+                    }else{
+                        // TODO: 2016-09-28 there are no tokens in app oauth, so this should switch to App OAuth
                         app.startActivity(AuthActivity.intent(app, true));
                         return null;
                     }
-                    if(!isOnline){
-                        connectionManager.showConnectionStatus(false);
-                        requestBuilder.addHeader("Cache-Control",
-                                "public, only-if-cached, max-stale=" + MAX_STALE);
-                        Log.d("CSTATUS", "no connection!, stale = " + MAX_STALE);
-                    }
                 }
-                Request request = requestBuilder.build();
-
-                Response.Builder responseBuilder = chain.proceed(request).newBuilder();
-                if(originalRequest.url().host().equalsIgnoreCase(OAUTH_HOST)){
-                    if(isOnline){
-                        responseBuilder.header("cache-control", "public, max-age=" + MAX_AGE);
-                        responseBuilder.header("Connection-Status", "Connected");
-                        Log.d("CSTATUS", "connected to internet! age = " + MAX_AGE + " seconds");
-                    }
+                if(!isOnline){
+                    connectionManager.showConnectionStatus(false);
+                    requestBuilder.addHeader("Cache-Control",
+                            "public, only-if-cached, max-stale=" + MAX_STALE);
+                    Log.d("CSTATUS", "no connection!, stale = " + MAX_STALE);
                 }
-                return responseBuilder.build();
             }
+            Request request = requestBuilder.build();
+
+            Response.Builder responseBuilder = chain.proceed(request).newBuilder();
+            if(originalRequest.url().host().equalsIgnoreCase(OAUTH_HOST)){
+                if(isOnline){
+                    responseBuilder.header("cache-control", "public, max-age=" + MAX_AGE);
+                    responseBuilder.header("Connection-Status", "Connected");
+                    Log.d("CSTATUS", "connected to internet! age = " + MAX_AGE + " seconds");
+                }
+            }
+            return responseBuilder.build();
         });
 
         builder.authenticator(new MyAuthenticator());
@@ -140,8 +138,7 @@ public class RedditService extends RedditServiceBase {
     private Cache myCache(){
         //setup cache
         File httpCacheDir = new File(mContext.getCacheDir(), "HttpCacheDir");
-        Cache httpResponseCache = new Cache(httpCacheDir, CACHE_DIR_SIZE);
-        return httpResponseCache;
+        return new Cache(httpCacheDir, CACHE_DIR_SIZE);
     }
 
     private class MyAuthenticator implements Authenticator {

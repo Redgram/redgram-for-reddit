@@ -3,21 +3,20 @@ package com.matie.redgram.data.network.api.reddit;
 import android.support.annotation.Nullable;
 
 import com.google.gson.JsonElement;
-import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
+import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
+import com.matie.redgram.data.models.api.reddit.base.RedditObject;
+import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.api.reddit.main.RedditComment;
+import com.matie.redgram.data.models.api.reddit.main.RedditLink;
 import com.matie.redgram.data.models.api.reddit.main.RedditMore;
 import com.matie.redgram.data.models.api.reddit.main.RedditSubreddit;
-import com.matie.redgram.data.models.api.reddit.base.RedditObject;
-import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
 import com.matie.redgram.data.models.api.reddit.main.RedditUser;
+import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
-import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.api.reddit.main.RedditLink;
-import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
-import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.items.comment.CommentItem;
 import com.matie.redgram.data.models.main.items.comment.CommentMoreItem;
 import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
@@ -35,7 +34,6 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.functions.Func2;
-import rx.functions.Func3;
 
 /**
  * Created by matie on 17/04/15.
@@ -58,15 +56,13 @@ public class RedditClient extends RedditService {
                 .filter(accessToken -> accessToken.getAccessToken() != null) //make sure it's not null
                 .flatMap(accessToken -> {
                     String token = accessToken.getAccessToken();
-                    return Observable.zip(getUser(token), getUserPrefs(token), Observable.just(accessToken), new Func3<AuthUser, AuthPrefs, AccessToken, AuthWrapper>() {
-                        @Override
-                        public AuthWrapper call(AuthUser authUser, AuthPrefs authPrefs, AccessToken accessToken) {
+                    return Observable.zip(getUser(token), getUserPrefs(token), Observable.just(accessToken),
+                        (authUser, authPrefs, accessToken1) -> {
                             AuthWrapper wrapper = new AuthWrapper();
-                            wrapper.setAccessToken(accessToken);
+                            wrapper.setAccessToken(accessToken1);
                             wrapper.setAuthUser(authUser);
                             wrapper.setAuthPrefs(authPrefs);
                             return wrapper;
-                        }
                     });
                 });
     }
