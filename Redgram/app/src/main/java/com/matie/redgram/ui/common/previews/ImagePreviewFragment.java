@@ -159,8 +159,7 @@ public class ImagePreviewFragment extends BasePreviewFragment {
     @OnClick(R.id.close_fragment)
     public void OnCloseFragment(){
         imagePreview.setVisibility(View.GONE);
-        SlidingUpPanelActivity activity = (SlidingUpPanelActivity)getContext();
-        activity.hidePanel();
+        ((SlidingUpPanelActivity)getBaseActivity()).hidePanel();
     }
 
     private void displayCachedImageFromBackgroundThread(ImageRequest request){

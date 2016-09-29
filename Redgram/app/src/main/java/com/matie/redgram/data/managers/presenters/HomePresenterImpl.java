@@ -2,6 +2,7 @@ package com.matie.redgram.data.managers.presenters;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.main.home.HomeViewWrapper;
 import com.matie.redgram.data.models.main.items.PostItem;
@@ -92,10 +93,14 @@ public class HomePresenterImpl implements HomePresenter{
     public void getHomeViewWrapper() {
         homeView.showLoading();
 
-        //todo: get filter from settings
+        Map<String, String> params = new HashMap<>();
+        if(getPrefs() != null){
+            params.put("limit", getPrefs().getNumSites()+"");
+        }
+
         Observable<RedditListing<PostItem>> linksObservable =
                 redditClient.getListing(app.getResources().getString(R.string.default_filter).toLowerCase(),
-                        new HashMap<String, String>(), null);
+                        params, null);
 
         Map<String,String> subparams = new HashMap<String, String>();
         subparams.put("limit", "100");
@@ -195,5 +200,12 @@ public class HomePresenterImpl implements HomePresenter{
         }
         listing.setItems(items);
         return listing;
+    }
+
+    private Prefs getPrefs(){
+        if(homeView.getContentContext().getBaseActivity().getSession() != null){
+            return homeView.getContentContext().getBaseActivity().getSession().getUser().getPrefs();
+        }
+        return null;
     }
 }

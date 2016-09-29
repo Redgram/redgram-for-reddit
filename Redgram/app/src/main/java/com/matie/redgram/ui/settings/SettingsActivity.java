@@ -3,7 +3,6 @@ package com.matie.redgram.ui.settings;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -11,11 +10,10 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.SwitchPreference;
-import android.support.annotation.LayoutRes;
-import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.annotation.LayoutRes;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -30,13 +28,11 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.views.BaseContextView;
-import com.matie.redgram.ui.search.views.SearchView;
 import com.matie.redgram.ui.settings.fragments.CommentsPreferenceFragment;
 import com.matie.redgram.ui.settings.fragments.GeneralPreferenceFragment;
 import com.matie.redgram.ui.settings.fragments.NotificationPreferenceFragment;
 import com.matie.redgram.ui.settings.fragments.PostPreferenceFragment;
 import com.matie.redgram.ui.settings.fragments.SyncPreferenceFragment;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.List;
 
@@ -243,8 +239,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Bas
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
         if(user != null && userChanged){
-            ((App)getApplication()).setUserPrefs(realm.copyFromRealm(user).getPrefs());
-
             realm.beginTransaction();
             realm.copyToRealmOrUpdate(user);
             realm.commitTransaction();

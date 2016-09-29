@@ -1,15 +1,11 @@
 package com.matie.redgram.data.managers.presenters;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.google.gson.JsonElement;
-import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.db.Prefs;
-import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
@@ -18,7 +14,6 @@ import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
 import com.matie.redgram.ui.posts.views.LinksView;
-import com.matie.redgram.ui.settings.SettingsActivity;
 
 import java.util.Map;
 
@@ -86,7 +81,7 @@ public class LinksPresenterImpl implements LinksPresenter {
         if(params.containsKey("after")){
             params.remove("after");
         }
-        params.put("limit", app.getAuthUserPrefs().getNumSites()+"");
+        params.put("limit", getPrefs().getNumSites()+"");
         containerView.showLoading();
         listingSubscription = getListingSubscription(subreddit, front, params, true);
     }
@@ -94,7 +89,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     @Override
     public void getMoreListing(String subreddit, @Nullable String front, Map<String, String> params) {
         params.put("after", loadMoreId);
-        params.put("limit", app.getAuthUserPrefs().getNumSites()+"");
+        params.put("limit", getPrefs().getNumSites()+"");
         linksView.showLoading();
         if(front != null){
             listingSubscription = getListingSubscription(subreddit, front, params, false);
@@ -309,23 +304,10 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     @Override
     public void enableNsfwPreview() {
-
-        Realm realm = app.getDatabaseManager().getInstance();
+        Realm realm = linksView.getContentContext().getBaseActivity().getRealm();
         if(realm != null){
-            User user = DatabaseHelper.getSessionUser(realm);
-            if(user != null){
-
-                realm.beginTransaction();
-
-                user.getPrefs().setDisableNsfwPreview(false);
-                realm.copyToRealmOrUpdate(user);
-
-                realm.commitTransaction();
-
-                DatabaseHelper.close(realm);
-            }
+            realm.executeTransaction(instance -> getPrefs().setDisableNsfwPreview(false));
         }
-
     }
 
     private Subscription getListingSubscription(@Nullable String subreddit, @Nullable String filter, Map<String,String> params, boolean isNew){
@@ -434,5 +416,9 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     public void setLoadMoreId(String loadMoreId) {
         this.loadMoreId = loadMoreId;
+    }
+
+    private Prefs getPrefs(){
+        return linksView.getContentContext().getBaseActivity().getSession().getUser().getPrefs();
     }
 }

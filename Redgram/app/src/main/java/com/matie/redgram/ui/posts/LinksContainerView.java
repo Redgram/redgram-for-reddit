@@ -28,8 +28,8 @@ import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
-import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.db.Prefs;
+import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.App;
@@ -37,7 +37,6 @@ import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
-import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
@@ -56,7 +55,6 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import io.realm.Realm;
 import io.realm.RealmChangeListener;
 
 /**
@@ -344,9 +342,9 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         MaterialDialog.SingleButtonCallback callback = new MaterialDialog.SingleButtonCallback() {
             @Override
             public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-                if(!app.getAuthUserPrefs().isOver18()){
+                if(!getPrefs().isOver18()){
                     linksPresenter.confirmAge();
-                }else if(app.getAuthUserPrefs().isDisableNsfwPreview()){
+                }else if(getPrefs().isDisableNsfwPreview()){
                     //change preferences
                     linksPresenter.enableNsfwPreview();
                 }
@@ -451,16 +449,15 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     public void addChangeListeners() {
         if(context instanceof BaseActivity){
-            Realm realm = ((BaseActivity) context).getRealm();
-            User user = DatabaseHelper.getSessionUser(realm);
-            if(user != null){
-                prefs = user.getPrefs();
-                if(prefs != null){
-                    prefsChangeListener = () -> {
-                        app.setupUserPrefs();
-                        updateList();
-                    };
-                    prefs.addChangeListener(prefsChangeListener);
+            Session session = ((BaseActivity) context).getSession();
+            if(session != null){
+                User user = session.getUser();
+                if(user != null){
+                    prefs = user.getPrefs();
+                    if(prefs != null){
+                        prefsChangeListener = this::updateList;
+                        prefs.addChangeListener(prefsChangeListener);
+                    }
                 }
             }
         }
@@ -474,6 +471,10 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     public void setLoadMoreId(String id){
         ((LinksPresenterImpl)linksPresenter).setLoadMoreId(id);
+    }
+
+    private Prefs getPrefs(){
+        return getContentContext().getBaseActivity().getSession().getUser().getPrefs();
     }
 
 }

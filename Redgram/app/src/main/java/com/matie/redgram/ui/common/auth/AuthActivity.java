@@ -90,7 +90,6 @@ public class AuthActivity extends BaseActivity implements AuthView {
 
         realmChangeListener = () -> {
             //changes made in this context are related to the session being set
-            app.setupUserPrefs();
             transitionToMainActivity(resultIncluded, true);
         };
         realm.addChangeListener(realmChangeListener);

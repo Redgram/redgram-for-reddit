@@ -3,6 +3,7 @@ package com.matie.redgram.data.managers.presenters;
 import android.util.Log;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.UserItem;
@@ -36,6 +37,8 @@ public class UserListPresenterImpl implements UserListPresenter {
     private final ContentView contentView;
     private final Realm realm;
     private Session session;
+    private App app;
+    private DatabaseManager databaseManager;
 
     private CompositeSubscription subscriptions;
 
@@ -44,6 +47,8 @@ public class UserListPresenterImpl implements UserListPresenter {
         this.userListView = userListView;
         this.contentView = contentView;
         this.contextView = contentView.getContentContext();
+        this.app = app;
+        this.databaseManager = app.getDatabaseManager();
 
         BaseActivity activity = contextView.getBaseActivity();
         this.realm = activity.getRealm();
@@ -79,7 +84,7 @@ public class UserListPresenterImpl implements UserListPresenter {
                     .subscribe(new Subscriber<List<UserItem>>() {
                         @Override
                         public void onCompleted() {
-
+                            Log.d("Error Getting User List", "User List Completed");
                         }
 
                         @Override
@@ -132,9 +137,9 @@ public class UserListPresenterImpl implements UserListPresenter {
                 .flatMap(this::updateSessionWithSelectedUser);
 
         if(contextView instanceof BaseActivity){
-            userObservable = userObservable.compose(((BaseActivity)contextView).bindToLifecycle());
+            userObservable.compose(((BaseActivity)contextView).bindToLifecycle());
         }else if(contextView instanceof BaseFragment){
-            userObservable = userObservable.compose(((BaseFragment)contextView).bindToLifecycle());
+            userObservable.compose(((BaseFragment)contextView).bindToLifecycle());
         }
 
         Subscription selectUserSubscription = userObservable
@@ -142,7 +147,9 @@ public class UserListPresenterImpl implements UserListPresenter {
                         .subscribe(new Subscriber<User>() {
                             @Override
                             public void onCompleted() {
-
+                                //session updated - restart
+                                //NOT CALLED - update realm?
+                                userListView.restartContext();
                             }
 
                             @Override
@@ -152,7 +159,9 @@ public class UserListPresenterImpl implements UserListPresenter {
 
                             @Override
                             public void onNext(User user) {
-
+                                //// TODO: 2016-09-29 restartContext should be moved to onCompleted
+                                Log.d("Select User - onNext", user.getUserName());
+                                userListView.restartContext();
                             }
                         });
 
@@ -165,7 +174,9 @@ public class UserListPresenterImpl implements UserListPresenter {
         realm.executeTransaction(realmInstance -> {
             if(session != null){
                 //this should trigger the session listener set in the BaseActivity
+                //UPDATE listener was removed since it doesn't listen to specific changes in the session
                 session.setUser(user);
+                databaseManager.setCurrentToken(user.getTokenInfo().getToken());
             }
         });
         return user.asObservable();

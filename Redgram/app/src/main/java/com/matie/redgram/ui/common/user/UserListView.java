@@ -126,12 +126,10 @@ public class UserListView extends FrameLayout implements UserListControllerView 
         }
     }
 
-    @Override
+    @Override //never called for now
     public void addAccount(String id, String username) {
         getItems().add(new UserItem(id, username));
         userRecyclerView.getAdapter().notifyItemInserted(getItems().size()-1);
-        //restarting the activity shall auto select the user in session
-        restartContext();
     }
 
     @Override

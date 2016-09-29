@@ -1,6 +1,7 @@
 package com.matie.redgram.data.managers.presenters;
 
 import com.google.gson.JsonElement;
+import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
@@ -58,11 +59,15 @@ public class ThreadPresenterImpl implements ThreadPresenter {
         }
     }
 
+    private Prefs getUserPrefs() {
+        return threadView.getContentContext().getBaseActivity().getSession().getUser().getPrefs();
+    }
+
     @Override
     public void getThread(String id, Map<String, String> params) {
-        params.put("limit", app.getAuthUserPrefs().getNumComments()+"");
+        params.put("limit", getUserPrefs().getNumComments()+"");
         //todo display the sort in action bar
-        params.put("sort", app.getAuthUserPrefs().getDefaultCommentSort());
+        params.put("sort", getUserPrefs().getDefaultCommentSort());
         threadView.showLoading();
         threadSubscription = redditClient.getCommentsByArticle(id, params)
                 .compose(((BaseActivity)threadView.getContentContext()).bindToLifecycle())
