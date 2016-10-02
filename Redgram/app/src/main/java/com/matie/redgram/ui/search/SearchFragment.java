@@ -276,6 +276,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
         //focus on edit text and show keyboard
         searchView.setFocusable(true);
+        searchView.requestFocus();
         searchView.setCursorVisible(true);
         toggleKeyboard(true);
     }
