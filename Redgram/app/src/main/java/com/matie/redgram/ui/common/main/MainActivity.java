@@ -519,6 +519,12 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         } else if(id == R.id.nav_logout){
             app.getToastHandler().showToast("Logout", Toast.LENGTH_SHORT);
             logoutCurrentUser();
+        } else if(id == R.id.nav_about) {
+            dialogUtil.build()
+                    .title(R.string.about_dialog_title)
+                    .content(R.string.about_dialog_content)
+                    .positiveText(R.string.dialog_close)
+                    .show();
         }
 
         closeDrawer();

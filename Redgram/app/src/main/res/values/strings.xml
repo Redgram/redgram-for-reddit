@@ -23,6 +23,17 @@
     <string name="fragment_about">About</string>
     <string name="password_constant">Password</string>
 
+    <string name="about_dialog_title">About Redgram</string>
+    <string name="about_dialog_content">
+        Redgram is an open sourced Reddit Client for Android. It is a project that focuses on the
+        user experience by providing a solid foundation of the basic use cases of Reddit along with
+        other add-on features. The nature of this project being collaborative is to bring the
+        best out of the experience creating this application while making sure that the user
+        remains in the big picture.
+    </string>
+
+    <string name="dialog_close">Close</string>
+
     <string name="no_connection">No Internet Connection</string>
     <string name="no_connection_cache_loaded">Loading Cache</string>
 
