@@ -503,6 +503,12 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             //logout is only visible to non-guest type and should revoke the access token of the current user
             app.getToastHandler().showToast("Switching to Guest", Toast.LENGTH_SHORT);
             logoutCurrentUser();
+        } else if(id == R.id.nav_about) {
+            dialogUtil.build()
+                    .title(R.string.about_dialog_title)
+                    .content(R.string.about_dialog_content)
+                    .positiveText(R.string.dialog_close)
+                    .show();
         }
 
         closeDrawer();
