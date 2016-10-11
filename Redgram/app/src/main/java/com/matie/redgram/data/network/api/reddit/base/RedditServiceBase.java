@@ -23,6 +23,7 @@ public class RedditServiceBase extends ApiBase {
     public static final String DURATION = "permanent";
     public static final String GRANT_TYPE_REFRESH="refresh_token";
     public static final String GRANT_TYPE_AUTHORIZE="authorization_code";
+    public static final String GRANT_TYPE_INSTALLED="https://oauth.reddit.com/grants/installed_client";
 
     public static final String API_KEY = "TK68m6qyOWxMZg";
     private static final String API_SECRET = "";

@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
@@ -106,36 +107,44 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.inject(this);
 
-        mDrawerLayout.setStatusBarBackgroundColor(
-                getResources().getColor(R.color.material_red600));
+        if(getSession() == null || DatabaseHelper.getUserById(getRealm(), "Guest") == null){
+            //launch auth activity with specific flags and create a guest user
+            startActivity(AuthActivity.intent(this, true));
+        }else{
 
-        //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(getResources().getColor(R.color.material_red600));
-        }
+            ButterKnife.inject(this);
 
-        // Possible work around for market launches. See http://code.google.com/p/android/issues/detail?id=2373
-        // for more details. Essentially, the market launches the main activity on top of other activities.
-        // we never want this to happen. Instead, we check if we are the root and if not, we finish.
-        if (!isTaskRoot()) {
-            final Intent intent = getIntent();
-            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(intent.getAction())) {
-                Log.w("LAUNCH_LOG", "Main MainActivity is not the root.  Finishing Main MainActivity instead of launching.");
-                finish();
-                return;
+            mDrawerLayout.setStatusBarBackgroundColor(
+                    getResources().getColor(R.color.material_red600));
+
+            //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window = getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                window.setStatusBarColor(getResources().getColor(R.color.material_red600));
             }
-        }
 
-        setUpToolbar();
-        setup(savedInstanceState);
-        setUpPanel();
-        if(getSession() != null){
-            setupNavUserLayout(getSession().getUser());
+            // Possible work around for market launches. See http://code.google.com/p/android/issues/detail?id=2373
+            // for more details. Essentially, the market launches the main activity on top of other activities.
+            // we never want this to happen. Instead, we check if we are the root and if not, we finish.
+            if (!isTaskRoot()) {
+                final Intent intent = getIntent();
+                if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(intent.getAction())) {
+                    Log.w("LAUNCH_LOG", "Main MainActivity is not the root.  Finishing Main MainActivity instead of launching.");
+                    finish();
+                    return;
+                }
+            }
+
+            setUpToolbar();
+            setup(savedInstanceState);
+            setUpPanel();
+            if(getSession() != null){
+                setupNavUserLayout(getSession().getUser());
+            }
+
         }
     }
 
@@ -166,10 +175,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     private void setupNavUserLayout(User user){
         FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);
 
-        TextView username = (TextView) headerView.findViewById(R.id.drawerUserName);
-        username.setText(user != null ? user.getUserName() : "Guest");
-        username.setOnClickListener(v -> startActivity(ProfileActivity.intent(MainActivity.this)));
-
         ImageView accountsView = ((ImageView) headerView.findViewById(R.id.drawerAccounts));
         accountsView.setOnClickListener(v -> {
             if(userListLayout != null && userListLayout.getParent() != null){
@@ -177,6 +182,16 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             }
             modifyNavDrawer(userListLayout, R.color.material_bluegrey900);
         });
+
+        TextView username = (TextView) headerView.findViewById(R.id.drawerUserName);
+        username.setText(user != null ? user.getUserName() : "Guest");
+        if(user != null){
+            if(User.USER_AUTH.equalsIgnoreCase(user.getUserType())){
+                username.setOnClickListener(v -> startActivity(ProfileActivity.intent(MainActivity.this)));
+            }else if(User.USER_GUEST.equalsIgnoreCase(user.getUserType())){
+                navigationView.getMenu().findItem(R.id.nav_logout).setVisible(false);
+            }
+        }
 
         setUpNavUserList();
     }
@@ -485,7 +500,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         } else if(id == R.id.nav_logout){
-            app.getToastHandler().showToast("Logout", Toast.LENGTH_SHORT);
+            //logout is only visible to non-guest type and should revoke the access token of the current user
+            app.getToastHandler().showToast("Switching to Guest", Toast.LENGTH_SHORT);
             logoutCurrentUser();
         }
 
@@ -493,10 +509,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         return true;
     }
 
-    // TODO: 2016-09-25 make this set the current session to Guest User and restart activity
     private void logoutCurrentUser() {
-        app.getDatabaseManager().deleteSession(getRealm());
-        startActivity(AuthActivity.intent(this, true));
+        // TODO: 2016-10-11 revoke access token for the current user
+        userListLayout.getPresenter().selectUser("Guest", 0);
     }
 
     public DialogUtil getDialogUtil() {

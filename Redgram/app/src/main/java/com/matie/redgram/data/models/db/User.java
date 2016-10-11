@@ -8,10 +8,15 @@ import io.realm.annotations.PrimaryKey;
  * Created by matie on 2016-02-25.
  */
 public class User extends RealmObject {
+
+    public static final String USER_GUEST = "USER_GUEST";
+    public static final String USER_AUTH = "USER_AUTH";
+
     @PrimaryKey
     private String id;
     private String userName;
     private int inboxCount;
+    private String userType;
     private Token tokenInfo;
     private Prefs prefs;
     private State state;
@@ -64,6 +69,14 @@ public class User extends RealmObject {
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
 
     public RealmList<Subreddit> getSubreddits() {

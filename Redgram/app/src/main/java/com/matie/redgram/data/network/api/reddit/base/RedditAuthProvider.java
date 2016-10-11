@@ -21,6 +21,20 @@ public interface RedditAuthProvider {
      * Get the access token after allowing access to user data
      *
      * @param grantType
+     * @param deviceId
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(NAMESPACE+ACCESS_TOKEN)
+    Observable<AccessToken> obtainAccessToken(
+            @Field("grant_type") String grantType,
+            @Field("device_id") String deviceId
+    );
+
+    /**
+     * Get the access token after allowing access to user data
+     *
+     * @param grantType
      * @param code
      * @param redirectUri
      * @return

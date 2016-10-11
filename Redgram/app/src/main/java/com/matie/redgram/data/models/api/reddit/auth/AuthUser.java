@@ -97,4 +97,20 @@ public class AuthUser {
     public DateTime getSuspensionExpirationUtc() {
         return suspension_expiration_utc;
     }
+
+    public void setToDefault(){
+        id = "Guest";
+        name = "Guest";
+        hide_from_robots = false;
+        is_suspended = false;
+        created_utc = new DateTime();
+        has_mod_mail = false;
+        link_karma = 0;
+        comment_karma = 0;
+        over_18 = false;
+        is_gold = false;
+        is_mod = false;
+        inbox_count = 0;
+        has_verified_email = false;
+    }
 }
