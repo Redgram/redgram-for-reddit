@@ -22,6 +22,7 @@ import org.joda.time.DateTime;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -55,6 +56,7 @@ public class RedditService extends RedditServiceBase {
     private final Retrofit.Builder retrofitBuilder;
     private final DatabaseManager sm;
     private final RedditAuthProvider authProvider;
+    private final String uuid;
 
     @Inject
     public RedditService(App application) {
@@ -64,6 +66,7 @@ public class RedditService extends RedditServiceBase {
         sm = app.getDatabaseManager();
         retrofitBuilder = getRetrofitBuilder();
         authProvider = buildRetrofit(REDDIT_HOST_ABSOLUTE).create(RedditAuthProvider.class);
+        uuid = UUID.randomUUID().toString();
     }
 
     public Retrofit buildRetrofit(String host) {
@@ -97,7 +100,6 @@ public class RedditService extends RedditServiceBase {
                     if(sm.getCurrentToken() != null){
                         requestBuilder.addHeader("Authorization", "bearer "+ sm.getCurrentToken());
                     }else{
-                        // TODO: 2016-09-28 there are no tokens in app oauth, so this should switch to App OAuth
                         app.startActivity(AuthActivity.intent(app, true));
                         return null;
                     }
@@ -159,7 +161,8 @@ public class RedditService extends RedditServiceBase {
                                         .build();
                             }
                         }else{
-                            //start auth activity and return null
+                            // app only grant does not receive a refresh token, but in worst case scenario
+                            // launch the auth activity as a Launcher
                             app.startActivity(AuthActivity.intent(app, true));
                             return null;
                         }
@@ -168,10 +171,10 @@ public class RedditService extends RedditServiceBase {
 
                     //rare cases
                     if(challenge.scheme().equalsIgnoreCase("Basic")){
-                        Log.d("401 Unauthorized", "Basic Auth failed.");
+                        Log.d("Unauthorized", response.code() + " - Basic Auth failed.");
                         if (response.request().header(REFRESH_HEADER_TAG).equalsIgnoreCase(REFRESH_HEADER_TAG)){
                             //if refresh token mechanism is unauthorized return a message
-                            app.getToastHandler().showBackgroundToast("401 Unauthorized Refresh Token", Toast.LENGTH_LONG);
+                            app.getToastHandler().showBackgroundToast(response.code() + " - Unauthorized Refresh Token", Toast.LENGTH_LONG);
                             app.startActivity(AuthActivity.intent(app, true));
                         }
                         return null;
@@ -185,6 +188,10 @@ public class RedditService extends RedditServiceBase {
 
     public Observable<AccessToken> getAccessToken(String code){
         return authProvider.obtainAccessToken(GRANT_TYPE_AUTHORIZE, code, REDIRECT_URI);
+    }
+
+    public Observable<AccessToken> getAccessToken(){
+        return authProvider.obtainAccessToken(GRANT_TYPE_INSTALLED, uuid);
     }
 
     public Call<AccessToken> refreshToken(){

@@ -1,8 +1,8 @@
 package com.matie.redgram.ui.profile.components;
 
 import com.matie.redgram.ui.FragmentScope;
-import com.matie.redgram.ui.profile.modules.ProfileOverviewModule;
 import com.matie.redgram.ui.profile.ProfileOverviewFragment;
+import com.matie.redgram.ui.profile.modules.ProfileOverviewModule;
 import com.matie.redgram.ui.profile.views.ProfileOverviewView;
 
 import dagger.Component;

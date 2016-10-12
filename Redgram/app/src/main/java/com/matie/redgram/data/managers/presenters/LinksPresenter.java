@@ -1,7 +1,6 @@
 package com.matie.redgram.data.managers.presenters;
 
 import com.matie.redgram.data.managers.presenters.base.BasePresenter;
-import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 
 import java.util.Map;
 

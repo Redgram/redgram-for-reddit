@@ -10,6 +10,7 @@ public class AuthWrapper {
     private AccessToken accessToken;
     private AuthUser authUser;
     private AuthPrefs authPrefs;
+    private String type;
 
     public AccessToken getAccessToken() {
         return accessToken;
@@ -33,5 +34,13 @@ public class AuthWrapper {
 
     public void setAuthPrefs(AuthPrefs authPrefs) {
         this.authPrefs = authPrefs;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

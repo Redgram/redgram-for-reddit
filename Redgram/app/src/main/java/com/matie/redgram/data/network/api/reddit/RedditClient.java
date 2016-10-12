@@ -13,6 +13,7 @@ import com.matie.redgram.data.models.api.reddit.main.RedditLink;
 import com.matie.redgram.data.models.api.reddit.main.RedditMore;
 import com.matie.redgram.data.models.api.reddit.main.RedditSubreddit;
 import com.matie.redgram.data.models.api.reddit.main.RedditUser;
+import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.items.UserItem;
@@ -62,8 +63,20 @@ public class RedditClient extends RedditService {
                             wrapper.setAccessToken(accessToken1);
                             wrapper.setAuthUser(authUser);
                             wrapper.setAuthPrefs(authPrefs);
+                            wrapper.setType(User.USER_AUTH);
                             return wrapper;
                     });
+                });
+    }
+
+    public Observable<AuthWrapper> getAuthWrapper(){
+        return getAccessToken()
+                .filter(accessToken -> accessToken.getAccessToken() != null) //make sure it's not null
+                .map(accessToken -> {
+                    AuthWrapper wrapper = new AuthWrapper();
+                    wrapper.setAccessToken(accessToken);
+                    wrapper.setType(User.USER_GUEST);
+                    return wrapper;
                 });
     }
 

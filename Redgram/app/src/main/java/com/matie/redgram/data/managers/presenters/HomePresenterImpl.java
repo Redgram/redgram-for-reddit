@@ -4,6 +4,7 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Subreddit;
+import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.home.HomeViewWrapper;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
@@ -110,7 +111,13 @@ public class HomePresenterImpl implements HomePresenter{
         if(storedListing != null){
             subredditsObservable = Observable.just(storedListing);
         }else{
-            subredditsObservable = redditClient.getSubscriptions(subparams);
+            String userType = homeView.getContentContext().getBaseActivity().getSession().getUser().getUserType();
+            if(User.USER_GUEST.equalsIgnoreCase(userType)){
+                subredditsObservable = redditClient.getSubreddits("default", subparams);
+            }else{
+                //auth user
+                subredditsObservable = redditClient.getSubscriptions(subparams);
+            }
         }
 
         homeWrapperSubscription = Observable

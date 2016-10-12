@@ -107,7 +107,7 @@ public class UserListView extends FrameLayout implements UserListControllerView 
 
     @Override
     public void showErrorMessage(String error) {
-
+        dialogUtil.build().title("Oops!").content(error).show();
     }
 
     @Override

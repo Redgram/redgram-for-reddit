@@ -36,7 +36,6 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
@@ -45,6 +44,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
     public static final String RESULT_USER_NAME = "result_user_name";
     public static final String RESULT_USER_ID = "result_user_id";
     public static final String REQUEST_NEW_ACCOUNT = "request_new_account";
+    public static final String REQUEST_APP_OAUTH = "request_app_oauth";
 
     @InjectView(R.id.web_view)
     WebView mContentView;
@@ -52,11 +52,11 @@ public class AuthActivity extends BaseActivity implements AuthView {
     FrameLayout loadingLayout;
 
     private AuthComponent authComponent;
-    private Realm realm;
     private RealmChangeListener realmChangeListener;
     private RealmResults<User> users;
 
     private boolean resultIncluded;
+    private boolean requestAppOAuth;
     private String userId;
     private String userName;
 
@@ -75,24 +75,28 @@ public class AuthActivity extends BaseActivity implements AuthView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.inject(this);
-        setUpWebView();
-        setUpRealm();
         checkIntent(getIntent());
+        setUpRealm();
+        if(!requestAppOAuth){
+            setUpWebView();
+        }else{
+            authPresenter.getAccessToken();
+        }
     }
 
     private void checkIntent(Intent intent) {
         //check whether result expected or not
         resultIncluded = intent.getBooleanExtra(REQUEST_NEW_ACCOUNT, false);
+        //check if it's requesting an app oauth
+        requestAppOAuth = intent.getBooleanExtra(REQUEST_APP_OAUTH, false);
     }
 
     private void setUpRealm() {
-        realm = app.getDatabaseManager().getInstance();
-
         realmChangeListener = () -> {
             //changes made in this context are related to the session being set
             transitionToMainActivity(resultIncluded, true);
         };
-        realm.addChangeListener(realmChangeListener);
+        getRealm().addChangeListener(realmChangeListener);
     }
 
     private void setResult(boolean isSuccess) {
@@ -166,21 +170,20 @@ public class AuthActivity extends BaseActivity implements AuthView {
     protected void onDestroy() {
         super.onDestroy();
         ButterKnife.reset(this);
-        DatabaseHelper.close(realm);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         authPresenter.registerForEvents();
-        realm.addChangeListener(realmChangeListener);
+        getRealm().addChangeListener(realmChangeListener);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         authPresenter.unregisterForEvents();
-        realm.removeAllChangeListeners();
+        getRealm().removeAllChangeListeners();
     }
 
     @Override
@@ -219,11 +222,11 @@ public class AuthActivity extends BaseActivity implements AuthView {
     public void transitionToMainActivity(boolean resultIncluded, boolean isSuccess) {
         if(resultIncluded){
             setResult(isSuccess);
-        }else{
+            finish();
+        }else {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
-        finish();
     }
 
     private static String getAuthUrl() {
@@ -254,8 +257,8 @@ public class AuthActivity extends BaseActivity implements AuthView {
 
     @Override
     public void showPreferencesOptions(AuthWrapper wrapper) {
-        if(realm != null && !realm.isClosed()){
-            users = DatabaseHelper.getUsers(realm);
+        if(getRealm() != null && !getRealm().isClosed()){
+            users = DatabaseHelper.getUsers(getRealm());
             List<String> userNames = new ArrayList<>();
             for(User user : users){
                 if(wrapper.getAuthUser().getId().equalsIgnoreCase(user.getId())){
@@ -312,7 +315,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
                 .itemsCallback((dialog, itemView, which, text) -> {
                     for(User user : users){
                         if(user.getUserName().equalsIgnoreCase(text.toString())){
-                            Prefs prefs = DatabaseHelper.getPrefsByUserId(realm, user.getId());
+                            Prefs prefs = DatabaseHelper.getPrefsByUserId(getRealm(), user.getId());
 
                             AuthPrefs authPrefs = new AuthPrefs();
                             authPrefs.setDefaultCommentSort(prefs.getDefaultCommentSort());
@@ -332,7 +335,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
                             break;
                         }
                     }
-                    app.getDatabaseManager().setSession(wrapper);
+                    authPresenter.updateSession(wrapper);
                 })
                 .negativeText("No, thanks")
                 .onNegative((dialog, which) -> showPreferencesSyncDialog(wrapper))
@@ -346,10 +349,10 @@ public class AuthActivity extends BaseActivity implements AuthView {
                 .title("Use preferences from your Reddit account?")
                 .positiveText("Yes")
                 .negativeText("No")
-                .onPositive((dialog, which) -> app.getDatabaseManager().setSession(wrapper))
+                .onPositive((dialog, which) -> DatabaseHelper.setSession(getRealm(), wrapper))
                 .onNegative((dialog, which) -> {
                     wrapper.getAuthPrefs().setToDefault();
-                    app.getDatabaseManager().setSession(wrapper);
+                    authPresenter.updateSession(wrapper);
                 })
                 .cancelable(false)
                 .canceledOnTouchOutside(false)
@@ -357,15 +360,14 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
 
-    public static Intent intent(Context context, boolean isSingleTask){
+    public static Intent intent(Context context, boolean isLauncher){
         Intent intent = new Intent(context, AuthActivity.class);
-        //common flags
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        //common flag
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         //only if true
-        if(isSingleTask){
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        if(isLauncher){
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra(REQUEST_APP_OAUTH, true);
         }else{
             intent.putExtra(REQUEST_NEW_ACCOUNT, true);
         }

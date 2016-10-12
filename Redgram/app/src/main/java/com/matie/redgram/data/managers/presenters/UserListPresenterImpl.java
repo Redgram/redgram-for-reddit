@@ -154,6 +154,7 @@ public class UserListPresenterImpl implements UserListPresenter {
 
                             @Override
                             public void onError(Throwable e) {
+                                userListView.showErrorMessage("Could Not Select User");
                                 Log.d("Select User", "Could Not Select User");
                             }
 
@@ -174,7 +175,7 @@ public class UserListPresenterImpl implements UserListPresenter {
         realm.executeTransaction(realmInstance -> {
             if(session != null){
                 //this should trigger the session listener set in the BaseActivity
-                //UPDATE listener was removed since it doesn't listen to specific changes in the session
+                //UPDATE - listener was removed since it doesn't listen to specific changes in the session
                 session.setUser(user);
                 databaseManager.setCurrentToken(user.getTokenInfo().getToken());
             }

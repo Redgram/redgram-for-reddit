@@ -11,14 +11,9 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 
-import com.google.gson.JsonElement;
 import com.matie.redgram.R;
-import com.matie.redgram.data.models.main.items.UserItem;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.auth.AuthActivity;
-import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.ViewPagerActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
@@ -27,17 +22,11 @@ import com.matie.redgram.ui.profile.components.DaggerProfileComponent;
 import com.matie.redgram.ui.profile.components.ProfileComponent;
 import com.matie.redgram.ui.profile.modules.ProfileModule;
 import com.matie.redgram.ui.profile.views.adapters.ProfilePagerAdapter;
-import com.matie.redgram.ui.subcription.SubscriptionActivity;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import io.realm.RealmChangeListener;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class ProfileActivity extends ViewPagerActivity implements CoordinatorLayoutInterface {
 

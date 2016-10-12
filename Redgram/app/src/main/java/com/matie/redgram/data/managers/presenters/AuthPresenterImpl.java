@@ -2,7 +2,9 @@ package com.matie.redgram.data.managers.presenters;
 
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.ui.App;
@@ -69,6 +71,31 @@ public class AuthPresenterImpl implements AuthPresenter {
         }
     }
 
+    @Override
+    public void getAccessToken() {
+        authView.showLoading();
+        authSubscription = redditClient.getAuthWrapper()
+                .compose(((AuthActivity)authView.getContentContext()).bindToLifecycle())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<AuthWrapper>() {
+                    @Override
+                    public void onCompleted() {
+                        app.getToastHandler().showToast("Guest User Created", Toast.LENGTH_LONG);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        authView.showErrorMessage(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(AuthWrapper authWrapper) {
+                        updateSession(authWrapper);
+                    }
+                });
+    }
+
     private void bindAuthSubscription() {
         authSubscription = redditClient.getAuthWrapper(authCode)
                 .compose(((AuthActivity)authView.getContentContext()).bindToLifecycle())
@@ -82,7 +109,7 @@ public class AuthPresenterImpl implements AuthPresenter {
                     public void onError(Throwable e) {
                         Log.e("getAccessToken", e.toString());
                         authView.hideLoading();
-                        authView.showErrorMessage(e.toString());
+                        authView.showErrorMessage(e.getMessage());
                     }
 
                     @Override
@@ -90,5 +117,12 @@ public class AuthPresenterImpl implements AuthPresenter {
                         authView.showPreferencesOptions(wrapper);
                     }
                 });
+    }
+
+    @Override
+    public void updateSession(AuthWrapper wrapper) {
+        DatabaseHelper.setSession(((AuthActivity) authView.getContentContext()).getRealm(), wrapper);
+        //important - this is used in the services to capture the token of the current user
+        app.getDatabaseManager().setCurrentToken(wrapper.getAccessToken().getAccessToken());
     }
 }

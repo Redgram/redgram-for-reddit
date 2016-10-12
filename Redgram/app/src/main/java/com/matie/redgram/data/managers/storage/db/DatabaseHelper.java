@@ -15,7 +15,6 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmObject;
 import io.realm.RealmResults;
 import rx.Observable;
 
@@ -43,14 +42,31 @@ public class DatabaseHelper {
     }
 
     public static void setSession(Realm realm, AuthWrapper wrapper) {
-        Token token = buildToken(wrapper.getAccessToken());
-        Prefs prefs = buildPrefs(wrapper.getAuthPrefs());
+        if(wrapper.getAccessToken() != null){
+            Token token = buildToken(wrapper.getAccessToken());
+            AuthPrefs authPrefs = null;
+            AuthUser authUser = null;
+            if(User.USER_AUTH.equalsIgnoreCase(wrapper.getType())){
+                authPrefs = wrapper.getAuthPrefs();
+                authUser = wrapper.getAuthUser();
+            }else if(User.USER_GUEST.equalsIgnoreCase(wrapper.getType())){
+                authPrefs = new AuthPrefs();
+                authPrefs.setToDefault();
+                authUser = new AuthUser();
+                authUser.setToDefault();
+            }
+            if(authPrefs != null && authUser != null){
+                Prefs prefs = buildPrefs(authPrefs);
 
-        token.setId(wrapper.getAuthUser().getId());
-        prefs.setId(wrapper.getAuthUser().getId());
+                //set id to be equal to the user's
+                token.setId(authUser.getId());
+                prefs.setId(authUser.getId());
 
-        User user = buildUser(wrapper.getAuthUser(), token, prefs);
-        setSession(realm, buildSession(user));
+                User user = buildUser(authUser, token, prefs);
+                user.setUserType(wrapper.getType());
+                setSession(realm, buildSession(user));
+            }
+        }
     }
 
     //updates everything except for refresh token - remains the same
