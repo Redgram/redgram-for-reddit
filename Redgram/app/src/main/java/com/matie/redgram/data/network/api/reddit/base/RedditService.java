@@ -50,6 +50,9 @@ public class RedditService extends RedditServiceBase {
     private static final int CACHE_DIR_SIZE = 10 * 1024 * 1024; //
     private static final String REFRESH_HEADER_TAG = "redgram-refresh-header"; //
 
+    private static final String BASIC = "basic";
+    private static final String BEARER = "bearer";
+
     private final App app;
     private final Context mContext;
     private final ConnectionManager connectionManager;
@@ -150,8 +153,10 @@ public class RedditService extends RedditServiceBase {
             if((response.code() == 401 || response.code() == 403) && response.message() != null){ //unauthorized
                 List<Challenge> challenges = response.challenges();
                 for(Challenge challenge : challenges){
-                    if(challenge.scheme().equalsIgnoreCase("Bearer")){
-                        if(getRefreshToken() != null){
+                    String scheme = challenge.scheme();
+                    if(BEARER.equalsIgnoreCase(scheme)){
+                        String refreshToken = getRefreshToken();
+                        if(refreshToken != null && !refreshToken.isEmpty()){
                             //get new access token and retry
                             retrofit2.Response<AccessToken> accessToken = refreshToken().execute();
                             if(accessToken.body().getAccessToken() != null){
@@ -166,11 +171,7 @@ public class RedditService extends RedditServiceBase {
                             app.startActivity(AuthActivity.intent(app, true));
                             return null;
                         }
-
-                    }
-
-                    //rare cases
-                    if(challenge.scheme().equalsIgnoreCase("Basic")){
+                    }else if(BASIC.equalsIgnoreCase(scheme)){
                         Log.d("Unauthorized", response.code() + " - Basic Auth failed.");
                         if (response.request().header(REFRESH_HEADER_TAG).equalsIgnoreCase(REFRESH_HEADER_TAG)){
                             //if refresh token mechanism is unauthorized return a message
@@ -196,6 +197,25 @@ public class RedditService extends RedditServiceBase {
 
     public Call<AccessToken> refreshToken(){
         return authProvider.refreshAccessToken(REFRESH_HEADER_TAG, GRANT_TYPE_REFRESH, getRefreshToken());
+    }
+
+    //revoke token of the current authenticated user
+    public Observable<AccessToken> revokeToken(String tokenType){
+        if(RedditAuthProvider.ACCESS_TOKEN.equalsIgnoreCase(tokenType)){
+            return authProvider.revokeToken(sm.getCurrentToken(), tokenType);
+        }else if(RedditAuthProvider.REFRESH_TOKEN.equalsIgnoreCase(tokenType)){
+            return authProvider.revokeToken(sm.getRefreshToken(), tokenType);
+        }
+        return null;
+    }
+
+    //revoke token passed to this method
+    //returns code 204 even if the token was invalid
+    public Observable<AccessToken> revokeToken(String token, String tokenType){
+        if(RedditAuthProvider.ACCESS_TOKEN.equalsIgnoreCase(tokenType) || RedditAuthProvider.REFRESH_TOKEN.equalsIgnoreCase(tokenType)){
+            return authProvider.revokeToken(token, tokenType);
+        }
+        return null;
     }
 
     private String getRefreshToken(){

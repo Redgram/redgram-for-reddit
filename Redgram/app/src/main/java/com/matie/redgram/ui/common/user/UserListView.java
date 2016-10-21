@@ -136,7 +136,7 @@ public class UserListView extends FrameLayout implements UserListControllerView 
     public void selectAccount(String id, int position) {
         UserItem userItem = getItem(position);
         if(!userItem.isSelected()){
-            presenter.selectUser(id, position);
+            presenter.switchUser(id, position);
         }
     }
 

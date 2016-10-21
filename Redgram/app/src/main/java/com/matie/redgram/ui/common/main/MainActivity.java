@@ -409,7 +409,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                 String userId = data.getStringExtra(AuthActivity.RESULT_USER_ID);
                 String username = data.getStringExtra(AuthActivity.RESULT_USER_NAME);
                 if(userId != null && username != null){
-                    userListLayout.restartContext();
+                    recreate();
                 }
             }
         }
@@ -516,8 +516,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     private void logoutCurrentUser() {
-        // TODO: 2016-10-11 revoke access token for the current user
-        userListLayout.getPresenter().selectUser("Guest", 0);
+        //switches to Guest user automatically - default
+        userListLayout.getPresenter().switchUser();
     }
 
     public DialogUtil getDialogUtil() {

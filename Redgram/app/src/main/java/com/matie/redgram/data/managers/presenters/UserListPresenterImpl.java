@@ -4,9 +4,11 @@ import android.util.Log;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.UserItem;
+import com.matie.redgram.data.network.api.reddit.base.RedditAuthProvider;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
@@ -21,10 +23,12 @@ import javax.inject.Inject;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -71,7 +75,6 @@ public class UserListPresenterImpl implements UserListPresenter {
     public void getUsers() {
         Observable<List<UserItem>> userListObservable = getUserListObservable(realm, session.getUser());
 
-
         if(contextView instanceof BaseActivity){
             userListObservable = userListObservable.compose(((BaseActivity)contextView).bindToLifecycle());
         }else if(contextView instanceof BaseFragment){
@@ -84,7 +87,7 @@ public class UserListPresenterImpl implements UserListPresenter {
                     .subscribe(new Subscriber<List<UserItem>>() {
                         @Override
                         public void onCompleted() {
-                            Log.d("Error Getting User List", "User List Completed");
+                            Log.d("User List", "User List Completed");
                         }
 
                         @Override
@@ -104,6 +107,7 @@ public class UserListPresenterImpl implements UserListPresenter {
 
     private Observable<List<UserItem>> getUserListObservable(Realm realm, User sessionUser){
         return DatabaseHelper.getUsersAsync(realm)
+                .filter(RealmResults::isLoaded)
                 .map(list -> {
                     List<UserItem> userItems = new ArrayList<>();
 
@@ -143,33 +147,62 @@ public class UserListPresenterImpl implements UserListPresenter {
         }
 
         Subscription selectUserSubscription = userObservable
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<User>() {
-                            @Override
-                            public void onCompleted() {
-                                //session updated - restart
-                                //NOT CALLED - update realm?
-                                userListView.restartContext();
-                            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Subscriber<User>() {
+                @Override
+                public void onCompleted() {
+                    //session updated - restart
+                    //NOT CALLED - update realm?
+                    userListView.restartContext();
+                }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                userListView.showErrorMessage("Could Not Select User");
-                                Log.d("Select User", "Could Not Select User");
-                            }
+                @Override
+                public void onError(Throwable e) {
+                    userListView.showErrorMessage("Could Not Select User");
+                    Log.d("Select User", "Could Not Select User");
+                }
 
-                            @Override
-                            public void onNext(User user) {
-                                //// TODO: 2016-09-29 restartContext should be moved to onCompleted
-                                Log.d("Select User - onNext", user.getUserName());
-                                userListView.restartContext();
-                            }
-                        });
+                @Override
+                public void onNext(User user) {
+                    //// TODO: 2016-09-29 restartContext should be moved to onCompleted
+                    Log.d("Select User - onNext", user.getUserName());
+                    userListView.restartContext();
+                }
+            });
 
         if(!getSubscriptions().isUnsubscribed()){
             subscriptions.add(selectUserSubscription);
         }
     }
+
+    @Override
+    public void switchUser() {
+       getDefaultRevokeAccessObservable()
+               .observeOn(AndroidSchedulers.mainThread())
+               .subscribeOn(Schedulers.io())
+               .subscribe(new SelectedUserSubscriber("Guest", 0));
+    }
+
+    @Override
+    public void switchUser(String id, int position) {
+        getDefaultRevokeAccessObservable()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new SelectedUserSubscriber(id, position));
+    }
+
+    private Observable<AccessToken> getDefaultRevokeAccessObservable() {
+        Observable<AccessToken> revokeAccessTokenObservable = app.getRedditClient()
+                .revokeToken(RedditAuthProvider.ACCESS_TOKEN);
+
+        if(contextView instanceof BaseActivity){
+            revokeAccessTokenObservable.compose(((BaseActivity)contextView).bindToLifecycle());
+        }else if(contextView instanceof BaseFragment){
+            revokeAccessTokenObservable.compose(((BaseFragment)contextView).bindToLifecycle());
+        }
+        return revokeAccessTokenObservable;
+    }
+
 
     private Observable<User> updateSessionWithSelectedUser(User user) {
         realm.executeTransaction(realmInstance -> {
@@ -193,5 +226,31 @@ public class UserListPresenterImpl implements UserListPresenter {
     private CompositeSubscription getSubscriptions() {
         initializeSubscriptions();
         return subscriptions;
+    }
+
+    private class SelectedUserSubscriber extends Subscriber<AccessToken>{
+
+        private String id;
+        private int position;
+
+        public SelectedUserSubscriber(String id, int position) {
+            this.id = id;
+            this.position = position;
+        }
+
+        @Override
+        public void onCompleted() {
+            selectUser(id, position);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onNext(AccessToken accessToken) {
+
+        }
     }
 }

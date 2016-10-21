@@ -349,7 +349,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
                 .title("Use preferences from your Reddit account?")
                 .positiveText("Yes")
                 .negativeText("No")
-                .onPositive((dialog, which) -> DatabaseHelper.setSession(getRealm(), wrapper))
+                .onPositive((dialog, which) -> authPresenter.updateSession(wrapper))
                 .onNegative((dialog, which) -> {
                     wrapper.getAuthPrefs().setToDefault();
                     authPresenter.updateSession(wrapper);

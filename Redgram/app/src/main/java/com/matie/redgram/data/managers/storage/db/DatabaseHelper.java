@@ -122,7 +122,7 @@ public class DatabaseHelper {
     }
 
     public static Observable<RealmResults<User>> getUsersAsync(Realm realm) {
-        return realm.where(User.class).findAllAsync().asObservable().filter(RealmResults::isLoaded);
+        return realm.where(User.class).findAllAsync().asObservable();
     }
 
     public static Observable<User> getUserByIdAsync(Realm realm, String userId) {
