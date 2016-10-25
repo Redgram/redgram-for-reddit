@@ -1,8 +1,8 @@
 package com.matie.redgram.ui.common.user;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -126,12 +126,6 @@ public class UserListView extends FrameLayout implements UserListControllerView 
         }
     }
 
-    @Override //never called for now
-    public void addAccount(String id, String username) {
-        getItems().add(new UserItem(id, username));
-        userRecyclerView.getAdapter().notifyItemInserted(getItems().size()-1);
-    }
-
     @Override
     public void selectAccount(String id, int position) {
         UserItem userItem = getItem(position);
@@ -142,11 +136,21 @@ public class UserListView extends FrameLayout implements UserListControllerView 
 
     @Override
     public void removeAccount(String id, int position) {
-        // TODO: 2016-09-15 removes user from local db and then from adapter on success
-        // TODO: 2016-09-15 switch to Application Only Auth
-        String username = getItem(position).getUserName();
-        Log.d("username", username);
-        presenter.removeUser(id, position);
+        dialogUtil.build()
+                .title("Remove this account?")
+                .content(getItem(position).getUserName())
+                .onPositive((dialog, which) -> presenter.removeUser(id, position))
+                .onNegative((dialog1, which1) -> dialog1.dismiss())
+                .positiveText("Yes")
+                .negativeText("Cancel")
+                .show();
+    }
+
+    @Override
+    public void removeItem(int position) {
+        RecyclerView.Adapter adapter = userRecyclerView.getAdapter();
+        adapter.notifyItemRemoved(position);
+        adapter.notifyItemRangeChanged(position, adapter.getItemCount() - position);
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.matie.redgram.data.managers.presenters.UserListPresenter;
 import com.matie.redgram.data.managers.presenters.UserListPresenterImpl;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.user.views.UserListControllerView;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.ContentView;
 
 import dagger.Module;
@@ -18,11 +17,20 @@ public class UserListModule {
 
     private UserListControllerView userListView;
     private ContentView contentView;
+    //flag to enable showing the Guest user in the list, if any presented
+    private boolean enableDefault = false;
 
     public UserListModule(UserListControllerView userListView, ContentView contentView){
         this.userListView = userListView;
         this.contentView = contentView;
         this.userListView.setBaseContextView(contentView.getContentContext());
+    }
+
+    public UserListModule(UserListControllerView userListView, ContentView contentView, boolean enableDefault){
+        this.userListView = userListView;
+        this.contentView = contentView;
+        this.userListView.setBaseContextView(contentView.getContentContext());
+        this.enableDefault = true;
     }
 
 
@@ -33,7 +41,7 @@ public class UserListModule {
 
     @Provides
     public UserListPresenter providesUserListPresenter(App app){
-        return new UserListPresenterImpl(userListView, contentView, app);
+        return new UserListPresenterImpl(userListView, contentView, app, enableDefault);
     }
 
 }

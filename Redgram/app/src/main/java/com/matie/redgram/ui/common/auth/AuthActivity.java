@@ -169,6 +169,8 @@ public class AuthActivity extends BaseActivity implements AuthView {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        authPresenter.unregisterForEvents();
+        getRealm().removeAllChangeListeners();
         ButterKnife.reset(this);
     }
 
@@ -177,13 +179,6 @@ public class AuthActivity extends BaseActivity implements AuthView {
         super.onResume();
         authPresenter.registerForEvents();
         getRealm().addChangeListener(realmChangeListener);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        authPresenter.unregisterForEvents();
-        getRealm().removeAllChangeListeners();
     }
 
     @Override

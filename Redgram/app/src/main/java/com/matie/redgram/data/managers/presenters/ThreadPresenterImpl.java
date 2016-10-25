@@ -2,6 +2,7 @@ package com.matie.redgram.data.managers.presenters;
 
 import com.google.gson.JsonElement;
 import com.matie.redgram.data.models.db.Prefs;
+import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
@@ -59,8 +60,12 @@ public class ThreadPresenterImpl implements ThreadPresenter {
         }
     }
 
-    private Prefs getUserPrefs() {
-        return threadView.getContentContext().getBaseActivity().getSession().getUser().getPrefs();
+    private Prefs getUserPrefs(){
+        Session session = threadView.getContentContext().getBaseActivity().getSession();
+        if(session != null && session.getUser() != null){
+            return session.getUser().getPrefs();
+        }
+        return null;
     }
 
     @Override

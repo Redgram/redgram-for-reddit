@@ -204,7 +204,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     protected void setupComponent(AppComponent appComponent) {
         userListLayout = (UserListView) getLayoutInflater().inflate(R.layout.nav_user_list, null, false);
 
-        UserListModule userListModule = new UserListModule(userListLayout, this);
+        UserListModule userListModule = new UserListModule(userListLayout, this, true);
         mainComponent = DaggerMainComponent.builder()
                         .appComponent(appComponent)
                         .mainModule(new MainModule(this))
@@ -325,6 +325,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        userListLayout.getPresenter().unregisterForEvents();
         ButterKnife.reset(this);
     }
 
@@ -333,12 +334,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         super.onResume();
         userListLayout.getPresenter().registerForEvents();
         selectItem(currentSelectedMenuId);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        userListLayout.getPresenter().unregisterForEvents();
     }
 
     @Override

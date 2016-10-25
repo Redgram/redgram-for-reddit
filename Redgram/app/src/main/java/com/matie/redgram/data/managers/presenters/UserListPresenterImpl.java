@@ -43,16 +43,18 @@ public class UserListPresenterImpl implements UserListPresenter {
     private Session session;
     private App app;
     private DatabaseManager databaseManager;
+    private boolean enableDefault;
 
     private CompositeSubscription subscriptions;
 
     @Inject
-    public UserListPresenterImpl(UserListControllerView userListView, ContentView contentView, App app) {
+    public UserListPresenterImpl(UserListControllerView userListView, ContentView contentView, App app, boolean enableDefault) {
         this.userListView = userListView;
         this.contentView = contentView;
         this.contextView = contentView.getContentContext();
         this.app = app;
         this.databaseManager = app.getDatabaseManager();
+        this.enableDefault = enableDefault;
 
         BaseActivity activity = contextView.getBaseActivity();
         this.realm = activity.getRealm();
@@ -110,26 +112,44 @@ public class UserListPresenterImpl implements UserListPresenter {
                 .filter(RealmResults::isLoaded)
                 .map(list -> {
                     List<UserItem> userItems = new ArrayList<>();
-
                     for(User user : list){
-                        userItems.add(buildUserItem(user, sessionUser));
+                        if((enableDefault && User.USER_GUEST.equalsIgnoreCase(user.getUserType()))
+                            || !User.USER_GUEST.equalsIgnoreCase(user.getUserType())){
+                            userItems.add(buildUserItem(user, sessionUser));
+                        }
                     }
-
                     return userItems;
                 });
     }
 
     private UserItem buildUserItem(User user, User sessionUser) {
         UserItem userItem = new UserItem(user.getId(), user.getUserName());
-        if(sessionUser != null && user.getId().equalsIgnoreCase(sessionUser.getId())){
-            userItem.setSelected(true);
+        if(sessionUser != null){
+            if(user.getId().equalsIgnoreCase(sessionUser.getId())) {
+                userItem.setSelected(true);
+            }
+
+            if(User.USER_GUEST.equalsIgnoreCase(user.getUserType())){
+                userItem.setDefault(true);
+            }
         }
         return userItem;
     }
 
-
+    // TODO: 2016-10-24 change to asynchronous
     @Override
     public void removeUser(String id, int position) {
+        try {
+            DatabaseHelper.deleteUserById(realm, id, null);
+            if(userListView.getItem(position).isSelected()){
+                selectUser("Guest", 0);
+            }else{
+                userListView.removeItem(position);
+            }
+        }catch (IllegalStateException e){
+            Log.d("Remove User", e.getMessage());
+            userListView.showErrorMessage(e.getMessage());
+        }
 
     }
 
@@ -203,6 +223,18 @@ public class UserListPresenterImpl implements UserListPresenter {
         return revokeAccessTokenObservable;
     }
 
+    private Observable<AccessToken> getRevokeTokenObservable(String token, String type) {
+        Observable<AccessToken> revokeAccessTokenObservable = app.getRedditClient()
+                .revokeToken(token, type);
+
+        if(contextView instanceof BaseActivity){
+            revokeAccessTokenObservable.compose(((BaseActivity)contextView).bindToLifecycle());
+        }else if(contextView instanceof BaseFragment){
+            revokeAccessTokenObservable.compose(((BaseFragment)contextView).bindToLifecycle());
+        }
+        return revokeAccessTokenObservable;
+    }
+
 
     private Observable<User> updateSessionWithSelectedUser(User user) {
         realm.executeTransaction(realmInstance -> {
@@ -228,7 +260,7 @@ public class UserListPresenterImpl implements UserListPresenter {
         return subscriptions;
     }
 
-    private class SelectedUserSubscriber extends Subscriber<AccessToken>{
+    private class SelectedUserSubscriber extends Subscriber<Object>{
 
         private String id;
         private int position;
@@ -249,7 +281,7 @@ public class UserListPresenterImpl implements UserListPresenter {
         }
 
         @Override
-        public void onNext(AccessToken accessToken) {
+        public void onNext(Object accessToken) {
 
         }
     }

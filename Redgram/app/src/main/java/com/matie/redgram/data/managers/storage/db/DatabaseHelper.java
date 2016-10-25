@@ -141,13 +141,34 @@ public class DatabaseHelper {
         Session session = getSession(realm);
         if(session != null){
             realm.beginTransaction();
-            //// TODO: 2016-05-24 update realm and use a user-defined function in Session.class
-            session.getUser().getPrefs().removeFromRealm();
-            session.getUser().getTokenInfo().removeFromRealm();
-            session.getUser().removeFromRealm();
+
+            if(session.getUser() != null){
+                deleteUser(session.getUser());
+            }
             session.removeFromRealm();
             realm.commitTransaction();
         }
+    }
+
+    public static void deleteUser(Realm realm, User user, Realm.Transaction.Callback callback){
+        if(callback != null){
+            realm.executeTransaction(realmRef -> deleteUser(user), callback);
+        }else{
+            realm.executeTransaction(realmRef -> deleteUser(user));
+        }
+    }
+
+    public static void deleteUserById(Realm realm, String id, Realm.Transaction.Callback callback){
+        User user = getUserById(realm, id);
+        if(user != null){
+            deleteUser(realm, user, callback);
+        }
+    }
+
+    private static void deleteUser(User user){
+        user.getPrefs().removeFromRealm();
+        user.getTokenInfo().removeFromRealm();
+        user.removeFromRealm();
     }
 
     public static RealmList<Subreddit> getSubreddits(Realm realm) {

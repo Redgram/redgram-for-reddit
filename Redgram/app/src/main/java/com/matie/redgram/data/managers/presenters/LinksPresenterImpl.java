@@ -71,7 +71,7 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     @Override
     public void unregisterForEvents() {
-        if(subscriptions.hasSubscriptions() && subscriptions != null){
+        if(subscriptions != null && subscriptions.hasSubscriptions()){
             subscriptions.unsubscribe();
         }
     }

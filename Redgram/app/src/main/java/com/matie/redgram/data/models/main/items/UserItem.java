@@ -9,6 +9,7 @@ public class UserItem {
     private String id;
     private String userName;
     private boolean isSelected = false;
+    private boolean isDefault = false;
 
     public UserItem(String id, String userName) {
         this.id =id;
@@ -45,5 +46,13 @@ public class UserItem {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean aDefault) {
+        isDefault = aDefault;
     }
 }

@@ -323,26 +323,13 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        homePresenter.registerForEvents();
-        linksContainerView.getLinksPresenter().registerForEvents();
-        linksContainerView.addChangeListeners();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        homePresenter.unregisterForEvents();
-        linksContainerView.getLinksPresenter().unregisterForEvents();
-        linksContainerView.removeChangeListeners();
-    }
-
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         homeRecyclerView.clearOnScrollListeners();
+        homePresenter.unregisterForEvents();
+        linksContainerView.getLinksPresenter().unregisterForEvents();
+        linksContainerView.removeChangeListeners();
+
         ButterKnife.reset(this);
     }
 
