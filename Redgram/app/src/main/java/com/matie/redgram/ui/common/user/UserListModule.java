@@ -30,7 +30,7 @@ public class UserListModule {
         this.userListView = userListView;
         this.contentView = contentView;
         this.userListView.setBaseContextView(contentView.getContentContext());
-        this.enableDefault = true;
+        this.enableDefault = enableDefault;
     }
 
 
