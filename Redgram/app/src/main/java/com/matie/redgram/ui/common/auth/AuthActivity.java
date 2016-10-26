@@ -168,10 +168,10 @@ public class AuthActivity extends BaseActivity implements AuthView {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         authPresenter.unregisterForEvents();
         getRealm().removeAllChangeListeners();
         ButterKnife.reset(this);
+        super.onDestroy();
     }
 
     @Override

@@ -324,9 +324,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         userListLayout.getPresenter().unregisterForEvents();
         ButterKnife.reset(this);
+        super.onDestroy();
     }
 
     @Override

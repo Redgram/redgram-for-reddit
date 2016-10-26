@@ -160,9 +160,9 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         threadPresenter.unregisterForEvents();
         ButterKnife.reset(this);
+        super.onDestroy();
     }
 
     private void setupToolbarImage() {

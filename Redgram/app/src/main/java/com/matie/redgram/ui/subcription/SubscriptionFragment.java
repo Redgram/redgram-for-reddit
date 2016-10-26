@@ -121,15 +121,10 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onDestroyView() {
-        super.onDestroyView();
         subscriptionPresenter.unregisterForEvents();
         ButterKnife.reset(this);
+        super.onDestroyView();
     }
 
     @Override

@@ -369,13 +369,12 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
-
         searchPresenter.unregisterForEvents();
         linksContainerView.getLinksPresenter().unregisterForEvents();
         linksContainerView.removeChangeListeners();
 
         ButterKnife.reset(this);
+        super.onDestroyView();
     }
 
     @Override

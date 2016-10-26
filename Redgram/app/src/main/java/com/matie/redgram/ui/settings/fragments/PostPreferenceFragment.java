@@ -33,7 +33,7 @@ public class PostPreferenceFragment extends PreferenceFragment {
 
             editor.putString(SettingsActivity.pref_posts_media, prefs.getMedia());
             editor.putString(SettingsActivity.pref_posts_min_score, prefs.getMinLinkScore() == 0 ? "" : prefs.getMinLinkScore()+"");
-            editor.putString(SettingsActivity.pref_posts_num_display, prefs.getNumSites()+"");
+            editor.putString(SettingsActivity.pref_posts_num_display, prefs.getNumSites() == 0 ? "25" : prefs.getNumSites()+"");
 
             editor.commit();
         }
