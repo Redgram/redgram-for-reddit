@@ -56,7 +56,6 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
         View view = inflater.inflate(R.layout.fragment_sub, container, false);
         ButterKnife.inject(this, view);
 
-
         toastHandler = ((App)getActivity().getApplication()).getToastHandler();
 
         mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
