@@ -242,7 +242,7 @@ public class UserListPresenterImpl implements UserListPresenter {
                 //this should trigger the session listener set in the BaseActivity
                 //UPDATE - listener was removed since it doesn't listen to specific changes in the session
                 session.setUser(user);
-                databaseManager.setCurrentToken(user.getTokenInfo().getToken());
+                databaseManager.setCurrentToken(realmInstance.copyFromRealm(user.getTokenInfo()));
             }
         });
         return user.asObservable();

@@ -1,6 +1,17 @@
 package com.matie.redgram.data.network.api.reddit;
 
+import android.widget.Toast;
+
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.models.db.User;
+import com.matie.redgram.data.network.api.util.AccessLevel;
+import com.matie.redgram.data.network.api.util.Security;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import javax.inject.Singleton;
 
@@ -14,7 +25,47 @@ import dagger.Provides;
 public class RedditModule {
     @Singleton
     @Provides
-    public RedditClient provideRedditClient(App app){
-        return new RedditClient(app);
+    public RedditClientInterface provideRedditClient(App app){
+        RedditClient redditClient = new RedditClient(app);
+        RedditClientInvocationHandler handler = new RedditClientInvocationHandler(redditClient,
+                app.getDatabaseManager(), app.getToastHandler());
+        return (RedditClientInterface) Proxy
+                .newProxyInstance(RedditClientInterface.class.getClassLoader(),
+                        new Class[]{RedditClientInterface.class}, handler);
+    }
+
+    class RedditClientInvocationHandler implements InvocationHandler{
+
+        private final RedditClient redditClient;
+        private final DatabaseManager databaseManager;
+        private ToastHandler toastHandler;
+
+        public RedditClientInvocationHandler(RedditClient redditClient,
+                                             DatabaseManager databaseManager) {
+            this.redditClient = redditClient;
+            this.databaseManager = databaseManager;
+        }
+
+        public RedditClientInvocationHandler(RedditClient redditClient, DatabaseManager databaseManager, ToastHandler toastHandler) {
+            this.redditClient = redditClient;
+            this.databaseManager = databaseManager;
+            this.toastHandler = toastHandler;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            if(User.USER_GUEST.equalsIgnoreCase(databaseManager.getCurrentToken().getHolderType())
+                    && checkAnnotationAccessLevel(method.getAnnotation(Security.class), AccessLevel.USER)){
+                if(toastHandler != null){
+                    toastHandler.showBackgroundToast("Please log in to perform this action", Toast.LENGTH_SHORT);
+                    //follow Null Object Pattern here
+                }
+            }
+            return method.invoke(redditClient, args);
+        }
+
+        private boolean checkAnnotationAccessLevel(Security annotation, AccessLevel level) {
+            return annotation != null && annotation.accessLevel() == level;
+        }
     }
 }

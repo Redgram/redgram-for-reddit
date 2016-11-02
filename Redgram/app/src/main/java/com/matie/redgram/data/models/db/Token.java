@@ -12,6 +12,7 @@ public class Token extends RealmObject {
     private String token;
     private String refreshToken;
     private String tokenType;
+    private String holderType;
     private String expiresIn;
     private String scope;
 
@@ -61,5 +62,13 @@ public class Token extends RealmObject {
 
     public void setScope(String scope) {
         this.scope = scope;
+    }
+
+    public String getHolderType() {
+        return holderType;
+    }
+
+    public void setHolderType(String holderType) {
+        this.holderType = holderType;
     }
 }

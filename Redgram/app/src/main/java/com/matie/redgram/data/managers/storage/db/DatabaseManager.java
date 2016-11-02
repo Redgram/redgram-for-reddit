@@ -46,7 +46,7 @@ public class DatabaseManager {
     private final App app;
     private final Context context;
 
-    private String currentAccessToken;
+    private Token currentAccessToken;
 
     @Inject
     public DatabaseManager(App app) {
@@ -58,19 +58,27 @@ public class DatabaseManager {
                 .setModules(this)
                 .build();
         Realm.setDefaultConfiguration(configuration);
-        this.currentAccessToken = getToken();
+        initCurrentAccessToken();
+    }
+
+    private void initCurrentAccessToken() {
+        Realm realm = getInstance();
+        Token token = DatabaseHelper.getSessionToken(realm);
+        if(token != null){
+            this.currentAccessToken = realm.copyFromRealm(token);
+        }
     }
 
     public static Integer id() {
         return SESSION_DEFAULT_ID;
     }
 
-    public String getCurrentToken() {
+    public Token getCurrentToken() {
         return currentAccessToken;
     }
 
-    public void setCurrentToken(String currentAccessToken) {
-        this.currentAccessToken = currentAccessToken;
+    public void setCurrentToken(Token currentToken) {
+        this.currentAccessToken = currentToken;
     }
 
     public Realm getInstance(){
@@ -86,6 +94,7 @@ public class DatabaseManager {
         DatabaseHelper.close(realm);
     }
 
+    @Deprecated
     public void deleteSession(Realm realm) {
         DatabaseHelper.deleteSession(realm);
         setCurrentToken(null);
@@ -95,16 +104,12 @@ public class DatabaseManager {
         Realm realm = getInstance();
         DatabaseHelper.setSession(realm, wrapper);
         close(realm);
-
-        setCurrentToken(wrapper.getAccessToken().getAccessToken());
     }
 
     public void setTokenInfo(AccessToken accessToken) {
         Realm realm = getInstance();
         DatabaseHelper.setTokenInfo(realm, accessToken);
         close(realm);
-
-        setCurrentToken(accessToken.getAccessToken());
     }
 
     public void setPrefs(AuthPrefs prefs) {
@@ -143,30 +148,6 @@ public class DatabaseManager {
         }
         close(realm);
         return usableUsers;
-    }
-
-    public String getToken(){
-        Realm realm = getInstance();
-        Token token = DatabaseHelper.getSessionToken(realm);
-        String usableToken = null;
-        if(token != null){
-            usableToken = token.getToken();
-        }
-
-        close(realm);
-        return usableToken;
-    }
-
-    public String getRefreshToken(){
-        Realm realm = getInstance();
-        Token token = DatabaseHelper.getSessionToken(realm);
-        String refreshToken = null;
-        if(token != null){
-            refreshToken = token.getRefreshToken();
-        }
-
-        close(realm);
-        return refreshToken;
     }
 
     public void setSubreddits(List<SubredditItem> items){

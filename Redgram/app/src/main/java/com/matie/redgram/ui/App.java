@@ -6,6 +6,7 @@ import android.content.res.Resources;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
@@ -28,7 +29,7 @@ public class App extends Application {
     DatabaseManager databaseManager;
 
     @Inject
-    RedditClient redditClient;
+    RedditClientInterface redditClient;
 
     Resources mResources;
 
@@ -67,7 +68,7 @@ public class App extends Application {
         return databaseManager;
     }
 
-    public RedditClient getRedditClient() {
+    public RedditClientInterface getRedditClient() {
         return redditClient;
     }
 

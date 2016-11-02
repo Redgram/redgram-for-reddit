@@ -41,7 +41,7 @@ public class DatabaseHelper {
         realm.commitTransaction();
     }
 
-    public static void setSession(Realm realm, AuthWrapper wrapper) {
+    public static void  setSession(Realm realm, AuthWrapper wrapper) {
         if(wrapper.getAccessToken() != null){
             Token token = buildToken(wrapper.getAccessToken());
             AuthPrefs authPrefs = null;
@@ -49,11 +49,13 @@ public class DatabaseHelper {
             if(User.USER_AUTH.equalsIgnoreCase(wrapper.getType())){
                 authPrefs = wrapper.getAuthPrefs();
                 authUser = wrapper.getAuthUser();
+                token.setHolderType(User.USER_AUTH);
             }else if(User.USER_GUEST.equalsIgnoreCase(wrapper.getType())){
                 authPrefs = new AuthPrefs();
                 authPrefs.setToDefault();
                 authUser = new AuthUser();
                 authUser.setToDefault();
+                token.setHolderType(User.USER_GUEST);
             }
             if(authPrefs != null && authUser != null){
                 Prefs prefs = buildPrefs(authPrefs);

@@ -8,7 +8,7 @@ import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
-import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
@@ -33,7 +33,7 @@ import rx.subscriptions.CompositeSubscription;
 public class LinksPresenterImpl implements LinksPresenter {
     final private LinksView linksView;
     final private ContentView containerView; //parent
-    final private RedditClient redditClient;
+    final private RedditClientInterface redditClient;
     final private ToastHandler toastHandler;
     final private App app;
 
@@ -228,6 +228,7 @@ public class LinksPresenterImpl implements LinksPresenter {
 
                     @Override
                     public void onNext(JsonElement redditObject) {
+
                     }
                 });
         if (!subscriptions.isUnsubscribed()){

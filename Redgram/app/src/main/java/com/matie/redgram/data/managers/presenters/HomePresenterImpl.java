@@ -10,7 +10,7 @@ import com.matie.redgram.data.models.main.home.HomeViewWrapper;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
-import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.home.views.HomeView;
@@ -39,7 +39,7 @@ import rx.subscriptions.CompositeSubscription;
 public class HomePresenterImpl implements HomePresenter{
     private final App app;
     private final HomeView homeView;
-    private final RedditClient redditClient;
+    private final RedditClientInterface redditClient;
     private final DatabaseManager databaseManager;
     private final Session session;
 

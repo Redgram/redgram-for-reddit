@@ -39,7 +39,7 @@ import rx.functions.Func2;
 /**
  * Created by matie on 17/04/15.
  */
-public class RedditClient extends RedditService {
+public class RedditClient extends RedditService implements RedditClientInterface {
     public static final String BEFORE = "before";
     public static final String AFTER = "after";
     public static final String MODHASH = "modhash";
@@ -52,6 +52,7 @@ public class RedditClient extends RedditService {
         this.provider = buildRetrofit(OAUTH_HOST_ABSOLUTE).create(RedditProvider.class);
     }
 
+    @Override
     public Observable<AuthWrapper> getAuthWrapper(String code){
         return getAccessToken(code)
                 .filter(accessToken -> accessToken.getAccessToken() != null) //make sure it's not null
@@ -69,6 +70,7 @@ public class RedditClient extends RedditService {
                 });
     }
 
+    @Override
     public Observable<AuthWrapper> getAuthWrapper(){
         return getAccessToken()
                 .filter(accessToken -> accessToken.getAccessToken() != null) //make sure it's not null
@@ -80,27 +82,31 @@ public class RedditClient extends RedditService {
                 });
     }
 
-
+    @Override
     public Observable<AuthUser> getUser(@Nullable String accessToken) {
         accessToken = "bearer " + accessToken;
         return provider.getAuthUser(accessToken);
     }
 
+    @Override
     public Observable<AuthPrefs> getUserPrefs(@Nullable String accessToken){
         accessToken = "bearer " + accessToken;
         return provider.getUserPrefs(accessToken);
     }
 
+    @Override
     public Observable<AuthPrefs> updatePrefs(AuthPrefs prefs) {
         return provider.updatePrefs(prefs);
     }
 
+    @Override
     public Observable<RedditListing<UserItem>> getFriends(){
         Observable<RedditObject>
                 friendsObservable = provider.getFriends();
         return getDefaultUserListObservable(friendsObservable);
     }
 
+    @Override
     public Observable<RedditListing<UserItem>> getBlockedUsers(){
         Observable<RedditObject>
                 blockedUsersObservable = provider.getBlockedUsers();
@@ -108,35 +114,14 @@ public class RedditClient extends RedditService {
     }
 
     // TODO: 2016-09-09 change RedditObject and RedditListing that the main models extend from
+    @Override
     public Observable<RedditListing<com.matie.redgram.data.models.main.reddit.RedditObject>> getUserOverview(String username){
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>>
                 userOverview = provider.getUserOverview(username);
         return null;
     }
 
-    private Observable<RedditListing<UserItem>> getDefaultUserListObservable(Observable<RedditObject> listing) {
-        Observable<com.matie.redgram.data.models.api.reddit.main.RedditListing> redditListingObservable =
-                listing.map(redditObject -> (com.matie.redgram.data.models.api.reddit.main.RedditListing)redditObject);
-
-        Observable<List<UserItem>> listObservable = redditListingObservable
-                .flatMap(data -> Observable.from(data.getChildren()))
-                .cast(RedditUser.class)
-                .map(redditUser -> new UserItem(redditUser.getId(), redditUser.getName()))
-                .toList();
-
-        Observable<Map<String, String>> fieldsObservable = redditListingObservable.map(this::buildFieldsMap);
-
-        return Observable.zip(listObservable, fieldsObservable, (userItems, fields) -> {
-            RedditListing<UserItem> userListing = new RedditListing<UserItem>();
-            userListing.setItems(userItems);
-            userListing.setAfter(fields.get(AFTER));
-            userListing.setBefore(fields.get(BEFORE));
-            userListing.setModHash(fields.get(MODHASH));
-            return userListing;
-        });
-    }
-
-
+    @Override
     public Observable<RedditListing<PostItem>> getSubredditListing(String query, @Nullable Map<String, String> params, List<PostItem> postItems) {
 
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subObservable
@@ -146,6 +131,7 @@ public class RedditClient extends RedditService {
 
     }
 
+    @Override
     public Observable<RedditListing<PostItem>> getSubredditListing(String query, @Nullable String filter, @Nullable Map<String, String> params, List<PostItem> postItems) {
 
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subObservable
@@ -154,6 +140,7 @@ public class RedditClient extends RedditService {
         return getDefaultPostListObservable(subObservable, postItems);
     }
 
+    @Override
     public Observable<RedditListing<PostItem>> executeSearch(String subreddit, @Nullable Map<String, String> params, List<PostItem> postItems) {
 
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> searchObservable = null;
@@ -171,66 +158,13 @@ public class RedditClient extends RedditService {
         return getDefaultPostListObservable(searchObservable, postItems);
     }
 
+    @Override
     public Observable<RedditListing<PostItem>> getListing(String front, @Nullable Map<String, String> params, List<PostItem> postItems){
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> listingObservable = provider.getListing(front, params);
         return getDefaultPostListObservable(listingObservable, postItems);
     }
 
-    private Observable<RedditListing<PostItem>> getDefaultPostListObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> listingObservable, List<PostItem> postItems) {
-
-        Observable<List<PostItem>> itemsObservable = getItemsObservable(listingObservable, postItems);
-        Observable<Map<String,String>> fieldsObservable = getFieldsObservable(listingObservable);
-
-        return Observable.zip(itemsObservable, fieldsObservable, new Func2<List<PostItem>, Map<String, String>, RedditListing<PostItem>>() {
-            @Override
-            public RedditListing<PostItem> call(List<PostItem> postItems, Map<String, String> map) {
-                RedditListing<PostItem> postItemWrapper = new RedditListing();
-                postItemWrapper.setBefore(map.get(BEFORE));
-                postItemWrapper.setAfter(map.get(AFTER));
-                postItemWrapper.setModHash(map.get(MODHASH));
-                postItemWrapper.setItems(postItems);
-                return postItemWrapper;
-            }
-        });
-    }
-
-    private Observable<List<PostItem>> getItemsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> observable, @Nullable List<PostItem> postItems){
-
-        return observable.flatMap(response -> Observable.from(response.getData().getChildren()))
-                .cast(RedditLink.class)
-                .filter(link -> filterHidden(link)) //filters hidden posts
-                .map(this::mapLinkToPostItem)
-                .filter(item -> (postItems != null ? filterExistingItems(postItems, item) : true))
-                .toList();
-    }
-
-    private Boolean filterHidden(RedditLink link) {
-        if(link.isHidden()){
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * This function replaces the old item in the list with the new one only if both items have the
-     * same id. If replaced, filter out the emitted item. If not, return true to include it.
-     *
-     * Note: equals method of PostItem is overriden to only return true if ID are the same.
-     * @param postItems
-     * @param item
-     * @return true if the list does not contain the emitted item
-     */
-    private Boolean filterExistingItems(List<PostItem> postItems, PostItem item) {
-        //if the postItems are passed, this means we are loading more objects
-        if(postItems.contains(item)){
-            int i = postItems.indexOf(item);
-            postItems.remove(i);
-            postItems.add(i, item);
-            return false;
-        }
-        return true;
-    }
-
+    @Override
     public Observable<RedditListing<SubredditItem>> getSubreddits(String filter, @Nullable Map<String, String> params){
 
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subredditsListingObservable
@@ -239,6 +173,7 @@ public class RedditClient extends RedditService {
         return getSubredditsObservable(subredditsListingObservable);
     }
 
+    @Override
     public Observable<RedditListing<SubredditItem>> getSubscriptions(@Nullable Map<String, String> params){
 
         Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subredditsListingObservable
@@ -247,28 +182,7 @@ public class RedditClient extends RedditService {
         return getSubredditsObservable(subredditsListingObservable);
     }
 
-    private Observable<RedditListing<SubredditItem>> getSubredditsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subredditsListingObservable) {
-        Observable<List<SubredditItem>> itemsObservable = subredditsListingObservable
-                .flatMap(response -> Observable.from(response.getData().getChildren()))
-                .cast(RedditSubreddit.class)
-                .map(item -> mapToSubredditItem(item))
-                .toList();
-
-        Observable<Map<String,String>> fieldsObservable = getFieldsObservable(subredditsListingObservable);
-
-        return Observable.zip(itemsObservable, fieldsObservable, new Func2<List<SubredditItem>, Map<String, String>, RedditListing<SubredditItem>>() {
-            @Override
-            public RedditListing<SubredditItem> call(List<SubredditItem> items, Map<String, String> map) {
-                RedditListing<SubredditItem> postItemWrapper = new RedditListing();
-                postItemWrapper.setBefore(map.get(BEFORE));
-                postItemWrapper.setAfter(map.get(AFTER));
-                postItemWrapper.setModHash(map.get(MODHASH));
-                postItemWrapper.setItems(items);
-                return postItemWrapper;
-            }
-        });
-    }
-
+    @Override
     public Observable<CommentsWrapper> getCommentsByArticle(String article, @Nullable Map<String, String> params){
 
         Observable<List<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>>>
@@ -316,10 +230,12 @@ public class RedditClient extends RedditService {
 
     }
 
+    @Override
     public Observable<JsonElement> voteFor(String id, Integer direction){
         return provider.voteFor(id, direction);
     }
 
+    @Override
     public Observable<JsonElement> hide(String id, boolean hide){
         if(hide)
             return provider.hide(id);
@@ -327,6 +243,7 @@ public class RedditClient extends RedditService {
             return provider.unhide(id);
     }
 
+    @Override
     public Observable<JsonElement> save(String id, boolean save){
         if(save)
             return provider.save(id);
@@ -335,15 +252,95 @@ public class RedditClient extends RedditService {
     }
 
     //Confirmation prompt
+    @Override
     public Observable<JsonElement> report(String id){
         return provider.report("json", id, "");
     }
 
-    //Confirmation prompt
+    @Override
     public Observable<JsonElement> delete(String id){
         return provider.delete(id);
     }
 
+    //helpers / builders / transformers
+    private Observable<RedditListing<UserItem>> getDefaultUserListObservable(Observable<RedditObject> listing) {
+        Observable<com.matie.redgram.data.models.api.reddit.main.RedditListing> redditListingObservable =
+                listing.map(redditObject -> (com.matie.redgram.data.models.api.reddit.main.RedditListing)redditObject);
+
+        Observable<List<UserItem>> listObservable = redditListingObservable
+                .flatMap(data -> Observable.from(data.getChildren()))
+                .cast(RedditUser.class)
+                .map(redditUser -> new UserItem(redditUser.getId(), redditUser.getName()))
+                .toList();
+
+        Observable<Map<String, String>> fieldsObservable = redditListingObservable.map(this::buildFieldsMap);
+
+        return Observable.zip(listObservable, fieldsObservable, (userItems, fields) -> {
+            RedditListing<UserItem> userListing = new RedditListing<UserItem>();
+            userListing.setItems(userItems);
+            userListing.setAfter(fields.get(AFTER));
+            userListing.setBefore(fields.get(BEFORE));
+            userListing.setModHash(fields.get(MODHASH));
+            return userListing;
+        });
+    }
+
+    private Observable<RedditListing<PostItem>> getDefaultPostListObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> listingObservable, List<PostItem> postItems) {
+
+        Observable<List<PostItem>> itemsObservable = getItemsObservable(listingObservable, postItems);
+        Observable<Map<String,String>> fieldsObservable = getFieldsObservable(listingObservable);
+
+        return Observable.zip(itemsObservable, fieldsObservable, new Func2<List<PostItem>, Map<String, String>, RedditListing<PostItem>>() {
+            @Override
+            public RedditListing<PostItem> call(List<PostItem> postItems, Map<String, String> map) {
+                RedditListing<PostItem> postItemWrapper = new RedditListing();
+                postItemWrapper.setBefore(map.get(BEFORE));
+                postItemWrapper.setAfter(map.get(AFTER));
+                postItemWrapper.setModHash(map.get(MODHASH));
+                postItemWrapper.setItems(postItems);
+                return postItemWrapper;
+            }
+        });
+    }
+
+    private Observable<List<PostItem>> getItemsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> observable, @Nullable List<PostItem> postItems){
+
+        return observable.flatMap(response -> Observable.from(response.getData().getChildren()))
+                .cast(RedditLink.class)
+                .filter(link -> filterHidden(link)) //filters hidden posts
+                .map(this::mapLinkToPostItem)
+                .filter(item -> (postItems != null ? filterExistingItems(postItems, item) : true))
+                .toList();
+    }
+
+    private Boolean filterHidden(RedditLink link) {
+        if(link.isHidden()){
+            return false;
+        }
+        return true;
+    }
+
+    private Observable<RedditListing<SubredditItem>> getSubredditsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subredditsListingObservable) {
+        Observable<List<SubredditItem>> itemsObservable = subredditsListingObservable
+                .flatMap(response -> Observable.from(response.getData().getChildren()))
+                .cast(RedditSubreddit.class)
+                .map(item -> mapToSubredditItem(item))
+                .toList();
+
+        Observable<Map<String,String>> fieldsObservable = getFieldsObservable(subredditsListingObservable);
+
+        return Observable.zip(itemsObservable, fieldsObservable, new Func2<List<SubredditItem>, Map<String, String>, RedditListing<SubredditItem>>() {
+            @Override
+            public RedditListing<SubredditItem> call(List<SubredditItem> items, Map<String, String> map) {
+                RedditListing<SubredditItem> postItemWrapper = new RedditListing();
+                postItemWrapper.setBefore(map.get(BEFORE));
+                postItemWrapper.setAfter(map.get(AFTER));
+                postItemWrapper.setModHash(map.get(MODHASH));
+                postItemWrapper.setItems(items);
+                return postItemWrapper;
+            }
+        });
+    }
     /**
      * Maps attributes that belong to listings only. BEFORE AFTER AND MODHASH.
      * @param responseObservable
@@ -466,5 +463,23 @@ public class RedditClient extends RedditService {
         return subredditItem;
     }
 
-
+    /**
+     * This function replaces the old item in the list with the new one only if both items have the
+     * same id. If replaced, filter out the emitted item. If not, return true to include it.
+     *
+     * Note: equals method of PostItem is overridden to only return true if ID are the same.
+     * @param postItems
+     * @param item
+     * @return true if the list does not contain the emitted item
+     */
+    private Boolean filterExistingItems(List<PostItem> postItems, PostItem item) {
+        //if the postItems are passed, this means we are loading more objects
+        if(postItems.contains(item)){
+            int i = postItems.indexOf(item);
+            postItems.remove(i);
+            postItems.add(i, item);
+            return false;
+        }
+        return true;
+    }
 }

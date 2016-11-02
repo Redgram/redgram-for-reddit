@@ -29,11 +29,11 @@ import javax.inject.Inject;
 import okhttp3.Authenticator;
 import okhttp3.Cache;
 import okhttp3.Challenge;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.Route;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -43,7 +43,7 @@ import rx.Observable;
 /**
  * Created by matie on 15/04/15.
  */
-public class RedditService extends RedditServiceBase {
+public class RedditService extends RedditServiceBase implements RedditServiceInterface{
 
     private static final int MAX_AGE = 60; //1 minute
     private static final int MAX_STALE = 60 * 60 * 24 * 28; //tolerate 4-weeks
@@ -76,63 +76,23 @@ public class RedditService extends RedditServiceBase {
         return retrofitBuilder.baseUrl(host).build();
     }
 
-    private Retrofit.Builder getRetrofitBuilder() {
+    protected Retrofit.Builder getRetrofitBuilder() {
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(getGson()))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(myHttpClient());
     }
 
-    private OkHttpClient myHttpClient(){
+    protected OkHttpClient myHttpClient(){
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
-        builder.addInterceptor(chain -> {
-            boolean isOnline = connectionManager.isOnline();
-            Request originalRequest = chain.request();
-            String authHeader = originalRequest.header("Authorization");
-            String host = originalRequest.url().host();
-            Request.Builder requestBuilder = originalRequest.newBuilder();
-            if(host.equalsIgnoreCase(REDDIT_HOST)){
-                requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
-                requestBuilder.addHeader("accept", "application/json");
-                requestBuilder.addHeader("Authorization", getCredentials());
-            }else if(host.equalsIgnoreCase(OAUTH_HOST)){
-                requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
-                requestBuilder.addHeader("accept", "application/json");
-                if(authHeader == null){
-                    if(sm.getCurrentToken() != null){
-                        requestBuilder.addHeader("Authorization", "bearer "+ sm.getCurrentToken());
-                    }else{
-                        app.startActivity(AuthActivity.intent(app, true));
-                        return null;
-                    }
-                }
-                if(!isOnline){
-                    connectionManager.showConnectionStatus(false);
-                    requestBuilder.addHeader("Cache-Control",
-                            "public, only-if-cached, max-stale=" + MAX_STALE);
-                    Log.d("CSTATUS", "no connection!, stale = " + MAX_STALE);
-                }
-            }
-            Request request = requestBuilder.build();
-
-            Response.Builder responseBuilder = chain.proceed(request).newBuilder();
-            if(originalRequest.url().host().equalsIgnoreCase(OAUTH_HOST)){
-                if(isOnline){
-                    responseBuilder.header("cache-control", "public, max-age=" + MAX_AGE);
-                    responseBuilder.header("Connection-Status", "Connected");
-                    Log.d("CSTATUS", "connected to internet! age = " + MAX_AGE + " seconds");
-                }
-            }
-            return responseBuilder.build();
-        });
-
+//        builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
+        builder.addInterceptor(getMainInterceptor());
         builder.authenticator(new MyAuthenticator());
         builder.cache(myCache());
         return builder.build();
     }
 
-    private static Gson getGson() {
+    protected static Gson getGson() {
         return new GsonBuilder()
                 .registerTypeAdapter(BooleanDate.class, new BooleanDateDeserializer())
                 .registerTypeAdapter(RedditObject.class, new RedditObjectDeserializer())
@@ -140,14 +100,17 @@ public class RedditService extends RedditServiceBase {
                 .create();
     }
 
-    private Cache myCache(){
+    protected Cache myCache(){
         //setup cache
         File httpCacheDir = new File(mContext.getCacheDir(), "HttpCacheDir");
         return new Cache(httpCacheDir, CACHE_DIR_SIZE);
     }
 
-    private class MyAuthenticator implements Authenticator {
+    protected Interceptor getMainInterceptor() {
+        return new RedditGeneralInterceptor();
+    }
 
+    protected class MyAuthenticator implements Authenticator {
         @Override
         public Request authenticate(Route route, Response response) throws IOException {
             if((response.code() == 401 || response.code() == 403) && response.message() != null){ //unauthorized
@@ -161,8 +124,10 @@ public class RedditService extends RedditServiceBase {
                             retrofit2.Response<AccessToken> accessToken = refreshToken().execute();
                             if(accessToken.body().getAccessToken() != null){
                                 sm.setTokenInfo(accessToken.body());
+                                //update to new token info
+                                sm.setCurrentToken(sm.getSessionUser().getTokenInfo());
                                 return response.request().newBuilder()
-                                        .header("Authorization", "bearer " + sm.getCurrentToken())
+                                        .header("Authorization", BEARER + " " + getToken())
                                         .build();
                             }
                         }else{
@@ -186,31 +151,33 @@ public class RedditService extends RedditServiceBase {
         }
     }
 
-
+    @Override
     public Observable<AccessToken> getAccessToken(String code){
         return authProvider.obtainAccessToken(GRANT_TYPE_AUTHORIZE, code, REDIRECT_URI);
     }
-
+    @Override
     public Observable<AccessToken> getAccessToken(){
         return authProvider.obtainAccessToken(GRANT_TYPE_INSTALLED, uuid);
     }
-
+    @Override
     public Call<AccessToken> refreshToken(){
         return authProvider.refreshAccessToken(REFRESH_HEADER_TAG, GRANT_TYPE_REFRESH, getRefreshToken());
     }
 
     //revoke token of the current authenticated user
+    @Override
     public Observable<AccessToken> revokeToken(String tokenType){
         if(RedditAuthProvider.ACCESS_TOKEN.equalsIgnoreCase(tokenType)){
-            return authProvider.revokeToken(sm.getCurrentToken(), tokenType);
+            return authProvider.revokeToken(getToken(), tokenType);
         }else if(RedditAuthProvider.REFRESH_TOKEN.equalsIgnoreCase(tokenType)){
-            return authProvider.revokeToken(sm.getRefreshToken(), tokenType);
+            return authProvider.revokeToken(getRefreshToken(), tokenType);
         }
         return null;
     }
 
     //revoke token passed to this method
     //returns code 204 even if the token was invalid
+    @Override
     public Observable<AccessToken> revokeToken(String token, String tokenType){
         if(RedditAuthProvider.ACCESS_TOKEN.equalsIgnoreCase(tokenType) || RedditAuthProvider.REFRESH_TOKEN.equalsIgnoreCase(tokenType)){
             return authProvider.revokeToken(token, tokenType);
@@ -218,8 +185,61 @@ public class RedditService extends RedditServiceBase {
         return null;
     }
 
-    private String getRefreshToken(){
-        return sm.getRefreshToken();
+    protected String getToken(){
+        if(sm.getCurrentToken() != null){
+            return sm.getCurrentToken().getToken();
+        }
+        return null;
     }
 
+    protected String getRefreshToken(){
+        if(sm.getCurrentToken() != null){
+            return sm.getCurrentToken().getRefreshToken();
+        }
+        return null;
+    }
+
+    private class RedditGeneralInterceptor implements Interceptor {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            boolean isOnline = connectionManager.isOnline();
+            Request originalRequest = chain.request();
+            String authHeader = originalRequest.header("Authorization");
+            String host = originalRequest.url().host();
+            Request.Builder requestBuilder = originalRequest.newBuilder();
+            if(REDDIT_HOST.equalsIgnoreCase(host)){
+                requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
+                requestBuilder.addHeader("accept", "application/json");
+                requestBuilder.addHeader("Authorization", getCredentials());
+            }else if(OAUTH_HOST.equalsIgnoreCase(host)){
+                requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
+                requestBuilder.addHeader("accept", "application/json");
+                if(authHeader == null){
+                    if(getToken() != null){
+                        requestBuilder.addHeader("Authorization", "bearer "+ getToken());
+                    }else{
+                        app.startActivity(AuthActivity.intent(app, true));
+                        return null;
+                    }
+                }
+                if(!isOnline){
+                    connectionManager.showConnectionStatus(false);
+                    requestBuilder.addHeader("Cache-Control",
+                            "public, only-if-cached, max-stale=" + MAX_STALE);
+                    Log.d("CSTATUS", "no connection!, stale = " + MAX_STALE);
+                }
+            }
+            Request request = requestBuilder.build();
+
+            Response.Builder responseBuilder = chain.proceed(request).newBuilder();
+            if(OAUTH_HOST.equalsIgnoreCase(originalRequest.url().host())){
+                if(isOnline){
+                    responseBuilder.header("cache-control", "public, max-age=" + MAX_AGE);
+                    responseBuilder.header("Connection-Status", "Connected");
+                    Log.d("CSTATUS", "connected to internet! age = " + MAX_AGE + " seconds");
+                }
+            }
+            return responseBuilder.build();
+        }
+    }
 }

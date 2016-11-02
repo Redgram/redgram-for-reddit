@@ -6,7 +6,7 @@ import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
-import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView;
@@ -33,7 +33,7 @@ import rx.subscriptions.CompositeSubscription;
 public class SubscriptionPresenterImpl implements SubscriptionPresenter {
     final private SubscriptionView subscriptionView;
     final private SubredditRecyclerView subredditRecyclerView;
-    final private RedditClient redditClient;
+    final private RedditClientInterface redditClient;
     final private DatabaseManager databaseManager;
 
     private List<SubredditItem> subredditItems;

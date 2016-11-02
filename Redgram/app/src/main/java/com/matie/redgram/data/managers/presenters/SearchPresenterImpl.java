@@ -1,6 +1,6 @@
 package com.matie.redgram.data.managers.presenters;
 
-import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.search.views.SearchView;
 
@@ -14,7 +14,7 @@ import rx.subscriptions.CompositeSubscription;
 public class SearchPresenterImpl implements SearchPresenter {
 
     private final SearchView searchView;
-    private final RedditClient redditClient;
+    private final RedditClientInterface redditClient;
 
     private CompositeSubscription subscriptions;
 

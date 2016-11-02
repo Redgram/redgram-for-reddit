@@ -6,7 +6,7 @@ import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
-import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.thread.views.ThreadView;
@@ -29,7 +29,7 @@ public class ThreadPresenterImpl implements ThreadPresenter {
 
     private final App app;
     private final ThreadView threadView;
-    private final RedditClient redditClient;
+    private final RedditClientInterface redditClient;
 
     private CompositeSubscription subscriptions;
     private Subscription threadSubscription;
