@@ -9,6 +9,8 @@ import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
+import com.matie.redgram.data.network.api.util.subscriber.NullCheckSubscriber;
+import com.matie.redgram.data.network.api.util.subscriber.NullSubscriptionExecutor;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
@@ -214,23 +216,24 @@ public class LinksPresenterImpl implements LinksPresenter {
                 .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<JsonElement>() {
+                .subscribe(new NullCheckSubscriber<>(new NullSubscriptionExecutor<JsonElement>() {
                     @Override
-                    public void onCompleted() {
+                    public void executeOnCompleted() {
+
+                    }
+
+                    @Override
+                    public void executeOnNext(JsonElement data) {
+                        //null check is already done
                         linksView.getItem(position).setSaved(save);
                         linksView.updateItem(position, linksView.getItem(position));
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void executeOnError(Throwable e) {
                         linksView.showErrorMessage(e.toString());
                     }
-
-                    @Override
-                    public void onNext(JsonElement redditObject) {
-
-                    }
-                });
+                }));
         if (!subscriptions.isUnsubscribed()){
             subscriptions.add(saveSubscription);
         }

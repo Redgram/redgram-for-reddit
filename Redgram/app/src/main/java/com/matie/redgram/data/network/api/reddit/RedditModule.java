@@ -38,27 +38,25 @@ public class RedditModule {
 
         private final RedditClient redditClient;
         private final DatabaseManager databaseManager;
+        private final RedditClientUserNullProxy nullProxy;
         private ToastHandler toastHandler;
-
-        public RedditClientInvocationHandler(RedditClient redditClient,
-                                             DatabaseManager databaseManager) {
-            this.redditClient = redditClient;
-            this.databaseManager = databaseManager;
-        }
 
         public RedditClientInvocationHandler(RedditClient redditClient, DatabaseManager databaseManager, ToastHandler toastHandler) {
             this.redditClient = redditClient;
             this.databaseManager = databaseManager;
+            this.nullProxy = new RedditClientUserNullProxy();
             this.toastHandler = toastHandler;
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            Object invokeObject;
             if(User.USER_GUEST.equalsIgnoreCase(databaseManager.getCurrentToken().getHolderType())
                     && checkAnnotationAccessLevel(method.getAnnotation(Security.class), AccessLevel.USER)){
                 if(toastHandler != null){
                     toastHandler.showBackgroundToast("Please log in to perform this action", Toast.LENGTH_SHORT);
-                    //follow Null Object Pattern here
+                    //follow Null Object Pattern here - call on the null proxy
+                    return method.invoke(nullProxy, args);
                 }
             }
             return method.invoke(redditClient, args);

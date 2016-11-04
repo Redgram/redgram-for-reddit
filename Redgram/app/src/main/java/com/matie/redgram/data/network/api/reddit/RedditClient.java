@@ -322,9 +322,10 @@ public class RedditClient extends RedditService implements RedditClientInterface
 
     private Observable<RedditListing<SubredditItem>> getSubredditsObservable(Observable<RedditResponse<com.matie.redgram.data.models.api.reddit.main.RedditListing>> subredditsListingObservable) {
         Observable<List<SubredditItem>> itemsObservable = subredditsListingObservable
+                .filter(response -> response != null)
                 .flatMap(response -> Observable.from(response.getData().getChildren()))
                 .cast(RedditSubreddit.class)
-                .map(item -> mapToSubredditItem(item))
+                .map(this::mapToSubredditItem)
                 .toList();
 
         Observable<Map<String,String>> fieldsObservable = getFieldsObservable(subredditsListingObservable);
