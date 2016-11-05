@@ -72,7 +72,7 @@ public class RedditClient extends RedditService implements RedditClientInterface
 
     @Override
     public Observable<AuthWrapper> getAuthWrapper(){
-        return getAccessToken()
+        return getAccessTokenObservable()
                 .filter(accessToken -> accessToken.getAccessToken() != null) //make sure it's not null
                 .map(accessToken -> {
                     AuthWrapper wrapper = new AuthWrapper();

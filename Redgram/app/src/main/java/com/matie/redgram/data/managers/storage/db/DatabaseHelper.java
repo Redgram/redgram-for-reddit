@@ -254,8 +254,8 @@ public class DatabaseHelper {
         prefs.setLabelNsfw(authPrefs.isLabelNsfw());
         prefs.setMinCommentsScore(authPrefs.getMinCommentScore());
         prefs.setMinLinkScore(authPrefs.getMinLinkScore());
-        prefs.setNumComments(authPrefs.getNumComments());
-        prefs.setNumSites(authPrefs.getNumSites());
+        prefs.setNumComments((authPrefs.getNumComments() == 0) ? 100 : authPrefs.getNumComments());
+        prefs.setNumSites((authPrefs.getNumSites() == 0) ? 25 : authPrefs.getNumSites());
         prefs.setOver18(authPrefs.isOver18());
         prefs.setShowFlair(authPrefs.isShowFlair());
         prefs.setShowLinkFlair(authPrefs.isShowLinkFlair());

@@ -16,7 +16,10 @@ public interface RedditServiceInterface {
     Observable<AccessToken> getAccessToken(String code);
 
     @Security(accessLevel = AccessLevel.ANY)
-    Observable<AccessToken> getAccessToken();
+    Observable<AccessToken> getAccessTokenObservable();
+
+    @Security(accessLevel = AccessLevel.ANY)
+    Call<AccessToken> getAccessToken();
 
     @Security(accessLevel = AccessLevel.USER)
     Call<AccessToken> refreshToken();

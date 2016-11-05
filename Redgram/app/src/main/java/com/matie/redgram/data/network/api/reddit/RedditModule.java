@@ -50,8 +50,8 @@ public class RedditModule {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            Object invokeObject;
-            if(User.USER_GUEST.equalsIgnoreCase(databaseManager.getCurrentToken().getHolderType())
+            if(databaseManager.getCurrentToken() != null
+                    && User.USER_GUEST.equalsIgnoreCase(databaseManager.getCurrentToken().getHolderType())
                     && checkAnnotationAccessLevel(method.getAnnotation(Security.class), AccessLevel.USER)){
                 if(toastHandler != null){
                     toastHandler.showBackgroundToast("Please log in to perform this action", Toast.LENGTH_SHORT);

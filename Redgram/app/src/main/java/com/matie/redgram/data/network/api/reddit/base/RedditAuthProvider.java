@@ -33,6 +33,13 @@ public interface RedditAuthProvider {
             @Field("device_id") String deviceId
     );
 
+    @FormUrlEncoded
+    @POST(NAMESPACE+ACCESS_TOKEN)
+    Call<AccessToken> obtainAccessTokenSync(
+            @Field("grant_type") String grantType,
+            @Field("device_id") String deviceId
+    );
+
     /**
      * Get the access token after allowing access to user data
      *

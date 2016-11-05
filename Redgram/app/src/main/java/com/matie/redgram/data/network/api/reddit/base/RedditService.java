@@ -120,23 +120,23 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
                     String scheme = challenge.scheme();
                     if(BEARER.equalsIgnoreCase(scheme)){
                         String refreshToken = getRefreshToken();
+                        retrofit2.Response<AccessToken> accessToken;
                         if(refreshToken != null && !refreshToken.isEmpty()){
-                            //get new access token and retry
-                            retrofit2.Response<AccessToken> accessToken = refreshToken().execute();
-                            if(accessToken.body().getAccessToken() != null){
-                                sm.setTokenInfo(accessToken.body());
-                                //update to new token info
-                                sm.setCurrentToken(sm.getSessionUser().getTokenInfo());
-                                return response.request().newBuilder()
-                                        .header("Authorization", BEARER + " " + getToken())
-                                        .build();
-                            }
+                            accessToken = refreshToken().execute();
                         }else{
-                            // app only grant does not receive a refresh token, but in worst case scenario
-                            // launch the auth activity as a Launcher
-                            app.startActivity(AuthActivity.intent(app, true));
-                            return null;
+                            // app only grant does not receive a refresh token
+                            accessToken = getAccessToken().execute();
                         }
+
+                        if(accessToken != null && accessToken.isSuccess() && accessToken.body().getAccessToken() != null){
+                            updateToken(accessToken.body());
+                            return response.request().newBuilder()
+                                    .header("Authorization", BEARER + " " + getToken())
+                                    .build();
+                        }else{
+                            app.startActivity(AuthActivity.intent(app, true));
+                        }
+
                     }else if(BASIC.equalsIgnoreCase(scheme)){
                         Log.d("Unauthorized", response.code() + " - Basic Auth failed.");
                         if (response.request().header(REFRESH_HEADER_TAG).equalsIgnoreCase(REFRESH_HEADER_TAG)){
@@ -144,7 +144,6 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
                             app.getToastHandler().showBackgroundToast(response.code() + " - Unauthorized Refresh Token", Toast.LENGTH_LONG);
                             app.startActivity(AuthActivity.intent(app, true));
                         }
-                        return null;
                     }
                 }
             }
@@ -152,14 +151,26 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
         }
     }
 
+    private void updateToken(AccessToken body){
+        sm.setTokenInfo(body);
+        //update to new token info
+        sm.setCurrentToken(sm.getSessionUser().getTokenInfo());
+    }
+
     @Override
     public Observable<AccessToken> getAccessToken(String code){
         return authProvider.obtainAccessToken(GRANT_TYPE_AUTHORIZE, code, REDIRECT_URI);
     }
-    @Override
-    public Observable<AccessToken> getAccessToken(){
+
+    public Observable<AccessToken> getAccessTokenObservable(){
         return authProvider.obtainAccessToken(GRANT_TYPE_INSTALLED, uuid);
     }
+
+    @Override
+    public Call<AccessToken> getAccessToken() {
+        return authProvider.obtainAccessTokenSync(GRANT_TYPE_INSTALLED, uuid);
+    }
+
     @Override
     public Call<AccessToken> refreshToken(){
         return authProvider.refreshAccessToken(REFRESH_HEADER_TAG, GRANT_TYPE_REFRESH, getRefreshToken());

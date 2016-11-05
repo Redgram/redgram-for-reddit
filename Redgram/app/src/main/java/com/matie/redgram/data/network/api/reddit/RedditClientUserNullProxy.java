@@ -137,7 +137,12 @@ public class RedditClientUserNullProxy implements RedditClientInterface {
     }
 
     @Override
-    public Observable<AccessToken> getAccessToken() {
+    public Observable<AccessToken> getAccessTokenObservable() {
+        return null;
+    }
+
+    @Override
+    public Call<AccessToken> getAccessToken() {
         return null;
     }
 

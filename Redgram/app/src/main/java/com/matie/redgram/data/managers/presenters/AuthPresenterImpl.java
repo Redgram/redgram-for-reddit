@@ -111,7 +111,7 @@ public class AuthPresenterImpl implements AuthPresenter {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e("getAccessToken", e.toString());
+                        Log.e("getAccessTokenObservable", e.toString());
                         authView.hideLoading();
                         authView.showErrorMessage(e.getMessage());
                     }
