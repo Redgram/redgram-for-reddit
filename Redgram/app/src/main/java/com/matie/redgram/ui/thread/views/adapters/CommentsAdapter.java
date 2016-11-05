@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.zip.Inflater;
 
 /**
  * Created by matie on 2016-01-31.
@@ -86,11 +85,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
     @Override
     public int getItemCount() {
         return commentItems.size();
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
     }
 
     @Override

@@ -4,67 +4,169 @@ package com.matie.redgram.data.models.api.reddit.auth;
  * Created by matie on 2016-03-01.
  */
 public class AuthPrefs {
-
-    private String default_comment_sort;
+    //alter results from the servers, so they have to remain consistent with the user reddit preferences
     private boolean hide_downs;
     private boolean hide_ups;
     private boolean label_nsfw;
     private boolean over_18;
+    //passed as parameters or UI rendering
+    private String default_comment_sort;
     private boolean show_trending;
     private boolean show_flair;
     private boolean show_link_flair;
     private boolean store_visits;
     private int min_comment_score;
     private int min_link_score;
-//    private String media; // TODO: 2016-03-01
     private int num_comments;
+    private int numsites;
+    private String media; //one of on, off, subreddit
+    private boolean highlight_controversial;
+    private boolean ignore_suggested_sort;
 
-    public String getDefault_comment_sort() {
+    public int getNumSites() {
+        return numsites;
+    }
+
+    public String getDefaultCommentSort() {
         return default_comment_sort;
     }
 
-    public boolean isHide_downs() {
+    public boolean isHideDowns() {
         return hide_downs;
     }
 
-    public boolean isHide_ups() {
+    public boolean isHideUps() {
         return hide_ups;
     }
 
-    public boolean isLabel_nsfw() {
+    public boolean isLabelNsfw() {
         return label_nsfw;
     }
 
-    public boolean isOver_18() {
+    public boolean isOver18() {
         return over_18;
     }
 
-    public boolean isShow_trending() {
+    public boolean isShowTrending() {
         return show_trending;
     }
 
-    public boolean isShow_flair() {
+    public boolean isShowFlair() {
         return show_flair;
     }
 
-    public boolean isShow_link_flair() {
+    public boolean isShowLinkFlair() {
         return show_link_flair;
     }
 
-    public boolean isStore_visits() {
+    public boolean isStoreVisits() {
         return store_visits;
     }
 
-    public int getMin_comment_score() {
+    public int getMinCommentScore() {
         return min_comment_score;
     }
 
-    public int getMin_link_score() {
+    public int getMinLinkScore() {
         return min_link_score;
     }
 
-    public int getNum_comments() {
+    public int getNumComments() {
         return num_comments;
+    }
+
+    public void setOver18(boolean over18) {
+        this.over_18 = over18;
+    }
+
+    public void setNumsites(int numsites) {
+        this.numsites = numsites;
+    }
+
+    public void setNumComments(int num_comments) {
+        this.num_comments = num_comments;
+    }
+
+    public void setMinLinkScore(int min_link_score) {
+        this.min_link_score = min_link_score;
+    }
+
+    public void setMinCommentScore(int min_comment_score) {
+        this.min_comment_score = min_comment_score;
+    }
+
+    public void setStoreVisits(boolean store_visits) {
+        this.store_visits = store_visits;
+    }
+
+    public void setShowLinkFlair(boolean show_link_flair) {
+        this.show_link_flair = show_link_flair;
+    }
+
+    public void setShowFlair(boolean show_flair) {
+        this.show_flair = show_flair;
+    }
+
+    public void setShowTrending(boolean show_trending) {
+        this.show_trending = show_trending;
+    }
+
+    public void setLabelNsfw(boolean label_nsfw) {
+        this.label_nsfw = label_nsfw;
+    }
+
+    public void setHideUps(boolean hide_ups) {
+        this.hide_ups = hide_ups;
+    }
+
+    public void setHideDowns(boolean hide_downs) {
+        this.hide_downs = hide_downs;
+    }
+
+    public void setDefaultCommentSort(String default_comment_sort) {
+        this.default_comment_sort = default_comment_sort;
+    }
+
+
+    public boolean getIgnoreSuggestedSort() {
+        return ignore_suggested_sort;
+    }
+
+    public void setIgnoreSuggestedSort(boolean ignore_suggested_sort) {
+        this.ignore_suggested_sort = ignore_suggested_sort;
+    }
+
+    public boolean isHighlightControversial() {
+        return highlight_controversial;
+    }
+
+    public void setHighlightControversial(boolean highlight_controversial) {
+        this.highlight_controversial = highlight_controversial;
+    }
+
+    public String getMedia() {
+        return media;
+    }
+
+    public void setMedia(String media) {
+        this.media = media;
+    }
+
+    //only explicit preferences used as API calls' parameters or which explicitly affect the UI
+    public void setToDefault() {
+        show_trending = true;
+        store_visits = true;
+        numsites = 25;
+        num_comments = 200;
+        min_comment_score = -4;
+        min_link_score = -4;
+        default_comment_sort = "best";
+        show_link_flair = true;
+        show_flair = true;
+        highlight_controversial = true;
+        ignore_suggested_sort = true;
+        over_18 = false;
+        media = "subreddit"; //maybe implicit
     }
 
     //    {
@@ -96,8 +198,8 @@ public class AuthPrefs {
 //        "newwindow": boolean value,
 //        "no_profanity": boolean value,
 //        "num_comments": an integer between 1 and 500,
-//            "numsites": an integer between 1 and 100,
-//            "organic": boolean value,
+//        "numsites": an integer between 1 and 100,
+//        "organic": boolean value,
 //        "other_theme": subreddit name,
 //        "over_18": boolean value,
 //        "private_feeds": boolean value,

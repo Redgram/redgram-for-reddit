@@ -1,7 +1,6 @@
 package com.matie.redgram.ui.common.previews;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 
 import com.matie.redgram.R;
 import com.matie.redgram.ui.common.base.BaseFragment;
@@ -16,9 +15,12 @@ public abstract class BasePreviewFragment extends BaseFragment {
         return getResources().getString(R.string.main_data_key);
     }
 
+    public String getMainPos(){
+        return getResources().getString(R.string.main_data_position);
+    }
+
     public String getLocalCacheKey(){
         return getResources().getString(R.string.local_cache_key);
     }
-
 
 }

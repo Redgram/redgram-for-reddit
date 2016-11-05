@@ -1,14 +1,16 @@
 package com.matie.redgram.data.managers.presenters;
 
+import com.matie.redgram.data.managers.presenters.base.BasePresenter;
 import com.matie.redgram.data.models.main.items.PostItem;
 
-/**
- * Created by matie on 2016-02-10.
- */
-public interface ThreadPresenter {
-    void registerForEvents();
-    void unregisterForEvents();
+import java.util.Map;
 
-    void getThread(String id );
+/**
+ * Thread Presenter Interface
+ */
+public interface ThreadPresenter extends BasePresenter {
+    void getThread(String id, Map<String, String> params);
     void vote(PostItem item, int dir);
+    void save(PostItem postItem, boolean save);
+    void hide(PostItem postItem, boolean hide);
 }

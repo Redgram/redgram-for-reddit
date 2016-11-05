@@ -5,10 +5,12 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
+import com.matie.redgram.ui.common.views.ContentView;
+
 /**
  * Created by matie on 2016-03-29.
  */
 public interface CoordinatorLayoutInterface {
-    CoordinatorLayout getCoordinatorLayout();
+    CoordinatorLayout coordinatorLayout();
     void showSnackBar(String msg, int length, @Nullable String actionText, @Nullable View.OnClickListener onClickListener, @Nullable Snackbar.Callback callback);
 }

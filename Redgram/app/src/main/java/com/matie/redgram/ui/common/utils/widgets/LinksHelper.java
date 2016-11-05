@@ -11,8 +11,10 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseActivity;
+import com.matie.redgram.ui.common.main.MainActivity;
+import com.matie.redgram.ui.profile.ProfileActivity;
+import com.matie.redgram.ui.subcription.SubscriptionActivity;
 
 /**
  * Created by matie on 2016-04-04.
@@ -50,13 +52,16 @@ public class LinksHelper {
     }
 
     public static void openResult(Context context, String result, String type) {
+        Intent intent = null;
         if(SUB.equalsIgnoreCase(type)){
-            ((BaseActivity) context).openActivityForSubreddit(result);
-            return;
+            intent = new Intent(context, MainActivity.class);
+            intent.putExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME, result);
+        }else if(PROFILE.equalsIgnoreCase(type)){
+            intent = new Intent(context, ProfileActivity.class);
+            intent.putExtra(ProfileActivity.RESULT_USER_NAME, result);
         }
-        if(PROFILE.equalsIgnoreCase(type)){
-            ((BaseActivity) context).openActivityForProfile(result);
-            return;
+        if(intent != null){
+            ((BaseActivity) context).openIntent(intent, 0, 0);
         }
     }
 
@@ -110,5 +115,16 @@ public class LinksHelper {
                 LinksHelper.callShareDialog(context, urlToShare);
             }
         };
+    }
+
+    public static void callAgeConfirmDialog(DialogUtil dialogUtil, MaterialDialog.SingleButtonCallback callback) {
+        if(dialogUtil != null){
+            dialogUtil.build()
+                    .title("Are you over 18?")
+                    .positiveText("Yes")
+                    .negativeText("Cancel")
+                    .onPositive(callback)
+                    .show();
+        }
     }
 }

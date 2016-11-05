@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:key="pref_sync_enable"
+        android:title="Sync with Reddit"
+        android:defaultValue="true"
+        android:summary="Enable to choose what and when to sync."/>
+
+    <ListPreference
+        android:key="pref_sync_period"
+        android:defaultValue="30"
+        android:dependency="pref_sync_enable"
+        android:title="Sync Period"
+        android:entries="@array/pref_sync_period"
+        android:entryValues="@array/pref_sync_period_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"/>
+
+    <!--general-->
+    <PreferenceCategory
+        android:title="General Options"
+        android:dependency="pref_sync_enable">
+        <CheckBoxPreference
+            android:key="pref_sync_general_show_trending"
+            android:defaultValue="true"
+            android:title="Show Trending Subreddits"/>
+        <CheckBoxPreference
+            android:key="pref_sync_general_store_visits"
+            android:defaultValue="true"
+            android:title="Store Visits"/>
+        <!--might not be included-->
+        <CheckBoxPreference
+            android:key="pref_sync_general_label_nsfw"
+            android:defaultValue="true"
+            android:title="Label NSFW"/>
+        <CheckBoxPreference
+            android:key="pref_sync_general_over_18"
+            android:defaultValue="true"
+            android:enabled="false"
+            android:summary="Syncs always"
+            android:title="Age"/>
+    </PreferenceCategory>
+
+    <!--posts-->
+    <PreferenceCategory
+        android:title="Links Options"
+        android:dependency="pref_sync_enable">
+        <CheckBoxPreference
+            android:key="pref_sync_posts_min_score"
+            android:defaultValue="true"
+            android:title="Link Minimum Score"/>
+        <CheckBoxPreference
+            android:key="pref_sync_posts_show_flair"
+            android:defaultValue="true"
+            android:title="Link Flair"/>
+        <CheckBoxPreference
+            android:key="pref_sync_posts_media"
+            android:defaultValue="true"
+            android:title="@string/pref_posts_media_title"/>
+        <CheckBoxPreference
+            android:key="pref_sync_posts_hide_ups"
+            android:defaultValue="true"
+            android:enabled="false"
+            android:summary="Syncs always"
+            android:title="Hide Upvoted Links"/>
+        <CheckBoxPreference
+            android:key="pref_sync_posts_hide_downs"
+            android:defaultValue="true"
+            android:enabled="false"
+            android:summary="Syncs always"
+            android:title="Hide Downvoted Links"/>
+    </PreferenceCategory>
+
+    <!--comments-->
+    <PreferenceCategory
+        android:title="Comments Options"
+        android:dependency="pref_sync_enable">
+        <CheckBoxPreference
+            android:key="pref_sync_comments_default_sort"
+            android:defaultValue="true"
+            android:title="Comments Default Sort"/>
+        <CheckBoxPreference
+            android:key="pref_sync_comments_ignore_suggested"
+            android:defaultValue="true"
+            android:title="Ignore Suggested Sort in Threads"/>
+        <CheckBoxPreference
+            android:key="pref_sync_comments_highlight_controversial"
+            android:defaultValue="true"
+            android:title="Highlight Controversial Comments"/>
+        <CheckBoxPreference
+            android:key="pref_sync_comments_show_flair"
+            android:defaultValue="true"
+            android:title="Comment Flair"/>
+        <CheckBoxPreference
+            android:key="pref_sync_comments_num_display"
+            android:defaultValue="true"
+            android:title="Number of Comments Displayed"/>
+        <CheckBoxPreference
+            android:key="pref_sync_comments_min_score"
+            android:defaultValue="true"
+            android:title="Comment Minimum Score"/>
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

@@ -1,10 +1,13 @@
 package com.matie.redgram.data.managers.presenters;
 
+import com.matie.redgram.data.managers.presenters.base.BasePresenter;
+import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
+
 /**
- * Created by matie on 2016-02-21.
+ * Authentication Presenter Interface
  */
-public interface AuthPresenter {
-    void registerForEvents();
-    void unregisterForEvents();
+public interface AuthPresenter extends BasePresenter {
     void getAccessToken(String url);
+    void getAccessToken();
+    void updateSession(AuthWrapper wrapper);
 }

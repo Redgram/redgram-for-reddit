@@ -18,6 +18,8 @@ public interface ThreadView extends ContentView {
     int UN_VOTE = 0;
 
     void toggleVote(@Nullable int direction);
+    void toggleSave(boolean save);
+    void toggleUnHide();
     void passDataToCommentsView(List<CommentBaseItem> commentItems);
 
     //helper

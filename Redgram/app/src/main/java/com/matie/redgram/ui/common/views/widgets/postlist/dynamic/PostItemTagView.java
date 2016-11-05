@@ -14,7 +14,6 @@ import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.utils.text.CustomClickable;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 import com.matie.redgram.ui.common.utils.text.StringUtils;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
@@ -72,11 +71,6 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
                 .span(new ForegroundColorSpan(Color.rgb(204, 0, 0)), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                 .clickable()
                 .build();
-    }
-
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-
     }
 
     @Override

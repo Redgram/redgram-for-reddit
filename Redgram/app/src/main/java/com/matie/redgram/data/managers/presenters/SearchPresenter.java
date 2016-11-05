@@ -1,12 +1,9 @@
 package com.matie.redgram.data.managers.presenters;
 
-import java.util.Map;
+import com.matie.redgram.data.managers.presenters.base.BasePresenter;
 
 /**
- * Created by matie on 28/06/15.
+ * Search Presenter Interface
  */
-public interface SearchPresenter {
-    //these are used to determine the source of loading
-    public void registerForEvents();
-    public void unregisterForEvents();
+public interface SearchPresenter extends BasePresenter {
 }

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/Match">
-
-</com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView>

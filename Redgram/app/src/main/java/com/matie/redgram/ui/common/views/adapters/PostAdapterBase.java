@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostViewHolder;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.views.LinksView;
 
 import java.util.ArrayList;
@@ -97,11 +96,6 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
     @Override
     public int getItemCount() {
         return items.size();
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
     }
 
     @Override

@@ -7,7 +7,7 @@
         style="@style/Match">
 
         <include android:id="@+id/links_container_view"
-            layout="@layout/links_container_view"></include>
+            layout="@layout/links_container_view"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

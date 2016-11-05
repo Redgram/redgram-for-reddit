@@ -9,13 +9,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.utils.text.CustomClickable;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 import com.matie.redgram.ui.common.utils.text.StringUtils;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
 import com.matie.redgram.ui.thread.views.ThreadView;
 
 import butterknife.ButterKnife;
@@ -72,6 +70,7 @@ public class OptionsView extends RelativeLayout implements CustomSpanListener {
         this.listener = listener;
         userNameView.setText(postItem.getAuthor());
         scoreView.setText(postItem.getScore()+"");
+        toggleSave(postItem.isSaved());
         setupInfo(postItem);
     }
 
@@ -97,6 +96,14 @@ public class OptionsView extends RelativeLayout implements CustomSpanListener {
         String target = targetString.toString();
         if(target.contains("/r/")){
             listener.visitSubreddit();
+        }
+    }
+
+    public void toggleSave(boolean save){
+        if(save){
+            favView.setColorFilter(getResources().getColor(R.color.material_red400));
+        }else{
+            favView.setColorFilter(getResources().getColor(R.color.material_grey600));
         }
     }
 

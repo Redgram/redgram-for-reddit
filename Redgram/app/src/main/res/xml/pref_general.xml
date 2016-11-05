@@ -1,0 +1,35 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:key="general_show_trending"
+        android:title="Show trending subreddits"
+        android:defaultValue="true"/>
+    <SwitchPreference
+        android:key="general_store_visits"
+        android:title="Store visits"
+        android:defaultValue="true"/>
+    <!--app only-->
+    <SwitchPreference
+        android:key="general_recent_post"
+        android:title="Recent Post"
+        android:defaultValue="true"/>
+
+    <PreferenceCategory
+        android:title="NSFW">
+        <SwitchPreference
+            android:key="general_over_18"
+            android:title="I am over 18"
+            android:defaultValue="false"/>
+        <SwitchPreference
+            android:key="general_label_nsfw"
+            android:dependency="general_over_18"
+            android:title="Label NSFW"
+            android:defaultValue="true"/>
+        <!--app only-->
+        <SwitchPreference
+            android:key="general_preview_nsfw"
+            android:dependency="general_over_18"
+            android:title="Disable NSFW Preview"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

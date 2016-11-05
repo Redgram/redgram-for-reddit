@@ -2,8 +2,6 @@ package com.matie.redgram.data.models.main.items.comment;
 
 import com.matie.redgram.data.models.main.reddit.RedditObject;
 
-import java.util.List;
-
 /**
  * Created by matie on 2016-01-31.
  */
@@ -19,7 +17,6 @@ public class CommentBaseItem extends RedditObject {
     private CommentType commentType;
     private int level;
     private boolean isExpanded = true; //expanded by default
-    private boolean isGrouped = false;
 
     public String getId() {
         return id;
@@ -61,11 +58,22 @@ public class CommentBaseItem extends RedditObject {
         this.isExpanded = isExpanded;
     }
 
-    public boolean isGrouped() {
-        return isGrouped;
+    @Override
+    public boolean equals(Object o) {
+        boolean flag = false;
+
+        if(o instanceof CommentBaseItem){
+            CommentBaseItem item = (CommentBaseItem) o;
+            flag = this.id.equalsIgnoreCase(item.getId());
+        }
+
+        return flag;
     }
 
-    public void setIsGrouped(boolean isGrouped) {
-        this.isGrouped = isGrouped;
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 17 * hash + (this.id != null ? this.id.hashCode() : 0);
+        return hash;
     }
 }

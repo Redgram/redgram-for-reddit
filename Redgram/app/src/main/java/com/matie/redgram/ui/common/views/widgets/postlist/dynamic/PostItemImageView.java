@@ -12,7 +12,6 @@ import com.facebook.imagepipeline.image.ImageInfo;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.media.video.ImageManager;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
@@ -70,23 +69,13 @@ public class PostItemImageView extends PostItemSubView{
                 .setListener(getControllerListener())
                 .build();
 
-        if(item.isAdult() && !isNsfwDisabled()){
+        if(item.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
             imageOverlay.setVisibility(VISIBLE);
         }else{
             imageOverlay.setVisibility(GONE);
         }
 
     }
-
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-        if(disabled){
-            imageOverlay.setVisibility(GONE);
-        }else{
-            imageOverlay.setVisibility(VISIBLE);
-        }
-    }
-
 
     private ControllerListener<? super ImageInfo> getControllerListener() {
         ControllerListener controllerListener = new BaseControllerListener<ImageInfo>(){
@@ -102,20 +91,12 @@ public class PostItemImageView extends PostItemSubView{
 
     @OnClick(R.id.image_overlay)
     public void onOverlayClick(){
-        handleOverlayClickEvent();
+        listener.callAgeConfirmDialog();
     }
 
     @OnClick(R.id.image_view)
     public void onImageClick(){
         listener.viewImageMedia(position, imageLoaded);
-    }
-
-    private void handleOverlayClickEvent(){
-        if(imageOverlay.getVisibility() == VISIBLE){
-            if(!isNsfwDisabled()){
-                callNsfwDialog();
-            }
-        }
     }
 
 

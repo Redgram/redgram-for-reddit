@@ -20,7 +20,6 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
@@ -83,13 +82,6 @@ public class PostItemGalleryView extends PostItemSubView {
         overlayImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_photo_library));
     }
 
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-        if(disabled){
-            listener.viewWebMedia(position);
-        }
-    }
-
     private GenericDraweeHierarchy getDraweeHierarchy(PostItem item) {
         GenericDraweeHierarchyBuilder builder =
                 new GenericDraweeHierarchyBuilder(getResources())
@@ -106,18 +98,16 @@ public class PostItemGalleryView extends PostItemSubView {
         PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
                 .setImageRequest(thumbnail)
                 .setOldController(thumbnailView.getController());
-
-        DraweeController controller = builder.build();
-        return controller;
+        return builder.build();
     }
 
 
     @OnClick({R.id.gallery_overlay, R.id.overlay_image, R.id.overlay_text})
     public void onGalleryClick(){
-        if(postItem != null && isNsfwDisabled()){
-            listener.viewWebMedia(position);
+        if(postItem.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
+            listener.callAgeConfirmDialog();
         }else{
-            callNsfwDialog();
+            listener.viewWebMedia(position);
         }
     }
 }

@@ -1,13 +1,11 @@
 package com.matie.redgram.ui.search;
 
-import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,7 +24,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -38,20 +35,19 @@ import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.posts.LinksComponent;
 import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.search.views.SearchView;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
-import com.nineoldandroids.view.ViewHelper;
+import com.matie.redgram.ui.thread.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.Arrays;
@@ -133,14 +129,20 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == CommentsActivity.REQ_CODE){
-            if(resultCode == getActivity().RESULT_OK){
-                PostItem postItem = new Gson().fromJson(data.getStringExtra(CommentsActivity.RESULT_POST_CHANGE), PostItem.class);
-                int pos = data.getIntExtra(CommentsActivity.RESULT_POST_POS, -1);
+        if(requestCode == ThreadActivity.REQ_CODE){
+            if(resultCode == Activity.RESULT_OK){
+                PostItem postItem = new Gson()
+                        .fromJson(data.getStringExtra(ThreadActivity.RESULT_POST_CHANGE), PostItem.class);
+                int pos = data.getIntExtra(ThreadActivity.RESULT_POST_POS, -1);
                 if(linksContainerView.getItems().contains(postItem) && pos >= 0){
-                    linksContainerView.getItems().remove(pos);
-                    linksContainerView.getItems().add(pos, postItem);
-                    linksContainerView.refreshView();
+                    // TODO: 2016-04-18 override hashcode to check whether item has actually changed before calling update
+                    // TODO: 2016-04-18 Also, use the same mechanism for single item operations in LinkContainerView
+                    // TODO: 2016-04-18 handle 400 errors - some posts cannot be modified (archived)
+                    if(postItem.isHidden()){
+                        linksContainerView.removeItem(pos);
+                    }else{
+                        linksContainerView.updateItem(pos, postItem);
+                    }
                 }
             }
         }
@@ -164,6 +166,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         component.inject(this);
         linksComponent = component.getLinksComponent(linksModule);
         linksContainerView.setComponent(linksComponent);
+        linksContainerView.setHostingFragmentTag(Fragments.SEARCH.toString());
     }
 
     @Override
@@ -268,6 +271,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
         //focus on edit text and show keyboard
         searchView.setFocusable(true);
+        searchView.requestFocus();
         searchView.setCursorVisible(true);
         toggleKeyboard(true);
     }
@@ -351,6 +355,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         super.onResume();
         searchPresenter.registerForEvents();
         linksContainerView.getLinksPresenter().registerForEvents();
+        linksContainerView.addChangeListeners();
     }
 
     @Override
@@ -359,15 +364,17 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
         //hide keyboard
         toggleKeyboard(false);
-        searchPresenter.unregisterForEvents();
-        linksContainerView.getLinksPresenter().unregisterForEvents();
     }
 
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        searchPresenter.unregisterForEvents();
+        linksContainerView.getLinksPresenter().unregisterForEvents();
+        linksContainerView.removeChangeListeners();
+
         ButterKnife.reset(this);
+        super.onDestroyView();
     }
 
     @Override
@@ -394,18 +401,8 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     }
 
     @Override
-    public Context getContext() {
-        return getActivity().getApplicationContext();
-    }
-
-    @Override
-    public BaseActivity getBaseActivity() {
-        return (BaseActivity)getActivity();
-    }
-
-    @Override
-    public BaseFragment getBaseFragment() {
-        return this;
+    public BaseContextView getContentContext() {
+        return getBaseFragment();
     }
 
     @Override

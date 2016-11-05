@@ -1,11 +1,14 @@
 package com.matie.redgram.ui.common.views;
 
-import android.app.Activity;
 import android.content.Context;
-import android.support.v4.app.Fragment;
 
+import com.google.gson.JsonElement;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
+import com.trello.rxlifecycle.components.support.RxFragment;
+
+import rx.Observable;
 
 /**
  * Created by matie on 12/04/15.

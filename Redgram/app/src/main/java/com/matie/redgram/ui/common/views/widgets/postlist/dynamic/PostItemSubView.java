@@ -1,15 +1,13 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.matie.redgram.data.managers.storage.preferences.PreferenceManager;
+import com.matie.redgram.data.models.db.Prefs;
+import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.home.views.HomeView;
-import com.matie.redgram.ui.common.main.MainActivity;
+import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.posts.views.LinksView;
 
 /**
@@ -22,47 +20,22 @@ import com.matie.redgram.ui.posts.views.LinksView;
  */
 public abstract class PostItemSubView extends RelativeLayout {
 
-    private MainActivity mainActivity;
-    private SharedPreferences postPreferences;
-    private HomeView listener;
+    private final BaseActivity baseActivity;
+    private final Session session;
 
     public PostItemSubView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mainActivity = (MainActivity)getContext();
-        postPreferences = (mainActivity.getApp()).getPreferenceManager().getSharedPreferences(PreferenceManager.POSTS_PREF);
+        this.baseActivity = (BaseActivity) getContext();
+        this.session = baseActivity.getSession();
     }
 
     public abstract void setupView(PostItem item, int position, LinksView listener);
-    public abstract void handleNsfwUpdate(boolean disabled);
 
-    public boolean isNsfwDisabled(){
-        return postPreferences.getBoolean(PreferenceManager.POSTS_NSFW_KEY, false);
+    public Prefs getUserPrefs() {
+        if(session.getUser() != null){
+            return session.getUser().getPrefs();
+        }
+        return null;
     }
-
-    public void disableNsfw(){
-        postPreferences.edit().putBoolean(PreferenceManager.POSTS_NSFW_KEY, true).commit();
-        handleNsfwUpdate(true);
-        // TODO: 09/10/15 notify data set changed
-    }
-
-    public void callNsfwDialog(){
-        mainActivity.getDialogUtil().build()
-                .title("Disable NSFW setting?")
-                .positiveText("Yes")
-                .negativeText("Cancel")
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        disableNsfw();
-                    }
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        super.onNegative(dialog);
-                    }
-                })
-                .show();
-    }
-
 
 }

@@ -20,7 +20,6 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
@@ -99,25 +98,15 @@ public class PostItemAnimatedView extends PostItemSubView {
                 .setImageRequest(thumbnail)
                 .setOldController(thumbnailView.getController());
 
-        DraweeController controller = builder.build();
-        return controller;
+        return builder.build();
     }
-
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-        // TODO: 2016-03-09 handle NSFW from UI
-        if(disabled){
-            listener.viewWebMedia(position);
-        }
-    }
-
 
     @OnClick({R.id.animated_overlay, R.id.overlay_image, R.id.overlay_text})
     public void onGalleryClick(){
-        if(postItem != null && isNsfwDisabled()){
-            listener.viewWebMedia(position);
+        if(postItem.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
+            listener.callAgeConfirmDialog();
         }else{
-            callNsfwDialog();
+            listener.viewWebMedia(position);
         }
     }
 

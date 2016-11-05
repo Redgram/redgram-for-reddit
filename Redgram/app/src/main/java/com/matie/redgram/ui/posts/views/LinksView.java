@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.common.views.ContentSubView;
 import com.matie.redgram.ui.common.views.ContentView;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Map;
 /**
  * Created by matie on 2016-03-16.
  */
-public interface LinksView extends ContentView{
+public interface LinksView extends ContentSubView{
     int UP_VOTE = 1;
     int DOWN_VOTE = -1;
     int UN_VOTE = 0;
@@ -20,6 +21,10 @@ public interface LinksView extends ContentView{
     PostItem getItem(int position);
     List<PostItem> getItems();
     void updateList();
+    void updateRestOfList(int position);
+    void updateItem(int position, PostItem postItem);
+    PostItem removeItem(int position);
+    void insertItem(int position, PostItem postItem);
     void updateList(List<PostItem> items);
     void refreshView();
     void refreshView(@Nullable String subredditChoice, @NonNull String filterChoice, @NonNull Map<String, String> params);
@@ -36,9 +41,10 @@ public interface LinksView extends ContentView{
 
     void sharePost(int position);
     void visitSubreddit(String subredditName);
-    void visitProfile(int position);
+    void visitProfile(String username);
     void openInBrowser(int position);
     void copyItemLink(int position);
     void viewWebMedia(int position);
     void viewImageMedia(int position, boolean loaded);
+    void callAgeConfirmDialog();
 }

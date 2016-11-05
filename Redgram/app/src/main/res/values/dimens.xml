@@ -3,7 +3,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-
     <dimen name="action_bar_height">48dp</dimen>
     <dimen name="app_bar_height">400dp</dimen>
     <dimen name="default_horizontal_margin">16dp</dimen>
@@ -19,9 +18,7 @@
     <dimen name="navigation_drawer_header_image_view_size">40dp</dimen>
     <dimen name="navigation_drawer_image_view_size">24dp</dimen>
     <dimen name="navigation_drawer_item_height">48dp</dimen>
-    <!--<dimen name="navigation_drawer_item_height">48dp</dimen>    -->
-
-    <dimen name="navigation_drawer_personal_data_layout_height">150dp</dimen>
+    <dimen name="navigation_drawer_personal_data_layout_height">80dp</dimen>
 
     <!-- Circle size -->
     <dimen name="circle_width">240dp</dimen>
@@ -44,10 +41,12 @@
     <!--Action view height-->
     <dimen name="action_view_height">48dp</dimen>
     <!--Header height-->
-    <dimen name="header_height">72dp</dimen>
+    <dimen name="header_height">64dp</dimen>
+    <dimen name="header_text_width">250dp</dimen>
 
     <dimen name="thumbnail_size">90dp</dimen>
 
+    <dimen name="action_more_margin">9dp</dimen>
     <dimen name="action_icon_margin">12dp</dimen>
     <dimen name="content_inset">72dp</dimen>
     <dimen name="fab_margin">16dp</dimen>

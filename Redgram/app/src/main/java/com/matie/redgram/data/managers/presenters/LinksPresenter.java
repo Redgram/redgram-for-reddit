@@ -1,13 +1,13 @@
 package com.matie.redgram.data.managers.presenters;
 
+import com.matie.redgram.data.managers.presenters.base.BasePresenter;
+
 import java.util.Map;
 
 /**
- * Created by matie on 2016-03-15.
+ * Links Presenter Interface.
  */
-public interface LinksPresenter {
-    void registerForEvents();
-    void unregisterForEvents();
+public interface LinksPresenter extends BasePresenter{
     void getListing(String subreddit, String front, Map<String,String> params);
     void getMoreListing(String subreddit, String front, Map<String,String> params);
     void searchListing(String subreddit, Map<String,String> params);
@@ -17,4 +17,7 @@ public interface LinksPresenter {
     void save(int position, String name, boolean save);
     void delete(int position);
     void report(int position);
+    //dealing with settings
+    void confirmAge();
+    void enableNsfwPreview();
 }

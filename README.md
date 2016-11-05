@@ -1,4 +1,5 @@
 # redgram-for-reddit [![Build Status](https://travis-ci.org/Redgram/redgram-for-reddit.svg?branch=master)](https://travis-ci.org/Redgram/redgram-for-reddit)
+
 An awesome Android Reddit client
 
 --------------

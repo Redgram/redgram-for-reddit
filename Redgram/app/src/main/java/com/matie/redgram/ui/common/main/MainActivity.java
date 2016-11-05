@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
@@ -13,8 +14,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -23,24 +24,30 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.storage.db.session.SessionHelper;
-import com.matie.redgram.data.managers.storage.db.session.SessionManager;
+import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.base.BaseActivity;
+import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
+import com.matie.redgram.ui.common.main.views.MainView;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
+import com.matie.redgram.ui.common.user.UserListComponent;
+import com.matie.redgram.ui.common.user.UserListModule;
+import com.matie.redgram.ui.common.user.UserListView;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.home.HomeFragment;
+import com.matie.redgram.ui.profile.ProfileActivity;
 import com.matie.redgram.ui.search.SearchFragment;
+import com.matie.redgram.ui.settings.SettingsActivity;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -49,12 +56,14 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.Optional;
-import io.realm.Realm;
+import io.realm.RealmChangeListener;
 
 
-public class MainActivity extends SlidingUpPanelActivity implements CoordinatorLayoutInterface, NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends SlidingUpPanelActivity implements CoordinatorLayoutInterface,
+                                                    NavigationView.OnNavigationItemSelectedListener, MainView{
 
     private static final int SUBSCRIPTION_REQUEST_CODE = 69;
+
     private int currentSelectedMenuId = R.id.nav_home;
 
     static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
@@ -80,6 +89,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     BasePreviewFragment previewFragment;
     Fragments currentPreviewFragment;
+    UserListView userListLayout;
 
     @Inject
     App app;
@@ -87,56 +97,55 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     DialogUtil dialogUtil;
 
     private ActionBarDrawerToggle mDrawerToggle;
-    private CharSequence mTitle;
-    private CharSequence mDrawerTitle;
     private MainComponent mainComponent;
 
     private Window window;
     private boolean isDrawerOpen = false;
-    private Realm realm;
+    private String subredditToVisitOnResult;
+    private RealmChangeListener realmSessionListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.inject(this);
 
-        mTitle = mDrawerTitle = getTitle();
+        if(getSession() == null || DatabaseHelper.getUserById(getRealm(), "Guest") == null){
+            //launch auth activity with specific flags and create a guest user
+            startActivity(AuthActivity.intent(this, true));
+        }else{
 
-        mDrawerLayout.setStatusBarBackgroundColor(
-                getResources().getColor(R.color.material_red600));
+            ButterKnife.inject(this);
 
-        //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(getResources().getColor(R.color.material_red600));
-        }
+            mDrawerLayout.setStatusBarBackgroundColor(
+                    getResources().getColor(R.color.material_red600));
 
-        // Possible work around for market launches. See http://code.google.com/p/android/issues/detail?id=2373
-        // for more details. Essentially, the market launches the main activity on top of other activities.
-        // we never want this to happen. Instead, we check if we are the root and if not, we finish.
-        if (!isTaskRoot()) {
-            final Intent intent = getIntent();
-            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(intent.getAction())) {
-                Log.w("LAUNCH_LOG", "Main MainActivity is not the root.  Finishing Main MainActivity instead of launching.");
-                finish();
-                return;
+            //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window = getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                window.setStatusBarColor(getResources().getColor(R.color.material_red600));
             }
-        }
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container,
-                    Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment())).commit();
-            selectItem(currentSelectedMenuId);
-        } else {
-            currentSelectedMenuId = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-        }
+            // Possible work around for market launches. See http://code.google.com/p/android/issues/detail?id=2373
+            // for more details. Essentially, the market launches the main activity on top of other activities.
+            // we never want this to happen. Instead, we check if we are the root and if not, we finish.
+            if (!isTaskRoot()) {
+                final Intent intent = getIntent();
+                if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN.equals(intent.getAction())) {
+                    Log.w("LAUNCH_LOG", "Main MainActivity is not the root.  Finishing Main MainActivity instead of launching.");
+                    finish();
+                    return;
+                }
+            }
 
-        setUpToolbar();
-        setup();
-        setUpPanel();
-        setUpRealm();
+            setUpToolbar();
+            setup(savedInstanceState);
+            setUpPanel();
+            if(getSession() != null){
+                setupNavUserLayout(getSession().getUser());
+            }
+
+        }
     }
 
     @Override
@@ -149,6 +158,12 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         return R.id.container;
     }
 
+    @Override
+    protected RealmChangeListener getRealmSessionChangeListener() {
+        //keep null as
+        return realmSessionListener;
+    }
+
     private void setUpToolbar() {
         //ActionBar setup
         setSupportActionBar(toolbar);
@@ -157,25 +172,47 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
-    private void setUpRealm() {
-        SessionManager sessionManager = app.getSessionManager();
-        realm = sessionManager.getInstance();
-        User user = SessionHelper.getSessionUser(realm);
+    private void setupNavUserLayout(User user){
+        FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);
+
+        ImageView accountsView = ((ImageView) headerView.findViewById(R.id.drawerAccounts));
+        accountsView.setOnClickListener(v -> {
+            if(userListLayout != null && userListLayout.getParent() != null){
+                return;
+            }
+            modifyNavDrawer(userListLayout, R.color.material_bluegrey900);
+        });
+
+        TextView username = (TextView) headerView.findViewById(R.id.drawerUserName);
+        username.setText(user != null ? user.getUserName() : "Guest");
         if(user != null){
-//            navigationView.get(0)
-//            drawerUserName.setText(user.getUserName());
+            if(User.USER_AUTH.equalsIgnoreCase(user.getUserType())){
+                username.setOnClickListener(v -> startActivity(ProfileActivity.intent(MainActivity.this)));
+            }else if(User.USER_GUEST.equalsIgnoreCase(user.getUserType())){
+                navigationView.getMenu().findItem(R.id.nav_logout).setVisible(false);
+            }
         }
 
+        setUpNavUserList();
     }
 
+    private void setUpNavUserList() {
+        userListLayout.setUp();
+    }
 
     @Override
     protected void setupComponent(AppComponent appComponent) {
+        userListLayout = (UserListView) getLayoutInflater().inflate(R.layout.nav_user_list, null, false);
+
+        UserListModule userListModule = new UserListModule(userListLayout, this, true);
         mainComponent = DaggerMainComponent.builder()
                         .appComponent(appComponent)
                         .mainModule(new MainModule(this))
+                        .userListModule(userListModule)
                         .build();
         mainComponent.inject(this);
+        UserListComponent userListComponent = mainComponent.getUserListComponent(userListModule);
+        userListLayout.setComponent(userListComponent);
     }
 
     @Override
@@ -183,19 +220,13 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         return mainComponent;
     }
 
-    @Override
-    public BaseActivity activity() {
-        return this;
-    }
-
-    private void setup(){
+    private void setup(Bundle savedInstanceState){
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close) {
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 supportInvalidateOptionsMenu();
-
                 isDrawerOpen = false;
             }
 
@@ -220,6 +251,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && window != null) {
                             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
                         }
+                        resetNavDrawer();
                         setPanelHeight(48);
                     }
                     supportInvalidateOptionsMenu();
@@ -236,37 +268,45 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        if(getIntent().getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME) != null){
-            disableDrawer();
-            String subredditName = getIntent().getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
-
-            Bundle bundle = new Bundle();
-            bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
-
-            HomeFragment homeFragment = (HomeFragment) Fragment
-                    .instantiate(activity(), Fragments.HOME.getFragment());
-
-            openFragmentWithResult(homeFragment, bundle);
-        } // TODO: 2016-04-08 do the same for profile
-
+        if(!checkIntentStatus(getIntent())){
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction().add(R.id.container,
+                        Fragment.instantiate(MainActivity.this, Fragments.HOME.getFragment()), Fragments.HOME.toString()).commit();
+                selectItem(currentSelectedMenuId);
+            } else {
+                currentSelectedMenuId = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+            }
+        }
     }
 
     private boolean checkIntentStatus(Intent intent){
-        Uri data = intent.getData();
-        if(data != null){
-            Log.d("INTENT_DATA", data.toString());
+        if(getIntent().getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME) != null){
+            String subredditName = getIntent().getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
+            launchFragmentForSubreddit(subredditName);
+            return true;
+        }else if(intent.getData() != null){
+            Uri data = intent.getData();
             if(data.getPath().contains("/r/")){
                 //open subreddit
                 String path = data.getPath();
                 String subredditName = path.substring(path.lastIndexOf('/')+1, path.length());
-                // TODO: 2016-04-06 open another activity and check intent to hide navbar
-                openActivityForSubreddit(subredditName);
-            }else if(data.getPath().contains("/u/")){
-                //open user
+                launchFragmentForSubreddit(subredditName);
+                return true;
             }
-            return true;
         }
         return false;
+    }
+
+    private void launchFragmentForSubreddit(String subredditName) {
+        disableDrawer();
+        Bundle bundle = new Bundle();
+        bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
+
+        HomeFragment homeFragment = (HomeFragment) Fragment
+                .instantiate(getBaseActivity(), Fragments.HOME.getFragment());
+        homeFragment.setArguments(bundle);
+
+        openFragmentWithResult(homeFragment, Fragments.HOME.toString());
     }
 
     private void setUpPanel() {
@@ -284,14 +324,15 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        userListLayout.getPresenter().unregisterForEvents();
         ButterKnife.reset(this);
-        SessionHelper.close(realm);
+        super.onDestroy();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        userListLayout.getPresenter().registerForEvents();
         selectItem(currentSelectedMenuId);
     }
 
@@ -325,7 +366,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         } else if (item.getItemId() == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }else if(item.getItemId() == android.R.id.home){
             //only when back button enabled for this activity
             finish();
@@ -336,12 +378,12 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if(getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED){
+            hidePanel();
+        }else if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             closeDrawer();
-        } else {
-//            Log.d("back-stack", getSupportFragmentManager().getBackStackEntryCount()+"");
+        }else {
             super.onBackPressed();
-//            Log.d("back-stack-after", getSupportFragmentManager().getBackStackEntryCount()+"");
             if(getSupportFragmentManager().getBackStackEntryCount() == 0){
                 currentSelectedMenuId = R.id.nav_home;
                 selectItem(currentSelectedMenuId);
@@ -351,23 +393,52 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == SUBSCRIPTION_REQUEST_CODE){
             if(resultCode == RESULT_OK){
                 String subredditName = data.getStringExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
-                if(!subredditName.isEmpty() || subredditName != null){
-                    //select home fragment - first item
-                    Bundle bundle = new Bundle();
-                    bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
-
-                    HomeFragment homeFragment = (HomeFragment) Fragment
-                            .instantiate(activity(), Fragments.HOME.getFragment());
-
-                    openFragmentWithResult(homeFragment, bundle);
+                subredditToVisitOnResult = subredditName;
+            }
+        }else if(requestCode == UserListView.ADD_ACCOUNT){
+            if(resultCode == RESULT_OK){
+                String userId = data.getStringExtra(AuthActivity.RESULT_USER_ID);
+                String username = data.getStringExtra(AuthActivity.RESULT_USER_NAME);
+                if(userId != null && username != null){
+                    recreate();
                 }
             }
-            return;
         }
-        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if(subredditToVisitOnResult != null){
+            visitSubredditOnResult();
+            subredditToVisitOnResult = null;
+        }
+    }
+
+    /**
+     * Only called when onActivityResult returns the name of the subreddit
+     */
+    private void visitSubredditOnResult() {
+        //select home fragment - first item
+        Bundle bundle = new Bundle();
+        bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditToVisitOnResult);
+
+        HomeFragment homeFragment = (HomeFragment) Fragment
+                .instantiate(getBaseActivity(), Fragments.HOME.getFragment());
+        homeFragment.setArguments(bundle);
+
+        //makes sure only one fragment is in the stack
+        if(!getSupportFragmentManager().findFragmentByTag(Fragments.HOME.toString()).isVisible()){
+            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            currentSelectedMenuId = R.id.nav_home;
+            selectItem(currentSelectedMenuId);
+        }
+
+        openFragmentWithResult(homeFragment, Fragments.HOME.toString());
     }
 
     @Override
@@ -377,7 +448,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     private void syncDrawerToggle(){
-        if(mDrawerToggle != null) { //create this check to prevent the call of syncState() when the user is not logged in
+        if(mDrawerToggle != null) { //create this check to prevent the call of syncState() when the session is not logged in
             mDrawerToggle.syncState();
         }
     }
@@ -419,11 +490,20 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             }
         } else if(id == R.id.nav_subs){
             Intent intent = new Intent(this, SubscriptionActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivityForResult(intent, SUBSCRIPTION_REQUEST_CODE);
+        } else if(id == R.id.nav_settings){
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         } else if(id == R.id.nav_logout){
-            app.getToastHandler().showToast("Logout", Toast.LENGTH_SHORT);
+            //logout is only visible to non-guest type and should revoke the access token of the current user
+            app.getToastHandler().showToast("Switching to Guest", Toast.LENGTH_SHORT);
             logoutCurrentUser();
+        } else if(id == R.id.nav_about) {
+            dialogUtil.build()
+                    .title(R.string.about_dialog_title)
+                    .content(R.string.about_dialog_content)
+                    .positiveText(R.string.dialog_close)
+                    .show();
         }
 
         closeDrawer();
@@ -431,18 +511,13 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     private void logoutCurrentUser() {
-        app.getSessionManager().deleteSession(realm);
-        app.startAuthActivity();
-    }
-
-    public App getApp() {
-        return app;
+        //switches to Guest user automatically - default
+        userListLayout.getPresenter().switchUser();
     }
 
     public DialogUtil getDialogUtil() {
         return dialogUtil;
     }
-
 
     @Override
     public void togglePanel() {
@@ -533,15 +608,15 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     //controlling the coordinator layout
     @Override
-    public CoordinatorLayout getCoordinatorLayout() {
+    public CoordinatorLayout coordinatorLayout() {
         return coordinatorLayout;
     }
 
     @Override
     public void showSnackBar(String msg, int length, @Nullable String actionText, @Nullable View.OnClickListener onClickListener, @Nullable Snackbar.Callback callback) {
-        if(getCoordinatorLayout() != null){
+        if(coordinatorLayout() != null){
 
-            Snackbar snackbar = Snackbar.make(getCoordinatorLayout(), msg, length);
+            Snackbar snackbar = Snackbar.make(coordinatorLayout(), msg, length);
 
             if(actionText != null && onClickListener != null){
                 snackbar.setAction(actionText, onClickListener);
@@ -566,6 +641,62 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     public void disableDrawer(){
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mDrawerToggle.setDrawerIndicatorEnabled(false);
+    }
+
+
+
+    /**
+     * Adds a view to the navDrawer and changes status color
+     * @param view
+     * @param colorId
+     */
+    @Override
+    public void modifyNavDrawer(View view, int colorId) {
+        navigationView.addView(view);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(getResources().getColor(colorId));
+        }
+    }
+
+    /**
+     * Resets Drawer to initial state
+     */
+    @Override
+    public void resetNavDrawer() {
+        if(navigationView.getChildCount() > 1){
+            for(int i = 1; i <= navigationView.getChildCount(); i++){
+                navigationView.removeViewAt(i);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.setStatusBarColor(getResources().getColor(R.color.material_red600));
+            }
+        }
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void showInfoMessage() {
+
+    }
+
+    @Override
+    public void showErrorMessage(String error) {
+
+    }
+
+    @Override
+    public BaseContextView getContentContext() {
+        return getBaseActivity();
     }
 }
 

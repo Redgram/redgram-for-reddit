@@ -1,7 +1,5 @@
 package com.matie.redgram.ui.common.utils.text;
 
-import android.graphics.drawable.Drawable;
-
 /**
  * Created by matie on 2015-12-13.
  *

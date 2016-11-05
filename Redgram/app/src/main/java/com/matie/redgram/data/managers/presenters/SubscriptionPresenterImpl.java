@@ -1,22 +1,19 @@
 package com.matie.redgram.data.managers.presenters;
 
-import android.content.SharedPreferences;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.matie.redgram.R;
-import com.matie.redgram.data.managers.storage.preferences.PreferenceManager;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.models.db.Session;
+import com.matie.redgram.data.models.db.Subreddit;
+import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
-import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView;
 import com.matie.redgram.ui.subcription.views.SubscriptionView;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,30 +27,31 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static rx.android.app.AppObservable.bindFragment;
-
 /**
- * Created by matie on 2015-11-29.
+ * Subscription Presenter Implementation
  */
 public class SubscriptionPresenterImpl implements SubscriptionPresenter {
     final private SubscriptionView subscriptionView;
     final private SubredditRecyclerView subredditRecyclerView;
-    final private RedditClient redditClient;
-    final private PreferenceManager preferenceManager;
+    final private RedditClientInterface redditClient;
+    final private DatabaseManager databaseManager;
 
     private List<SubredditItem> subredditItems;
     private String loadMoreId = "";
 
     private CompositeSubscription subscriptions;
     private Subscription subredditSubscription;
+    private Session session;
 
     @Inject
     public SubscriptionPresenterImpl(SubscriptionView subscriptionView, App app) {
         this.subscriptionView = subscriptionView;
         this.subredditRecyclerView = subscriptionView.getRecyclerView();
         this.redditClient = app.getRedditClient();
-        this.preferenceManager = app.getPreferenceManager();
-        this.subredditItems = new ArrayList<SubredditItem>();
+        this.subredditItems = new ArrayList<>();
+        this.databaseManager = app.getDatabaseManager();
+
+        session = subscriptionView.getContentContext().getBaseActivity().getSession();
     }
 
     @Override
@@ -68,7 +66,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
 
     @Override
     public void unregisterForEvents() {
-        if(subscriptions.hasSubscriptions() || subscriptions != null){
+        if(subscriptions != null && subscriptions.hasSubscriptions()){
             subscriptions.unsubscribe();
         }
     }
@@ -78,27 +76,29 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         subredditItems.clear();
         subscriptionView.showLoading();
 
-        Map<String,String> params = new HashMap<String, String>();
+        Map<String,String> params = new HashMap<>();
         params.put("limit", "100");
 
-        //check if subreddits are in shared preferences
-        SharedPreferences sharedPreferences = preferenceManager
-                .getSharedPreferences(PreferenceManager.SUBREDDIT_PREF);
-        Observable<RedditListing<SubredditItem>> subredditsObservable = null;
-        boolean isSubredditsCached = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null) != null;
-        if(isSubredditsCached && !forceNetwork){
-            String storedListingObject = sharedPreferences.getString(PreferenceManager.SUBREDDIT_LIST, null);
-
-            Type listType = new TypeToken<RedditListing<SubredditItem>>(){}.getType();
-            RedditListing<SubredditItem> storedListing = new Gson().fromJson(storedListingObject, listType);
-
-            subredditsObservable = Observable.just(storedListing);
-
-        }else{
-            subredditsObservable = redditClient.getSubscriptions(params);
+        //check if subreddits are in db
+        Observable<RedditListing<SubredditItem>> subredditsObservable;
+        RedditListing<SubredditItem> storedListing = null;
+        if(!forceNetwork){
+            storedListing = getSubredditsFromCache();
         }
 
-        subredditSubscription = (Subscription)bindFragment(subscriptionView.getBaseFragment(), subredditsObservable)
+        if(storedListing != null){
+            subredditsObservable = Observable.just(storedListing);
+        }else{
+            if(session.getUser() != null && User.USER_GUEST.equalsIgnoreCase(session.getUser().getUserType())){
+                subredditsObservable = redditClient.getSubreddits("default", params);
+            }else{
+                //auth user
+                subredditsObservable = redditClient.getSubscriptions(params);
+            }
+        }
+
+        subredditSubscription = subredditsObservable
+                .compose(((BaseFragment)subscriptionView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing<SubredditItem>>() {
@@ -117,16 +117,43 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
                         subredditItems.addAll(subredditListing.getItems());
 
                         //todo optimize
-                        Collections.sort(subredditItems, new Comparator<SubredditItem>() {
-                            @Override
-                            public int compare(SubredditItem lhs, SubredditItem rhs) {
-                                return lhs.getName().compareToIgnoreCase(rhs.getName());
-                            }
-                        });
+                        Collections.sort(subredditItems, (lhs, rhs) -> lhs.getName().compareToIgnoreCase(rhs.getName()));
 
                         subredditRecyclerView.replaceWith(subredditItems);
-                        loadMoreId = subredditListing.getAfter(); //if needed
+                        if(subredditListing.getAfter() != null){
+                            loadMoreId = subredditListing.getAfter(); //if needed
+                        }
+                        //add to db if from network
+                        if(forceNetwork){
+                            databaseManager.setSubreddits(subredditItems);
+                        }
                     }
                 });
+    }
+
+    private RedditListing<SubredditItem> getSubredditsFromCache() {
+        List<Subreddit> subreddits = databaseManager.getSubreddits();
+        if(!subreddits.isEmpty()){
+            return buildSubredditListing(subreddits);
+        }
+        return null;
+    }
+
+    private RedditListing<SubredditItem> buildSubredditListing(List<Subreddit> subreddits) {
+        RedditListing<SubredditItem> listing = new RedditListing<>();
+        List<SubredditItem> items = new ArrayList<>();
+        for(Subreddit subreddit : subreddits){
+            SubredditItem sbItem = new SubredditItem();
+            sbItem.setName(subreddit.getName());
+            sbItem.setAccountsActive(subreddit.getAccountsActive());
+            sbItem.setDescription(subreddit.getDescription());
+            sbItem.setDescriptionHtml(subreddit.getDescription());
+            sbItem.setSubscribersCount(subreddit.getSubscribersCount());
+            sbItem.setSubredditType(subreddit.getSubredditType());
+            sbItem.setSubmissionType(subreddit.getSubmissionType());
+            items.add(sbItem);
+        }
+        listing.setItems(items);
+        return listing;
     }
 }

@@ -4,24 +4,24 @@ import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.google.gson.JsonElement;
+import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
+import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
-import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
+import com.matie.redgram.data.network.api.util.subscriber.NullCheckSubscriber;
+import com.matie.redgram.data.network.api.util.subscriber.NullSubscriptionExecutor;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
-import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.views.LinksView;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import icepick.State;
+import io.realm.Realm;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -29,16 +29,15 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static rx.android.app.AppObservable.bindFragment;
-
 /**
- * Created by matie on 2016-03-15.
+ * Links Presenter Implementation
  */
 public class LinksPresenterImpl implements LinksPresenter {
     final private LinksView linksView;
     final private ContentView containerView; //parent
-    final private RedditClient redditClient;
+    final private RedditClientInterface redditClient;
     final private ToastHandler toastHandler;
+    final private App app;
 
     private CompositeSubscription subscriptions;
     //global subscriptions
@@ -47,11 +46,12 @@ public class LinksPresenterImpl implements LinksPresenter {
     //states
     private String loadMoreId;
     private PostItem removedItem;
-    private int removedItemPosition = -1;
+    private int removedItemPosition;
 
 
     @Inject
     public LinksPresenterImpl(LinksView linksView, ContentView containerView, App app) {
+        this.app = app;
         this.linksView = linksView;
         this.containerView = containerView;
         this.redditClient = app.getRedditClient();
@@ -64,8 +64,8 @@ public class LinksPresenterImpl implements LinksPresenter {
         if(subscriptions == null)
             subscriptions = new CompositeSubscription();
 
-        if(!subscriptions.isUnsubscribed()){
-            if(listingSubscription != null){
+        if(!subscriptions.isUnsubscribed()) {
+            if (listingSubscription != null) {
                 subscriptions.add(listingSubscription);
             }
         }
@@ -73,7 +73,7 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     @Override
     public void unregisterForEvents() {
-        if(subscriptions.hasSubscriptions() && subscriptions != null){
+        if(subscriptions != null && subscriptions.hasSubscriptions()){
             subscriptions.unsubscribe();
         }
     }
@@ -83,7 +83,7 @@ public class LinksPresenterImpl implements LinksPresenter {
         if(params.containsKey("after")){
             params.remove("after");
         }
-        linksView.getItems().clear();
+        params.put("limit", getPrefs().getNumSites()+"");
         containerView.showLoading();
         listingSubscription = getListingSubscription(subreddit, front, params, true);
     }
@@ -91,6 +91,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     @Override
     public void getMoreListing(String subreddit, @Nullable String front, Map<String, String> params) {
         params.put("after", loadMoreId);
+        params.put("limit", getPrefs().getNumSites()+"");
         linksView.showLoading();
         if(front != null){
             listingSubscription = getListingSubscription(subreddit, front, params, false);
@@ -109,40 +110,41 @@ public class LinksPresenterImpl implements LinksPresenter {
         containerView.showLoading();
         listingSubscription = getSearchSubscription(subreddit, params, true);
 
-        if(!listingSubscription.isUnsubscribed()){
+        if(!subscriptions.isUnsubscribed()){
             subscriptions.add(listingSubscription);
         }
     }
 
     @Override
     public void voteFor(int position, String name, Integer dir) {
-        Subscription voteSubscription = bindFragment(containerView.getBaseFragment(), redditClient.voteFor(name, dir))
+        Subscription voteSubscription = redditClient.voteFor(name, dir)
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<JsonElement>() {
+                .subscribe(new NullCheckSubscriber<>(new NullSubscriptionExecutor<JsonElement>() {
                     @Override
-                    public void onCompleted() {
+                    public void executeOnCompleted() {
+
+                    }
+
+                    @Override
+                    public void executeOnNext(JsonElement data) {
                         if(dir == 1){
                             linksView.getItem(position).setLikes("true");
-
                         }else if(dir == -1){
                             linksView.getItem(position).setLikes("false");
 
                         }else{
                             linksView.getItem(position).setLikes(null);
                         }
-                        linksView.updateList();
+                        linksView.updateItem(position, linksView.getItem(position));
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void executeOnError(Throwable e) {
                         linksView.showErrorMessage(e.toString());
                     }
-
-                    @Override
-                    public void onNext(JsonElement redditObject) {
-                    }
-                });
+                }));
         if(!subscriptions.isUnsubscribed()){
             subscriptions.add(voteSubscription);
         }
@@ -150,29 +152,31 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     @Override
     public void hide(int position, String name, boolean showUndo) {
-        Subscription hideSubscription = bindFragment(containerView.getBaseFragment(), redditClient.hide(name, true))
+        Subscription hideSubscription = redditClient.hide(name, true)
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<JsonElement>() {
+                .subscribe(new NullCheckSubscriber<>(new NullSubscriptionExecutor<JsonElement>() {
                     @Override
-                    public void onCompleted() {
+                    public void executeOnCompleted() {
+
+                    }
+
+                    @Override
+                    public void executeOnNext(JsonElement data) {
                         if(showUndo){
-                            removedItem = linksView.getItems().remove(position);
                             removedItemPosition = position;
-                            linksView.updateList();
+                            removedItem = linksView.removeItem(position);
                             linksView.showHideUndoOption();
                         } //else already removed and updated list
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void executeOnError(Throwable e) {
                         linksView.showErrorMessage(e.toString());
                     }
+                }));
 
-                    @Override
-                    public void onNext(JsonElement redditObject) {
-                    }
-                });
         if(!subscriptions.isUnsubscribed()){
             subscriptions.add(hideSubscription);
         }
@@ -184,25 +188,27 @@ public class LinksPresenterImpl implements LinksPresenter {
         int removedItemPos = removedItemPosition;
         PostItem removedPost = removedItem;
 
-        Subscription unHideSubscription = bindFragment(containerView.getBaseFragment(), redditClient.hide(removedPost.getName(), false))
+        Subscription unHideSubscription = redditClient.hide(removedPost.getName(), true)
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<JsonElement>() {
+                .subscribe(new NullCheckSubscriber<>(new NullSubscriptionExecutor<JsonElement>() {
                     @Override
-                    public void onCompleted() {
-                        linksView.getItems().add(removedItemPos, removedPost);
-                        linksView.updateList();
+                    public void executeOnCompleted() {
+
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void executeOnNext(JsonElement data) {
+                        //null check made
+                        linksView.insertItem(removedItemPos, removedPost);
+                    }
+
+                    @Override
+                    public void executeOnError(Throwable e) {
                         linksView.showErrorMessage(e.toString());
                     }
-
-                    @Override
-                    public void onNext(JsonElement redditObject) {
-                    }
-                });
+                }));
         if(!subscriptions.isUnsubscribed()){
             subscriptions.add(unHideSubscription);
         }
@@ -210,25 +216,28 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     @Override
     public void save(int position, String name, boolean save) {
-        Subscription saveSubscription = bindFragment(containerView.getBaseFragment(), redditClient.save(name, save))
+        Subscription saveSubscription = redditClient.save(name, save)
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<JsonElement>() {
+                .subscribe(new NullCheckSubscriber<>(new NullSubscriptionExecutor<JsonElement>() {
                     @Override
-                    public void onCompleted() {
-                        linksView.getItem(position).setSaved(save);
-                        linksView.updateList();
+                    public void executeOnCompleted() {
+
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void executeOnNext(JsonElement data) {
+                        //null check is already done
+                        linksView.getItem(position).setSaved(save);
+                        linksView.updateItem(position, linksView.getItem(position));
+                    }
+
+                    @Override
+                    public void executeOnError(Throwable e) {
                         linksView.showErrorMessage(e.toString());
                     }
-
-                    @Override
-                    public void onNext(JsonElement redditObject) {
-                    }
-                });
+                }));
         if (!subscriptions.isUnsubscribed()){
             subscriptions.add(saveSubscription);
         }
@@ -243,16 +252,46 @@ public class LinksPresenterImpl implements LinksPresenter {
     @Override
     public void report(int position) {
         final String name = linksView.getItem(position).getName();
-        Subscription reportSubscription = bindFragment(containerView.getBaseFragment(), redditClient.report(name))
+        Subscription reportSubscription = redditClient.report(name)
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<JsonElement>() {
+                .subscribe(new NullCheckSubscriber<>(new NullSubscriptionExecutor<JsonElement>() {
                     @Override
-                    public void onCompleted() {
-                        linksView.getItems().remove(position);
-                        linksView.updateList();
+                    public void executeOnCompleted() {
+
+                    }
+
+                    @Override
+                    public void executeOnNext(JsonElement data) {
+                        linksView.removeItem(position);
                         hide(position, name, false);
                         toastHandler.showBackgroundToast("Reported", Toast.LENGTH_LONG);
+                    }
+
+                    @Override
+                    public void executeOnError(Throwable e) {
+                        linksView.showErrorMessage(e.toString());
+                    }
+                }));
+        if(!subscriptions.isUnsubscribed()){
+            subscriptions.add(reportSubscription);
+        }
+    }
+
+    @Override
+    public void confirmAge() {
+
+        AuthPrefs prefs = new AuthPrefs();
+        prefs.setOver18(true);
+
+        Subscription subscription = redditClient.updatePrefs(prefs)
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<AuthPrefs>() {
+                    @Override
+                    public void onCompleted() {
                     }
 
                     @Override
@@ -261,16 +300,26 @@ public class LinksPresenterImpl implements LinksPresenter {
                     }
 
                     @Override
-                    public void onNext(JsonElement redditObject) {
+                    public void onNext(AuthPrefs prefs) {
+                        app.getDatabaseManager().setPrefs(prefs);
+                        //realm Prefs object will recognize a change a refresh the list in the UI
                     }
                 });
         if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(reportSubscription);
+            subscriptions.add(subscription);
+        }
+    }
+
+    @Override
+    public void enableNsfwPreview() {
+        Realm realm = linksView.getContentContext().getBaseActivity().getRealm();
+        if(realm != null){
+            realm.executeTransaction(instance -> getPrefs().setDisableNsfwPreview(false));
         }
     }
 
     private Subscription getListingSubscription(@Nullable String subreddit, @Nullable String filter, Map<String,String> params, boolean isNew){
-        Observable<RedditListing<PostItem>> targetObservable = null;
+        Observable<RedditListing<PostItem>> targetObservable;
 
         if(subreddit != null){
             if(filter != null)
@@ -284,8 +333,11 @@ public class LinksPresenterImpl implements LinksPresenter {
         return buildSubscription(targetObservable, isNew);
     }
 
+    @SuppressWarnings("unchecked")
+    // TODO: 2016-04-21 share Subscriber with getSearchSubscription
     private Subscription buildSubscription(Observable<RedditListing<PostItem>> observable, boolean isNew){
-        return (Subscription)bindFragment(containerView.getBaseFragment(), observable)
+        return observable
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing>() {
@@ -321,8 +373,10 @@ public class LinksPresenterImpl implements LinksPresenter {
                 });
     }
 
+    @SuppressWarnings("unchecked")
     private Subscription getSearchSubscription(String subreddit, Map<String, String> params, boolean isNew) {
-        return bindFragment(containerView.getBaseFragment(), redditClient.executeSearch(subreddit, params, ((!isNew) ? linksView.getItems() : null)))
+        return redditClient.executeSearch(subreddit, params, ((!isNew) ? linksView.getItems() : null))
+                .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditListing>() {
@@ -349,6 +403,7 @@ public class LinksPresenterImpl implements LinksPresenter {
                     @Override
                     public void onNext(RedditListing wrapper) {
                         if(isNew){
+                            linksView.getItems().clear();
                             linksView.updateList(wrapper.getItems());
                         }else{
                             linksView.getItems().addAll(wrapper.getItems());
@@ -365,5 +420,13 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     public void setRemovedItemPosition(int removedItemPosition) {
         this.removedItemPosition = removedItemPosition;
+    }
+
+    public void setLoadMoreId(String loadMoreId) {
+        this.loadMoreId = loadMoreId;
+    }
+
+    private Prefs getPrefs(){
+        return linksView.getContentContext().getBaseActivity().getSession().getUser().getPrefs();
     }
 }

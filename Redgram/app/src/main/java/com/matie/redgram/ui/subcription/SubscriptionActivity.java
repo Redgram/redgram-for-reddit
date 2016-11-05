@@ -15,13 +15,13 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
-
-import java.util.List;
+import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.realm.RealmChangeListener;
 
 /**
  * Created by matie on 2015-11-24.
@@ -61,16 +61,6 @@ public class SubscriptionActivity extends BaseActivity{
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -82,21 +72,6 @@ public class SubscriptionActivity extends BaseActivity{
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
     }
 
     @Override
@@ -114,8 +89,8 @@ public class SubscriptionActivity extends BaseActivity{
     }
 
     @Override
-    protected BaseActivity activity() {
-        return this;
+    public DialogUtil getDialogUtil() {
+        return null;
     }
 
     @Override
@@ -128,8 +103,9 @@ public class SubscriptionActivity extends BaseActivity{
         return 0;
     }
 
-    public App getApp() {
-        return app;
+    @Override
+    protected RealmChangeListener getRealmSessionChangeListener() {
+        return null;
     }
 
     public void closeActivityWithResult(String subredditName) {

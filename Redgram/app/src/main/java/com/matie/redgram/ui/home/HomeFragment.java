@@ -1,8 +1,7 @@
 package com.matie.redgram.ui.home;
 
 
-import android.animation.ValueAnimator;
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,23 +23,23 @@ import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.LinksComponent;
 import com.matie.redgram.ui.posts.LinksContainerView;
 import com.matie.redgram.ui.posts.LinksModule;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
-import com.matie.redgram.ui.thread.views.CommentsActivity;
-import com.nineoldandroids.view.ViewHelper;
+import com.matie.redgram.ui.thread.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.HashMap;
@@ -136,7 +135,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
             toolbarSubtitle.setText(filter);
         } else{
             homePresenter.getHomeViewWrapper();
-            linksContainerView.refreshView();
             toolbarSubtitle.setText(filter);
         }
     }
@@ -154,6 +152,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         component.inject(this);
         linksComponent = component.getLinksComponent(linksModule);
         linksContainerView.setComponent(linksComponent);
+        linksContainerView.setHostingFragmentTag(Fragments.HOME.toString());
     }
     @Override
     protected void setupToolbar() {
@@ -175,9 +174,8 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         titleWrapper.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(homeRecyclerView.getVisibility() == View.VISIBLE && homePresenter.getSubreddits() != null){
-
-                    List<String> subreddits = homePresenter.getSubreddits();
+                List<String> subreddits = homePresenter.getSubreddits();;
+                if(homeRecyclerView.getVisibility() == View.VISIBLE && subreddits != null){
                     //if a subreddit was selected before, add an option to return to home
                     if(!getResources().getString(R.string.frontpage).equalsIgnoreCase(toolbarTitle.getText().toString())){
                         subreddits.add(0, "Return to Frontpage");
@@ -188,7 +186,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                     }
 
                     dialogUtil.build()
-                            .title("Subreddits")
+                            .title("Subreddit")
                             .items(subreddits.toArray(new CharSequence[subreddits.size()]))
                             .itemsCallback(new MaterialDialog.ListCallback() {
                                 @Override
@@ -307,14 +305,18 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == CommentsActivity.REQ_CODE){
-            if(resultCode == getActivity().RESULT_OK){
-                PostItem postItem = new Gson().fromJson(data.getStringExtra(CommentsActivity.RESULT_POST_CHANGE), PostItem.class);
-                int pos = data.getIntExtra(CommentsActivity.RESULT_POST_POS, -1);
+        if(requestCode == ThreadActivity.REQ_CODE){
+            if(resultCode == Activity.RESULT_OK){
+                PostItem postItem = new Gson()
+                        .fromJson(data.getStringExtra(ThreadActivity.RESULT_POST_CHANGE), PostItem.class);
+                int pos = data.getIntExtra(ThreadActivity.RESULT_POST_POS, -1);
                 if(linksContainerView.getItems().contains(postItem) && pos >= 0){
-                    linksContainerView.getItems().remove(pos);
-                    linksContainerView.getItems().add(pos, postItem);
-                    linksContainerView.refreshView();
+                    // TODO: 2016-04-18 override hashcode to check whether item has actually changed before calling update
+                    if(postItem.isHidden()){
+                        linksContainerView.removeItem(pos);
+                    }else{
+                        linksContainerView.updateItem(pos, postItem);
+                    }
                 }
             }
         }
@@ -325,21 +327,18 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         super.onResume();
         homePresenter.registerForEvents();
         linksContainerView.getLinksPresenter().registerForEvents();
+        linksContainerView.addChangeListeners();
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        homePresenter.unregisterForEvents();
-        linksContainerView.getLinksPresenter().unregisterForEvents();
-    }
-
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         homeRecyclerView.clearOnScrollListeners();
+        homePresenter.unregisterForEvents();
+        linksContainerView.getLinksPresenter().unregisterForEvents();
+        linksContainerView.removeChangeListeners();
+
         ButterKnife.reset(this);
+        super.onDestroyView();
     }
 
 
@@ -364,6 +363,11 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     }
 
     @Override
+    public BaseContextView getContentContext() {
+        return getBaseFragment();
+    }
+
+    @Override
     public void showToolbar() {
 
     }
@@ -373,20 +377,10 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     }
 
-
     @Override
-    public Context getContext() {
-        return getActivity().getApplicationContext();
-    }
-
-    @Override
-    public BaseActivity getBaseActivity() {
-        return (BaseActivity)getActivity();
-    }
-
-    @Override
-    public BaseFragment getBaseFragment() {
-        return this;
+    public void loadLinksContainer(RedditListing<PostItem> links) {
+        linksContainerView.setLoadMoreId(links.getAfter());
+        linksContainerView.updateList(links.getItems());
     }
 
 

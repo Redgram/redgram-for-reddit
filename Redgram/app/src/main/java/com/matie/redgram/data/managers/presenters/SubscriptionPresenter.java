@@ -1,13 +1,10 @@
 package com.matie.redgram.data.managers.presenters;
 
-import java.util.List;
+import com.matie.redgram.data.managers.presenters.base.BasePresenter;
 
 /**
- * Created by matie on 2015-11-29.
+ * Subscription Presenter Interface
  */
-public interface SubscriptionPresenter {
-    public void registerForEvents();
-    public void unregisterForEvents();
-
-    public void getSubreddits(boolean forceNetwork);
+public interface SubscriptionPresenter extends BasePresenter {
+    void getSubreddits(boolean forceNetwork);
 }

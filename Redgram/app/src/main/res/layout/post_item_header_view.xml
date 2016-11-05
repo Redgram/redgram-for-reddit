@@ -6,14 +6,9 @@
     <LinearLayout
         android:id="@+id/header_wrapper"
         style="@style/HeaderPostItemTextContainer">
-        <TextView
-            android:id="@+id/header_username_view"
-            style="@style/HeaderUsernamePostItemText"
-            />
-        <TextView
-            android:id="@+id/header_time_subreddit_view"
-            style="@style/HeaderInfoPostItemText"
-            />
+            <TextView
+                android:id="@+id/header_time_subreddit_view"
+                style="@style/HeaderInfoPostItemText"/>
     </LinearLayout>
     <ImageView
         android:id="@+id/header_more_view"

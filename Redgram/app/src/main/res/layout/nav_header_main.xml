@@ -1,32 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--include fixed header of nav drawer-->
-<RelativeLayout
+<FrameLayout
     android:id="@+id/userDrawerHeader"
-    android:layout_width="@dimen/navigation_drawer_width"
+    android:layout_width="match_parent"
     android:layout_height="@dimen/navigation_drawer_personal_data_layout_height"
-    android:paddingBottom="@dimen/default_small_padding"
+    android:background="@color/material_red400"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ImageView
-        style="@style/Wrap"
-        android:id="@+id/drawerUserImage"
-        android:layout_alignParentLeft="true"
-        android:layout_marginTop="40dp"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_launcher"
-        android:layout_marginRight="@dimen/default_horizontal_margin"
-        android:layout_marginLeft="@dimen/default_horizontal_margin"/>
-
-    <TextView
-        android:id="@+id/drawerUserName"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:layout_below="@id/drawerUserImage"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:textSize="@dimen/text_size_medium"
-        android:layout_marginRight="@dimen/default_horizontal_margin"
-        android:layout_marginLeft="@dimen/default_horizontal_margin"/>
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:layout_marginBottom="@dimen/default_vertical_margin">
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/drawerUserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:textColor="@color/white"
+            android:text="username"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_medium"
+            android:layout_marginRight="@dimen/default_horizontal_margin"
+            android:layout_marginLeft="@dimen/default_horizontal_margin"
+            android:background="@drawable/default_ripple"/>
+
+        <LinearLayout
+            android:id="@+id/drawerMail"
+            android:orientation="horizontal"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="@dimen/default_horizontal_margin"
+            android:layout_marginLeft="@dimen/default_horizontal_margin"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/default_ripple"
+            android:clickable="true">
+            <ImageView
+                android:id="@+id/drawerAccounts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_acc_list" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+</FrameLayout>

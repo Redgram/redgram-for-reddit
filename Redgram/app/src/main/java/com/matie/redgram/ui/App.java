@@ -2,19 +2,15 @@ package com.matie.redgram.ui;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 
-import com.matie.redgram.data.managers.storage.db.session.SessionManager;
-import com.matie.redgram.data.managers.storage.preferences.PreferenceManager;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.data.network.connection.ConnectionManager;
-import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
 import javax.inject.Inject;
-
-import io.realm.Realm;
 
 /**
  * Created by matie on 21/05/15.
@@ -28,18 +24,15 @@ public class App extends Application {
 
     @Inject
     ConnectionManager connectionManager;
-    String connectionMsg;
 
     @Inject
-    PreferenceManager preferenceManager;
+    DatabaseManager databaseManager;
 
     @Inject
-    SessionManager sessionManager;
-
-    @Inject
-    RedditClient redditClient;
+    RedditClientInterface redditClient;
 
     Resources mResources;
+
 
     @Override
     public void onCreate() {
@@ -71,29 +64,16 @@ public class App extends Application {
         return connectionManager;
     }
 
-    public PreferenceManager getPreferenceManager() {
-        return preferenceManager;
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 
-    public SessionManager getSessionManager() {
-        return sessionManager;
-    }
-
-    public RedditClient getRedditClient() {
+    public RedditClientInterface getRedditClient() {
         return redditClient;
     }
 
     public ToastHandler getToastHandler() {
         return toastHandler;
-    }
-
-    public void startAuthActivity(){
-        Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(intent);
     }
 
 }

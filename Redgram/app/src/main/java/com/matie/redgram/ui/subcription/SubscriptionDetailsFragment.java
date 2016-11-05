@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.text.Spanned;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
@@ -111,28 +110,9 @@ public class SubscriptionDetailsFragment extends BaseFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.reset(this);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
 }

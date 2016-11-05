@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.main.MainActivity;
-import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
@@ -62,12 +61,10 @@ public class PostItemTextView extends PostItemSubView {
 
         if(item.getText().length() > 0){
 
-            textContentView.setText(item.getText());
-
-            if(item.isAdult() && !isNsfwDisabled()){
+            if(isNsfw()){
                 textContentView.setText(res.getString(R.string.nsfw_material));
             }else{
-                textContentView.setText(textContentView.getText());
+                textContentView.setText(item.getText());
             }
 
             textContentView.setVisibility(VISIBLE);
@@ -77,41 +74,29 @@ public class PostItemTextView extends PostItemSubView {
 
         if(item.getType().equals(PostItem.Type.SELF)){
             textTitleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, res.getDimension(R.dimen.text_size_large));
-        }
-
-        if(item.getType().equals(PostItem.Type.DEFAULT)) {
+        }else if(item.getType().equals(PostItem.Type.DEFAULT) || item.getType().equals(PostItem.Type.IMGUR)) {
+            // TODO: 2016-04-21 IMGUR type should be later look like IMAGE, YOUTUBE, etc
             textTitleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, res.getDimension(R.dimen.text_size_small));
-        }
-
-    }
-
-    @Override
-    public void handleNsfwUpdate(boolean disabled) {
-        if(disabled){
-            textContentView.setText(textContentView.getText());
         }else{
-            textContentView.setText(res.getString(R.string.nsfw_material));
+            textTitleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, res.getDimension(R.dimen.text_size_medium));
         }
+
     }
 
-
-    @OnClick(R.id.text_title_view)
-    public void onTitleClick(){
-        // TODO: 2016-04-14 check for NSFW
-        listener.loadCommentsForPost(position);
-    }
-
-    @OnClick(R.id.text_content_view)
-    public void onContentClick(){
-        if(textContentView.getText().equals(res.getString(R.string.nsfw_material))){
-            // TODO: 09/10/15 Formatted view of content
-            if(!isNsfwDisabled()){
-                callNsfwDialog();
-            }
+    @OnClick({R.id.text_title_view, R.id.text_content_view})
+    public void onClick(){
+        if(isNsfw()){
+            listener.callAgeConfirmDialog();
         }else{
             listener.loadCommentsForPost(position);
         }
     }
 
+    private boolean isNsfw(){
+        if(postItem.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
+            return true;
+        }
+        return false;
+    }
 
 }

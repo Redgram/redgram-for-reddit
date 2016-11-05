@@ -1,12 +1,7 @@
 package com.matie.redgram.ui.common.base;
 
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.WindowManager;
 
 import com.matie.redgram.R;
 import com.matie.redgram.ui.common.utils.display.SlidingPanelControllerInterface;

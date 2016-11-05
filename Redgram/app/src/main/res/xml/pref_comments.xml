@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="Best"
+        android:entries="@array/pref_comments_default_sort"
+        android:entryValues="@array/pref_comments_default_sort"
+        android:key="pref_comments_sort"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="Default sort"/>
+    <SwitchPreference
+        android:key="pref_comments_ignore_suggested"
+        android:title="Ignore suggested sort"
+        android:defaultValue="true"/>
+    <SwitchPreference
+        android:key="pref_comments_highlight_controversial"
+        android:title="Highlght controversial"
+        android:defaultValue="true"/>
+    <SwitchPreference
+        android:key="pref_comments_show_flair"
+        android:title="Show comment flair"
+        android:defaultValue="true"/>
+    <EditTextPreference
+        android:key="pref_comments_num_display"
+        android:defaultValue="200"
+        android:inputType="number"
+        android:title="Comment count"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:maxLines="1" />
+    <EditTextPreference
+        android:key="pref_comments_min_score"
+        android:defaultValue="-4"
+        android:inputType="numberDecimal|numberSigned"
+        android:title="Minimum comment score"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:maxLines="1" />
+</PreferenceScreen>

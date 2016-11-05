@@ -37,7 +37,7 @@
                 style="@style/Wrap"
                 android:paddingLeft="@dimen/default_padding"
                 android:drawSelectorOnTop="true"
-                ></Spinner>
+                />
         </TableRow>
         <TableRow>
             <TextView
@@ -51,7 +51,7 @@
                 style="@style/Wrap"
                 android:paddingLeft="@dimen/default_padding"
                 android:drawSelectorOnTop="true"
-                ></Spinner>
+               />
         </TableRow>
         <TableRow
             android:layout_marginTop="@dimen/default_vertical_margin"

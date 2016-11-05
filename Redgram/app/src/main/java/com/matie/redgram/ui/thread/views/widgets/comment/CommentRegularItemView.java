@@ -3,11 +3,11 @@ package com.matie.redgram.ui.thread.views.widgets.comment;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentItem;
-import com.matie.redgram.ui.common.views.widgets.ExpandableIndicator;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

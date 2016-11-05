@@ -1,15 +1,13 @@
 package com.matie.redgram.data.managers.presenters;
 
-import java.util.List;
+import com.matie.redgram.data.managers.presenters.base.BasePresenter;
+
 import java.util.Map;
 
 /**
- * Created by matie on 2016-02-11.
+ * Comments Presenter Interface
  */
-public interface CommentsPresenter {
-     void registerForEvents();
-     void unregisterForEvents();
-
+public interface CommentsPresenter extends BasePresenter {
      void getComments(String article, Map<String,String> params);
      void getMoreComments();
 }

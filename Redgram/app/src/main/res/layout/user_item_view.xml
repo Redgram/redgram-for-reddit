@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.matie.redgram.ui.common.views.widgets.drawer.UserItemView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/navigation_drawer_user_item_bg">
+    <RelativeLayout
+        android:id="@+id/username_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/default_padding">
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="username"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_medium"/>
+        <ImageView
+            android:id="@+id/delete_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_remove"
+            android:tint="@color/white"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+</com.matie.redgram.ui.common.views.widgets.drawer.UserItemView>

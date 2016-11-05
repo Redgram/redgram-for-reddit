@@ -1,51 +1,46 @@
 package com.matie.redgram.data.managers.presenters;
 
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.matie.redgram.data.managers.storage.db.session.SessionManager;
-import com.matie.redgram.data.managers.storage.preferences.PreferenceManager;
-import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
+import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
-import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
+import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.auth.views.AuthView;
+import com.matie.redgram.ui.common.base.BaseActivity;
 
 import javax.inject.Inject;
 
-import io.realm.Realm;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static rx.android.app.AppObservable.bindActivity;
-
 
 /**
- * Created by matie on 2016-02-21.
+ * Presenter implementation for the Authentication View.
  */
 public class AuthPresenterImpl implements AuthPresenter {
 
+    private final App app;
     private final AuthView authView;
-    private final RedditClient redditClient;
-    private final SharedPreferences sp;
-    private final SessionManager sessionManager;
+    private final RedditClientInterface redditClient;
     private Subscription authSubscription;
     private CompositeSubscription subscriptions;
     private String authCode = "";
 
     @Inject
     public AuthPresenterImpl(AuthView authView, App app) {
+        this.app = app;
         this.authView = authView;
         this.redditClient = app.getRedditClient();
-        this.sp = app.getPreferenceManager().getSharedPreferences(PreferenceManager.OAUTH_PREF);
-        this.sessionManager = app.getSessionManager();
     }
 
     @Override
@@ -62,7 +57,7 @@ public class AuthPresenterImpl implements AuthPresenter {
 
     @Override
     public void unregisterForEvents() {
-        if(subscriptions.hasSubscriptions() || subscriptions != null){
+        if(subscriptions != null && subscriptions.hasSubscriptions()){
             subscriptions.unsubscribe();
         }
     }
@@ -80,31 +75,70 @@ public class AuthPresenterImpl implements AuthPresenter {
         }
     }
 
-    private void bindAuthSubscription() {
-        authSubscription = (Subscription)bindActivity(authView.getBaseActivity(),
-                redditClient.getAuthWrapper(authCode))
+    @Override
+    public void getAccessToken() {
+        authView.showLoading();
+        authSubscription = redditClient.getAuthWrapper()
+                .compose(((AuthActivity)authView.getContentContext()).bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AuthWrapper>() {
                     @Override
                     public void onCompleted() {
-                        authView.transitionToMainActivity();
-                        authView.hideLoading();
+                        app.getToastHandler().showToast("Guest User Updated", Toast.LENGTH_LONG);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e("getAccessToken", e.toString());
-                        authView.hideLoading();
-                        authView.showErrorMessage(e.toString());
+                        authView.showErrorMessage(e.getMessage());
                     }
 
                     @Override
-                    public void onNext(AuthWrapper wrapper) {
-                        sessionManager.setSession(wrapper);
+                    public void onNext(AuthWrapper authWrapper) {
+                        updateSession(authWrapper);
                     }
                 });
     }
 
+    private void bindAuthSubscription() {
+        authSubscription = redditClient.getAuthWrapper(authCode)
+                .compose(((AuthActivity)authView.getContentContext()).bindToLifecycle())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<AuthWrapper>() {
+                    @Override
+                    public void onCompleted() {}
 
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("getAccessTokenObservable", e.toString());
+                        authView.hideLoading();
+                        authView.showErrorMessage(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(AuthWrapper wrapper) {
+                        authView.showPreferencesOptions(wrapper);
+                    }
+                });
+    }
+
+    @Override
+    public void updateSession(AuthWrapper wrapper) {
+        BaseActivity baseActivity = authView.getContentContext().getBaseActivity();
+        Session session = baseActivity.getSession();
+        //if session user already exists and is of type Guest, and wrapper is of type Guest
+        if(session != null && session.getUser() != null
+                && User.USER_GUEST.equalsIgnoreCase(session.getUser().getUserType())
+                && User.USER_GUEST.equalsIgnoreCase(wrapper.getType())){
+            DatabaseHelper.setTokenInfo(baseActivity.getRealm(), wrapper.getAccessToken());
+        }else{ //otherwise it's a new user or a null session/user
+            DatabaseHelper.setSession(baseActivity.getRealm(), wrapper);
+        }
+        //important - this is used in the services to capture the token of the current user
+        if(session != null && session.getUser() != null){
+            Token token = baseActivity.getRealm().copyFromRealm(session.getUser().getTokenInfo());
+            app.getDatabaseManager().setCurrentToken(token);
+        }
+    }
 }
