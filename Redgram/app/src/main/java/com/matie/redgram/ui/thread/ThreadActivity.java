@@ -2,7 +2,6 @@ package com.matie.redgram.ui.thread;
 
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
@@ -34,8 +33,6 @@ import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.ViewPagerActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
@@ -162,15 +159,10 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        threadPresenter.unregisterForEvents();
-    }
-
-    @Override
     protected void onDestroy() {
-        super.onDestroy();
+        threadPresenter.unregisterForEvents();
         ButterKnife.reset(this);
+        super.onDestroy();
     }
 
     private void setupToolbarImage() {

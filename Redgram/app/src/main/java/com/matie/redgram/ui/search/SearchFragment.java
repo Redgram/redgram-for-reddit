@@ -35,7 +35,6 @@ import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
@@ -365,16 +364,17 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
         //hide keyboard
         toggleKeyboard(false);
-        searchPresenter.unregisterForEvents();
-        linksContainerView.getLinksPresenter().unregisterForEvents();
-        linksContainerView.removeChangeListeners();
     }
 
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        searchPresenter.unregisterForEvents();
+        linksContainerView.getLinksPresenter().unregisterForEvents();
+        linksContainerView.removeChangeListeners();
+
         ButterKnife.reset(this);
+        super.onDestroyView();
     }
 
     @Override

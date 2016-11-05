@@ -204,7 +204,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     protected void setupComponent(AppComponent appComponent) {
         userListLayout = (UserListView) getLayoutInflater().inflate(R.layout.nav_user_list, null, false);
 
-        UserListModule userListModule = new UserListModule(userListLayout, this);
+        UserListModule userListModule = new UserListModule(userListLayout, this, true);
         mainComponent = DaggerMainComponent.builder()
                         .appComponent(appComponent)
                         .mainModule(new MainModule(this))
@@ -324,8 +324,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        userListLayout.getPresenter().unregisterForEvents();
         ButterKnife.reset(this);
+        super.onDestroy();
     }
 
     @Override
@@ -333,12 +334,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         super.onResume();
         userListLayout.getPresenter().registerForEvents();
         selectItem(currentSelectedMenuId);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        userListLayout.getPresenter().unregisterForEvents();
     }
 
     @Override
@@ -409,7 +404,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                 String userId = data.getStringExtra(AuthActivity.RESULT_USER_ID);
                 String username = data.getStringExtra(AuthActivity.RESULT_USER_NAME);
                 if(userId != null && username != null){
-                    userListLayout.restartContext();
+                    recreate();
                 }
             }
         }
@@ -516,8 +511,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     private void logoutCurrentUser() {
-        // TODO: 2016-10-11 revoke access token for the current user
-        userListLayout.getPresenter().selectUser("Guest", 0);
+        //switches to Guest user automatically - default
+        userListLayout.getPresenter().switchUser();
     }
 
     public DialogUtil getDialogUtil() {

@@ -81,11 +81,8 @@ public class PostItemActionView extends PostItemSubView {
     @OnClick(R.id.action_vote_up)
     public void onUpVoteClick(){
         if (!TRUE.equalsIgnoreCase(postItem.getLikes())){
-            voteUp.setColorFilter(getResources().getColor(R.color.material_green700));
-            voteDown.setColorFilter(null);
             listener.votePost(position, LinksView.UP_VOTE);
         }else{
-            voteUp.setColorFilter(null);
             listener.votePost(position, LinksView.UN_VOTE);
         }
     }
@@ -93,11 +90,8 @@ public class PostItemActionView extends PostItemSubView {
     @OnClick(R.id.action_vote_down)
     public void onDownVoteClick(){
         if (!FALSE.equalsIgnoreCase(postItem.getLikes())){
-            voteDown.setColorFilter(R.color.material_red700);
-            voteUp.setColorFilter(null);
             listener.votePost(position, LinksView.DOWN_VOTE);
         }else{
-            voteDown.setColorFilter(null);
             listener.votePost(position, LinksView.UN_VOTE);
         }
     }

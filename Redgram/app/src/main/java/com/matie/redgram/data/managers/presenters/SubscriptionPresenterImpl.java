@@ -1,10 +1,12 @@
 package com.matie.redgram.data.managers.presenters;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Subreddit;
+import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
-import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView;
@@ -31,7 +33,7 @@ import rx.subscriptions.CompositeSubscription;
 public class SubscriptionPresenterImpl implements SubscriptionPresenter {
     final private SubscriptionView subscriptionView;
     final private SubredditRecyclerView subredditRecyclerView;
-    final private RedditClient redditClient;
+    final private RedditClientInterface redditClient;
     final private DatabaseManager databaseManager;
 
     private List<SubredditItem> subredditItems;
@@ -39,6 +41,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
 
     private CompositeSubscription subscriptions;
     private Subscription subredditSubscription;
+    private Session session;
 
     @Inject
     public SubscriptionPresenterImpl(SubscriptionView subscriptionView, App app) {
@@ -47,6 +50,8 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         this.redditClient = app.getRedditClient();
         this.subredditItems = new ArrayList<>();
         this.databaseManager = app.getDatabaseManager();
+
+        session = subscriptionView.getContentContext().getBaseActivity().getSession();
     }
 
     @Override
@@ -61,7 +66,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
 
     @Override
     public void unregisterForEvents() {
-        if(subscriptions.hasSubscriptions() || subscriptions != null){
+        if(subscriptions != null && subscriptions.hasSubscriptions()){
             subscriptions.unsubscribe();
         }
     }
@@ -84,7 +89,12 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         if(storedListing != null){
             subredditsObservable = Observable.just(storedListing);
         }else{
-            subredditsObservable = redditClient.getSubscriptions(params);
+            if(session.getUser() != null && User.USER_GUEST.equalsIgnoreCase(session.getUser().getUserType())){
+                subredditsObservable = redditClient.getSubreddits("default", params);
+            }else{
+                //auth user
+                subredditsObservable = redditClient.getSubscriptions(params);
+            }
         }
 
         subredditSubscription = subredditsObservable

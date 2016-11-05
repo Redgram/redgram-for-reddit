@@ -9,4 +9,6 @@ public interface UserListPresenter extends BasePresenter{
     void getUsers();
     void removeUser(String id, int position);
     void selectUser(String id, int position);
+    void switchUser(String id, int position);
+    void switchUser();
 }

@@ -5,8 +5,8 @@ import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
 import com.matie.redgram.data.models.db.Prefs;
+import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.posts.views.LinksView;
 
@@ -21,16 +21,21 @@ import com.matie.redgram.ui.posts.views.LinksView;
 public abstract class PostItemSubView extends RelativeLayout {
 
     private final BaseActivity baseActivity;
+    private final Session session;
 
     public PostItemSubView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.baseActivity = (BaseActivity) getContext();
+        this.session = baseActivity.getSession();
     }
 
     public abstract void setupView(PostItem item, int position, LinksView listener);
 
     public Prefs getUserPrefs() {
-        return baseActivity.getSession().getUser().getPrefs();
+        if(session.getUser() != null){
+            return session.getUser().getPrefs();
+        }
+        return null;
     }
 
 }

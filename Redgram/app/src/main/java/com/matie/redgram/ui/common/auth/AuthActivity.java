@@ -168,8 +168,10 @@ public class AuthActivity extends BaseActivity implements AuthView {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        authPresenter.unregisterForEvents();
+        getRealm().removeAllChangeListeners();
         ButterKnife.reset(this);
+        super.onDestroy();
     }
 
     @Override
@@ -177,13 +179,6 @@ public class AuthActivity extends BaseActivity implements AuthView {
         super.onResume();
         authPresenter.registerForEvents();
         getRealm().addChangeListener(realmChangeListener);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        authPresenter.unregisterForEvents();
-        getRealm().removeAllChangeListeners();
     }
 
     @Override
@@ -349,7 +344,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
                 .title("Use preferences from your Reddit account?")
                 .positiveText("Yes")
                 .negativeText("No")
-                .onPositive((dialog, which) -> DatabaseHelper.setSession(getRealm(), wrapper))
+                .onPositive((dialog, which) -> authPresenter.updateSession(wrapper))
                 .onNegative((dialog, which) -> {
                     wrapper.getAuthPrefs().setToDefault();
                     authPresenter.updateSession(wrapper);

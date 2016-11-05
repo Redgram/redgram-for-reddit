@@ -56,7 +56,6 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
         View view = inflater.inflate(R.layout.fragment_sub, container, false);
         ButterKnife.inject(this, view);
 
-
         toastHandler = ((App)getActivity().getApplication()).getToastHandler();
 
         mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
@@ -121,15 +120,10 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        subscriptionPresenter.unregisterForEvents();
-    }
-
-    @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        subscriptionPresenter.unregisterForEvents();
         ButterKnife.reset(this);
+        super.onDestroyView();
     }
 
     @Override

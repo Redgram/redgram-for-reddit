@@ -8,7 +8,7 @@ import com.matie.redgram.data.network.api.ApiBase;
  * Created by matie on 15/04/15.
  * Check for nulls before using the methods.
  */
-public class RedditServiceBase extends ApiBase {
+public abstract class RedditServiceBase extends ApiBase {
 
     public static final String SSL = "https://";
     public static final String REDDIT_HOST = "www.reddit.com";

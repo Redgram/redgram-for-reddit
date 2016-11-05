@@ -2,7 +2,7 @@ package com.matie.redgram.ui;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.managers.storage.db.DatabaseModule;
-import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.data.network.api.reddit.RedditModule;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.data.network.connection.ConnectionModule;
@@ -34,6 +34,6 @@ public interface AppComponent {
     App getApp();
     ToastHandler getToastHandler();
     ConnectionManager getConnectionStatus();
-    RedditClient getRedditClient();
+    RedditClientInterface getRedditClient();
     DatabaseManager getSessionManager();
 }

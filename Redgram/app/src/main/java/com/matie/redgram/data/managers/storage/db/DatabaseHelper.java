@@ -41,7 +41,7 @@ public class DatabaseHelper {
         realm.commitTransaction();
     }
 
-    public static void setSession(Realm realm, AuthWrapper wrapper) {
+    public static void  setSession(Realm realm, AuthWrapper wrapper) {
         if(wrapper.getAccessToken() != null){
             Token token = buildToken(wrapper.getAccessToken());
             AuthPrefs authPrefs = null;
@@ -49,11 +49,13 @@ public class DatabaseHelper {
             if(User.USER_AUTH.equalsIgnoreCase(wrapper.getType())){
                 authPrefs = wrapper.getAuthPrefs();
                 authUser = wrapper.getAuthUser();
+                token.setHolderType(User.USER_AUTH);
             }else if(User.USER_GUEST.equalsIgnoreCase(wrapper.getType())){
                 authPrefs = new AuthPrefs();
                 authPrefs.setToDefault();
                 authUser = new AuthUser();
                 authUser.setToDefault();
+                token.setHolderType(User.USER_GUEST);
             }
             if(authPrefs != null && authUser != null){
                 Prefs prefs = buildPrefs(authPrefs);
@@ -122,7 +124,7 @@ public class DatabaseHelper {
     }
 
     public static Observable<RealmResults<User>> getUsersAsync(Realm realm) {
-        return realm.where(User.class).findAllAsync().asObservable().filter(RealmResults::isLoaded);
+        return realm.where(User.class).findAllAsync().asObservable();
     }
 
     public static Observable<User> getUserByIdAsync(Realm realm, String userId) {
@@ -141,13 +143,34 @@ public class DatabaseHelper {
         Session session = getSession(realm);
         if(session != null){
             realm.beginTransaction();
-            //// TODO: 2016-05-24 update realm and use a user-defined function in Session.class
-            session.getUser().getPrefs().removeFromRealm();
-            session.getUser().getTokenInfo().removeFromRealm();
-            session.getUser().removeFromRealm();
+
+            if(session.getUser() != null){
+                deleteUser(session.getUser());
+            }
             session.removeFromRealm();
             realm.commitTransaction();
         }
+    }
+
+    public static void deleteUser(Realm realm, User user, Realm.Transaction.Callback callback){
+        if(callback != null){
+            realm.executeTransaction(realmRef -> deleteUser(user), callback);
+        }else{
+            realm.executeTransaction(realmRef -> deleteUser(user));
+        }
+    }
+
+    public static void deleteUserById(Realm realm, String id, Realm.Transaction.Callback callback){
+        User user = getUserById(realm, id);
+        if(user != null){
+            deleteUser(realm, user, callback);
+        }
+    }
+
+    private static void deleteUser(User user){
+        user.getPrefs().removeFromRealm();
+        user.getTokenInfo().removeFromRealm();
+        user.removeFromRealm();
     }
 
     public static RealmList<Subreddit> getSubreddits(Realm realm) {
@@ -231,8 +254,8 @@ public class DatabaseHelper {
         prefs.setLabelNsfw(authPrefs.isLabelNsfw());
         prefs.setMinCommentsScore(authPrefs.getMinCommentScore());
         prefs.setMinLinkScore(authPrefs.getMinLinkScore());
-        prefs.setNumComments(authPrefs.getNumComments());
-        prefs.setNumSites(authPrefs.getNumSites());
+        prefs.setNumComments((authPrefs.getNumComments() == 0) ? 100 : authPrefs.getNumComments());
+        prefs.setNumSites((authPrefs.getNumSites() == 0) ? 25 : authPrefs.getNumSites());
         prefs.setOver18(authPrefs.isOver18());
         prefs.setShowFlair(authPrefs.isShowFlair());
         prefs.setShowLinkFlair(authPrefs.isShowLinkFlair());

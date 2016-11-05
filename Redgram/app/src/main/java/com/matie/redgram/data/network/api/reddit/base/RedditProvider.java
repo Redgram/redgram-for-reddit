@@ -32,7 +32,6 @@ public interface RedditProvider {
 
     //common
     String FILTER = "/{filter}";
-    String JSON = ".json";
 
     //https://github.com/Redgram/redgram-for-reddit/issues/30
     //account
@@ -239,7 +238,7 @@ public interface RedditProvider {
      * @param params
      * @return a listing of subreddit listing
      */
-    @GET(SUBREDDITS+FILTER+JSON)
+    @GET(SUBREDDITS+FILTER)
     Observable<RedditResponse<RedditListing>> getSubredditsListing(
             @Path("filter") String filter, @QueryMap Map<String, String> params);
 
@@ -253,7 +252,7 @@ public interface RedditProvider {
      * @param params
      * @return a listing
      */
-    @GET(FILTER+JSON)
+    @GET(FILTER)
     Observable<RedditResponse<RedditListing>> getListing(
             @Path("filter") String filter, @QueryMap Map<String, String> params);
 
@@ -277,7 +276,7 @@ public interface RedditProvider {
      * @param params
      * @return a listing
      */
-    @GET(SUBREDDIT+FILTER+JSON)
+    @GET(SUBREDDIT+FILTER)
     Observable<RedditResponse<RedditListing>> getSubreddit(
             @Path("subreddit") String subreddit, @Path("filter") String filter, @QueryMap Map<String, String> params);
 
@@ -288,7 +287,7 @@ public interface RedditProvider {
      * @param params
      * @return a listing
      */
-    @GET(SEARCH+JSON)
+    @GET(SEARCH)
     Observable<RedditResponse<RedditListing>> executeSearch(
             @QueryMap Map<String, String> params);
 
@@ -300,15 +299,15 @@ public interface RedditProvider {
      * @param params
      * @return a listing
      */
-    @GET(SUBREDDIT+SEARCH+JSON)
+    @GET(SUBREDDIT+SEARCH)
     Observable<RedditResponse<RedditListing>> executeSearch(
             @Path("subreddit") String subreddit, @QueryMap Map<String, String> params);
 
-    @GET(FRIENDS_COMMENTS+JSON)
+    @GET(FRIENDS_COMMENTS)
     Observable<List<RedditResponse<RedditListing>>> getFriendsComments(@QueryMap Map<String, String> params);
 
 
-    @GET(FRIENDS_GILDED_COMMENTS+JSON)
+    @GET(FRIENDS_GILDED_COMMENTS)
     Observable<List<RedditResponse<RedditListing>>> getFriendsGildedComments(@QueryMap Map<String, String> params);
 
     /**
@@ -317,7 +316,7 @@ public interface RedditProvider {
      * @param params
      * @return an array of 2 listings: the link and its comments
      */
-    @GET(COMMENTS+ARTICLE+JSON)
+    @GET(COMMENTS+ARTICLE)
     Observable<List<RedditResponse<RedditListing>>> getCommentsByArticle(
             @Path("article") String article, @QueryMap Map<String, String> params);
 

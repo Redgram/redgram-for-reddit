@@ -3,13 +3,14 @@ package com.matie.redgram.data.managers.presenters;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Prefs;
+import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.home.HomeViewWrapper;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
-import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.home.views.HomeView;
@@ -38,8 +39,9 @@ import rx.subscriptions.CompositeSubscription;
 public class HomePresenterImpl implements HomePresenter{
     private final App app;
     private final HomeView homeView;
-    private final RedditClient redditClient;
+    private final RedditClientInterface redditClient;
     private final DatabaseManager databaseManager;
+    private final Session session;
 
     private LinksPresenter linksPresenter;
     private CompositeSubscription subscriptions;
@@ -61,6 +63,8 @@ public class HomePresenterImpl implements HomePresenter{
         this.redditClient = app.getRedditClient();
         this.databaseManager = app.getDatabaseManager();
         this.subredditItems = new ArrayList<SubredditItem>();
+
+        this.session = homeView.getContentContext().getBaseActivity().getSession();
     }
 
     /**
@@ -82,7 +86,7 @@ public class HomePresenterImpl implements HomePresenter{
      */
     @Override
     public void unregisterForEvents() {
-        if(subscriptions.hasSubscriptions() && subscriptions != null){
+        if(subscriptions != null && subscriptions.hasSubscriptions()){
             subscriptions.unsubscribe();
         }
     }
@@ -111,8 +115,7 @@ public class HomePresenterImpl implements HomePresenter{
         if(storedListing != null){
             subredditsObservable = Observable.just(storedListing);
         }else{
-            String userType = homeView.getContentContext().getBaseActivity().getSession().getUser().getUserType();
-            if(User.USER_GUEST.equalsIgnoreCase(userType)){
+            if(session.getUser() != null && User.USER_GUEST.equalsIgnoreCase(session.getUser().getUserType())){
                 subredditsObservable = redditClient.getSubreddits("default", subparams);
             }else{
                 //auth user
@@ -210,8 +213,9 @@ public class HomePresenterImpl implements HomePresenter{
     }
 
     private Prefs getPrefs(){
-        if(homeView.getContentContext().getBaseActivity().getSession() != null){
-            return homeView.getContentContext().getBaseActivity().getSession().getUser().getPrefs();
+        Session session = homeView.getContentContext().getBaseActivity().getSession();
+        if(session != null && session.getUser() != null){
+            return session.getUser().getPrefs();
         }
         return null;
     }
