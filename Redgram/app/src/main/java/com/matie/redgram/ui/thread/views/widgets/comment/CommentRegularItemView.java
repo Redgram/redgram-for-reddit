@@ -80,16 +80,15 @@ public class CommentRegularItemView extends CommentItemView{
         return commentItem.getAuthor();
     }
 
-    private String parseLinks(String commentBody){
+    public String parseLinks(String commentBody){
         Pattern linkPattern = Pattern.compile("\\[.*\\]\\(.*\\)");
         Matcher m = linkPattern.matcher(commentBody);
         String parsedCommentBody = commentBody;
         try {
             while (m.find()){
                 int startIndexLinkText = m.group().indexOf("]");
-                int startIndexLinkHref = m.group().indexOf("(");
                 String linkText = m.group().substring(1, startIndexLinkText);
-                String linkHref = m.group().substring(startIndexLinkHref+1, m.group().length()-1);
+                String linkHref = m.group().substring(startIndexLinkText+2, m.group().length()-1);
                 String completeLink = "<a href=\"" +linkHref+ "\">" +linkText+ "</a>";
                 parsedCommentBody = parsedCommentBody.replace(m.group(), completeLink);
             }
