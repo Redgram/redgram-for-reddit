@@ -4,8 +4,8 @@ import android.widget.Toast;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.User;
-import com.matie.redgram.data.network.api.util.AccessLevel;
-import com.matie.redgram.data.network.api.util.Security;
+import com.matie.redgram.data.network.api.utils.AccessLevel;
+import com.matie.redgram.data.network.api.utils.Security;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 

@@ -1,4 +1,4 @@
-package com.matie.redgram.data.network.api.util.subscriber;
+package com.matie.redgram.data.network.api.utils.subscriber;
 
 import rx.Subscriber;
 

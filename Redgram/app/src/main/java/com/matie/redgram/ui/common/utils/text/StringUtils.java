@@ -182,24 +182,20 @@ public class StringUtils {
         }
 
         public void build() {
-            try{
-                textView.setText(sb, TextView.BufferType.NORMAL);
-            }catch (NullPointerException e){
-                Log.d("NullPointer", SpannableBuilder.class.getName() + "#build - text view is not set");
-            }
+            build(TextView.BufferType.NORMAL);
         }
 
         public void buildEditable() {
-            try{
-                textView.setText(sb, TextView.BufferType.EDITABLE);
-            }catch (NullPointerException e){
-                Log.d("NullPointer", SpannableBuilder.class.getName() + "#build - text view is not set");
-            }
+            build(TextView.BufferType.EDITABLE);
         }
 
         public void buildSpannable() {
+            build(TextView.BufferType.SPANNABLE);
+        }
+
+        private void build(TextView.BufferType type){
             try{
-                textView.setText(sb, TextView.BufferType.SPANNABLE);
+                textView.setText(sb, type);
             }catch (NullPointerException e){
                 Log.d("NullPointer", SpannableBuilder.class.getName() + "#build - text view is not set");
             }
