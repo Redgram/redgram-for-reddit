@@ -7,13 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.common.views.widgets.renders.MDTextView;
 import com.matie.redgram.ui.thread.views.PostView;
 
 import butterknife.ButterKnife;
@@ -28,7 +27,7 @@ public class PostFragment extends BaseFragment implements PostView{
     PostItem postItem;
 
     @InjectView(R.id.content)
-    TextView mContent;
+    MDTextView mContent;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,7 +41,8 @@ public class PostFragment extends BaseFragment implements PostView{
         String content = postItem.getText();
 
         if(content.length() > 0){
-           mContent.setText(content);
+            mContent.parse(content, null);
+//            mContent.setText(content);
         }else{
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
             params.gravity = Gravity.CENTER_HORIZONTAL;

@@ -28,7 +28,9 @@ public class CustomClickable extends ClickableSpan {
                 Spanned s = (Spanned) tv.getText();
                 int start = s.getSpanStart(this);
                 int end = s.getSpanEnd(this);
-                clickableListener.onClickableEvent(s.subSequence(start, end));
+                if(clickableListener != null){
+                    clickableListener.onClickableEvent(s.subSequence(start, end));
+                }
             }
         }
     }

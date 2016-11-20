@@ -13,7 +13,7 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.utils.text.CustomClickable;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
-import com.matie.redgram.ui.common.utils.text.StringUtils;
+import com.matie.redgram.ui.common.utils.text.StringDecorator;
 import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
@@ -62,7 +62,7 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
         CustomClickable commentsClickable = new CustomClickable(this, false);
         CustomClickable linkClickable = new CustomClickable(this, false);
 
-        StringUtils.newSpannableBuilder(getContext())
+        StringDecorator.newSpannableBuilder(getContext())
                 .setTextView(tags)
                 .append(comments, commentsClickable, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 .span(new ForegroundColorSpan(Color.rgb(204, 0, 0)), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)

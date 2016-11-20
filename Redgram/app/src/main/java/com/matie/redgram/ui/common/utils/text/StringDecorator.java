@@ -1,23 +1,29 @@
 package com.matie.redgram.ui.common.utils.text;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by matie on 2015-11-22.
  *
  * Responsible for all text decorations
  */
-public class StringUtils {
+public class StringDecorator {
 
     //cannot be instantiated
-    private StringUtils(){}
+    private StringDecorator(){}
 
     public static SpannableBuilder newSpannableBuilder(Context context){
         return new SpannableBuilder(context);
@@ -30,6 +36,9 @@ public class StringUtils {
     }
     public static SpanContainer newSpanContainer(Object resource, int flag){
         return new SpanContainer(resource, flag);
+    }
+    public static MDParser newMDParser(){
+        return new MDParser();
     }
 
     /**
@@ -202,4 +211,85 @@ public class StringUtils {
         }
 
     }
+
+    public static class MDParser{
+
+        private MDStyle style;
+
+        public MDStyle getStyle() {
+            return style;
+        }
+
+        public void setStyle(MDStyle style) {
+            this.style = style;
+        }
+
+        public SpannableString parse(CharSequence stringToParse){
+
+            SpannableString spannableString;
+
+            if(stringToParse == null || stringToParse.length() == 0){
+                return null;
+            }else{
+                spannableString = new SpannableString(stringToParse);
+            }
+
+            if(style == null){
+                //default styling
+                style = new MDStyle(Color.rgb(204, 0, 0), Color.rgb(204, 0, 0), Color.rgb(204, 0, 0));
+            }
+
+            parseHeader(spannableString, MDHighlights.HEADER, style);
+            parseLink(spannableString, MDHighlights.LINK, style);
+            parseBold(spannableString, MDHighlights.BOLD, style);
+            parseItalic(spannableString, MDHighlights.ITALICS, style);
+            parseStrike(spannableString, MDHighlights.STRIKE, style);
+            parseUser(spannableString, MDHighlights.USER, style);
+            parseSub(spannableString, MDHighlights.SUB, style);
+
+            return spannableString;
+        }
+
+        private void parseUser(SpannableString stringToParse, MDHighlights user, MDStyle style) {
+            parse(stringToParse, user.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+        }
+
+        private void parseStrike(SpannableString stringToParse, MDHighlights strike, MDStyle style) {
+            parse(stringToParse, strike.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+        }
+
+        private void parseItalic(SpannableString stringToParse, MDHighlights italics, MDStyle style) {
+            parse(stringToParse, italics.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+        }
+
+        private void parseBold(SpannableString stringToParse, MDHighlights bold, MDStyle style) {
+            parse(stringToParse, bold.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+        }
+
+        private void parseLink(SpannableString stringToParse, MDHighlights link, MDStyle style) {
+            parse(stringToParse, link.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+        }
+
+        private void parseSub(SpannableString stringToParse, MDHighlights sub, MDStyle style) {
+            parse(stringToParse, sub.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+        }
+
+        private void parseHeader(SpannableString stringToParse, MDHighlights header, MDStyle style) {
+            parse(stringToParse, header.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+         }
+
+         /**
+         * apply the span on all matches across the string
+         * @param stringToParse
+         * @param pattern
+         * @param span
+         */
+        protected void parse(SpannableString stringToParse, final Pattern pattern, final Object span){
+            for (Matcher m = pattern.matcher(stringToParse); m.find(); ) {
+                stringToParse
+                        .setSpan(span, m.start(), m.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        }
+    }
+
 }

@@ -13,7 +13,7 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.utils.text.CustomClickable;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
-import com.matie.redgram.ui.common.utils.text.StringUtils;
+import com.matie.redgram.ui.common.utils.text.StringDecorator;
 import com.matie.redgram.ui.thread.views.ThreadView;
 
 import butterknife.ButterKnife;
@@ -82,7 +82,7 @@ public class OptionsView extends RelativeLayout implements CustomSpanListener {
         String subreddit = "/r/"+item.getSubreddit();
         CustomClickable clickable = new CustomClickable(this, true);
 
-        StringUtils.newSpannableBuilder(getContext())
+        StringDecorator.newSpannableBuilder(getContext())
                 .setTextView(timeView)
                 .append(item.getTime() + " hrs ago to ")
                 .append(subreddit, clickable, Spannable.SPAN_INCLUSIVE_INCLUSIVE)

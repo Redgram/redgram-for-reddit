@@ -19,7 +19,7 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.utils.text.CustomClickable;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
-import com.matie.redgram.ui.common.utils.text.StringUtils;
+import com.matie.redgram.ui.common.utils.text.StringDecorator;
 import com.matie.redgram.ui.posts.views.LinksView;
 
 import butterknife.ButterKnife;
@@ -134,7 +134,7 @@ public class PostItemHeaderView extends PostItemSubView implements CustomSpanLis
         String subreddit = "/r/"+item.getSubreddit();
         CustomClickable subredditClickable = new CustomClickable(this, true);
 
-        StringUtils.SpannableBuilder builder = StringUtils.newSpannableBuilder(getContext())
+        StringDecorator.SpannableBuilder builder = StringDecorator.newSpannableBuilder(getContext())
                 .setTextView(headerTimeSubredditView)
                 .append("submitted " + item.getTime() + " hrs ago to ")
                 .append(subreddit, subredditClickable, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
