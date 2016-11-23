@@ -3,19 +3,19 @@ package com.matie.redgram.ui.common.views.widgets.renders;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.text.SpannableString;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.TextView;
 
+import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 import com.matie.redgram.ui.common.utils.text.MDStyle;
-import com.matie.redgram.ui.common.utils.text.StringDecorator;
 
 /**
  * Renders Markdown
  *
  * Created by matie on 2016-11-17.
  */
-public class MDTextView extends TextView {
+public class MDTextView extends TextView implements CustomSpanListener {
 
     public MDTextView(Context context) {
         super(context);
@@ -49,12 +49,19 @@ public class MDTextView extends TextView {
      * @param stringToParse
      */
     public void parse(String stringToParse, MDStyle style){
-        StringDecorator.MDParser parser = StringDecorator.newMDParser();
-        parser.setStyle(style);
-        //modifies the string by adding spans
-        SpannableString spannableString = parser.parse(stringToParse);
-        if(spannableString != null){
-            setText(spannableString, BufferType.SPANNABLE);
-        }
+//        StringDecorator.newMDParser()
+//                .setView(this)
+//                .setText(stringToParse)
+//                .parseBold(new StyleSpan(Typeface.BOLD),
+//                        new ForegroundColorSpan(Color.rgb(204, 0, 0)))
+//                .parseItalic(new StyleSpan(Typeface.ITALIC))
+//                .parseStrike(new StrikethroughSpan())
+//                .parseLink(new CustomClickable(this, true))
+//                .build();
+    }
+
+    @Override
+    public void onClickableEvent(CharSequence targetString) {
+        Log.d("URL CLICKED", targetString.toString());
     }
 }

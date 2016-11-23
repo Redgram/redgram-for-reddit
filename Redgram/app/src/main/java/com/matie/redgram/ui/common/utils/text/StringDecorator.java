@@ -1,13 +1,9 @@
 package com.matie.redgram.ui.common.utils.text;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -213,81 +209,104 @@ public class StringDecorator {
     }
 
     public static class MDParser{
+        //note EditText is a TextView
+        private TextView view;
+        private SpannableStringBuilder spannableStringBuilder;
+        private CharSequence stringToParse;
 
-        private MDStyle style;
+        private MDParser() {}
 
-        public MDStyle getStyle() {
-            return style;
+        public TextView getView() {
+            return view;
         }
 
-        public void setStyle(MDStyle style) {
-            this.style = style;
+        public MDParser setView(TextView view) {
+            this.view = view;
+            return this;
         }
 
-        public SpannableString parse(CharSequence stringToParse){
+        public SpannableStringBuilder getSpannableStringBuilder() {
+            return spannableStringBuilder;
+        }
 
-            SpannableString spannableString;
+        public CharSequence getStringToParse() {
+            return stringToParse;
+        }
 
+        public MDParser setText(CharSequence stringToParse){
             if(stringToParse == null || stringToParse.length() == 0){
-                return null;
+                return this;
             }else{
-                spannableString = new SpannableString(stringToParse);
+                this.stringToParse = stringToParse;
+                spannableStringBuilder = new SpannableStringBuilder(stringToParse);
             }
 
-            if(style == null){
-                //default styling
-                style = new MDStyle(Color.rgb(204, 0, 0), Color.rgb(204, 0, 0), Color.rgb(204, 0, 0));
-            }
-
-            parseHeader(spannableString, MDHighlights.HEADER, style);
-            parseLink(spannableString, MDHighlights.LINK, style);
-            parseBold(spannableString, MDHighlights.BOLD, style);
-            parseItalic(spannableString, MDHighlights.ITALICS, style);
-            parseStrike(spannableString, MDHighlights.STRIKE, style);
-            parseUser(spannableString, MDHighlights.USER, style);
-            parseSub(spannableString, MDHighlights.SUB, style);
-
-            return spannableString;
+            return this;
         }
 
-        private void parseUser(SpannableString stringToParse, MDHighlights user, MDStyle style) {
-            parse(stringToParse, user.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+        public MDParser parseUser(final Object... spans) {
+            parse(MDHighlights.USER.getPattern(), spans);
+            return this;
         }
 
-        private void parseStrike(SpannableString stringToParse, MDHighlights strike, MDStyle style) {
-            parse(stringToParse, strike.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+        public MDParser parseStrike(final Object... spans) {
+            parse(MDHighlights.STRIKE.getPattern(), spans);
+            return this;
         }
 
-        private void parseItalic(SpannableString stringToParse, MDHighlights italics, MDStyle style) {
-            parse(stringToParse, italics.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+        public MDParser parseItalic(final Object... spans) {
+            parse(MDHighlights.ITALICS.getPattern(), spans);
+            return this;
         }
 
-        private void parseBold(SpannableString stringToParse, MDHighlights bold, MDStyle style) {
-            parse(stringToParse, bold.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+        public MDParser parseBold(final Object... spans) {
+            parse(MDHighlights.BOLD.getPattern(), spans);
+            return this;
         }
 
-        private void parseLink(SpannableString stringToParse, MDHighlights link, MDStyle style) {
-            parse(stringToParse, link.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+        public MDParser parseLink(final Object... spans) {
+            parse(MDHighlights.LINK.getPattern(), spans);
+            return this;
         }
 
-        private void parseSub(SpannableString stringToParse, MDHighlights sub, MDStyle style) {
-            parse(stringToParse, sub.getPattern(), new ForegroundColorSpan(style.getTextColor()));
+        public MDParser parseSub(final Object... spans) {
+            parse(MDHighlights.SUB.getPattern(), spans);
+            return this;
         }
 
-        private void parseHeader(SpannableString stringToParse, MDHighlights header, MDStyle style) {
-            parse(stringToParse, header.getPattern(), new ForegroundColorSpan(style.getTextColor()));
-         }
+        public MDParser parseHeader(final Object... spans) {
+            parse(MDHighlights.HEADER.getPattern(), spans);
+            return this;
+        }
 
          /**
          * apply the span on all matches across the string
-         * @param stringToParse
          * @param pattern
-         * @param span
+         * @param spans
          */
-        protected void parse(SpannableString stringToParse, final Pattern pattern, final Object span){
-            for (Matcher m = pattern.matcher(stringToParse); m.find(); ) {
-                stringToParse
-                        .setSpan(span, m.start(), m.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        public MDParser parse(final Pattern pattern, final Object... spans){
+            if(spannableStringBuilder != null){
+                for (Matcher m = pattern.matcher(spannableStringBuilder); m.find();) {
+                    //apply all spans
+                    for(Object span: spans){
+                        spannableStringBuilder
+                                .setSpan(span, m.start(), m.end(), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+                    //replace the markdown with the group which holds the actual data after the span
+                    //is applied. The spans are reservable.
+                    spannableStringBuilder.replace(m.start(), m.end(), m.group(1));
+                }
+            }
+            return this;
+        }
+
+        public void build(){
+            if(view != null){
+                if(spannableStringBuilder != null){
+                    view.setText(spannableStringBuilder, TextView.BufferType.SPANNABLE);
+                }else if(stringToParse != null){
+                    view.setText(stringToParse, TextView.BufferType.NORMAL);
+                }
             }
         }
     }
