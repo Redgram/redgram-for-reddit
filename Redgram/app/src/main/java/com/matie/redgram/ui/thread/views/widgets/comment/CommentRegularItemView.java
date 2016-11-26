@@ -1,13 +1,19 @@
 package com.matie.redgram.ui.thread.views.widgets.comment;
 
 import android.content.Context;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentItem;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -42,7 +48,9 @@ public class CommentRegularItemView extends CommentItemView{
     protected void setUpView(CommentBaseItem item) {
 
         CommentItem commentItem = (CommentItem)item;
-        textView.setText(commentItem.getBody());
+        String parsedComment = parseLinks(commentItem.getBody());
+        textView.setText(Html.fromHtml(parsedComment));
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
         authorView.setText(getAuthor(commentItem));
 
         indicator.setExpandedState(commentItem.isExpanded(), commentItem.getChildCount());
@@ -70,6 +78,24 @@ public class CommentRegularItemView extends CommentItemView{
             }
         }
         return commentItem.getAuthor();
+    }
+
+    public String parseLinks(String commentBody){
+        Pattern linkPattern = Pattern.compile("\\[.*\\]\\(.*\\)");
+        Matcher m = linkPattern.matcher(commentBody);
+        String parsedCommentBody = commentBody;
+        try {
+            while (m.find()){
+                int startIndexLinkText = m.group().indexOf("]");
+                String linkText = m.group().substring(1, startIndexLinkText);
+                String linkHref = m.group().substring(startIndexLinkText+2, m.group().length()-1);
+                String completeLink = "<a href=\"" +linkHref+ "\">" +linkText+ "</a>";
+                parsedCommentBody = parsedCommentBody.replace(m.group(), completeLink);
+            }
+        }catch (Exception e){
+            Log.d("CommentRegularItemView", e.getMessage());
+        }
+        return parsedCommentBody;
     }
 
     @Override
