@@ -12,6 +12,7 @@ import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.data.utils.reddit.BooleanDateDeserializer;
+import com.matie.redgram.data.utils.reddit.CachingInterceptor;
 import com.matie.redgram.data.utils.reddit.DateTimeDeserializer;
 import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
 import com.matie.redgram.ui.App;
@@ -81,8 +82,12 @@ public class RedditService extends RedditServiceBase {
     }
 
     private OkHttpClient myHttpClient(){
+        long SIZE_OF_CACHE = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(new File(mContext.getCacheDir(), "http"), SIZE_OF_CACHE);
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
+        builder.addInterceptor(new CachingInterceptor());
+        builder.cache(cache);
         builder.addInterceptor(chain -> {
             boolean isOnline = connectionManager.isOnline();
             Request originalRequest = chain.request();
