@@ -22,6 +22,8 @@ import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 import com.matie.redgram.ui.common.utils.text.StringDecorator;
 import com.matie.redgram.ui.posts.views.LinksView;
 
+import java.util.HashMap;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -115,6 +117,11 @@ public class PostItemHeaderView extends PostItemSubView implements CustomSpanLis
         }else{
             listener.visitProfile(target);
         }
+    }
+
+    @Override
+    public void onClickableEvent(HashMap<String, String> data) {
+        //do nothing
     }
 
     private int getAuthorBackgroundColor(PostItem item) {

@@ -3,12 +3,16 @@ package com.matie.redgram.ui.common.views.widgets.renders;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 import com.matie.redgram.ui.common.utils.text.MDStyle;
+import com.matie.redgram.ui.common.utils.text.StringDecorator;
+
+import java.util.HashMap;
 
 /**
  * Renders Markdown
@@ -39,8 +43,7 @@ public class MDTextView extends TextView implements CustomSpanListener {
     }
 
     private void init() {
-        //empty for now
-
+        setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /**
@@ -49,19 +52,28 @@ public class MDTextView extends TextView implements CustomSpanListener {
      * @param stringToParse
      */
     public void parse(String stringToParse, MDStyle style){
-//        StringDecorator.newMDParser()
-//                .setView(this)
-//                .setText(stringToParse)
-//                .parseBold(new StyleSpan(Typeface.BOLD),
-//                        new ForegroundColorSpan(Color.rgb(204, 0, 0)))
-//                .parseItalic(new StyleSpan(Typeface.ITALIC))
-//                .parseStrike(new StrikethroughSpan())
-//                .parseLink(new CustomClickable(this, true))
-//                .build();
+        StringDecorator.newMDParser()
+                .setView(this)
+                .setText(stringToParse)
+                .parseLink(this)
+                .parseUser(this)
+                .parseSub(this)
+                .parseBold()
+                .parseItalic()
+                .parseStrike()
+                .build();
+
     }
 
     @Override
     public void onClickableEvent(CharSequence targetString) {
         Log.d("URL CLICKED", targetString.toString());
+    }
+
+    @Override
+    public void onClickableEvent(HashMap<String, String> data) {
+        if(data != null && data.containsKey(StringDecorator.MDParser.SPAN_URL)){
+            Log.d("URL CLICKED", data.get(StringDecorator.MDParser.SPAN_URL));
+        }
     }
 }

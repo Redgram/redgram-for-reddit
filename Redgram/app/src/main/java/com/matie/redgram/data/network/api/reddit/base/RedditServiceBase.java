@@ -25,7 +25,7 @@ public abstract class RedditServiceBase extends ApiBase {
     public static final String GRANT_TYPE_AUTHORIZE="authorization_code";
     public static final String GRANT_TYPE_INSTALLED="https://oauth.reddit.com/grants/installed_client";
 
-    public static final String API_KEY = "TK68m6qyOWxMZg";
+    public static final String API_KEY = "SWISrdD3qV882w";
     private static final String API_SECRET = "";
     private static final String CREDENTIALS = API_KEY+":"+API_SECRET;
 

@@ -16,6 +16,8 @@ import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 import com.matie.redgram.ui.common.utils.text.StringDecorator;
 import com.matie.redgram.ui.thread.views.ThreadView;
 
+import java.util.HashMap;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -97,6 +99,11 @@ public class OptionsView extends RelativeLayout implements CustomSpanListener {
         if(target.contains("/r/")){
             listener.visitSubreddit();
         }
+    }
+
+    @Override
+    public void onClickableEvent(HashMap<String, String> data) {
+        //do nothing
     }
 
     public void toggleSave(boolean save){
