@@ -91,7 +91,7 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
         builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
         builder.addInterceptor(getMainInterceptor());
         builder.authenticator(new MyAuthenticator());
-        builder.addInterceptor(getCachingInterceptor());
+//        builder.addInterceptor(getCachingInterceptor());
         builder.cache(myCache());
         return builder.build();
     }

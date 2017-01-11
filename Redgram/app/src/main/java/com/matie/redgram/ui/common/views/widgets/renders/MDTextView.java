@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
+import com.matie.redgram.ui.common.utils.text.MDParser;
 import com.matie.redgram.ui.common.utils.text.MDStyle;
 import com.matie.redgram.ui.common.utils.text.StringDecorator;
 
@@ -52,9 +53,49 @@ public class MDTextView extends TextView implements CustomSpanListener {
      * @param stringToParse
      */
     public void parse(String stringToParse, MDStyle style){
+
+        stringToParse = "~~*italicstrike*~~ \n" +
+                "\n" +
+                "or\n" +
+                "\n" +
+                ">hello\n" +
+                ">>world\n" +
+                "\n" +
+                "Test 2\n" +
+                "\n" +
+                "[Maybe a link too and `some code`..[another link](www.google.com)..I guess](www.google.com)\n" +
+                "\n" +
+                "`[Maybe a link too and `some code`..[another link](www.google.com)..I guess](www.google.com)`\n" +
+                "\n" +
+                "##hello\n" +
+                "\n" +
+                "`##hello`\n" +
+                "\n" +
+                "Test:\n" +
+                "\n" +
+                "[this /r/redditdev post **hello**](https://www.reddit.com/r/redditdev/comments/37nmt7/upcoming_changes_to_subreddit_and_user_links_in/)\n" +
+                "\n" +
+                "/r/redditdev\n" +
+                "\\/r/redditdev\n" +
+                "r/redditdev\n" +
+                "\\r/redditdev\n" +
+                "\n" +
+                "`*italic* within code`\n" +
+                "\n" +
+                "*`code` within italic*\n" +
+                "\n" +
+                "[here is a link with `code` in it](http://www.google.com)\n" +
+                "\n" +
+                "[here is a link with `code and *italic*` in it](http://www.google.com)\n" +
+                "\n" +
+                "[here is a link with *italic and `code`* in it](http://www.google.com)";
+
+
         StringDecorator.newMDParser()
                 .setView(this)
+                .setStyle(style)
                 .setText(stringToParse)
+                .parseCode()
                 .parseLink(this)
                 .parseUser(this)
                 .parseSub(this)
@@ -72,8 +113,8 @@ public class MDTextView extends TextView implements CustomSpanListener {
 
     @Override
     public void onClickableEvent(HashMap<String, String> data) {
-        if(data != null && data.containsKey(StringDecorator.MDParser.SPAN_URL)){
-            Log.d("URL CLICKED", data.get(StringDecorator.MDParser.SPAN_URL));
+        if(data != null && data.containsKey(MDParser.SPAN_URL)){
+            Log.d("URL CLICKED", data.get(MDParser.SPAN_URL));
         }
     }
 }

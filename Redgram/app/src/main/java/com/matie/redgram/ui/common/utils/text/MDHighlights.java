@@ -13,9 +13,10 @@ public enum MDHighlights {
     HEADER(Pattern.compile("(((\\n|^)#+.*?\\n)|((\\n|^).*?\\n(-|=)+))")),
     STRIKE(Pattern.compile("\\~\\~(.*?)\\~\\~")),
     BOLD(Pattern.compile("(\\*\\*|__)(.*?)\\1")),
+    CODE(Pattern.compile("(`)(.*?)\\1")),
     ITALICS(Pattern.compile("(\\*|_)(.*?)\\1")),
-    SUB(Pattern.compile("/?r/[a-zA-Z0-9]+")),
-    USER(Pattern.compile("/?u/[a-zA-Z0-9]+"));
+    SUB(Pattern.compile("(?<!\\\\)/r/[a-zA-Z0-9]+|(?<!/)r/[a-zA-Z0-9]+")),
+    USER(Pattern.compile("(?<!\\\\)/u/[a-zA-Z0-9]+|(?<!/)u/[a-zA-Z0-9]+"));
 
     private Pattern pattern;
 

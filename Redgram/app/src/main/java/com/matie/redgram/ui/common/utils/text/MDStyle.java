@@ -7,11 +7,15 @@ public class MDStyle {
     private int textColor;
     private int headerColor;
     private int linkColor;
+    private int codeTextColor;
+    private int codeBackgroundColor;
 
-    public MDStyle(int textColor, int headerColor, int linkColor) {
+    public MDStyle(int textColor, int headerColor, int linkColor, int codeTextColor, int codeBackgroundColor) {
         this.textColor = textColor;
         this.headerColor = headerColor;
         this.linkColor = linkColor;
+        this.codeTextColor = codeTextColor;
+        this.codeBackgroundColor = codeBackgroundColor;
     }
 
     public int getTextColor() {
@@ -36,5 +40,21 @@ public class MDStyle {
 
     public void setLinkColor(int linkColor) {
         this.linkColor = linkColor;
+    }
+
+    public int getCodeTextColor() {
+        return codeTextColor;
+    }
+
+    public void setCodeTextColor(int codeTextColor) {
+        this.codeTextColor = codeTextColor;
+    }
+
+    public int getCodeBackgroundColor() {
+        return codeBackgroundColor;
+    }
+
+    public void setCodeBackgroundColor(int codeBackgroundColor) {
+        this.codeBackgroundColor = codeBackgroundColor;
     }
 }

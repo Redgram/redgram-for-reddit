@@ -1,21 +1,13 @@
 package com.matie.redgram.ui.common.utils.text;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StrikethroughSpan;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.widget.TextView;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by matie on 2015-11-22.
@@ -212,164 +204,6 @@ public class StringDecorator {
             }
         }
 
-    }
-
-    public static class MDParser{
-        public static final String SPAN_URL = "SPAN_URL";
-        //note EditText is a TextView
-        private TextView view;
-        private SpannableStringBuilder spannableStringBuilder;
-        private CharSequence stringToParse;
-
-        private MDParser() {}
-
-        public TextView getView() {
-            return view;
-        }
-
-        public MDParser setView(TextView view) {
-            this.view = view;
-            return this;
-        }
-
-        public SpannableStringBuilder getSpannableStringBuilder() {
-            return spannableStringBuilder;
-        }
-
-        public CharSequence getStringToParse() {
-            return stringToParse;
-        }
-
-        public MDParser setText(CharSequence stringToParse){
-            if(stringToParse == null || stringToParse.length() == 0){
-                return this;
-            }else{
-                this.stringToParse = stringToParse;
-                spannableStringBuilder = new SpannableStringBuilder(stringToParse);
-            }
-
-            return this;
-        }
-
-        public MDParser parseStrike() {
-            if(spannableStringBuilder != null) {
-                Matcher matcher = getMatches(MDHighlights.STRIKE.getPattern());
-                while (matcher.find()) {
-                    setSpan(new StrikethroughSpan(), matcher);
-                }
-            }
-            return this;
-        }
-
-        public MDParser parseItalic() {
-            if(spannableStringBuilder != null) {
-                Matcher matcher = getMatches(MDHighlights.ITALICS.getPattern());
-                while (matcher.find()) {
-                    setSpan(new StyleSpan(Typeface.ITALIC), matcher);
-                    setSpan(new ForegroundColorSpan(Color.rgb(100, 20, 150)), matcher);
-                }
-            }
-            return this;
-        }
-
-        public MDParser parseBold() {
-            if(spannableStringBuilder != null){
-                Matcher matcher = getMatches(MDHighlights.BOLD.getPattern());
-                while(matcher.find()){
-                    setSpan(new StyleSpan(Typeface.BOLD), matcher);
-                    setSpan(new ForegroundColorSpan(Color.rgb(140, 0, 50)), matcher);
-                }
-            }
-            return this;
-        }
-
-        public MDParser parseLink(CustomSpanListener clickable) {
-            if(spannableStringBuilder != null){
-                Matcher matcher = getMatches(MDHighlights.LINK.getPattern());
-                while(matcher.find()){
-                    //pass the actual string as data to the span
-                    HashMap<String, String> dataMap = new HashMap<>();
-                    dataMap.put(SPAN_URL, matcher.group(2));
-
-                    CustomClickable customClickable = new CustomClickable(clickable, dataMap, true);
-                    customClickable.setType(CustomSpanListener.URL);
-
-                    setSpan(customClickable, matcher);
-                    setSpan(new ForegroundColorSpan(Color.rgb(204, 0, 0)), matcher);
-                }
-            }
-            return this;
-        }
-
-        public MDParser parseSub(CustomSpanListener clickable) {
-            if(spannableStringBuilder != null) {
-                Matcher matcher = getMatches(MDHighlights.SUB.getPattern());
-                while (matcher.find()) {
-                    //if next match has a link span then skip to the next match
-                    if(isLinkSpanApplied(matcher)){
-                        continue;
-                    }
-                    setSpan(new CustomClickable(clickable, false), matcher);
-                    setSpan(new ForegroundColorSpan(Color.rgb(204, 100, 0)), matcher);
-                }
-            }
-            return this;
-        }
-
-        public MDParser parseUser(CustomSpanListener clickable) {
-            if(spannableStringBuilder != null) {
-                Matcher matcher = getMatches(MDHighlights.USER.getPattern());
-                while (matcher.find()) {
-//                    if next match has a link span then skip to the next match
-                    if(isLinkSpanApplied(matcher)){
-                        continue;
-                    }
-                    setSpan(new CustomClickable(clickable, false), matcher);
-                    setSpan(new ForegroundColorSpan(Color.rgb(204, 200, 0)), matcher);
-                }
-            }
-            return this;
-        }
-
-        private boolean isLinkSpanApplied(Matcher matcher) {
-            CustomClickable[] customClickables = spannableStringBuilder.getSpans(0, spannableStringBuilder.length(), CustomClickable.class);
-            for(CustomClickable span : customClickables){
-                if(CustomSpanListener.URL.equalsIgnoreCase(span.getType())
-                        && (matcher.start() >= spannableStringBuilder.getSpanStart(span)
-                        &&  matcher.end() <= spannableStringBuilder.getSpanEnd(span))){
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public MDParser parseHeader() {
-            if(spannableStringBuilder != null) {
-                Matcher matcher = getMatches(MDHighlights.HEADER.getPattern());
-                while (matcher.find()) {
-                    setSpan(new ForegroundColorSpan(Color.rgb(204, 0, 0)), matcher);
-                }
-            }
-            return this;
-        }
-
-        private Matcher getMatches(final Pattern pattern){
-            return pattern.matcher(spannableStringBuilder);
-        }
-
-        private void setSpan(Object spanObject, Matcher matcher){
-            spannableStringBuilder.setSpan(spanObject, matcher.start(), matcher.end(), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-
-        public void build(){
-            if(view != null){
-                if(spannableStringBuilder != null){
-                    view.setText(spannableStringBuilder, TextView.BufferType.SPANNABLE);
-                }else if(stringToParse != null){
-                    view.setText(stringToParse, TextView.BufferType.NORMAL);
-                }
-            }
-        }
     }
 
 }
