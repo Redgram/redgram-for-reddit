@@ -3,7 +3,6 @@ package com.matie.redgram.ui.thread.views.widgets;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Spannable;
-import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -82,13 +81,12 @@ public class OptionsView extends RelativeLayout implements CustomSpanListener {
 
     private void setupInfo(PostItem item) {
         String subreddit = "/r/"+item.getSubreddit();
-        CustomClickable clickable = new CustomClickable(this, true);
+        CustomClickable clickable = new CustomClickable(this, true, Color.rgb(204, 0, 0));
 
         StringDecorator.newSpannableBuilder(getContext())
                 .setTextView(timeView)
                 .append(item.getTime() + " hrs ago to ")
                 .append(subreddit, clickable, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-                .span(new ForegroundColorSpan(Color.rgb(204, 0, 0)), Spannable.SPAN_INCLUSIVE_INCLUSIVE)
                 .clickable()
                 .build();
     }

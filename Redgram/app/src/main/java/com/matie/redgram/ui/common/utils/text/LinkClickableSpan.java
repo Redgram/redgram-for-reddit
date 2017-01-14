@@ -11,8 +11,13 @@ public class LinkClickableSpan extends CustomClickable {
 
     private HashMap<String, String> dataMap;
 
-    public LinkClickableSpan(CustomSpanListener clickableListener, boolean underlineText, HashMap<String, String> dataMap) {
-        super(clickableListener, underlineText);
+    public LinkClickableSpan(boolean underlineText, int textColor, HashMap<String, String> dataMap) {
+        super(underlineText, textColor);
+        this.dataMap = dataMap;
+    }
+
+    public LinkClickableSpan(CustomSpanListener clickableListener, boolean underlineText, int textColor, HashMap<String, String> dataMap) {
+        super(clickableListener, underlineText, textColor);
         this.dataMap = dataMap;
     }
 
@@ -27,5 +32,4 @@ public class LinkClickableSpan extends CustomClickable {
     public HashMap<String, String> getDataMap() {
         return dataMap;
     }
-
 }

@@ -7,10 +7,11 @@ public class MDStyle {
     private int textColor;
     private int headerColor;
     private int linkColor;
+    private boolean underlineLink;
     private int codeTextColor;
     private int codeBackgroundColor;
 
-    public MDStyle(int textColor, int headerColor, int linkColor, int codeTextColor, int codeBackgroundColor) {
+    public MDStyle(int textColor, int headerColor, int linkColor, boolean underlineLink, int codeTextColor, int codeBackgroundColor) {
         this.textColor = textColor;
         this.headerColor = headerColor;
         this.linkColor = linkColor;
@@ -56,5 +57,13 @@ public class MDStyle {
 
     public void setCodeBackgroundColor(int codeBackgroundColor) {
         this.codeBackgroundColor = codeBackgroundColor;
+    }
+
+    public boolean isUnderlineLink() {
+        return underlineLink;
+    }
+
+    public void setUnderlineLink(boolean underlineLink) {
+        this.underlineLink = underlineLink;
     }
 }

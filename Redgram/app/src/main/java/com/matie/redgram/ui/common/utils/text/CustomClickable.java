@@ -13,10 +13,18 @@ public class CustomClickable extends ClickableSpan {
 
     private CustomSpanListener clickableListener;
     private boolean underlineText;
+    private int textColor;
 
-    public CustomClickable(CustomSpanListener clickableListener, boolean underlineText) {
+
+    public CustomClickable(boolean underlineText, int textColor) {
+        this.underlineText = underlineText;
+        this.textColor = textColor;
+    }
+
+    public CustomClickable(CustomSpanListener clickableListener, boolean underlineText, int textColor) {
         this.clickableListener = clickableListener;
         this.underlineText = underlineText;
+        this.textColor = textColor;
     }
 
     @Override
@@ -41,5 +49,6 @@ public class CustomClickable extends ClickableSpan {
     @Override
     public void updateDrawState(TextPaint ds) {
         ds.setUnderlineText(underlineText);
+        ds.setColor(textColor);
     }
 }

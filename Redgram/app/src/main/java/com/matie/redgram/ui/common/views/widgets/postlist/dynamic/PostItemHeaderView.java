@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.text.Spannable;
 import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -139,23 +138,20 @@ public class PostItemHeaderView extends PostItemSubView implements CustomSpanLis
 
     private void setupInfo(PostItem item) {
         String subreddit = "/r/"+item.getSubreddit();
-        CustomClickable subredditClickable = new CustomClickable(this, true);
+        CustomClickable subredditClickable = new CustomClickable(this, true, Color.rgb(204, 0, 0));
 
         StringDecorator.SpannableBuilder builder = StringDecorator.newSpannableBuilder(getContext())
                 .setTextView(headerTimeSubredditView)
                 .append("submitted " + item.getTime() + " hrs ago to ")
                 .append(subreddit, subredditClickable, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                .span(new ForegroundColorSpan(Color.rgb(204, 0, 0)), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                 .append(" by ");
 
         if(item.distinguished() != null){
             final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
-            builder.append(item.getAuthor(), new CustomClickable(this, false), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    .span(new ForegroundColorSpan(getAuthorBackgroundColor(item)), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            builder.append(item.getAuthor(), new CustomClickable(this, false, getAuthorBackgroundColor(item)), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                     .span(bss, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }else{
-            builder.append(item.getAuthor(), new CustomClickable(this, true), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    .span(new ForegroundColorSpan(Color.rgb(204, 0, 0)), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            builder.append(item.getAuthor(), new CustomClickable(this, true, Color.rgb(204, 0, 0)), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
         builder.clickable().buildSpannable();
