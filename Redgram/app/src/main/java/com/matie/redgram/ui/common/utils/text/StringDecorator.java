@@ -1,6 +1,5 @@
 package com.matie.redgram.ui.common.utils.text;
 
-import android.content.Context;
 import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
@@ -19,14 +18,14 @@ public class StringDecorator {
     //cannot be instantiated
     private StringDecorator(){}
 
-    public static SpannableBuilder newSpannableBuilder(Context context){
-        return new SpannableBuilder(context);
+    public static SpannableBuilder newSpannableBuilder(){
+        return new SpannableBuilder();
     }
-    public static SpannableBuilder newSpannableBuilder(Context context, CharSequence charSequence){
-        return new SpannableBuilder(context, charSequence);
+    public static SpannableBuilder newSpannableBuilder(CharSequence charSequence){
+        return new SpannableBuilder(charSequence);
     }
-    public static SpannableBuilder newSpannableBuilder(Context context, CharSequence charSequence, int start, int end){
-        return new SpannableBuilder(context, charSequence, start, end);
+    public static SpannableBuilder newSpannableBuilder(CharSequence charSequence, int start, int end){
+        return new SpannableBuilder(charSequence, start, end);
     }
     public static SpanContainer newSpanContainer(Object resource, int flag){
         return new SpanContainer(resource, flag);
@@ -58,24 +57,20 @@ public class StringDecorator {
 
     public static class SpannableBuilder {
 
-        private Context context;
         private TextView textView;
         private SpannableStringBuilder sb;
         private int lastAddedOffset;
 
-        public SpannableBuilder(Context context) {
-            this.context = context;
+        public SpannableBuilder() {
             this.sb = new SpannableStringBuilder();
             this.lastAddedOffset = sb.length(); //starts 0, always update before append
         }
 
-        public SpannableBuilder(Context context, CharSequence charSequence) {
-            this.context = context;
+        public SpannableBuilder(CharSequence charSequence) {
             this.sb = new SpannableStringBuilder(charSequence);
         }
 
-        public SpannableBuilder(Context context, CharSequence charSequence, int start, int end) {
-            this.context = context;
+        public SpannableBuilder(CharSequence charSequence, int start, int end) {
             this.sb = new SpannableStringBuilder(charSequence, start, end);
         }
 

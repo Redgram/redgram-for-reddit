@@ -83,7 +83,7 @@ public class OptionsView extends RelativeLayout implements CustomSpanListener {
         String subreddit = "/r/"+item.getSubreddit();
         CustomClickable clickable = new CustomClickable(this, true, Color.rgb(204, 0, 0));
 
-        StringDecorator.newSpannableBuilder(getContext())
+        StringDecorator.newSpannableBuilder()
                 .setTextView(timeView)
                 .append(item.getTime() + " hrs ago to ")
                 .append(subreddit, clickable, Spannable.SPAN_INCLUSIVE_INCLUSIVE)

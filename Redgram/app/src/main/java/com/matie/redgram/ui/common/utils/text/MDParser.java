@@ -22,8 +22,8 @@ public class MDParser {
     public static final String SPAN_URL = "SPAN_URL";
     //note EditText is a TextView
     private TextView view;
-    private SpannableStringBuilder spannableStringBuilder;
     private CharSequence stringToParse;
+    private SpannableStringBuilder spannableStringBuilder;
     private CustomSpanListener spanListener;
     private MDStyle style;
 
@@ -67,14 +67,13 @@ public class MDParser {
     }
 
     protected void parse(){
-        int length = spannableStringBuilder.length();
-        parseLink(0, length);
-        parseUser(0, length);
-        parseSub(0, length);
-        parseBold(0, length);
-        parseItalic(0, length);
-        parseStrike(0, length);
-        parseCode(0, length);
+        parseLink(0, spannableStringBuilder.length());
+        parseUser(0, spannableStringBuilder.length());
+        parseSub(0, spannableStringBuilder.length());
+        parseBold(0, spannableStringBuilder.length());
+        parseItalic(0, spannableStringBuilder.length());
+        parseStrike(0, spannableStringBuilder.length());
+        parseCode(0, spannableStringBuilder.length());
     }
 
     public MDParser setStyle(MDStyle style){
@@ -114,6 +113,7 @@ public class MDParser {
                 }
 
                 setSpan(codeSpan, matcher.start(), matcher.end());
+                replaceWithTargetGroup(matcher, matcher.group(2));
             }
         }
         codeSpansApplied = true;
@@ -129,6 +129,7 @@ public class MDParser {
                 }
                 StrikethroughSpan strikethroughSpan = new StrikethroughSpan();
                 setSpan(strikethroughSpan, matcher.start(), matcher.end());
+                replaceWithTargetGroup(matcher, matcher.group(2));
             }
         }
         return this;
@@ -143,6 +144,7 @@ public class MDParser {
                 }
                 StyleSpan styleSpan = new StyleSpan(Typeface.ITALIC);
                 setSpan(styleSpan, matcher.start(), matcher.end());
+                replaceWithTargetGroup(matcher, matcher.group(2));
             }
         }
         return this;
@@ -157,6 +159,7 @@ public class MDParser {
                 }
                 StyleSpan styleSpan = new StyleSpan(Typeface.BOLD);
                 setSpan(styleSpan, matcher.start(), matcher.end());
+                replaceWithTargetGroup(matcher, matcher.group(2));
             }
         }
         return this;
@@ -183,6 +186,7 @@ public class MDParser {
                 clearSpansInRange(matcher, CustomClickable.class);
 
                 setSpan(customClickable, matcher.start(), matcher.end());
+                replaceWithTargetGroup(matcher, matcher.group(1));
             }
         }
         linkSpansApplied = true;
@@ -313,6 +317,11 @@ public class MDParser {
         spannableStringBuilder
                 .setSpan(spanObject, start, end,
                         SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    private void replaceWithTargetGroup(Matcher matcher, String group) {
+        spannableStringBuilder = spannableStringBuilder.replace(matcher.start(), matcher.end(), group);
+        matcher.reset(spannableStringBuilder);
     }
 
     public void build(){

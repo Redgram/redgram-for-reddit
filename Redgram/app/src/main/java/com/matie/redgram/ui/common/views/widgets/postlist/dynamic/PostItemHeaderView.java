@@ -140,7 +140,7 @@ public class PostItemHeaderView extends PostItemSubView implements CustomSpanLis
         String subreddit = "/r/"+item.getSubreddit();
         CustomClickable subredditClickable = new CustomClickable(this, true, Color.rgb(204, 0, 0));
 
-        StringDecorator.SpannableBuilder builder = StringDecorator.newSpannableBuilder(getContext())
+        StringDecorator.SpannableBuilder builder = StringDecorator.newSpannableBuilder()
                 .setTextView(headerTimeSubredditView)
                 .append("submitted " + item.getTime() + " hrs ago to ")
                 .append(subreddit, subredditClickable, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)

@@ -62,7 +62,7 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
         CustomClickable commentsClickable = new CustomClickable(this, false, Color.rgb(204, 0, 0));
         CustomClickable linkClickable = new CustomClickable(this, false, Color.rgb(204, 0, 0));
 
-        StringDecorator.newSpannableBuilder(getContext())
+        StringDecorator.newSpannableBuilder()
                 .setTextView(tags)
                 .append(comments, commentsClickable, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 .append(SPACE + bullet + SPACE)
