@@ -1,10 +1,12 @@
-package com.matie.redgram.ui.common.utils.text;
+package com.matie.redgram.ui.common.utils.text.spans;
 
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
+
+import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 
 /**
  * Created by matie on 2015-12-13.

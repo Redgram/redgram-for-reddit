@@ -9,8 +9,8 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
-import com.matie.redgram.ui.common.utils.text.MDParser;
-import com.matie.redgram.ui.common.utils.text.MDStyle;
+import com.matie.redgram.ui.common.utils.text.markdown.MDParser;
+import com.matie.redgram.ui.common.utils.text.markdown.MDStyle;
 import com.matie.redgram.ui.common.utils.text.StringDecorator;
 
 import java.util.HashMap;
@@ -54,53 +54,12 @@ public class MDTextView extends TextView implements CustomSpanListener {
      */
     public void parse(String stringToParse, MDStyle style){
 
-//        stringToParse = "~~*italicstrike*~~ \n" +
-//                "\n" +
-//                "or\n" +
-//                "\n" +
-//                ">hello\n" +
-//                ">>world\n" +
-//                "\n" +
-//                "Test 2\n" +
-//                "\n" +
-//                "[Maybe a link too and `some code`..[another link](www.google.com)..I guess](www.google.com)\n" +
-//                "\n" +
-//                "`[Maybe a link too and `some code`..[another link](www.google.com)..I guess](www.google.com)`\n" +
-//                "\n" +
-//                "##hello\n" +
-//                "\n" +
-//                "`##hello`\n" +
-//                "\n" +
-//                "Test:\n" +
-//                "\n" +
-//                "[this /r/redditdev post **hello**](https://www.reddit.com/r/redditdev/comments/37nmt7/upcoming_changes_to_subreddit_and_user_links_in/)\n" +
-//                "\n" +
-//                "/r/redditdev\n" +
-//                "\\/r/redditdev\n" +
-//                "r/redditdev\n" +
-//                "\\r/redditdev\n" +
-//                "\n" +
-//                "`*italic* within code" +
-//                "" +
-//                "" +
-//                " and in addition there is **bold** and ~~a strike~~, is it working?`\n" +
-//                "\n" +
-//                "*`code` within italic* " +
-//                "" +
-//                "\n" +
-//                "\n" +
-//                "[here is a link with `code` in it](http://www.google.com)\n" +
-//                "\n" +
-//                "[here is a link with `code and *italic*` in it](http://www.google.com)\n" +
-//                "\n" +
-//                "[here is a link with *italic and `code`* in it](http://www.google.com) \n" +
-//                "" +
-//                "~~stike with `code`~~";
-
+        stringToParse = "[here is a link with `code and *italic*` in it](http://www.google.com) here is a link with `cooooooooooooooooooooooodeeeee` http://www.google.com" +
+                "\n" +
+                "here is a link with `code and *italic*` and super^s1^hello^hello^hello^hello";
 
         StringDecorator.newMDParser()
-                .setView(this)
-                .setText(stringToParse)
+                .setView(this, stringToParse)
                 .setStyle(style)
                 .addSpanListener(this)
                 .build();

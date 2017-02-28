@@ -1,6 +1,9 @@
-package com.matie.redgram.ui.common.utils.text;
+package com.matie.redgram.ui.common.utils.text.spans;
 
 import android.view.View;
+
+import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
+import com.matie.redgram.ui.common.utils.text.spans.CustomClickable;
 
 import java.util.HashMap;
 

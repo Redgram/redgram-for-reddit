@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.utils.text;
+package com.matie.redgram.ui.common.utils.text.markdown;
 
 /**
  * Created by matie on 2016-11-19.

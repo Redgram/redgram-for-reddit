@@ -6,6 +6,8 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.matie.redgram.ui.common.utils.text.markdown.MDParser;
+
 import java.util.List;
 
 /**
