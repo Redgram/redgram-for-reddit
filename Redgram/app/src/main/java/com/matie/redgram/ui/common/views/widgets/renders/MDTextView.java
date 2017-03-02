@@ -56,7 +56,9 @@ public class MDTextView extends TextView implements CustomSpanListener {
 
         stringToParse = "[here is a link with `code and *italic*` in it](http://www.google.com) here is a link with `cooooooooooooooooooooooodeeeee` http://www.google.com" +
                 "\n" +
-                "here is a link with `code and *italic*` and super^s1^hello^hello^hello^hello";
+                "here is a link with `code and *italic*` and super^s1^hello^hello^hello^hello^s1^hello^hello^hello^hello and __bold with underscores__"
+                + "\n" +
+                "here is a link with `code and *italic*` and super^s1^hello^hello^hello^hello^s1^hello^hello^hello^hello^hello^__bolded__ works";
 
         StringDecorator.newMDParser()
                 .setView(this, stringToParse)

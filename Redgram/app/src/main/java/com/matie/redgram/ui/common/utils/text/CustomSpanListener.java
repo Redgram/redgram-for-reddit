@@ -9,9 +9,6 @@ import java.util.HashMap;
  */
 public interface CustomSpanListener {
 
-    public static final String URL = "type-url";
-    public static final String NORMAL = "type-normal";
-
     /**
      *
      * @param targetString actual string on the spanned string

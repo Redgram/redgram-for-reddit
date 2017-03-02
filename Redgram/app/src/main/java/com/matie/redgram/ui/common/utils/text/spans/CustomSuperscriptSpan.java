@@ -9,9 +9,11 @@ import android.text.style.SuperscriptSpan;
 public class CustomSuperscriptSpan extends SuperscriptSpan{
 
     private final int ascentMultiplier;
+    private final int nestedLevel;
 
-    public CustomSuperscriptSpan(int ascentMultiplier) {
+    public CustomSuperscriptSpan(int ascentMultiplier, int nestedLevel) {
         this.ascentMultiplier = ascentMultiplier;
+        this.nestedLevel = nestedLevel;
     }
 
     @Override
@@ -27,4 +29,7 @@ public class CustomSuperscriptSpan extends SuperscriptSpan{
         //do nothing
     }
 
+    public int getNestedLevel() {
+        return nestedLevel;
+    }
 }

@@ -2,22 +2,17 @@ package com.matie.redgram.ui.common.utils.text.markdown;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.text.Editable;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
-import android.text.style.SuperscriptSpan;
 import android.text.style.TypefaceSpan;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
-import com.matie.redgram.ui.common.utils.text.ActiveSpanListener;
-import com.matie.redgram.ui.common.utils.text.ActiveSpannableStringBuilder;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 import com.matie.redgram.ui.common.utils.text.spans.CodeSpan;
 import com.matie.redgram.ui.common.utils.text.spans.CustomClickable;
@@ -26,7 +21,9 @@ import com.matie.redgram.ui.common.utils.text.spans.LinkClickableSpan;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,19 +31,19 @@ import java.util.regex.Pattern;
 /**
  * Created by matie on 2017-01-08.
  */
-public class MDParser implements ActiveSpanListener {
+public class MDParser implements MDSpanListener {
 
     public static final String SPAN_URL = "SPAN_URL";
     //note EditText is a TextView
     private TextView view;
     private CharSequence stringToParse;
-    private SpannableStringBuilder spannableStringBuilder;
+    private MDSpannableStringBuilder spannableStringBuilder;
     private CustomSpanListener spanListener;
     private MDStyle style;
 
     private boolean codeSpansApplied = false;
     private boolean linkSpansApplied = false;
-    private SuperscriptSpan currentSuperscriptSpan;
+    private Queue<Object> spanQueue = new LinkedList<>();
 
     public MDParser() {}
 
@@ -57,58 +54,54 @@ public class MDParser implements ActiveSpanListener {
     public MDParser setView(TextView textView, String stringToParse) {
         view = textView;
         setText(stringToParse);
+
         ViewTreeObserver vto = view.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(() -> {
             Layout layout = view.getLayout();
-            if(layout != null && currentSuperscriptSpan != null){
-                int lineNumber = layout.getLineForOffset(spannableStringBuilder.getSpanStart(currentSuperscriptSpan));
-                int lineStart = layout.getLineStart(lineNumber);
-                int lineEnd = layout.getLineEnd(lineNumber);
+            if(layout != null && spanQueue.size() > 0){
+                Object span = spanQueue.remove();
+                if(span instanceof CustomSuperscriptSpan){
+                    int lineNumber = layout.getLineForOffset(spannableStringBuilder.getSpanStart(span));
+                    int lineStart = layout.getLineStart(lineNumber);
+                    int lineEnd = layout.getLineEnd(lineNumber);
 
-                currentSuperscriptSpan = null;
+                    MDSpannableStringBuilder firstHalf = (MDSpannableStringBuilder) spannableStringBuilder.subSequence(0, lineStart);
+                    MDSpannableStringBuilder secondHalf = (MDSpannableStringBuilder) spannableStringBuilder.subSequence(lineStart, spannableStringBuilder.length());
+                    int nestedLevel = ((CustomSuperscriptSpan) span).getNestedLevel();
+
+                    spannableStringBuilder = (MDSpannableStringBuilder) firstHalf
+                                                .append(addCountNewLines(nestedLevel/2))
+                                                .append(secondHalf);
+
+                    setText(spannableStringBuilder);
+                }
             }
         });
-
-
-        view.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                Layout layout = view.getLayout();
-//                if(layout != null){
-//                    int lineNumber = layout.getLineForOffset(start);
-//                    int lineStart = layout.getLineStart(lineNumber);
-//                    int lineEnd = layout.getLineEnd(lineNumber);
-//                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
 
         return this;
+    }
+
+    private CharSequence addCountNewLines(int count) {
+        CharSequence newLines = "";
+        for(int i = 0; i <= count; i++){
+            newLines = newLines + "\n";
+        }
+        return newLines;
     }
 
     private void setText(CharSequence stringToParse){
         if(stringToParse != null){
             this.stringToParse = stringToParse;
-            this.spannableStringBuilder = new ActiveSpannableStringBuilder(stringToParse, this);
+            this.spannableStringBuilder = new MDSpannableStringBuilder(stringToParse, this);
             setText(spannableStringBuilder);
         }
     }
 
-    private void setText(SpannableStringBuilder spannableBuilder){
+    private void setText(MDSpannableStringBuilder spannableBuilder){
         view.setText(spannableBuilder, TextView.BufferType.SPANNABLE);
     }
 
-    public SpannableStringBuilder getSpannableStringBuilder() {
+    public MDSpannableStringBuilder getSpannableStringBuilder() {
         return spannableStringBuilder;
     }
 
@@ -164,22 +157,13 @@ public class MDParser implements ActiveSpanListener {
 
                 CodeSpan codeSpan = new CodeSpan(codeHighlighterSpan, foregroundColorSpan, monospace);
 
-                setSpanAndReplaceText(codeSpan, matcher.start(), matcher.end(), matcher.group(2));
+                setSpanAndReplaceText(codeSpan, matcher.start(), matcher.end(), matcher.group(2), true);
                 reset(matcher);
             }
         }
         codeSpansApplied = true;
         return this;
     }
-
-    private void setSpanAndReplaceText(Object span, int start, int end, String group) {
-        if(spannableStringBuilder instanceof ActiveSpannableStringBuilder){
-            spannableStringBuilder = ((ActiveSpannableStringBuilder) spannableStringBuilder)
-                    .setSpanAndReplaceText(span, start, end, group, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-    }
-
-
     private MDParser parseCodeBlock(int start, int end) {
         return this;
     }
@@ -192,7 +176,7 @@ public class MDParser implements ActiveSpanListener {
                     continue;
                 }
                 StrikethroughSpan strikethroughSpan = new StrikethroughSpan();
-                setSpanAndReplaceText(strikethroughSpan, matcher.start(), matcher.end(), matcher.group(2));
+                setSpanAndReplaceText(strikethroughSpan, matcher.start(), matcher.end(), matcher.group(2), true);
                 reset(matcher);
             }
         }
@@ -207,7 +191,7 @@ public class MDParser implements ActiveSpanListener {
                     continue;
                 }
                 StyleSpan styleSpan = new StyleSpan(Typeface.ITALIC);
-                setSpanAndReplaceText(styleSpan, matcher.start(), matcher.end(), matcher.group(2));
+                setSpanAndReplaceText(styleSpan, matcher.start(), matcher.end(), matcher.group(2), true);
                 reset(matcher);
             }
         }
@@ -222,7 +206,7 @@ public class MDParser implements ActiveSpanListener {
                     continue;
                 }
                 StyleSpan styleSpan = new StyleSpan(Typeface.BOLD);
-                setSpanAndReplaceText(styleSpan, matcher.start(), matcher.end(), matcher.group(2));
+                setSpanAndReplaceText(styleSpan, matcher.start(), matcher.end(), matcher.group(2), true);
                 reset(matcher);
             }
         }
@@ -247,7 +231,7 @@ public class MDParser implements ActiveSpanListener {
                     customClickable = new LinkClickableSpan(getStyle().isUnderlineLink(), getStyle().getLinkColor(), dataMap);
                 }
 
-                setSpanAndReplaceText(customClickable, matcher.start(), matcher.end(), matcher.group(1));
+                setSpanAndReplaceText(customClickable, matcher.start(), matcher.end(), matcher.group(1), true);
                 reset(matcher);
             }
             linkSpansApplied = true;
@@ -421,13 +405,12 @@ public class MDParser implements ActiveSpanListener {
             int start = currentMatch.getStart();
             int end = currentMatch.getEnd();
 
-            CustomSuperscriptSpan span = new CustomSuperscriptSpan(size);
+            CustomSuperscriptSpan span = new CustomSuperscriptSpan(size, originalSize - size);
 
             if(nestedMatches.size() == 0 && originalSize > 2){
-                setSpanAndReplaceText(span, start, end, targetGroup);
+                setSpanAndReplaceText(span, start, end, targetGroup, true);
             }else{
-                setSpan(span, start, end, false);
-                replaceWithTargetGroup(currentMatch.getStart(), currentMatch.getEnd(), targetGroup);
+                setSpanAndReplaceText(span, start, end, targetGroup, false);
             }
 
         }
@@ -496,16 +479,21 @@ public class MDParser implements ActiveSpanListener {
     }
 
     private void setSpan(Object spanObject, int start, int end, boolean triggerListener){
-        if(spannableStringBuilder instanceof ActiveSpannableStringBuilder){
-            ((ActiveSpannableStringBuilder) spannableStringBuilder)
-                    .setSpan(spanObject, start, end,
+       spannableStringBuilder.setSpan(spanObject, start, end,
                             SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE, triggerListener);
-        }
+
     }
 
-    private void replaceWithTargetGroup(int start, int end, String group) {
-        spannableStringBuilder = spannableStringBuilder.replace(start, end, group);
+    private void setSpanAndReplaceText(Object what, int start, int end, String group, boolean triggerListener) {
+        spannableStringBuilder = spannableStringBuilder
+                    .setSpanAndReplaceText(what, start, end, group, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE, triggerListener);
+
     }
+
+    private MDSpannableStringBuilder replaceWithSequence(int start, int end, CharSequence sequence) {
+        return spannableStringBuilder.replace(start, end, sequence);
+    }
+
 
     private void reset(Matcher matcher){
         matcher.reset(spannableStringBuilder);
@@ -525,8 +513,8 @@ public class MDParser implements ActiveSpanListener {
 
     @Override
     public void onSpanAdded(Object span) {
-        if(span instanceof SuperscriptSpan){
-            currentSuperscriptSpan = (SuperscriptSpan) span;
+        if(span instanceof CustomSuperscriptSpan){
+            spanQueue.add(span);
             setText(spannableStringBuilder);
         }
     }
