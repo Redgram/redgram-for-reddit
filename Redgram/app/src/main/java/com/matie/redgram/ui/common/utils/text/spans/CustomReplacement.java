@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.utils.text;
+package com.matie.redgram.ui.common.utils.text.spans;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

@@ -1,8 +1,8 @@
 package com.matie.redgram.data.network.api.reddit.base;
 
 import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
-import com.matie.redgram.data.network.api.util.AccessLevel;
-import com.matie.redgram.data.network.api.util.Security;
+import com.matie.redgram.data.network.api.utils.AccessLevel;
+import com.matie.redgram.data.network.api.utils.Security;
 
 import retrofit2.Call;
 import rx.Observable;

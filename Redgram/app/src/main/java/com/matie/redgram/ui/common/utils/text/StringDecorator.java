@@ -1,11 +1,12 @@
 package com.matie.redgram.ui.common.utils.text;
 
-import android.content.Context;
 import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.widget.TextView;
+
+import com.matie.redgram.ui.common.utils.text.markdown.MDParser;
 
 import java.util.List;
 
@@ -14,22 +15,25 @@ import java.util.List;
  *
  * Responsible for all text decorations
  */
-public class StringUtils {
+public class StringDecorator {
 
     //cannot be instantiated
-    private StringUtils(){}
+    private StringDecorator(){}
 
-    public static SpannableBuilder newSpannableBuilder(Context context){
-        return new SpannableBuilder(context);
+    public static SpannableBuilder newSpannableBuilder(){
+        return new SpannableBuilder();
     }
-    public static SpannableBuilder newSpannableBuilder(Context context, CharSequence charSequence){
-        return new SpannableBuilder(context, charSequence);
+    public static SpannableBuilder newSpannableBuilder(CharSequence charSequence){
+        return new SpannableBuilder(charSequence);
     }
-    public static SpannableBuilder newSpannableBuilder(Context context, CharSequence charSequence, int start, int end){
-        return new SpannableBuilder(context, charSequence, start, end);
+    public static SpannableBuilder newSpannableBuilder(CharSequence charSequence, int start, int end){
+        return new SpannableBuilder(charSequence, start, end);
     }
     public static SpanContainer newSpanContainer(Object resource, int flag){
         return new SpanContainer(resource, flag);
+    }
+    public static MDParser newMDParser(){
+        return new MDParser();
     }
 
     /**
@@ -55,24 +59,20 @@ public class StringUtils {
 
     public static class SpannableBuilder {
 
-        private Context context;
         private TextView textView;
         private SpannableStringBuilder sb;
         private int lastAddedOffset;
 
-        public SpannableBuilder(Context context) {
-            this.context = context;
+        public SpannableBuilder() {
             this.sb = new SpannableStringBuilder();
             this.lastAddedOffset = sb.length(); //starts 0, always update before append
         }
 
-        public SpannableBuilder(Context context, CharSequence charSequence) {
-            this.context = context;
+        public SpannableBuilder(CharSequence charSequence) {
             this.sb = new SpannableStringBuilder(charSequence);
         }
 
-        public SpannableBuilder(Context context, CharSequence charSequence, int start, int end) {
-            this.context = context;
+        public SpannableBuilder(CharSequence charSequence, int start, int end) {
             this.sb = new SpannableStringBuilder(charSequence, start, end);
         }
 
@@ -182,28 +182,25 @@ public class StringUtils {
         }
 
         public void build() {
-            try{
-                textView.setText(sb, TextView.BufferType.NORMAL);
-            }catch (NullPointerException e){
-                Log.d("NullPointer", SpannableBuilder.class.getName() + "#build - text view is not set");
-            }
+            build(TextView.BufferType.NORMAL);
         }
 
         public void buildEditable() {
-            try{
-                textView.setText(sb, TextView.BufferType.EDITABLE);
-            }catch (NullPointerException e){
-                Log.d("NullPointer", SpannableBuilder.class.getName() + "#build - text view is not set");
-            }
+            build(TextView.BufferType.EDITABLE);
         }
 
         public void buildSpannable() {
+            build(TextView.BufferType.SPANNABLE);
+        }
+
+        private void build(TextView.BufferType type){
             try{
-                textView.setText(sb, TextView.BufferType.SPANNABLE);
+                textView.setText(sb, type);
             }catch (NullPointerException e){
                 Log.d("NullPointer", SpannableBuilder.class.getName() + "#build - text view is not set");
             }
         }
 
     }
+
 }

@@ -1,4 +1,4 @@
-package com.matie.redgram.data.network.api.util;
+package com.matie.redgram.data.network.api.utils;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
