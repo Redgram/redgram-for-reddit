@@ -18,15 +18,16 @@ repositories {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.3'
 
     defaultConfig {
         applicationId "com.matie.redgram"
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
     }
 
     compileOptions {
@@ -54,17 +55,17 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile('com.afollestad.material-dialogs:core:0.8.4.0@aar') {
+    compile('com.afollestad.material-dialogs:core:0.8.5.6@aar') {
         transitive = true
     }
     apt 'com.google.dagger:dagger-compiler:2.0.1'
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:support-v4:23.1.1'
-    compile 'com.android.support:cardview-v7:23.1.1'
-    compile 'com.android.support:recyclerview-v7:23.2.1'
-    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.android.support:cardview-v7:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
     compile 'joda-time:joda-time:2.7'
 
     compile 'io.reactivex:rxjava:1.1.5'
@@ -82,7 +83,7 @@ dependencies {
     compile 'com.sothree.slidinguppanel:library:3.2.0'
     compile 'com.google.dagger:dagger:2.0.1'
     compile 'com.r0adkll:slidableactivity:2.0.4'
-    compile 'com.facebook.fresco:fresco:0.9.0+'
+    compile 'com.facebook.fresco:fresco:0.9.0'
     compile 'io.realm:realm-android:0.87.5'
     compile 'frankiesardo:icepick:3.2.0'
     provided 'frankiesardo:icepick-processor:3.2.0'
