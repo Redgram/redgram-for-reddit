@@ -5,7 +5,7 @@ An awesome Android Reddit client
 
 [Head over the Wiki to learn more about the project](https://github.com/Redgram/redgram-for-reddit/wiki)
 
-###License:
+### License:
 
 This project is under **GPL license**
 
