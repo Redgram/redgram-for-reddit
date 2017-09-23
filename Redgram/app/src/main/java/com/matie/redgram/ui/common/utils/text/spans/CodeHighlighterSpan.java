@@ -1,21 +1,22 @@
-package com.matie.redgram.ui.common.utils.text.tags;
+package com.matie.redgram.ui.common.utils.text.spans;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 
-import com.matie.redgram.ui.common.utils.text.CustomReplacement;
-
 /**
- * Created by matie on 2015-12-17.
+ *
+ * TEMPORARY - NOT USED
+ *
+ * Created by matie on 2017-01-10.
  */
-public class AuthorTag extends CustomReplacement {
+public class CodeHighlighterSpan extends CustomReplacement {
 
-    private static int CORNER_RADIUS = 10;
-    private static int PADDING = 30;
+    private static int CORNER_RADIUS = 0;
+    private static int PADDING = 5;
 
-    public AuthorTag(@NonNull int backgroundColor, @NonNull int textColor) {
+    public CodeHighlighterSpan(@NonNull int backgroundColor, @NonNull int textColor) {
         super(backgroundColor, textColor);
     }
 

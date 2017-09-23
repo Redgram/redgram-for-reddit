@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.views.widgets;
+package com.matie.redgram.ui.common.utils.widgets;
 
 import android.content.Context;
 import android.os.Parcelable;
@@ -57,11 +57,9 @@ public class ExpandableIndicator extends FrameLayout {
     }
 
     static abstract class Impl {
-
         public abstract void init(Context context, AttributeSet attrs, int defStyleAttr, ExpandableIndicator indicator);
         public abstract void setExpandedState(boolean isExpanded, int count);
         public abstract boolean isExpanded();
-
     }
 
     protected class ExpandableIndicatorAnim extends Impl{

@@ -23,11 +23,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import okhttp3.Authenticator;
 import okhttp3.Cache;
+import okhttp3.CacheControl;
 import okhttp3.Challenge;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -89,6 +91,7 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
         builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
         builder.addInterceptor(getMainInterceptor());
         builder.authenticator(new MyAuthenticator());
+//        builder.addInterceptor(getCachingInterceptor());
         builder.cache(myCache());
         return builder.build();
     }
@@ -105,6 +108,24 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
         //setup cache
         File httpCacheDir = new File(mContext.getCacheDir(), "HttpCacheDir");
         return new Cache(httpCacheDir, CACHE_DIR_SIZE);
+    }
+
+    private Interceptor getCachingInterceptor() {
+        return chain -> {
+            Request request = chain.request();
+
+            request = new Request.Builder()
+                    .cacheControl(new CacheControl.Builder()
+                            .maxAge(1, TimeUnit.DAYS)
+                            .minFresh(4, TimeUnit.HOURS)
+                            .maxStale(8, TimeUnit.HOURS)
+                            .build())
+                    .url(request.url())
+                    .build();
+
+
+            return chain.proceed(request);
+        };
     }
 
     protected Interceptor getMainInterceptor() {

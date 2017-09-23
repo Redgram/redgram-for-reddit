@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.text.Spannable;
 import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -17,11 +16,12 @@ import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.utils.text.CustomClickable;
+import com.matie.redgram.ui.common.utils.text.spans.CustomClickable;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
-import com.matie.redgram.ui.common.utils.text.StringUtils;
-import com.matie.redgram.ui.common.utils.text.tags.AuthorTag;
+import com.matie.redgram.ui.common.utils.text.StringDecorator;
 import com.matie.redgram.ui.posts.views.LinksView;
+
+import java.util.HashMap;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -118,6 +118,11 @@ public class PostItemHeaderView extends PostItemSubView implements CustomSpanLis
         }
     }
 
+    @Override
+    public void onClickableEvent(HashMap<String, String> data) {
+        //do nothing
+    }
+
     private int getAuthorBackgroundColor(PostItem item) {
         int resourceId;
         if(item.distinguished().equals("moderator")){
@@ -133,23 +138,20 @@ public class PostItemHeaderView extends PostItemSubView implements CustomSpanLis
 
     private void setupInfo(PostItem item) {
         String subreddit = "/r/"+item.getSubreddit();
-        CustomClickable subredditClickable = new CustomClickable(this, true);
+        CustomClickable subredditClickable = new CustomClickable(this, true, Color.rgb(204, 0, 0));
 
-        StringUtils.SpannableBuilder builder = StringUtils.newSpannableBuilder(getContext())
+        StringDecorator.SpannableBuilder builder = StringDecorator.newSpannableBuilder()
                 .setTextView(headerTimeSubredditView)
                 .append("submitted " + item.getTime() + " hrs ago to ")
                 .append(subreddit, subredditClickable, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                .span(new ForegroundColorSpan(Color.rgb(204, 0, 0)), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                 .append(" by ");
 
         if(item.distinguished() != null){
             final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
-            builder.append(item.getAuthor(), new CustomClickable(this, false), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    .span(new ForegroundColorSpan(getAuthorBackgroundColor(item)), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            builder.append(item.getAuthor(), new CustomClickable(this, false, getAuthorBackgroundColor(item)), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                     .span(bss, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }else{
-            builder.append(item.getAuthor(), new CustomClickable(this, true), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    .span(new ForegroundColorSpan(Color.rgb(204, 0, 0)), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            builder.append(item.getAuthor(), new CustomClickable(this, true, Color.rgb(204, 0, 0)), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
         builder.clickable().buildSpannable();

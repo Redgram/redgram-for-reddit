@@ -98,6 +98,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     private ActionBarDrawerToggle mDrawerToggle;
     private MainComponent mainComponent;
+    private MainFragmentManager mainFragmentManager;
 
     private Window window;
     private boolean isDrawerOpen = false;
@@ -118,7 +119,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             mDrawerLayout.setStatusBarBackgroundColor(
                     getResources().getColor(R.color.material_red600));
 
-            //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
+            // this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 window = getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -262,6 +263,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+        mainFragmentManager = new MainFragmentManager();
         getSupportFragmentManager().addOnBackStackChangedListener(
                 () -> { selectItem(currentSelectedMenuId); }
         );
@@ -310,7 +312,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     private void setUpPanel() {
-        //fix the height of the panel to start below the status bar
+        // fix the height of the panel to start below the status bar
         int statusBarHeight = 0;
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
         if(resourceId > 0){
@@ -334,6 +336,13 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         super.onResume();
         userListLayout.getPresenter().registerForEvents();
         selectItem(currentSelectedMenuId);
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(mainFragmentManager, true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getSupportFragmentManager().unregisterFragmentLifecycleCallbacks(mainFragmentManager);
     }
 
     @Override
@@ -378,13 +387,13 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     public void onBackPressed() {
-        if(getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED){
+        if (getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             hidePanel();
-        }else if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+        } else if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             closeDrawer();
-        }else {
+        } else {
             super.onBackPressed();
-            if(getSupportFragmentManager().getBackStackEntryCount() == 0){
+            if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
                 currentSelectedMenuId = R.id.nav_home;
                 selectItem(currentSelectedMenuId);
             }
@@ -465,19 +474,17 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        int currentFragmentPos = getSupportFragmentManager().getFragments().size()-1;
+        Fragment fragment = mainFragmentManager.getActiveFragment();
 
         if(id == R.id.nav_home){
-            if (!(getSupportFragmentManager().getFragments()
-                    .get(currentFragmentPos) instanceof HomeFragment)) {
-                //this fragment is added on activity entry, choosing it from the menu when not visible,
-                //will pop all stack to return to it, and re-create it
+            if (!(fragment instanceof HomeFragment)) {
+                // this fragment is added on activity entry, choosing it from the menu when not visible,
+                // will pop all stack to return to it, and re-create it
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 currentSelectedMenuId = item.getItemId();
             }
         } else if(id == R.id.nav_search){
-            if (!(getSupportFragmentManager().getFragments()
-                    .get(currentFragmentPos) instanceof SearchFragment)) {
+            if (!(fragment instanceof SearchFragment)) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, Fragment
                                 .instantiate(MainActivity.this, Fragments.SEARCH.getFragment()), Fragments.SEARCH.toString());
@@ -554,7 +561,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         //show panel
         togglePanel();
         //load data
-        if(getSupportFragmentManager().getFragments().contains(previewFragment) && previewFragment != null
+        if(mainFragmentManager.contains(previewFragment) && previewFragment != null
                 && currentPreviewFragment != null && fragmentEnum == currentPreviewFragment){
             previewFragment.refreshPreview(bundle);
         }else{

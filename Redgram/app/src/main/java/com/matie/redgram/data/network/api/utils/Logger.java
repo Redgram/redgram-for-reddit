@@ -1,4 +1,4 @@
-package com.matie.redgram.data.network.api.util;
+package com.matie.redgram.data.network.api.utils;
 
 /**
  * Created by matie on 2016-10-30.

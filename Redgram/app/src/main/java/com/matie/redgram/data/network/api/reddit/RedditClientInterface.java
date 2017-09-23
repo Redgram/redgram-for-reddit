@@ -12,8 +12,8 @@ import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
 import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceInterface;
-import com.matie.redgram.data.network.api.util.AccessLevel;
-import com.matie.redgram.data.network.api.util.Security;
+import com.matie.redgram.data.network.api.utils.AccessLevel;
+import com.matie.redgram.data.network.api.utils.Security;
 
 import java.util.List;
 import java.util.Map;

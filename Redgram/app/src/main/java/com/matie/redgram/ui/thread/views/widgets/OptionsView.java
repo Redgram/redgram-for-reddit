@@ -3,7 +3,6 @@ package com.matie.redgram.ui.thread.views.widgets;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Spannable;
-import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -11,10 +10,12 @@ import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.utils.text.CustomClickable;
+import com.matie.redgram.ui.common.utils.text.spans.CustomClickable;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
-import com.matie.redgram.ui.common.utils.text.StringUtils;
+import com.matie.redgram.ui.common.utils.text.StringDecorator;
 import com.matie.redgram.ui.thread.views.ThreadView;
+
+import java.util.HashMap;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -80,13 +81,12 @@ public class OptionsView extends RelativeLayout implements CustomSpanListener {
 
     private void setupInfo(PostItem item) {
         String subreddit = "/r/"+item.getSubreddit();
-        CustomClickable clickable = new CustomClickable(this, true);
+        CustomClickable clickable = new CustomClickable(this, true, Color.rgb(204, 0, 0));
 
-        StringUtils.newSpannableBuilder(getContext())
+        StringDecorator.newSpannableBuilder()
                 .setTextView(timeView)
                 .append(item.getTime() + " hrs ago to ")
                 .append(subreddit, clickable, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-                .span(new ForegroundColorSpan(Color.rgb(204, 0, 0)), Spannable.SPAN_INCLUSIVE_INCLUSIVE)
                 .clickable()
                 .build();
     }
@@ -97,6 +97,11 @@ public class OptionsView extends RelativeLayout implements CustomSpanListener {
         if(target.contains("/r/")){
             listener.visitSubreddit();
         }
+    }
+
+    @Override
+    public void onClickableEvent(HashMap<String, String> data) {
+        //do nothing
     }
 
     public void toggleSave(boolean save){
