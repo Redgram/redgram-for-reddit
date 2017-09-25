@@ -3,6 +3,7 @@ package com.matie.redgram.ui.profile;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -10,7 +11,10 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.matie.redgram.R;
 import com.matie.redgram.ui.App;
@@ -45,6 +49,13 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
         super.onCreate(savedInstanceState);
         ButterKnife.inject(this);
 
+        //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
+
 //        app.getRedditClient().getUserOverview("nullbell")
 //                .compose(bindToLifecycle())
 //                .subscribeOn(Schedulers.io())
@@ -65,6 +76,31 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
     protected void onDestroy() {
         super.onDestroy();
         ButterKnife.reset(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        if (id == android.R.id.home) {
+            //if no fragments in stack close activity
+            if(!getSupportFragmentManager().popBackStackImmediate()){
+                onBackPressed();
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -109,8 +145,7 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
     }
 
     public static Intent intent(Context context){
-        Intent intent = new Intent(context, ProfileActivity.class);
-        return intent;
+        return new Intent(context, ProfileActivity.class);
     }
 
     @Override
@@ -129,7 +164,7 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
             }
 
             if(callback != null) {
-                snackbar.setCallback(callback);
+                snackbar.addCallback(callback);
             }
             //hide the panel before showing the snack bar
             snackbar.show();

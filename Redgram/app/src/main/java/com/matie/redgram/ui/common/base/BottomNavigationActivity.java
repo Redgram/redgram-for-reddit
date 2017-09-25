@@ -2,11 +2,13 @@ package com.matie.redgram.ui.common.base;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.matie.redgram.R;
@@ -25,6 +27,8 @@ public abstract class BottomNavigationActivity extends BaseActivity {
     Toolbar toolbar;
     @InjectView(R.id.container)
     FrameLayout frameLayout;
+    @InjectView(R.id.bottom_navigation)
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,15 +42,33 @@ public abstract class BottomNavigationActivity extends BaseActivity {
         setupToolbar();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ButterKnife.reset(this);
+    }
 
     protected abstract void checkIntent();
 
     protected void setupBottomNavigation() {
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                item -> false
+        );
 
+        bottomNavigationView.setOnNavigationItemReselectedListener(
+                item -> {
+
+                }
+        );
     }
 
     private void setupToolbar() {
-
+        setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setShowHideAnimationEnabled(true);
+        }
     }
 
     public CoordinatorLayout getCoordinatorLayout() {
