@@ -7,12 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" android:fitsSystemWindows="true">
 
-    <android.support.v4.view.ViewPager
+    <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:background="@color/material_white"/>
+        android:background="@color/white"/>
 
     <android.support.design.widget.AppBarLayout android:id="@+id/app_bar"
         android:fitsSystemWindows="true" android:layout_height="@dimen/action_bar_height"
@@ -27,11 +27,20 @@
 
             <android.support.v7.widget.Toolbar android:id="@+id/toolbar"
                 android:fitsSystemWindows="true"
-                android:layout_height="?attr/actionBarSize" android:layout_width="match_parent"
-                android:titleTextColor="@color/material_white"/>
+                android:layout_height="?attr/actionBarSize" android:layout_width="match_parent"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        style="@style/MatchWidth"
+        android:layout_gravity="bottom"
+        android:background="@color/material_red400"
+        app:itemBackground="@color/material_red400"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
+        app:menu="@menu/profile_bottom_navigation" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -313,10 +313,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     private void setUpPanel() {
         // fix the height of the panel to start below the status bar
-        int statusBarHeight = 0;
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
         if(resourceId > 0){
-            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+            int statusBarHeight = getResources().getDimensionPixelSize(resourceId);
 
             SlidingUpPanelLayout.LayoutParams fl = new SlidingUpPanelLayout.LayoutParams(slidingUpFrameLayout.getLayoutParams());
             fl.setMargins(0, statusBarHeight, 0, 0);

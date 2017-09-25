@@ -68,8 +68,6 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
     public static final String RESULT_POST_CHANGE = "result_post_change";
     public static final String RESULT_POST_POS = "post_position";
 
-    private CommentsPagerAdapter commentsPagerAdapter;
-
     @InjectView(R.id.commentsFab)
     FloatingActionButton commentsFab;
     @InjectView(R.id.upFab)

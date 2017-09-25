@@ -14,6 +14,8 @@
     <string name="user_email">atiyaleb@gmail.com</string>
     <string name="fragment_home">Home</string>
     <string name="fragment_profile">Profile</string>
+    <string name="profile_about">About</string>
+    <string name="profile_activity">Activity</string>
     <string name="fragment_inbox">Inbox</string>
     <string name="fragment_friends">Friends</string>
     <string name="fragment_search">Search</string>

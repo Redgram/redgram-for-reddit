@@ -10,7 +10,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 
 import com.matie.redgram.R;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
 
 import butterknife.ButterKnife;
@@ -21,7 +20,7 @@ import butterknife.InjectView;
  */
 public abstract class ViewPagerActivity extends BaseActivity {
 
-    //any activity extending this class must have the following layouts defined in the activity XML.
+    // any activity extending this class must have the following layouts defined in the activity XML.
     @InjectView(R.id.app_bar)
     AppBarLayout appBarLayout;
     @InjectView(R.id.coordinator_layout)
@@ -31,7 +30,7 @@ public abstract class ViewPagerActivity extends BaseActivity {
     @InjectView(R.id.toolbar)
     Toolbar toolbar;
     @InjectView(R.id.container)
-    ViewPager mViewPager;
+    ViewPager viewPager;
 
     private SectionsPagerAdapter pagerAdapter;
 
@@ -58,7 +57,7 @@ public abstract class ViewPagerActivity extends BaseActivity {
     protected abstract void checkIntent();
 
     public ViewPager getViewPager(){
-        return mViewPager;
+        return viewPager;
     }
 
     public SectionsPagerAdapter getPagerAdapter(){
@@ -83,7 +82,7 @@ public abstract class ViewPagerActivity extends BaseActivity {
 
     protected void setupViewPager(){
         pagerAdapter = pagerAdapterInstance();
-        mViewPager.setAdapter(pagerAdapter);
+        viewPager.setAdapter(pagerAdapter);
     }
 
     protected void setToolbarTitle(int position) {

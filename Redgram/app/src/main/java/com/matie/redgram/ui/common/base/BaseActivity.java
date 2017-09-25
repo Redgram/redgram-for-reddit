@@ -39,6 +39,10 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseCo
         Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(getLayoutId());
 
+//        if(getIntent() != null){
+//            checkIntent();
+//        }
+
         AppComponent appComponent = App.get(this).component();
         setupRealm(appComponent.getApp());
         setupComponent(appComponent);
@@ -76,9 +80,10 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseCo
         DatabaseHelper.close(realm);
     }
 
-    protected abstract void setupComponent(AppComponent appComponent);
     public abstract AppComponent component();
     public abstract DialogUtil getDialogUtil();
+    protected abstract void setupComponent(AppComponent appComponent);
+//    protected abstract void checkIntent();
     protected abstract int getLayoutId();
     protected abstract int getContainerId();
     protected abstract RealmChangeListener getRealmSessionChangeListener();

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
@@ -14,6 +15,7 @@ import android.view.View;
 import com.matie.redgram.R;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
+import com.matie.redgram.ui.common.base.BottomNavigationActivity;
 import com.matie.redgram.ui.common.base.ViewPagerActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
@@ -28,7 +30,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import io.realm.RealmChangeListener;
 
-public class ProfileActivity extends ViewPagerActivity implements CoordinatorLayoutInterface {
+public class ProfileActivity extends BottomNavigationActivity implements CoordinatorLayoutInterface {
 
     public static final String RESULT_USER_NAME = "result_user_name";
     private ProfileComponent profileComponent;
@@ -80,37 +82,6 @@ public class ProfileActivity extends ViewPagerActivity implements CoordinatorLay
             }
         }
     }
-
-    @Override
-    protected int getInitialPagerPosition() {
-        return 0;
-    }
-
-    @Override
-    protected SectionsPagerAdapter pagerAdapterInstance() {
-        return new ProfilePagerAdapter(getSupportFragmentManager());
-    }
-
-    @Override
-    protected void setupViewPager() {
-        //call super to initialize to set the adapter and other common set ups
-        super.setupViewPager();
-        getViewPager().addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-
-            @Override
-            public void onPageSelected(int position) {
-                setToolbarTitle(position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-    }
-
 
     @Override
     public AppComponent component() {
