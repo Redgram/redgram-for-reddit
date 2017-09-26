@@ -63,9 +63,4 @@ public class ProfileOverviewFragment extends BaseFragment implements ProfileOver
                                     .build();
         profileOverviewComponent.inject(this);
     }
-
-    @Override
-    protected void setupToolbar() {
-
-    }
 }

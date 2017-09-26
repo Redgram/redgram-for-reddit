@@ -79,11 +79,6 @@ public class CommentsFragment extends BaseFragment implements CommentsView{
     }
 
     @Override
-    protected void setupToolbar() {
-        return;
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.reset(this);

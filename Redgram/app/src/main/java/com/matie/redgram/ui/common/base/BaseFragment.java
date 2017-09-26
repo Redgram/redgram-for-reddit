@@ -53,9 +53,9 @@ public abstract class BaseFragment extends RxFragment implements BaseContextView
         getActivity().overridePendingTransition(enterAnim, exitAnim);
     }
 
-    protected abstract void setupComponent();
+    protected void setupToolbar() {}
 
-    protected abstract void setupToolbar();
+    protected abstract void setupComponent();
 
     @Override
     public Context getContext() {

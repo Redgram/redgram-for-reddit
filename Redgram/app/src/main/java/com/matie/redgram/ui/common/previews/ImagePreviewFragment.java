@@ -124,11 +124,6 @@ public class ImagePreviewFragment extends BasePreviewFragment {
     }
 
     @Override
-    protected void setupToolbar() {
-
-    }
-
-    @Override
     public void refreshPreview(Bundle bundle) {
 
         if(bundle.containsKey(getLocalCacheKey())){

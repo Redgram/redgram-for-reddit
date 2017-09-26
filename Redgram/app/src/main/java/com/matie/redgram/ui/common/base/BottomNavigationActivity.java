@@ -52,7 +52,7 @@ public abstract class BottomNavigationActivity extends BaseActivity {
 
     protected void setupBottomNavigation() {
         bottomNavigationView.setOnNavigationItemSelectedListener(
-                item -> false
+                item -> true
         );
 
         bottomNavigationView.setOnNavigationItemReselectedListener(

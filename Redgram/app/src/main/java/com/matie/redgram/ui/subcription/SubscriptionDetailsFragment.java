@@ -104,7 +104,7 @@ public class SubscriptionDetailsFragment extends BaseFragment {
 
     @Override
     protected void setupToolbar() {
-        //no implementation needed, clear only
+        // no implementation needed, clear only
         frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
         frameLayout.removeAllViews();
     }

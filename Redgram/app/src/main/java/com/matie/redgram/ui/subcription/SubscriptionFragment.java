@@ -80,8 +80,8 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
 
     @Override
     protected void setupToolbar() {
-        //add refresh
-        //setting up toolbar
+        // add refresh
+        // setting up toolbar
         frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
         frameLayout.removeAllViews();
 
@@ -94,14 +94,11 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     }
 
     private void setupRefresh() {
-        subRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(subredditRecyclerView.getVisibility() == View.VISIBLE){
-                    //force load from network
-                    // TODO: 2015-12-10 only call network call a minute after the last call was made
-                    subscriptionPresenter.getSubreddits(true);
-                }
+        subRefresh.setOnClickListener(v -> {
+            if(subredditRecyclerView.getVisibility() == View.VISIBLE){
+                //force load from network
+                // TODO: 2015-12-10 only call network call a minute after the last call was made
+                subscriptionPresenter.getSubreddits(true);
             }
         });
     }

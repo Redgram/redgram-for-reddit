@@ -64,7 +64,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     Toolbar mToolbar;
     View mContentView;
-    LayoutInflater mInflater;
     LinearLayoutManager mLayoutManager;
 
     PostRecyclerView homeRecyclerView;
@@ -95,8 +94,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         setUpRecyclerView();
 
         mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
-        mContentView = getActivity().findViewById(R.id.container);
-        mInflater = inflater;
 
         setupSwipeContainer();
 
@@ -160,7 +157,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
         frameLayout.removeAllViews();
 
-        RelativeLayout rl = (RelativeLayout) mInflater.inflate(R.layout.fragment_home_toolbar, frameLayout, false);
+        RelativeLayout rl = (RelativeLayout) getLayoutInflater().inflate(R.layout.fragment_home_toolbar, frameLayout, false);
         frameLayout.addView(rl);
 
         titleWrapper = (LinearLayout)rl.findViewById(R.id.home_toolbar_title_linear_layout);

@@ -104,7 +104,7 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
             if(data.getPath().contains("/u/")){
                 //open user
                 String path = data.getPath();
-                String username = path.substring(path.lastIndexOf('/')+1, path.length());
+                String username = path.substring(path.lastIndexOf('/') + 1, path.length());
                 Log.d("username", username);
             }
         }

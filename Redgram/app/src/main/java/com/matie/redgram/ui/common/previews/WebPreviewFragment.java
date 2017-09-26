@@ -87,11 +87,6 @@ public class WebPreviewFragment extends BasePreviewFragment{
     }
 
     @Override
-    protected void setupToolbar() {
-
-    }
-
-    @Override
     public void refreshPreview(Bundle bundle) {
         if(bundle.containsKey(getMainKey())){
             String data = bundle.getString(getMainKey());

@@ -63,11 +63,6 @@ public class PostFragment extends BaseFragment implements PostView{
 
     }
 
-    @Override
-    protected void setupToolbar() {
-
-    }
-
     public void refreshPost(PostItem postItem) {
         setPostItem(postItem);
         //refresh view - regex, formatting, etc - if changed prompt user to update with remember choice??
