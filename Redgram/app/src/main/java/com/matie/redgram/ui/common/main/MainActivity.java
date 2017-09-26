@@ -264,6 +264,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         mainFragmentManager = new MainFragmentManager();
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(mainFragmentManager, true);
+
         getSupportFragmentManager().addOnBackStackChangedListener(
                 () -> { selectItem(currentSelectedMenuId); }
         );
@@ -439,7 +441,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                 .instantiate(getBaseActivity(), Fragments.HOME.getFragment());
         homeFragment.setArguments(bundle);
 
-        //makes sure only one fragment is in the stack
+        // make sure only one fragment is in the stack
         if(!getSupportFragmentManager().findFragmentByTag(Fragments.HOME.toString()).isVisible()){
             getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             currentSelectedMenuId = R.id.nav_home;

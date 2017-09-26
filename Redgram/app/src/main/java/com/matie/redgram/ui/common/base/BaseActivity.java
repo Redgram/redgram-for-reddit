@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.matie.redgram.R;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Session;
@@ -80,6 +81,12 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseCo
         DatabaseHelper.close(realm);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+    }
+
     public abstract AppComponent component();
     public abstract DialogUtil getDialogUtil();
     protected abstract void setupComponent(AppComponent appComponent);
@@ -108,9 +115,17 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseCo
         return session;
     }
 
+    public void openIntent(Intent intent) {
+        openIntent(intent, R.anim.enter, R.anim.exit);
+    }
+
     public void openIntent(Intent intent, int enterAnim, int exitAnim){
         startActivity(intent);
         overridePendingTransition(enterAnim, exitAnim);
+    }
+
+    public void openIntentForResult(Intent intent, int requestCode){
+        openIntentForResult(intent, requestCode, R.anim.enter, R.anim.exit);
     }
 
     public void openIntentForResult(Intent intent, int requestCode, int enterAnim, int exitAnim){
@@ -144,5 +159,4 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseCo
     public BaseFragment getBaseFragment() {
         return null;
     }
-
 }

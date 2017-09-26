@@ -313,7 +313,6 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
         }else{
             setResult();
             super.onBackPressed();
-            overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
         }
     }
 

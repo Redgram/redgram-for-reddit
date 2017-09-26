@@ -49,11 +49,8 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
         super.onCreate(savedInstanceState);
         ButterKnife.inject(this);
 
-        //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
 
 //        app.getRedditClient().getUserOverview("nullbell")
@@ -76,12 +73,6 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
     protected void onDestroy() {
         super.onDestroy();
         ButterKnife.reset(this);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.google.gson.JsonElement;
+import com.matie.redgram.R;
 import com.matie.redgram.ui.common.views.BaseContextView;
 import com.trello.rxlifecycle.LifecycleTransformer;
 import com.trello.rxlifecycle.components.support.RxFragment;
@@ -41,6 +42,10 @@ public abstract class BaseFragment extends RxFragment implements BaseContextView
     public void openIntent(Intent intent, int enterAnim, int exitAnim){
         startActivity(intent);
         getActivity().overridePendingTransition(enterAnim, exitAnim);
+    }
+
+    public void openIntentForResult(Intent intent, int requestCode){
+        openIntentForResult(intent, requestCode, R.anim.enter, R.anim.exit);
     }
 
     public void openIntentForResult(Intent intent, int requestCode, int enterAnim, int exitAnim){

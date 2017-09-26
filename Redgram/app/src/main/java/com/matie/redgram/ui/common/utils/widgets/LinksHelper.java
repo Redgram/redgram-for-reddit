@@ -57,15 +57,15 @@ public class LinksHelper {
             intent = new Intent(context, MainActivity.class);
             intent.putExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME, result);
         }else if(PROFILE.equalsIgnoreCase(type)){
-            intent = new Intent(context, ProfileActivity.class);
+            intent = ProfileActivity.intent(context);
             intent.putExtra(ProfileActivity.RESULT_USER_NAME, result);
         }
         if(intent != null){
-            ((BaseActivity) context).openIntent(intent, 0, 0);
+            ((BaseActivity) context).openIntent(intent);
         }
     }
 
-    public static Uri getUriToOpen(PostItem item, CharSequence charSequence) {
+    private static Uri getUriToOpen(PostItem item, CharSequence charSequence) {
         Uri urlToOpen = null;
         if (charSequence.toString().equalsIgnoreCase("Link")) {
             urlToOpen = Uri.parse(item.getUrl());

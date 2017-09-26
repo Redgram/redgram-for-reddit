@@ -65,9 +65,7 @@ public abstract class BottomNavigationActivity extends BaseActivity {
     private void setupToolbar() {
         setSupportActionBar(toolbar);
         if(getSupportActionBar() != null){
-            getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setShowHideAnimationEnabled(true);
         }
     }
 

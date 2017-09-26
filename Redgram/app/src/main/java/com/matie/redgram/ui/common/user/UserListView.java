@@ -122,7 +122,7 @@ public class UserListView extends FrameLayout implements UserListControllerView 
     @Override
     public void addAccount() {
         if(context instanceof BaseActivity){
-            ((BaseActivity)context).openIntentForResult(AuthActivity.intent(context, false), ADD_ACCOUNT, 0, 0);
+            ((BaseActivity)context).openIntentForResult(AuthActivity.intent(context, false), ADD_ACCOUNT);
         }
     }
 

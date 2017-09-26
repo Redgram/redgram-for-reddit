@@ -291,10 +291,10 @@ public class LinksContainerView extends FrameLayout implements LinksView {
                 ((BaseActivity) context).getSupportFragmentManager().findFragmentByTag(getHostingFragmentTag());
         if(hostingFragment != null){
             ((BaseFragment)hostingFragment)
-                    .openIntentForResult(intent, ThreadActivity.REQ_CODE, R.anim.enter, R.anim.exit);
+                    .openIntentForResult(intent, ThreadActivity.REQ_CODE);
         }else{
             ((BaseActivity) context)
-                    .openIntentForResult(intent, ThreadActivity.REQ_CODE, R.anim.enter, R.anim.exit);
+                    .openIntentForResult(intent, ThreadActivity.REQ_CODE);
         }
     }
 
