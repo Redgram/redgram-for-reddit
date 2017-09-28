@@ -10,7 +10,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -42,6 +41,7 @@ import com.matie.redgram.ui.common.user.UserListComponent;
 import com.matie.redgram.ui.common.user.UserListModule;
 import com.matie.redgram.ui.common.user.UserListView;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
+import com.matie.redgram.ui.common.utils.display.CustomFragmentManager;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.home.HomeFragment;
@@ -98,7 +98,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     private ActionBarDrawerToggle mDrawerToggle;
     private MainComponent mainComponent;
-    private MainFragmentManager mainFragmentManager;
+    private CustomFragmentManager mainFragmentManager;
 
     private Window window;
     private boolean isDrawerOpen = false;
@@ -263,7 +263,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        mainFragmentManager = new MainFragmentManager();
+        mainFragmentManager = new CustomFragmentManager();
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(mainFragmentManager, true);
 
         getSupportFragmentManager().addOnBackStackChangedListener(
@@ -443,7 +443,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         // make sure only one fragment is in the stack
         if(!getSupportFragmentManager().findFragmentByTag(Fragments.HOME.toString()).isVisible()){
-            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            getSupportFragmentManager().popBackStack(null, android.support.v4.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
             currentSelectedMenuId = R.id.nav_home;
             selectItem(currentSelectedMenuId);
         }
@@ -481,7 +481,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             if (!(fragment instanceof HomeFragment)) {
                 // this fragment is added on activity entry, choosing it from the menu when not visible,
                 // will pop all stack to return to it, and re-create it
-                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                getSupportFragmentManager().popBackStack(null, android.support.v4.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 currentSelectedMenuId = item.getItemId();
             }
         } else if(id == R.id.nav_search){
