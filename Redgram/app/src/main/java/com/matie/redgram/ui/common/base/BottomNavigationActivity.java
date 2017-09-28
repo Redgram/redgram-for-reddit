@@ -2,16 +2,15 @@ package com.matie.redgram.ui.common.base;
 
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.matie.redgram.R;
+import com.matie.redgram.ui.common.utils.display.CustomFragmentManager;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -30,6 +29,8 @@ public abstract class BottomNavigationActivity extends BaseActivity {
     @InjectView(R.id.bottom_navigation)
     BottomNavigationView bottomNavigationView;
 
+    private CustomFragmentManager fragmentManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +41,24 @@ public abstract class BottomNavigationActivity extends BaseActivity {
         }
         setupBottomNavigation();
         setupToolbar();
+        setupFragmentManager();
+    }
+
+    private void setupFragmentManager() {
+        fragmentManager = new CustomFragmentManager();
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(fragmentManager, true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(fragmentManager, true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getSupportFragmentManager().unregisterFragmentLifecycleCallbacks(fragmentManager);
     }
 
     @Override

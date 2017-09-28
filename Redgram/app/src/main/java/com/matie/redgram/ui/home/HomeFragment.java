@@ -161,7 +161,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         frameLayout.addView(rl);
 
         titleWrapper = (LinearLayout)rl.findViewById(R.id.home_toolbar_title_linear_layout);
-        //// TODO: 2015-10-20 handle subreddits and change the view to indicate a clickable
 
         toolbarTitle = (TextView) rl.findViewById(R.id.home_toolbar_title);
         toolbarSubtitle = (TextView) rl.findViewById(R.id.home_toolbar_subtitle);

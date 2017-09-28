@@ -1,10 +1,11 @@
 package com.matie.redgram.ui.profile.views;
 
+
 import com.matie.redgram.ui.common.views.ContentView;
 
 /**
- * Created by matie on 2016-07-26.
+ * Created by matie on 2017-09-27.
  */
-public interface ProfileOverviewView extends ContentView{
 
+public interface ProfileAboutView extends ContentView {
 }

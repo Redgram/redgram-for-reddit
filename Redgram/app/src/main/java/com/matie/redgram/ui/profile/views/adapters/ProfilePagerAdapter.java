@@ -4,7 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
-import com.matie.redgram.ui.profile.ProfileOverviewFragment;
 
 /**
  * Created by matie on 2016-08-06.

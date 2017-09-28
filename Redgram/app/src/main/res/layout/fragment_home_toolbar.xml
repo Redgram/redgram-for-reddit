@@ -7,11 +7,11 @@
         android:id="@+id/home_toolbar_title_linear_layout"
         android:layout_width="wrap_content"
         android:layout_height="?attr/actionBarSize"
-        android:layout_weight="1"
         android:background="@drawable/home_toolbar_wrapper_border"
         android:orientation="vertical"
         android:gravity="center_vertical"
         android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:layout_gravity="center_vertical"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
@@ -34,7 +34,6 @@
         android:id="@+id/home_toolbar_nav_linear_layout"
         android:layout_width="wrap_content"
         android:layout_height="?attr/actionBarSize"
-        android:layout_weight="1"
         android:background="?attr/colorAccent"
         android:orientation="horizontal"
         android:gravity="center_vertical"
@@ -45,11 +44,13 @@
 
         <ImageView
             android:id="@+id/listing_refresh"
+            android:contentDescription="list refresh"
             style="@style/ActionPostItemIcon"
             android:src="@drawable/ic_action_refresh"/>
 
         <ImageView
             android:id="@+id/listing_filter"
+            android:contentDescription="list filter"
             style="@style/ActionPostItemIcon"
             android:src="@drawable/ic_action_sort"/>
     </LinearLayout>
