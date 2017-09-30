@@ -14,12 +14,9 @@ import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.BaseContextView;
-import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import icepick.Icepick;
 import io.realm.Realm;
@@ -133,7 +130,7 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseCo
         overridePendingTransition(enterAnim, exitAnim);
     }
 
-    public void openFragmentWithResult(Fragment fragment, String tag) {
+    public void openFragment(Fragment fragment, String tag) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         if(tag != null){
             transaction = transaction.replace(getContainerId(), fragment, tag);

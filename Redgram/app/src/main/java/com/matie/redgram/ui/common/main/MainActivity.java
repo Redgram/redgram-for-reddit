@@ -310,7 +310,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                 .instantiate(getBaseActivity(), Fragments.HOME.getFragment());
         homeFragment.setArguments(bundle);
 
-        openFragmentWithResult(homeFragment, Fragments.HOME.toString());
+        openFragment(homeFragment, Fragments.HOME.toString());
     }
 
     private void setUpPanel() {
@@ -448,7 +448,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             selectItem(currentSelectedMenuId);
         }
 
-        openFragmentWithResult(homeFragment, Fragments.HOME.toString());
+        openFragment(homeFragment, Fragments.HOME.toString());
     }
 
     @Override

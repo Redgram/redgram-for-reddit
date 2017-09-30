@@ -26,7 +26,7 @@ public class ProfileAboutModule {
 
     @FragmentScope
     @Provides
-    public ProfileAboutPresenter provideProfileOverviewPresenter(App app){
+    public ProfileAboutPresenter provideProfileAboutPresenter(App app){
         return new ProfileAboutPresenterImpl(app, profileAboutView);
     }
 }

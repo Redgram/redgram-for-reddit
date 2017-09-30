@@ -6,28 +6,25 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 
 import com.matie.redgram.R;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BottomNavigationActivity;
-import com.matie.redgram.ui.common.base.ViewPagerActivity;
+import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
 import com.matie.redgram.ui.profile.components.DaggerProfileComponent;
 import com.matie.redgram.ui.profile.components.ProfileComponent;
 import com.matie.redgram.ui.profile.modules.ProfileModule;
-import com.matie.redgram.ui.profile.views.adapters.ProfilePagerAdapter;
 
 import javax.inject.Inject;
 
@@ -67,6 +64,12 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
                             .profileModule(new ProfileModule(this))
                             .build();
         profileComponent.inject(this);
+    }
+
+    @Override
+    protected void setup() {
+        super.setup();
+        setSelectedMenuItemId(R.id.profile_about);
     }
 
     @Override
@@ -111,6 +114,32 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
     }
 
     @Override
+    protected Pair<String, Fragment> getDestinationFragmentInformation(int itemId, Fragment fragment) {
+        if (!(fragment instanceof ProfileAboutFragment)
+                && itemId == R.id.profile_about) {
+            return buildDestinationFragment(Fragments.PROFILE_ABOUT);
+        } else if (!(fragment instanceof ProfileActivityFragment)
+                && itemId == R.id.profile_activity) {
+            return buildDestinationFragment(Fragments.PROFILE_ACTIVITY);
+        } else {
+            return buildDestinationFragment(Fragments.PROFILE_ABOUT);
+        }
+    }
+
+    @Override
+    protected Fragment getDefaultFragment() {
+        return instantiateFragment(Fragments.PROFILE_ABOUT.getFragment());
+    }
+
+    private Pair<String, Fragment> buildDestinationFragment(Fragments fragmentEnum) {
+        return new Pair<>(fragmentEnum.toString(), instantiateFragment(fragmentEnum.getFragment()));
+    }
+
+    private Fragment instantiateFragment(String name) {
+        return Fragment.instantiate(ProfileActivity.this, name);
+    }
+
+    @Override
     public AppComponent component() {
         return profileComponent;
     }
@@ -123,11 +152,6 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
     @Override
     protected int getLayoutId() {
         return R.layout.activity_profile;
-    }
-
-    @Override
-    protected int getContainerId() {
-        return R.id.container;
     }
 
     @Override

@@ -6,16 +6,23 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.matie.redgram.R;
 import com.matie.redgram.ui.common.utils.display.CustomFragmentManager;
 
+import java.util.EmptyStackException;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public abstract class BottomNavigationActivity extends BaseActivity {
+    protected int currentSelectedMenuId;
+
     @InjectView(R.id.app_bar)
     AppBarLayout appBarLayout;
     @InjectView(R.id.coordinator_layout)
@@ -39,12 +46,17 @@ public abstract class BottomNavigationActivity extends BaseActivity {
         if (getIntent() != null) {
             checkIntent();
         }
-        setupBottomNavigation();
-        setupToolbar();
-        setupFragmentManager();
+
+        setup();
     }
 
-    private void setupFragmentManager() {
+    protected void setup() {
+        setupFragmentManager();
+        setupBottomNavigation();
+        setupToolbar();
+    }
+
+    protected void setupFragmentManager() {
         fragmentManager = new CustomFragmentManager();
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(fragmentManager, true);
     }
@@ -67,19 +79,49 @@ public abstract class BottomNavigationActivity extends BaseActivity {
         ButterKnife.reset(this);
     }
 
+    @Override
+    protected int getContainerId() {
+        return R.id.container;
+    }
+
     protected abstract void checkIntent();
 
     protected void setupBottomNavigation() {
         bottomNavigationView.setOnNavigationItemSelectedListener(
-                item -> true
-        );
-
-        bottomNavigationView.setOnNavigationItemReselectedListener(
                 item -> {
-
+                    setContainerLayout(item);
+                    return true;
                 }
         );
     }
+
+    private void setContainerLayout(MenuItem item) {
+        setContainerLayout(item.getItemId());
+    }
+
+    protected void setContainerLayout(int itemId) {
+        Pair<String, Fragment> destination = null;
+        try {
+            Fragment fragment = fragmentManager.getActiveFragment();
+            destination = getDestinationFragmentInformation(itemId, fragment);
+        } catch (EmptyStackException e) {
+            destination = getDestinationFragmentInformation(itemId, getDefaultFragment());
+        } finally {
+            if (destination != null) {
+                openFragment(destination.second, destination.first);
+                currentSelectedMenuId = itemId;
+            }
+        }
+    }
+
+    protected abstract Fragment getDefaultFragment();
+
+    protected void setSelectedMenuItemId(int itemId) {
+        bottomNavigationView.setSelectedItemId(itemId);
+    }
+
+    protected abstract Pair<String, Fragment>
+        getDestinationFragmentInformation(int itemId, Fragment fragment);
 
     private void setupToolbar() {
         setSupportActionBar(toolbar);

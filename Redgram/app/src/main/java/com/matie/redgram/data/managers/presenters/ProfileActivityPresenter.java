@@ -7,4 +7,5 @@ import com.matie.redgram.data.managers.presenters.base.BasePresenter;
  */
 
 public interface ProfileActivityPresenter extends BasePresenter {
+    String getTitle();
 }
