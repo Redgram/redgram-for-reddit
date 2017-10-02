@@ -53,14 +53,15 @@ public class LinksHelper {
 
     public static void openResult(Context context, String result, String type) {
         Intent intent = null;
-        if(SUB.equalsIgnoreCase(type)){
+        if (SUB.equalsIgnoreCase(type)) {
             intent = new Intent(context, MainActivity.class);
             intent.putExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME, result);
-        }else if(PROFILE.equalsIgnoreCase(type)){
+        } else if (PROFILE.equalsIgnoreCase(type)) {
             intent = ProfileActivity.intent(context);
             intent.putExtra(ProfileActivity.RESULT_USER_NAME, result);
         }
-        if(intent != null){
+
+        if (intent != null) {
             ((BaseActivity) context).openIntent(intent);
         }
     }

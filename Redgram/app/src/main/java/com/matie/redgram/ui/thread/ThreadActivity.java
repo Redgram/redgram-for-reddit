@@ -140,7 +140,7 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
         threadPresenter.getThread(postItem.getId(), new HashMap<>());
 
         title.setText(postItem.getTitle());
-        //if position is passed, call other method with position as param
+        // if position is passed, call other method with position as param
         optionsView.setup(postItem, this);
     }
 

@@ -5,14 +5,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.Pair;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
 
 import com.matie.redgram.R;
@@ -20,7 +16,6 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BottomNavigationActivity;
 import com.matie.redgram.ui.common.base.Fragments;
-import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.profile.components.DaggerProfileComponent;
 import com.matie.redgram.ui.profile.components.ProfileComponent;
@@ -31,15 +26,17 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import io.realm.RealmChangeListener;
 
-public class ProfileActivity extends BottomNavigationActivity implements CoordinatorLayoutInterface {
-
-    public static final String RESULT_USER_NAME = "result_user_name";
-    private ProfileComponent profileComponent;
+public class ProfileActivity extends BottomNavigationActivity {
 
     @Inject
     App app;
     @Inject
     DialogUtil dialogUtil;
+
+    public static final String RESULT_USER_NAME = "result_user_name";
+
+    private ProfileComponent profileComponent;
+    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +47,8 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
 
+
+        Log.d("username", username);
 //        app.getRedditClient().getUserOverview("nullbell")
 //                .compose(bindToLifecycle())
 //                .subscribeOn(Schedulers.io())
@@ -99,16 +98,14 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
 
     @Override
     protected void checkIntent() {
-        if(getIntent().getStringExtra(RESULT_USER_NAME) != null){
-            String username = getIntent().getStringExtra(RESULT_USER_NAME);
-            Log.d("username", username);
-        }else if(getIntent().getData() != null){
+        if (getIntent().getStringExtra(RESULT_USER_NAME) != null) {
+            username = getIntent().getStringExtra(RESULT_USER_NAME);
+        } else if (getIntent().getData() != null) {
             Uri data = getIntent().getData();
-            if(data.getPath().contains("/u/")){
+            if (data.getPath().contains("/u/")) {
                 //open user
                 String path = data.getPath();
-                String username = path.substring(path.lastIndexOf('/') + 1, path.length());
-                Log.d("username", username);
+                username = path.substring(path.lastIndexOf('/') + 1, path.length());
             }
         }
     }
@@ -161,28 +158,5 @@ public class ProfileActivity extends BottomNavigationActivity implements Coordin
 
     public static Intent intent(Context context){
         return new Intent(context, ProfileActivity.class);
-    }
-
-    @Override
-    public CoordinatorLayout coordinatorLayout() {
-        return getCoordinatorLayout();
-    }
-
-    @Override
-    public void showSnackBar(String msg, int length, @Nullable String actionText, @Nullable View.OnClickListener onClickListener, @Nullable Snackbar.Callback callback) {
-        if(coordinatorLayout() != null){
-
-            Snackbar snackbar = Snackbar.make(coordinatorLayout(), msg, length);
-
-            if(actionText != null && onClickListener != null){
-                snackbar.setAction(actionText, onClickListener);
-            }
-
-            if(callback != null) {
-                snackbar.addCallback(callback);
-            }
-            //hide the panel before showing the snack bar
-            snackbar.show();
-        }
     }
 }

@@ -2,17 +2,21 @@ package com.matie.redgram.ui.common.base;
 
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.matie.redgram.R;
+import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.display.CustomFragmentManager;
 
 import java.util.EmptyStackException;
@@ -20,7 +24,8 @@ import java.util.EmptyStackException;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public abstract class BottomNavigationActivity extends BaseActivity {
+public abstract class BottomNavigationActivity extends BaseActivity
+        implements CoordinatorLayoutInterface {
     protected int currentSelectedMenuId;
 
     @InjectView(R.id.app_bar)
@@ -130,7 +135,26 @@ public abstract class BottomNavigationActivity extends BaseActivity {
         }
     }
 
-    public CoordinatorLayout getCoordinatorLayout() {
+    @Override
+    public CoordinatorLayout coordinatorLayout() {
         return coordinatorLayout;
+    }
+
+    @Override
+    public void showSnackBar(String msg, int length, @Nullable String actionText, @Nullable View.OnClickListener onClickListener, @Nullable Snackbar.Callback callback) {
+        if(coordinatorLayout() != null){
+
+            Snackbar snackbar = Snackbar.make(coordinatorLayout(), msg, length);
+
+            if(actionText != null && onClickListener != null){
+                snackbar.setAction(actionText, onClickListener);
+            }
+
+            if(callback != null) {
+                snackbar.addCallback(callback);
+            }
+
+            snackbar.show();
+        }
     }
 }
