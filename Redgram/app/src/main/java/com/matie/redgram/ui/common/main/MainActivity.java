@@ -103,7 +103,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     private Window window;
     private boolean isDrawerOpen = false;
     private String subredditToVisitOnResult;
-    private RealmChangeListener realmSessionListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,12 +156,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     @Override
     protected int getContainerId() {
         return R.id.container;
-    }
-
-    @Override
-    protected RealmChangeListener getRealmSessionChangeListener() {
-        //keep null as
-        return realmSessionListener;
     }
 
     private void setUpToolbar() {

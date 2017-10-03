@@ -2,6 +2,7 @@ package com.matie.redgram.ui.profile;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,18 +68,37 @@ public class ProfileAboutFragment extends BaseFragment implements ProfileAboutVi
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        textView.setText(aboutPresenter.getTitle());
+
+        if (getArguments() != null) {
+           textView.setText(getArguments().getString(ProfileActivity.RESULT_USER_NAME) + " " + 1 );
+
+            /**
+             * todo -
+             * for auth user or user in session - call getAuthUser(), getTrophies(), getKarmaDetails()
+             * for normal users - getUserDetails, getUserTrophies
+             */
+        }
+//        app.getRedditClient().getUserOverview("nullbell")
+//                .compose(bindToLifecycle())
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe();
     }
 
     @Override
     protected void setupComponent() {
-        AppComponent appComponent = ((BaseActivity)getActivity()).component();
+        AppComponent appComponent = ((BaseActivity) getActivity()).component();
         ProfileComponent profileComponent = (ProfileComponent) appComponent;
         component = DaggerProfileAboutComponent.builder()
                 .profileComponent(profileComponent)
                 .profileAboutModule(new ProfileAboutModule(this))
                 .build();
         component.inject(this);
+    }
+
+    @Override
+    protected void setupToolbar() {
+
     }
 
     @Override

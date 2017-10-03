@@ -100,12 +100,7 @@ public class SubscriptionActivity extends BaseActivity{
 
     @Override
     protected int getContainerId() {
-        return 0;
-    }
-
-    @Override
-    protected RealmChangeListener getRealmSessionChangeListener() {
-        return null;
+        return R.id.container;
     }
 
     public void closeActivityWithResult(String subredditName) {
@@ -123,7 +118,7 @@ public class SubscriptionActivity extends BaseActivity{
 
         detailsFragment.setArguments(bundle);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, detailsFragment)
+        getSupportFragmentManager().beginTransaction().replace(getContainerId(), detailsFragment)
                 //make sure to add to back stack to pop and return to original detailsFragment
                 .addToBackStack("sub_list")
                 .commit();

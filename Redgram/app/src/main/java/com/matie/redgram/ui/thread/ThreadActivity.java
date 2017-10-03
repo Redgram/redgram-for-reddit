@@ -295,11 +295,6 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
     }
 
     @Override
-    protected RealmChangeListener getRealmSessionChangeListener() {
-        return null;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_comments, menu);

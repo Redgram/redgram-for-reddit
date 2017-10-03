@@ -1,5 +1,8 @@
 package com.matie.redgram.data.managers.presenters;
 
+import com.matie.redgram.data.models.db.Session;
+import com.matie.redgram.data.network.api.reddit.RedditClient;
+import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.profile.views.ProfileAboutView;
 
@@ -11,8 +14,13 @@ import javax.inject.Inject;
 
 public class ProfileAboutPresenterImpl implements ProfileAboutPresenter {
 
+    private final RedditClientInterface redditClient;
+    private final Session session;
+
     @Inject
     public ProfileAboutPresenterImpl(App app, ProfileAboutView view) {
+        redditClient = app.getRedditClient();
+        session = view.getContentContext().getBaseActivity().getSession();
     }
 
     @Override
@@ -26,7 +34,7 @@ public class ProfileAboutPresenterImpl implements ProfileAboutPresenter {
     }
 
     @Override
-    public String getTitle() {
-        return "About";
+    public String getUserDetails(String username) {
+        return null;
     }
 }

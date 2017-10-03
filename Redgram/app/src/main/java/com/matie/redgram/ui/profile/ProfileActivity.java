@@ -46,14 +46,6 @@ public class ProfileActivity extends BottomNavigationActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
-
-
-        Log.d("username", username);
-//        app.getRedditClient().getUserOverview("nullbell")
-//                .compose(bindToLifecycle())
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe();
     }
 
     @Override
@@ -133,7 +125,14 @@ public class ProfileActivity extends BottomNavigationActivity {
     }
 
     private Fragment instantiateFragment(String name) {
-        return Fragment.instantiate(ProfileActivity.this, name);
+        Fragment fragment = Fragment.instantiate(ProfileActivity.this, name);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(RESULT_USER_NAME, username);
+
+        fragment.setArguments(bundle);
+
+        return fragment;
     }
 
     @Override
@@ -149,11 +148,6 @@ public class ProfileActivity extends BottomNavigationActivity {
     @Override
     protected int getLayoutId() {
         return R.layout.activity_profile;
-    }
-
-    @Override
-    protected RealmChangeListener getRealmSessionChangeListener() {
-        return null;
     }
 
     public static Intent intent(Context context){

@@ -29,17 +29,12 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseCo
 
     private Realm realm;
     private Session session;
-    private RealmChangeListener sessionListener;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fresco.initialize(this);
         Icepick.restoreInstanceState(this, savedInstanceState);
         setContentView(getLayoutId());
-
-//        if(getIntent() != null){
-//            checkIntent();
-//        }
 
         AppComponent appComponent = App.get(this).component();
         setupRealm(appComponent.getApp());
@@ -55,10 +50,6 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseCo
     @Override
     protected void onResume(){
         super.onResume();
-
-        if(session != null && sessionListener != null){
-            session.addChangeListener(sessionListener);
-        }
 
         //onResume of any activity, show connection status
         ((App)getApplication()).getConnectionManager().showConnectionStatus(true);
@@ -87,21 +78,13 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseCo
     public abstract AppComponent component();
     public abstract DialogUtil getDialogUtil();
     protected abstract void setupComponent(AppComponent appComponent);
-//    protected abstract void checkIntent();
     protected abstract int getLayoutId();
     protected abstract int getContainerId();
-    protected abstract RealmChangeListener getRealmSessionChangeListener();
 
     private void setupRealm(App app) {
         DatabaseManager databaseManager = app.getDatabaseManager();
         realm = databaseManager.getInstance();
         session = DatabaseHelper.getSession(realm);
-        if(session != null) {
-            sessionListener = getRealmSessionChangeListener();
-            if(sessionListener != null){
-                session.addChangeListener(sessionListener);
-            }
-        }
     }
 
     public Realm getRealm() {
@@ -110,6 +93,16 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseCo
 
     public Session getSession() {
         return session;
+    }
+
+    public void addSessionListener(RealmChangeListener listener) {
+        if (session == null) return;
+        session.addChangeListener(listener);
+    }
+
+    public void removeSessionListener(RealmChangeListener listener) {
+        if (session == null) return;
+        session.removeChangeListener(listener);
     }
 
     public void openIntent(Intent intent) {

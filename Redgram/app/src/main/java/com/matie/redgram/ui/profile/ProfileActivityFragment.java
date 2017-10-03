@@ -68,7 +68,9 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        textView.setText(activityPresenter.getTitle());
+        if (getArguments() != null) {
+            textView.setText(getArguments().getString(ProfileActivity.RESULT_USER_NAME) + " " + 2 );
+        }
     }
 
     @Override
@@ -80,6 +82,11 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
                 .profileActivityModule(new ProfileActivityModule(this))
                 .build();
         component.inject(this);
+    }
+
+    @Override
+    protected void setupToolbar() {
+
     }
 
     @Override

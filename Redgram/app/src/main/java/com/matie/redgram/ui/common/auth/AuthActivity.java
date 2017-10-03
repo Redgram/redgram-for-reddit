@@ -157,11 +157,6 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
     @Override
-    protected RealmChangeListener getRealmSessionChangeListener() {
-        return null;
-    }
-
-    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
     }
