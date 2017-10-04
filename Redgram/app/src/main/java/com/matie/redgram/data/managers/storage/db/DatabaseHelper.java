@@ -221,7 +221,7 @@ public class DatabaseHelper {
 
     public static Session buildSession(User user){
         Session session = new Session();
-        session.setId(DatabaseManager.id());
+        session.setId(DatabaseManager.SESSION_DEFAULT_ID);
         session.setUser(user);
         return session;
     }
