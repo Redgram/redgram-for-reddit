@@ -7,6 +7,7 @@ import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.api.reddit.main.RedditListing;
+import com.matie.redgram.data.models.api.reddit.main.RedditUser;
 
 import java.util.List;
 import java.util.Map;
@@ -157,7 +158,7 @@ public interface RedditProvider {
      * @return
      */
     @GET(USER_ABOUT)
-    Observable<AuthUser> getUserDetails(@Path("username") String username);
+    Observable<RedditResponse<RedditUser>> getUserDetails(@Path("username") String username);
 
     /**
      * Overview of links and comments submitted

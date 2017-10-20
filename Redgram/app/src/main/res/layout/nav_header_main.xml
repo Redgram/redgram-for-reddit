@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom"
-        android:layout_marginBottom="@dimen/default_vertical_margin">
+        android:layout_marginBottom="@dimen/default_large_margin">
 
         <TextView
             android:id="@+id/drawerUserName"

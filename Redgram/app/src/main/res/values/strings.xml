@@ -274,5 +274,10 @@
     <string name="pref_posts_hide_ups_title">Hide upvoted links</string>
     <string name="pref_posts_hide_downs_title">Hide downvoted links</string>
 
+    <!-- profile -->
+    <string name="link_karma">Link Karma</string>
+    <string name="comment_karma">Comment Karma</string>
+    <string name="option_friends">Friends</string>
+    <string name="option_blocked_users">Blocked Users</string>
 
 </resources>

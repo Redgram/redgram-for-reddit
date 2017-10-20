@@ -1,8 +1,8 @@
 package com.matie.redgram.data.models.main.home;
 
+import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
 
 /**
  * This object's intention is to hold the initial sub models that are responsible to represent the
@@ -12,24 +12,24 @@ import com.matie.redgram.data.models.main.reddit.RedditListing;
  */
 public class HomeViewWrapper {
     // TODO: 2016-06-04 also get trending if enabled in settings
-    private RedditListing<SubredditItem> subreddits;
-    private RedditListing<PostItem> links;
+    private Listing<SubredditItem> subreddits;
+    private Listing<PostItem> links;
 
     private Boolean isSubredditsCached;
 
-    public RedditListing<SubredditItem> getSubreddits() {
+    public Listing<SubredditItem> getSubreddits() {
         return subreddits;
     }
 
-    public void setSubreddits(RedditListing<SubredditItem> subreddits) {
+    public void setSubreddits(Listing<SubredditItem> subreddits) {
         this.subreddits = subreddits;
     }
 
-    public RedditListing<PostItem> getLinks() {
+    public Listing<PostItem> getLinks() {
         return links;
     }
 
-    public void setLinks(RedditListing<PostItem> links) {
+    public void setLinks(Listing<PostItem> links) {
         this.links = links;
     }
 

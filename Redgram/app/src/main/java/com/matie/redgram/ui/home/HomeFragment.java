@@ -22,8 +22,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
+import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
@@ -374,7 +374,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     }
 
     @Override
-    public void loadLinksContainer(RedditListing<PostItem> links) {
+    public void loadLinksContainer(Listing<PostItem> links) {
         linksContainerView.setLoadMoreId(links.getAfter());
         linksContainerView.updateList(links.getItems());
     }

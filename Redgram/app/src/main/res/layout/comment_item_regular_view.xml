@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginBottom="@dimen/default_vertical_margin"
+        android:layout_marginBottom="@dimen/default_large_margin"
         android:layout_alignParentTop="true">
         <TextView
             android:id="@+id/author"
@@ -48,7 +48,7 @@
 
     <TextView
         android:id="@+id/reg_body"
-        android:layout_marginTop="@dimen/default_vertical_margin"
+        android:layout_marginTop="@dimen/default_large_margin"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

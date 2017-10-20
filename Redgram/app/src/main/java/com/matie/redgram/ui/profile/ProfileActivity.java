@@ -110,14 +110,14 @@ public class ProfileActivity extends BottomNavigationActivity {
         } else if (!(fragment instanceof ProfileActivityFragment)
                 && itemId == R.id.profile_activity) {
             return buildDestinationFragment(Fragments.PROFILE_ACTIVITY);
-        } else {
-            return buildDestinationFragment(Fragments.PROFILE_ABOUT);
         }
+
+        return null;
     }
 
     @Override
-    protected Fragment getDefaultFragment() {
-        return instantiateFragment(Fragments.PROFILE_ABOUT.getFragment());
+    protected Pair<String, Fragment> getDefaultDestinationFragmentInformation() {
+        return buildDestinationFragment(Fragments.PROFILE_ABOUT);
     }
 
     private Pair<String, Fragment> buildDestinationFragment(Fragments fragmentEnum) {

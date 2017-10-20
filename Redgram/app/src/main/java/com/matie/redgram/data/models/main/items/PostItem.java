@@ -2,7 +2,7 @@ package com.matie.redgram.data.models.main.items;
 
 import android.net.Uri;
 
-import com.matie.redgram.data.models.main.reddit.RedditObject;
+import com.matie.redgram.data.models.main.base.BaseModel;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * Created by matie on 09/05/15.
  */
-public class PostItem extends RedditObject {
+public class PostItem extends BaseModel {
 
     public enum Type{
         DEFAULT,

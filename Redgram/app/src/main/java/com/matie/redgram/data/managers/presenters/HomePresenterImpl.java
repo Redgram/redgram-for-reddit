@@ -6,10 +6,10 @@ import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.User;
+import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.home.HomeViewWrapper;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseFragment;
@@ -103,15 +103,15 @@ public class HomePresenterImpl implements HomePresenter{
             params.put("limit", getPrefs().getNumSites()+"");
         }
 
-        Observable<RedditListing<PostItem>> linksObservable =
+        Observable<Listing<PostItem>> linksObservable =
                 redditClient.getListing(app.getResources().getString(R.string.default_filter).toLowerCase(),
                         params, null);
 
         Map<String,String> subparams = new HashMap<String, String>();
         subparams.put("limit", "100");
 
-        RedditListing<SubredditItem> storedListing =  getSubredditsFromCache();
-        Observable<RedditListing<SubredditItem>> subredditsObservable;
+        Listing<SubredditItem> storedListing =  getSubredditsFromCache();
+        Observable<Listing<SubredditItem>> subredditsObservable;
         if(storedListing != null){
             subredditsObservable = Observable.just(storedListing);
         }else{
@@ -152,7 +152,7 @@ public class HomePresenterImpl implements HomePresenter{
                         homeView.loadLinksContainer(homeViewWrapper.getLinks());
 
                         //dealing with the subreddits
-                        RedditListing<SubredditItem> subredditListing = homeViewWrapper.getSubreddits();
+                        Listing<SubredditItem> subredditListing = homeViewWrapper.getSubreddits();
                         subredditItems.addAll(subredditListing.getItems());
                         Collections.sort(subredditItems, new Comparator<SubredditItem>() {
                             @Override
@@ -177,7 +177,7 @@ public class HomePresenterImpl implements HomePresenter{
                 subredditNames.add(item.getName());
             }
         }else{
-            RedditListing<SubredditItem> storedListing = getSubredditsFromCache();
+            Listing<SubredditItem> storedListing = getSubredditsFromCache();
             if(storedListing != null){
                 for(SubredditItem item : storedListing.getItems()){
                     subredditNames.add(item.getName());
@@ -188,7 +188,7 @@ public class HomePresenterImpl implements HomePresenter{
         return subredditNames;
     }
 
-    public RedditListing<SubredditItem> getSubredditsFromCache() {
+    public Listing<SubredditItem> getSubredditsFromCache() {
         List<Subreddit> subreddits = databaseManager.getSubreddits();
         if(!subreddits.isEmpty()){
             return buildSubredditListing(subreddits);
@@ -196,12 +196,12 @@ public class HomePresenterImpl implements HomePresenter{
         return null;
     }
 
-    private void setSubredditsInCache(RedditListing<SubredditItem> listing) {
+    private void setSubredditsInCache(Listing<SubredditItem> listing) {
         databaseManager.setSubreddits(listing.getItems());
     }
 
-    private RedditListing<SubredditItem> buildSubredditListing(List<Subreddit> subreddits) {
-        RedditListing<SubredditItem> listing = new RedditListing<>();
+    private Listing<SubredditItem> buildSubredditListing(List<Subreddit> subreddits) {
+        Listing<SubredditItem> listing = new Listing<>();
         List<SubredditItem> items = new ArrayList<>();
         for(Subreddit subreddit : subreddits){
             SubredditItem item = new SubredditItem();

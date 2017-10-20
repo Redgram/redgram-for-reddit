@@ -36,6 +36,10 @@ public abstract class BaseFragment extends RxFragment implements BaseContextView
 
         //all common tasks
         setupComponent();
+        setup();
+    }
+
+    protected void setup() {
         setupToolbar();
     }
 

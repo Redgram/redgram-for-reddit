@@ -1,7 +1,6 @@
 package com.matie.redgram.data.models.main.items;
 
 /**
- * Created by matie on 17/01/15.
  * Navigation Drawer Item object.
  */
 public class UserItem {
@@ -12,7 +11,7 @@ public class UserItem {
     private boolean isDefault = false;
 
     public UserItem(String id, String userName) {
-        this.id =id;
+        this.id = id;
         this.userName = userName;
     }
 

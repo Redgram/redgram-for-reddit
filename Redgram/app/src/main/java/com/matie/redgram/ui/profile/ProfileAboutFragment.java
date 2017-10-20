@@ -2,17 +2,26 @@ package com.matie.redgram.ui.profile;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.ProfileAboutPresenterImpl;
+import com.matie.redgram.data.models.main.profile.ProfileUser;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.common.base.BottomNavigationActivity;
+import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.profile.components.DaggerProfileAboutComponent;
 import com.matie.redgram.ui.profile.components.ProfileAboutComponent;
@@ -25,18 +34,28 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by matie on 2017-09-27.
- */
-
 public class ProfileAboutFragment extends BaseFragment implements ProfileAboutView {
 
     @Inject
     ProfileAboutPresenterImpl aboutPresenter;
     ProfileAboutComponent component;
 
-    @InjectView(R.id.text)
-    TextView textView;
+    @InjectView(R.id.progress_bar)
+    ProgressBar progressBar;
+
+    @InjectView(R.id.content)
+    LinearLayout contentView;
+
+    @InjectView(R.id.link_karma)
+    TextView linkKarmaTextView;
+
+    @InjectView(R.id.comment_karma)
+    TextView commentKarmaTextView;
+
+    @InjectView(R.id.auth_user_options)
+    LinearLayout userOptions;
+
+    String username;
 
     @Nullable
     @Override
@@ -55,8 +74,8 @@ public class ProfileAboutFragment extends BaseFragment implements ProfileAboutVi
 
     @Override
     public void onPause() {
-        aboutPresenter.unregisterForEvents();
         super.onPause();
+        aboutPresenter.unregisterForEvents();
     }
 
     @Override
@@ -66,23 +85,30 @@ public class ProfileAboutFragment extends BaseFragment implements ProfileAboutVi
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    protected void setup() {
+        if (getArguments() == null) return;
 
-        if (getArguments() != null) {
-           textView.setText(getArguments().getString(ProfileActivity.RESULT_USER_NAME) + " " + 1 );
+        final String username = getArguments().getString(ProfileActivity.RESULT_USER_NAME);
 
-            /**
-             * todo -
-             * for auth user or user in session - call getAuthUser(), getTrophies(), getKarmaDetails()
-             * for normal users - getUserDetails, getUserTrophies
-             */
+        if(username == null) return;
+
+        this.username = username;
+        populateViews();
+        setupUserOptions();
+        setupToolbar();
+    }
+
+    private void populateViews() {
+        aboutPresenter.getUserDetails(username);
+    }
+
+
+    private void setupUserOptions() {
+        if (aboutPresenter.isAuthUser(username)) {
+            userOptions.setVisibility(View.VISIBLE);
+        } else {
+            userOptions.setVisibility(View.GONE);
         }
-//        app.getRedditClient().getUserOverview("nullbell")
-//                .compose(bindToLifecycle())
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe();
     }
 
     @Override
@@ -97,18 +123,29 @@ public class ProfileAboutFragment extends BaseFragment implements ProfileAboutVi
     }
 
     @Override
-    protected void setupToolbar() {
+    public void updateProfile(ProfileUser profileUser) {
+        linkKarmaTextView.setText(profileUser.getKarma().getLink() + "");
+        commentKarmaTextView.setText(profileUser.getKarma().getComment() + "");
+    }
 
+    @Override
+    protected void setupToolbar() {
+        ActionBar supportActionBar = ((BottomNavigationActivity) getActivity()).getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setTitle(username);
+        }
     }
 
     @Override
     public void showLoading() {
-
+        contentView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideLoading() {
-
+        progressBar.setVisibility(View.GONE);
+        contentView.setVisibility(View.VISIBLE);
     }
 
     @Override

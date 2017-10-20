@@ -4,8 +4,8 @@ import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.User;
+import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.items.SubredditItem;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseFragment;
@@ -80,8 +80,8 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         params.put("limit", "100");
 
         //check if subreddits are in db
-        Observable<RedditListing<SubredditItem>> subredditsObservable;
-        RedditListing<SubredditItem> storedListing = null;
+        Observable<Listing<SubredditItem>> subredditsObservable;
+        Listing<SubredditItem> storedListing = null;
         if(!forceNetwork){
             storedListing = getSubredditsFromCache();
         }
@@ -101,7 +101,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
                 .compose(((BaseFragment)subscriptionView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<RedditListing<SubredditItem>>() {
+                .subscribe(new Subscriber<Listing<SubredditItem>>() {
                     @Override
                     public void onCompleted() {
                         subscriptionView.hideLoading();
@@ -113,7 +113,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
                     }
 
                     @Override
-                    public void onNext(RedditListing<SubredditItem> subredditListing) {
+                    public void onNext(Listing<SubredditItem> subredditListing) {
                         subredditItems.addAll(subredditListing.getItems());
 
                         //todo optimize
@@ -131,7 +131,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
                 });
     }
 
-    private RedditListing<SubredditItem> getSubredditsFromCache() {
+    private Listing<SubredditItem> getSubredditsFromCache() {
         List<Subreddit> subreddits = databaseManager.getSubreddits();
         if(!subreddits.isEmpty()){
             return buildSubredditListing(subreddits);
@@ -139,8 +139,8 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         return null;
     }
 
-    private RedditListing<SubredditItem> buildSubredditListing(List<Subreddit> subreddits) {
-        RedditListing<SubredditItem> listing = new RedditListing<>();
+    private Listing<SubredditItem> buildSubredditListing(List<Subreddit> subreddits) {
+        Listing<SubredditItem> listing = new Listing<>();
         List<SubredditItem> items = new ArrayList<>();
         for(Subreddit subreddit : subreddits){
             SubredditItem sbItem = new SubredditItem();

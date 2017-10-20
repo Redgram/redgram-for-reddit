@@ -102,6 +102,7 @@ public class UserListPresenterImpl implements UserListPresenter {
                             userListView.populateView(userItems);
                         }
                     });
+
         if(!getSubscriptions().isUnsubscribed()){
             subscriptions.add(userListSubscription);
         }
@@ -141,12 +142,12 @@ public class UserListPresenterImpl implements UserListPresenter {
     public void removeUser(String id, int position) {
         try {
             DatabaseHelper.deleteUserById(realm, id, null);
-            if(userListView.getItem(position).isSelected()){
+            if (userListView.getItem(position).isSelected()) {
                 selectUser("Guest", 0);
-            }else{
+            } else {
                 userListView.removeItem(position);
             }
-        }catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             Log.d("Remove User", e.getMessage());
             userListView.showErrorMessage(e.getMessage());
         }
@@ -161,9 +162,9 @@ public class UserListPresenterImpl implements UserListPresenter {
                 .flatMap(this::updateSessionWithSelectedUser);
 
         if(contextView instanceof BaseActivity){
-            userObservable.compose(((BaseActivity)contextView).bindToLifecycle());
+            userObservable.compose(((BaseActivity) contextView).bindToLifecycle());
         }else if(contextView instanceof BaseFragment){
-            userObservable.compose(((BaseFragment)contextView).bindToLifecycle());
+            userObservable.compose(((BaseFragment) contextView).bindToLifecycle());
         }
 
         Subscription selectUserSubscription = userObservable

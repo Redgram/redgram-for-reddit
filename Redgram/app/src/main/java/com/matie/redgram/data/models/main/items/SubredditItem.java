@@ -1,11 +1,11 @@
 package com.matie.redgram.data.models.main.items;
 
-import com.matie.redgram.data.models.main.reddit.RedditObject;
+import com.matie.redgram.data.models.main.base.BaseModel;
 
 /**
  * Created by matie on 2015-10-25.
  */
-public class SubredditItem extends RedditObject{
+public class SubredditItem extends BaseModel {
     String name;
     private int accountsActive;
     private String description;

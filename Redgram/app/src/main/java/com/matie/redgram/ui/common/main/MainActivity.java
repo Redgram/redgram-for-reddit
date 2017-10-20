@@ -43,6 +43,7 @@ import com.matie.redgram.ui.common.user.UserListView;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.display.CustomFragmentManager;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.ui.profile.ProfileActivity;
@@ -181,7 +182,11 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         username.setText(user != null ? user.getUserName() : "Guest");
         if(user != null){
             if(User.USER_AUTH.equalsIgnoreCase(user.getUserType())){
-                username.setOnClickListener(v -> startActivity(ProfileActivity.intent(MainActivity.this)));
+                username.setOnClickListener(view -> {
+                    Intent intent = ProfileActivity.intent(getContext());
+                    intent.putExtra(ProfileActivity.RESULT_USER_NAME, user.getUserName());
+                    openIntent(intent);
+                });
             }else if(User.USER_GUEST.equalsIgnoreCase(user.getUserType())){
                 navigationView.getMenu().findItem(R.id.nav_logout).setVisible(false);
             }

@@ -86,8 +86,4 @@ public class User extends RealmObject {
     public void setSubreddits(RealmList<Subreddit> subreddits) {
         this.subreddits = subreddits;
     }
-
-    public boolean isAuthUser() {
-        return USER_AUTH.equals(this.userType);
-    }
 }

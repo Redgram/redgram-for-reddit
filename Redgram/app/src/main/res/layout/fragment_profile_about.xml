@@ -1,9 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    style="@style/Match">
+
+    <FrameLayout
+        style="@style/MatchWidth">
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:orientation="vertical"
+            style="@style/Match">
+
+            <!--todo Create a section for trophies, gold, creation, etc-->
+            <!--<LinearLayout-->
+            <!--style="@style/MatchWidth"-->
+            <!--android:orientation="vertical">-->
+            <!---->
+            <!--</LinearLayout>-->
+
+            <!--<include-->
+            <!--layout="@layout/post_item_separator"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/separator_height" />-->
+
+            <LinearLayout
+                style="@style/MatchWidth"
+                android:orientation="vertical"
+                android:layout_margin="@dimen/default_large_margin">
+
+                <TextView
+                    style="@style/Wrap"
+                    android:text="@string/link_karma"
+                    android:textSize="@dimen/text_size_small"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/link_karma"
+                    style="@style/Wrap"
+                    android:layout_marginTop="@dimen/default_small_margin"
+                    android:textSize="@dimen/text_size_large"
+                    android:textColor="@color/material_grey800"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/MatchWidth"
+                android:orientation="vertical"
+                android:layout_margin="@dimen/default_large_margin">
+
+                <TextView
+                    style="@style/Wrap"
+                    android:text="@string/comment_karma"
+                    android:textSize="@dimen/text_size_small"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/comment_karma"
+                    style="@style/Wrap"
+                    android:layout_marginTop="@dimen/default_small_margin"
+                    android:textSize="@dimen/text_size_large"
+                    android:textColor="@color/material_grey800"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@style/Wrap"
+            android:layout_marginTop="@dimen/default_medium_margin"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
+
+    <LinearLayout
+        android:id="@+id/auth_user_options"
+        style="@style/MatchWidth"
+        android:layout_marginLeft="@dimen/default_small_margin"
+        android:layout_marginStart="@dimen/default_small_margin"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/post_item_separator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/separator_height" />
+
+        <TextView
+            android:id="@+id/btn_friends"
+            style="@style/Wrap"
+            android:layout_margin="@dimen/default_small_margin"
+            android:text="@string/option_friends"
+            android:textStyle="bold"
+            android:textColor="@color/material_red400"
+            android:textSize="@dimen/text_size_small"/>
+
+        <TextView
+            android:id="@+id/btn_blocked"
+            style="@style/Wrap"
+            android:layout_margin="@dimen/default_small_margin"
+            android:text="@string/option_blocked_users"
+            android:textColor="@color/material_red400"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_small"/>
+
+    </LinearLayout>
+
 </LinearLayout>

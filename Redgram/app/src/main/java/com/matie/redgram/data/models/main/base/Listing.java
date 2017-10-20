@@ -1,4 +1,4 @@
-package com.matie.redgram.data.models.main.reddit;
+package com.matie.redgram.data.models.main.base;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import java.util.List;
  *
  * Created by matie on 13/09/15.
  */
-public class RedditListing<T> {
+public class Listing<T> {
     private List<T> items;
     private String modHash;
     private String after;

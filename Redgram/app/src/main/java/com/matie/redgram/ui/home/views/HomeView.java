@@ -1,7 +1,7 @@
 package com.matie.redgram.ui.home.views;
 
+import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.ui.common.views.ContentView;
 
 /**
@@ -11,5 +11,5 @@ import com.matie.redgram.ui.common.views.ContentView;
 public interface HomeView extends ContentView {
     void showToolbar();
     void hideToolbar();
-    void loadLinksContainer(RedditListing<PostItem> links);
+    void loadLinksContainer(Listing<PostItem> links);
 }

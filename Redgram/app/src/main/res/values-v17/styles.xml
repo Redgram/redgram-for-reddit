@@ -18,7 +18,7 @@
             <item name="android:layout_alignParentEnd">true</item>
             <item name="android:layout_marginLeft">@dimen/default_horizontal_margin</item>
             <item name="android:layout_marginRight">@dimen/default_horizontal_margin</item>
-            <item name="android:layout_marginTop">@dimen/default_vertical_margin</item>
+            <item name="android:layout_marginTop">@dimen/default_large_margin</item>
                 <item name="android:background">@drawable/default_ripple</item>
         </style>
 

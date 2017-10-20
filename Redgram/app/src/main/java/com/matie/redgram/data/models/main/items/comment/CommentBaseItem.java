@@ -1,11 +1,11 @@
 package com.matie.redgram.data.models.main.items.comment;
 
-import com.matie.redgram.data.models.main.reddit.RedditObject;
+import com.matie.redgram.data.models.main.base.BaseModel;
 
 /**
  * Created by matie on 2016-01-31.
  */
-public class CommentBaseItem extends RedditObject {
+public class CommentBaseItem extends BaseModel {
 
     public enum CommentType{
         REGULAR,

@@ -62,7 +62,7 @@
 
     <style name="Separator" parent="Match">
         <item name="android:layout_height">@dimen/separator_height</item>
-        <item name="android:background">@color/material_grey200</item>
+        <item name="android:background">@color/material_grey300</item>
     </style>
 
     <style name="default_icon" parent="ActionPostItemIcon">
@@ -100,7 +100,7 @@
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_marginLeft">@dimen/default_horizontal_margin</item>
         <item name="android:layout_marginRight">@dimen/default_horizontal_margin</item>
-        <item name="android:layout_marginTop">@dimen/default_vertical_margin</item>
+        <item name="android:layout_marginTop">@dimen/default_large_margin</item>
         <item name="android:background">@drawable/default_ripple</item>
     </style>
 

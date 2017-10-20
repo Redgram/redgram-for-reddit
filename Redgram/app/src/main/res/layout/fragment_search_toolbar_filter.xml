@@ -23,7 +23,7 @@
         style="@style/MatchWidth"
         android:id="@+id/tablelayout"
         android:layout_below="@+id/filter_query"
-        android:layout_marginTop="@dimen/default_vertical_margin"
+        android:layout_marginTop="@dimen/default_large_margin"
         >
         <TableRow>
             <TextView
@@ -54,7 +54,7 @@
                />
         </TableRow>
         <TableRow
-            android:layout_marginTop="@dimen/default_vertical_margin"
+            android:layout_marginTop="@dimen/default_large_margin"
             >
             <TextView
                 android:id="@+id/filter_limit"

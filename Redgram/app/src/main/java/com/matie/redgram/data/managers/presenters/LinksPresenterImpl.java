@@ -6,8 +6,8 @@ import android.widget.Toast;
 import com.google.gson.JsonElement;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.db.Prefs;
+import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.data.network.api.utils.subscriber.NullCheckSubscriber;
 import com.matie.redgram.data.network.api.utils.subscriber.NullSubscriptionExecutor;
@@ -319,7 +319,7 @@ public class LinksPresenterImpl implements LinksPresenter {
     }
 
     private Subscription getListingSubscription(@Nullable String subreddit, @Nullable String filter, Map<String,String> params, boolean isNew){
-        Observable<RedditListing<PostItem>> targetObservable;
+        Observable<Listing<PostItem>> targetObservable;
 
         if(subreddit != null){
             if(filter != null)
@@ -335,12 +335,12 @@ public class LinksPresenterImpl implements LinksPresenter {
 
     @SuppressWarnings("unchecked")
     // TODO: 2016-04-21 share Subscriber with getSearchSubscription
-    private Subscription buildSubscription(Observable<RedditListing<PostItem>> observable, boolean isNew){
+    private Subscription buildSubscription(Observable<Listing<PostItem>> observable, boolean isNew){
         return observable
                 .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<RedditListing>() {
+                .subscribe(new Subscriber<Listing>() {
                     @Override
                     public void onCompleted() {
                         if(isNew){
@@ -361,7 +361,7 @@ public class LinksPresenterImpl implements LinksPresenter {
                     }
 
                     @Override
-                    public void onNext(RedditListing wrapper) {
+                    public void onNext(Listing wrapper) {
                         if(isNew){
                             linksView.updateList(wrapper.getItems());
                         }else{
@@ -379,7 +379,7 @@ public class LinksPresenterImpl implements LinksPresenter {
                 .compose(((BaseFragment)containerView.getContentContext()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<RedditListing>() {
+                .subscribe(new Subscriber<Listing>() {
                     @Override
                     public void onCompleted() {
                         //hide progress and show list
@@ -401,7 +401,7 @@ public class LinksPresenterImpl implements LinksPresenter {
                     }
 
                     @Override
-                    public void onNext(RedditListing wrapper) {
+                    public void onNext(Listing wrapper) {
                         if(isNew){
                             linksView.getItems().clear();
                             linksView.updateList(wrapper.getItems());

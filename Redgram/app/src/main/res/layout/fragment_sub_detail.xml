@@ -32,7 +32,7 @@
             android:textSize="@dimen/text_size_micro"
             android:text="356 online"
             android:textColor="@color/material_green500"
-            android:layout_marginBottom="@dimen/default_vertical_margin"
+            android:layout_marginBottom="@dimen/default_large_margin"
             />
 
         <TextView
@@ -44,7 +44,7 @@
             style="@style/Wrap"
             android:textStyle="bold"
             android:text="Public"
-            android:layout_marginBottom="@dimen/default_vertical_margin"
+            android:layout_marginBottom="@dimen/default_large_margin"
             />
 
         <TextView
@@ -56,7 +56,7 @@
             style="@style/Wrap"
             android:textStyle="bold"
             android:text="All"
-            android:layout_marginBottom="@dimen/default_vertical_margin"
+            android:layout_marginBottom="@dimen/default_large_margin"
             />
 
         <TextView

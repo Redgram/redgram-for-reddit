@@ -14,9 +14,9 @@ public enum RedditType {
 
     Listing(RedditListing.class),
     UserList(RedditListing.class),
-    User(RedditUser.class),
     more(RedditMore.class),
     t1(RedditComment.class),
+    t2(RedditUser.class),
     t3(RedditLink.class),
     t5(RedditSubreddit.class);
 

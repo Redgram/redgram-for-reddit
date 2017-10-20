@@ -110,7 +110,7 @@ public abstract class BottomNavigationActivity extends BaseActivity
             Fragment fragment = fragmentManager.getActiveFragment();
             destination = getDestinationFragmentInformation(itemId, fragment);
         } catch (EmptyStackException e) {
-            destination = getDestinationFragmentInformation(itemId, getDefaultFragment());
+            destination = getDefaultDestinationFragmentInformation();
         } finally {
             if (destination != null) {
                 openFragment(destination.second, destination.first);
@@ -119,14 +119,14 @@ public abstract class BottomNavigationActivity extends BaseActivity
         }
     }
 
-    protected abstract Fragment getDefaultFragment();
+    protected abstract Pair<String, Fragment> getDefaultDestinationFragmentInformation();
+
+    protected abstract Pair<String, Fragment>
+        getDestinationFragmentInformation(int itemId, Fragment fragment);
 
     protected void setSelectedMenuItemId(int itemId) {
         bottomNavigationView.setSelectedItemId(itemId);
     }
-
-    protected abstract Pair<String, Fragment>
-        getDestinationFragmentInformation(int itemId, Fragment fragment);
 
     private void setupToolbar() {
         setSupportActionBar(toolbar);
