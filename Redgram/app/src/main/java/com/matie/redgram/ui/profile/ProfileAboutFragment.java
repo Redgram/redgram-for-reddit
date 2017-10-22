@@ -2,17 +2,13 @@ package com.matie.redgram.ui.profile;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.ProfileAboutPresenterImpl;
@@ -20,8 +16,6 @@ import com.matie.redgram.data.models.main.profile.ProfileUser;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
-import com.matie.redgram.ui.common.base.BottomNavigationActivity;
-import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.profile.components.DaggerProfileAboutComponent;
 import com.matie.redgram.ui.profile.components.ProfileAboutComponent;
@@ -130,7 +124,7 @@ public class ProfileAboutFragment extends BaseFragment implements ProfileAboutVi
 
     @Override
     protected void setupToolbar() {
-        ActionBar supportActionBar = ((BottomNavigationActivity) getActivity()).getSupportActionBar();
+        ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setTitle(username);
         }

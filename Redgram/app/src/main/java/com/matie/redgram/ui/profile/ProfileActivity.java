@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -24,7 +23,6 @@ import com.matie.redgram.ui.profile.modules.ProfileModule;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import io.realm.RealmChangeListener;
 
 public class ProfileActivity extends BottomNavigationActivity {
 
@@ -99,6 +97,16 @@ public class ProfileActivity extends BottomNavigationActivity {
                 String path = data.getPath();
                 username = path.substring(path.lastIndexOf('/') + 1, path.length());
             }
+        }
+    }
+
+    @Override
+    protected void setupToolbar() {
+        super.setupToolbar();
+
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowCustomEnabled(true);
         }
     }
 

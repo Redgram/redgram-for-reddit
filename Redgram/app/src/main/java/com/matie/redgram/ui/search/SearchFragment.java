@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -23,10 +24,8 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
@@ -43,9 +42,9 @@ import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
-import com.matie.redgram.ui.posts.LinksComponent;
-import com.matie.redgram.ui.posts.LinksContainerView;
-import com.matie.redgram.ui.posts.LinksModule;
+import com.matie.redgram.ui.links.LinksComponent;
+import com.matie.redgram.ui.links.LinksContainerView;
+import com.matie.redgram.ui.links.LinksModule;
 import com.matie.redgram.ui.search.views.SearchView;
 import com.matie.redgram.ui.thread.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -89,6 +88,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     Spinner fromSpinner;
     EditText limitToView;
     RelativeLayout filterContentLayout;
+    RelativeLayout customToolbar;
 
     List<String> sortArray;
     List<String> fromArray;
@@ -171,67 +171,26 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     @Override
     protected void setupToolbar() {
-        mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
-        frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
+        ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setDisplayShowCustomEnabled(true);
+            supportActionBar.setCustomView(R.layout.fragment_search_toolbar);
 
-        LinearLayout ll = (LinearLayout) mInflater.inflate(R.layout.fragment_search_toolbar, frameLayout, false);
-        frameLayout.removeAllViews();
-        frameLayout.addView(ll);
+            View customView = supportActionBar.getCustomView();
+            if (customView instanceof RelativeLayout) {
+                customToolbar = (RelativeLayout) customView;
 
-        searchView = (EditText)ll.findViewById(R.id.search_view);
-        searchClear = (ImageView)ll.findViewById(R.id.search_clear);
-        searchFilter = (ImageView)ll.findViewById(R.id.search_filter);
-
-        searchView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (event != null && event.getAction() != KeyEvent.ACTION_DOWN) {
-                    return false;
-                } else if (actionId == EditorInfo.IME_ACTION_SEARCH || event == null || event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                    //clear params
-                    params.clear();
-                    String query = v.getText().toString();
-                    if (query.length() > 0 && !searchSwipeContainer.isRefreshing()) {
-                        params.put("q", query);
-                        subreddit = "";
-                        linksContainerView.search(subreddit,params);
-                        searchView.setCursorVisible(false);
-                    }
-                }
-                //hide keyboard
-                toggleKeyboard(false);
-                return true;
+                setupToolbarSearch();
+                setupToolbarSearchClear();
+                setupToolbarSearchFilter();
             }
-        });
+        }
+    }
 
-        searchView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    private void setupToolbarSearchFilter() {
+        if(customToolbar == null) return;
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() > 0)
-                    searchClear.setVisibility(View.VISIBLE);
-                else
-                    searchClear.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
-        searchClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchView.setText("");
-                searchView.setHint(getResources().getString(R.string.enter_search_term));
-                searchView.setCursorVisible(true);
-                toggleKeyboard(true);
-            }
-        });
+        searchFilter = customToolbar.findViewById(R.id.search_filter);
 
         setupFilterContentLayout();
 
@@ -266,6 +225,68 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                     Log.d("DIALOG", "Make sure you are initializing the builder.");
                 }
 
+            }
+        });
+
+    }
+
+    private void setupToolbarSearchClear() {
+        if (customToolbar == null) return;
+
+        searchClear = customToolbar.findViewById(R.id.search_clear);
+
+        searchClear.setOnClickListener(v -> {
+            searchView.setText("");
+            searchView.setHint(getResources().getString(R.string.enter_search_term));
+            searchView.setCursorVisible(true);
+            toggleKeyboard(true);
+        });
+    }
+
+    private void setupToolbarSearch() {
+        if (customToolbar == null) return;
+
+        searchView = customToolbar.findViewById(R.id.search_view);
+
+        searchView.setOnEditorActionListener((v, actionId, event) -> {
+            if (event != null && event.getAction() != KeyEvent.ACTION_DOWN) {
+                return false;
+            } else if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    event == null ||
+                    event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                //clear params
+                params.clear();
+                String query = v.getText().toString();
+                if (query.length() > 0 && !searchSwipeContainer.isRefreshing()) {
+                    params.put("q", query);
+                    subreddit = "";
+                    linksContainerView.search(subreddit,params);
+                    searchView.setCursorVisible(false);
+                }
+            }
+
+            //hide keyboard
+            toggleKeyboard(false);
+
+            return true;
+        });
+
+        searchView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0)
+                    searchClear.setVisibility(View.VISIBLE);
+                else
+                    searchClear.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
             }
         });
 

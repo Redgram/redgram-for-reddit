@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostViewHolder;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.links.views.LinksView;
 
 import java.util.ArrayList;
 import java.util.Collections;

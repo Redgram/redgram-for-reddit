@@ -27,14 +27,13 @@
             android:fitsSystemWindows="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
-            android:background="@color/transparent">
+            app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:fitsSystemWindows="true"
                 android:layout_height="match_parent"
-                android:layout_width="match_parent"/>
+                android:layout_width="match_parent" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 

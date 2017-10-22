@@ -2,7 +2,7 @@ package com.matie.redgram.ui.common.views.widgets.postlist;
 
 import android.support.v7.widget.RecyclerView;
 
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.links.views.LinksView;
 
 /**
  * Created by matie on 04/04/15.

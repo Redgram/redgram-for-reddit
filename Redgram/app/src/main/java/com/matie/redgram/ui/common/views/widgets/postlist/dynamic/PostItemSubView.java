@@ -8,7 +8,7 @@ import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.links.views.LinksView;
 
 /**
  * Created by matie on 19/05/15.

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/home_toolbar_container"
-    style="@style/Match">
+<com.matie.redgram.ui.links.LinksControlView
+    style="@style/Match"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/home_toolbar_container">
 
     <LinearLayout
-        android:id="@+id/home_toolbar_title_linear_layout"
+        android:id="@+id/control_title_linear_layout"
         android:layout_width="wrap_content"
         android:layout_height="?attr/actionBarSize"
         android:background="@drawable/home_toolbar_wrapper_border"
@@ -16,22 +17,25 @@
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
+
         <TextView
-            android:id="@+id/home_toolbar_title"
+            android:id="@+id/toolbar_title"
             style="@style/Wrap"
             android:text="Home"
             android:textColor="#ffffff"
             android:textSize="@dimen/abc_text_size_medium_material"/>
+
         <TextView
-            android:id="@+id/home_toolbar_subtitle"
+            android:id="@+id/toolbar_subtitle"
             style="@style/Wrap"
             android:text="Sub"
             android:textColor="#ffffff"
             android:textSize="@dimen/text_size_small"/>
+
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/home_toolbar_nav_linear_layout"
+        android:id="@+id/toolbar_nav_linear_layout"
         android:layout_width="wrap_content"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorAccent"
@@ -53,8 +57,9 @@
             android:contentDescription="list filter"
             style="@style/ActionPostItemIcon"
             android:src="@drawable/ic_action_sort"/>
+
     </LinearLayout>
 
 
 
-</RelativeLayout>
+</com.matie.redgram.ui.links.LinksControlView>

@@ -5,18 +5,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
@@ -35,9 +30,10 @@ import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.home.views.HomeView;
-import com.matie.redgram.ui.posts.LinksComponent;
-import com.matie.redgram.ui.posts.LinksContainerView;
-import com.matie.redgram.ui.posts.LinksModule;
+import com.matie.redgram.ui.links.LinksComponent;
+import com.matie.redgram.ui.links.LinksContainerView;
+import com.matie.redgram.ui.links.LinksControlView;
+import com.matie.redgram.ui.links.LinksModule;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.matie.redgram.ui.thread.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -62,18 +58,10 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     @InjectView(R.id.links_container_view)
     LinksContainerView linksContainerView;
 
-    Toolbar mToolbar;
-    View mContentView;
     LinearLayoutManager mLayoutManager;
 
     PostRecyclerView homeRecyclerView;
-    FrameLayout frameLayout;
-    LinearLayout titleWrapper;
-    TextView toolbarTitle;
-    TextView toolbarSubtitle;
-    ImageView listingFilter;
-    ImageView listingRefresh;
-
+    LinksControlView linksControlView;
 
     HomeComponent component;
     LinksComponent linksComponent;
@@ -92,8 +80,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         ButterKnife.inject(this, view);
 
         setUpRecyclerView();
-
-        mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
 
         setupSwipeContainer();
 
@@ -128,11 +114,11 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
             String subredditChoice = getArguments().getString(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
             Map<String, String> params = new HashMap<>();
             linksContainerView.refreshView(subredditChoice, filter.toLowerCase(), params);
-            toolbarTitle.setText(subredditChoice);
-            toolbarSubtitle.setText(filter);
+            setControllerTitle(subredditChoice);
+            setControllerSubTitle(filter);
         } else{
             homePresenter.getHomeViewWrapper();
-            toolbarSubtitle.setText(filter);
+            setControllerSubTitle(filter);
         }
     }
 
@@ -153,99 +139,103 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     }
     @Override
     protected void setupToolbar() {
-        //setting up toolbar
-        frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
-        frameLayout.removeAllViews();
+        ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setDisplayShowCustomEnabled(true);
+            supportActionBar.setCustomView(R.layout.links_control_view);
 
-        RelativeLayout rl = (RelativeLayout) getLayoutInflater().inflate(R.layout.fragment_home_toolbar, frameLayout, false);
-        frameLayout.addView(rl);
+            View controlView = supportActionBar.getCustomView();
+            if (controlView instanceof LinksControlView) {
+                linksControlView = (LinksControlView) controlView;
 
-        titleWrapper = (LinearLayout)rl.findViewById(R.id.home_toolbar_title_linear_layout);
+                setupToolbarTitle();
+                setupToolbarSubredditPicker();
+                setupToolbarFilter();
+                setupToolbarRefresh();
+            }
+        }
+    }
 
-        toolbarTitle = (TextView) rl.findViewById(R.id.home_toolbar_title);
-        toolbarSubtitle = (TextView) rl.findViewById(R.id.home_toolbar_subtitle);
-        listingFilter = (ImageView)rl.findViewById(R.id.listing_filter);
-        listingRefresh = (ImageView)rl.findViewById(R.id.listing_refresh);
+    private void setupToolbarRefresh() {
+        if (linksControlView == null) return;
+        linksControlView.setRefreshListener(v -> {
+            if (!homeSwipeContainer.isRefreshing()) {
+                linksContainerView.refreshView();
+            }
+        });
+    }
 
-        titleWrapper.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                List<String> subreddits = homePresenter.getSubreddits();;
-                if(homeRecyclerView.getVisibility() == View.VISIBLE && subreddits != null){
-                    //if a subreddit was selected before, add an option to return to home
-                    if(!getResources().getString(R.string.frontpage).equalsIgnoreCase(toolbarTitle.getText().toString())){
-                        subreddits.add(0, "Return to Frontpage");
-                    }else{
-                        if(!subreddits.isEmpty()){
-                            subreddits.remove(0);
+    private void setupToolbarFilter() {
+        if (linksControlView == null) return;
+        linksControlView.setFilterListener(v -> dialogUtil.build()
+                .title("Filter Links By")
+                .items(R.array.frontArray)
+                .itemsCallback((materialDialog, view, i, charSequence) -> {
+                    //if top or controversial, call sort dialog
+                    if (i == 3 || i == 4) {
+                        callSortDialog(charSequence);
+                    } else {
+                        if(!homeSwipeContainer.isRefreshing()){
+                            String filterChoice = charSequence.toString();
+                            linksContainerView.sortView(filterChoice.toLowerCase(), null);
+                            setControllerSubTitle(filterChoice);
                         }
                     }
+                })
+                .show()
+        );
 
-                    dialogUtil.build()
-                            .title("Subreddit")
-                            .items(subreddits.toArray(new CharSequence[subreddits.size()]))
-                            .itemsCallback(new MaterialDialog.ListCallback() {
-                                @Override
-                                public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+    }
 
-                                    String subredditChoice = charSequence.toString();
-                                    String filterChoice = getContext().getResources().getString(R.string.default_filter);
-                                    Map<String, String> params = new HashMap<String, String>();
-                                    //common
-                                    toolbarSubtitle.setText(filterChoice);
+    private void setupToolbarTitle() {
+        if (linksControlView == null) return;
+        linksControlView.setTitle(getResources().getString(R.string.frontpage));
+    }
 
-                                    if (i == 0 && "Return to Frontpage".equalsIgnoreCase(charSequence.toString())) {
-                                        toolbarTitle.setText(getResources().getString(R.string.frontpage));
-                                        linksContainerView.refreshView(null, filterChoice.toLowerCase(), params);
-                                    } else {
-                                        toolbarTitle.setText(subredditChoice);
-                                        linksContainerView.refreshView(subredditChoice, filterChoice.toLowerCase(), params);
-                                    }
-
-                                }
-                            })
-                            .show();
+    private void setupToolbarSubredditPicker() {
+        if (linksControlView == null) return;
+        linksControlView.setItemPickerListener(v -> {
+            List<String> subreddits = homePresenter.getSubreddits();
+            if(homeRecyclerView.getVisibility() == View.VISIBLE && subreddits != null){
+                if(userOnFrontPage()) {
+                    if(!subreddits.isEmpty()){
+                        subreddits.remove(0);
+                    }
+                } else {
+                    //if a subreddit was selected before, add an option to return to home
+                    subreddits.add(0, "Frontpage");
                 }
+
+                dialogUtil.build()
+                        .title("Subreddit")
+                        .items(subreddits.toArray(new CharSequence[subreddits.size()]))
+                        .itemsCallback((materialDialog, view, i, charSequence) -> {
+
+                            String subredditChoice = charSequence.toString();
+                            String filterChoice = getContext().getResources().getString(R.string.default_filter);
+                            Map<String, String> params = new HashMap<>();
+
+                            //common
+                            setControllerSubTitle(filterChoice);
+
+                            if (i == 0 && "Return to Frontpage".equalsIgnoreCase(charSequence.toString())) {
+                                setControllerTitle(getResources().getString(R.string.frontpage));
+                                linksContainerView.refreshView(null, filterChoice.toLowerCase(), params);
+                            } else {
+                                setControllerTitle(subredditChoice);
+                                linksContainerView.refreshView(subredditChoice, filterChoice.toLowerCase(), params);
+                            }
+
+                        })
+                        .show();
             }
         });
+    }
 
-        toolbarTitle.setText(getResources().getString(R.string.frontpage));
-
-        listingFilter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                    dialogUtil.build()
-                            .title("Filter Links By")
-                            .items(R.array.frontArray)
-                            .itemsCallback(new MaterialDialog.ListCallback() {
-                                @Override
-                                public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                                    //if top or controversial, call sort dialog
-                                    if (i == 3 || i == 4) {
-                                        callSortDialog(charSequence);
-                                    } else {
-                                        if(!homeSwipeContainer.isRefreshing()){
-                                            String filterChoice = charSequence.toString();
-                                            linksContainerView.sortView(filterChoice.toLowerCase(), null);
-                                            toolbarSubtitle.setText(filterChoice);
-                                        }
-                                    }
-                                }
-                            })
-                            .show();
-
-            }
-        });
-
-        listingRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!homeSwipeContainer.isRefreshing()) {
-                    linksContainerView.refreshView();
-                }
-            }
-        });
+    private boolean userOnFrontPage() {
+        final String frontPageResource = getResources().getString(R.string.frontpage);
+        final String currentOption = linksControlView.getTitleView().getText().toString();
+        return frontPageResource.equalsIgnoreCase(currentOption);
     }
 
     private void setupSwipeContainer(){
@@ -285,17 +275,26 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
                             //change subtitle only
                             String bullet = getContext().getResources().getString(R.string.text_bullet);
-                            toolbarSubtitle.setText(query+" "+bullet+" "+charSequence);
-
+                            setControllerSubTitle(query + " " + bullet + " " + charSequence);
                         }
                     }
                 }).show();
     }
 
+
+    private void setControllerTitle(String value) {
+        if (linksControlView == null) return;
+        linksControlView.setTitle(value);
+    }
+
+    private void setControllerSubTitle(String value) {
+        if (linksControlView == null) return;
+        linksControlView.setSubTitle(value);
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-
         checkArgumentsAndUpdate();
     }
 

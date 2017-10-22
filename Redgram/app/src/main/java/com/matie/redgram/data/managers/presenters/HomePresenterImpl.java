@@ -42,10 +42,7 @@ public class HomePresenterImpl implements HomePresenter{
     private final RedditClientInterface redditClient;
     private final DatabaseManager databaseManager;
     private final Session session;
-
-    private LinksPresenter linksPresenter;
     private CompositeSubscription subscriptions;
-
     private List<SubredditItem> subredditItems;
 
     //global subscriptions
@@ -62,7 +59,7 @@ public class HomePresenterImpl implements HomePresenter{
         this.homeView = homeView;
         this.redditClient = app.getRedditClient();
         this.databaseManager = app.getDatabaseManager();
-        this.subredditItems = new ArrayList<SubredditItem>();
+        this.subredditItems = new ArrayList<>();
 
         this.session = homeView.getContentContext().getBaseActivity().getSession();
     }

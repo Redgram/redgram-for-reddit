@@ -17,7 +17,7 @@ import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemHeaderView;
 import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemSubView;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.links.views.LinksView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

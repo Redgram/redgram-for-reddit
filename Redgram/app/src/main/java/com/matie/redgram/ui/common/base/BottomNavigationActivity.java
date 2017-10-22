@@ -89,7 +89,7 @@ public abstract class BottomNavigationActivity extends BaseActivity
         return R.id.container;
     }
 
-    protected abstract void checkIntent();
+    protected void checkIntent() {};
 
     protected void setupBottomNavigation() {
         bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -128,11 +128,9 @@ public abstract class BottomNavigationActivity extends BaseActivity
         bottomNavigationView.setSelectedItemId(itemId);
     }
 
-    private void setupToolbar() {
+    protected void setupToolbar() {
+        collapsingToolbarLayout.setTitleEnabled(false);
         setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
     }
 
     @Override

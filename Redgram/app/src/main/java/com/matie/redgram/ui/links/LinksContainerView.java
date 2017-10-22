@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.posts;
+package com.matie.redgram.ui.links;
 
 import android.content.Context;
 import android.content.Intent;
@@ -43,7 +43,7 @@ import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.links.views.LinksView;
 import com.matie.redgram.ui.thread.ThreadActivity;
 
 import java.io.File;

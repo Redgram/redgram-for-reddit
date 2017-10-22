@@ -1,10 +1,10 @@
-package com.matie.redgram.ui.posts;
+package com.matie.redgram.ui.links;
 
 import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.ContentView;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.links.views.LinksView;
 
 import dagger.Module;
 import dagger.Provides;

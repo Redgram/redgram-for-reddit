@@ -76,10 +76,6 @@ public abstract class ViewPagerActivity extends BaseActivity {
         return collapsingToolbarLayout;
     }
 
-    public Toolbar getToolbar() {
-        return toolbar;
-    }
-
     protected void setupViewPager(){
         pagerAdapter = pagerAdapterInstance();
         viewPager.setAdapter(pagerAdapter);
@@ -93,7 +89,7 @@ public abstract class ViewPagerActivity extends BaseActivity {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     protected void setupToolbar() {
-        setSupportActionBar(getToolbar());
+        setSupportActionBar(toolbar);
         if(getSupportActionBar() != null){
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

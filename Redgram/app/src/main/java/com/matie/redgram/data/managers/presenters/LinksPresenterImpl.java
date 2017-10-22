@@ -15,7 +15,7 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.links.views.LinksView;
 
 import java.util.Map;
 
