@@ -56,17 +56,16 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
 
     @Override
     public void registerForEvents() {
-        if(subscriptions == null){
+        if (subscriptions == null) {
             subscriptions = new CompositeSubscription();
         }
-        if(subscriptions.isUnsubscribed()){
-            subscriptions.add(subredditSubscription);
-        }
+
+        subscriptions.add(subredditSubscription);
     }
 
     @Override
     public void unregisterForEvents() {
-        if(subscriptions != null && subscriptions.hasSubscriptions()){
+        if (subscriptions != null) {
             subscriptions.unsubscribe();
         }
     }

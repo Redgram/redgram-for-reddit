@@ -70,15 +70,12 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     @InjectView(R.id.swipe_container)
     SwipeRefreshLayout searchSwipeContainer;
 
-    Toolbar mToolbar;
     View mContentView;
     LayoutInflater mInflater;
-    LinearLayoutManager mLayoutManager;
 
     SearchComponent component;
     LinksComponent linksComponent;
 
-    FrameLayout frameLayout;
     EditText searchView;
     ImageView searchClear;
 

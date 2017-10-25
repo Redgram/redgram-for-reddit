@@ -16,13 +16,11 @@ import butterknife.ButterKnife;
  * Created by matie on 2015-10-25.
  */
 public class SubredditRecyclerView extends RecyclerView {
-    private final Context context;
     private final RecyclerView.LayoutManager layoutManager;
     private final SubredditAdapter subredditAdapter;
 
     public SubredditRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.context = context;
         this.layoutManager = new LinearLayoutManager(context);
         this.subredditAdapter = new SubredditAdapter(context);
     }

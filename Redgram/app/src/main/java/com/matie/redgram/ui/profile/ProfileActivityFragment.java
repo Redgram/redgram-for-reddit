@@ -13,6 +13,7 @@ import com.matie.redgram.data.managers.presenters.ProfileActivityPresenterImpl;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.links.LinksContainerView;
 import com.matie.redgram.ui.links.LinksControlView;
@@ -22,14 +23,15 @@ import com.matie.redgram.ui.profile.components.ProfileComponent;
 import com.matie.redgram.ui.profile.modules.ProfileActivityModule;
 import com.matie.redgram.ui.profile.views.ProfileActivityView;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-
-/**
- * Created by matie on 2017-09-27.
- */
 
 public class ProfileActivityFragment extends BaseFragment implements ProfileActivityView {
 
@@ -45,12 +47,20 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
 
     LinksControlView linksControlView;
     String username;
+    List<String> profileListings;
+    List<String> profileListingsFilter;
+
+    @Inject
+    DialogUtil dialogUtil;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile_activity, container, false);
         ButterKnife.inject(this, view);
+
+        profileListings = Arrays.asList(getContext().getResources().getStringArray(R.array.profileListing));
+        profileListingsFilter = Arrays.asList(getContext().getResources().getStringArray(R.array.profileListingFilter));
 
         return view;
     }
@@ -130,15 +140,36 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
     }
 
     private void setupToolbarFilter() {
-        if (linksContainerView == null) return;
+        if (linksControlView == null) return;
+
     }
 
     private void setupToolbarFeedPicker() {
-        if (linksContainerView == null) return;
+        if (linksControlView == null) return;
+        linksControlView.setItemPickerListener(view -> {
+            dialogUtil.build()
+                    .items(profileListings)
+                    .itemsCallback((dialog, itemView, pos, text) -> {
+                        final String targetListing = text.toString().toLowerCase();
+
+                        final Map<String, String> queryMap = new HashMap<>();
+                        queryMap.put("sort", profileListingsFilter.get(0));
+
+                        setToolbarTitle(text.toString());
+
+                        activityPresenter.getListing(targetListing, queryMap);
+                    })
+                    .show();
+        });
     }
 
     private void setupToolbarTitle() {
-        if (linksContainerView == null) return;
+        if (linksControlView == null) return;
+        setToolbarTitle(profileListings.get(0));
+    }
+
+    private void setToolbarTitle(String title) {
+        linksControlView.setTitle(title);
     }
 
     @Override

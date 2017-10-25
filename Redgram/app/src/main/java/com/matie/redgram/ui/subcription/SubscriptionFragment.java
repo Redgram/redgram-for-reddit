@@ -44,7 +44,7 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
 
     ToastHandler toastHandler;
 
-    Toolbar mToolbar;
+    Toolbar toolbar;
     LayoutInflater mInflater;
 
     FrameLayout frameLayout;
@@ -58,7 +58,7 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
 
         toastHandler = ((App)getActivity().getApplication()).getToastHandler();
 
-        mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
+        toolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
         mInflater = inflater;
 
         subredditRecyclerView.setAdapterListener(this);
@@ -82,13 +82,13 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     protected void setupToolbar() {
         // add refresh
         // setting up toolbar
-        frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
+        frameLayout = (FrameLayout) toolbar.findViewById(R.id.toolbar_child_view);
         frameLayout.removeAllViews();
 
         RelativeLayout rl = (RelativeLayout) mInflater.inflate(R.layout.fragment_sub_toolbar, frameLayout, false);
         frameLayout.addView(rl);
 
-        subRefresh = (ImageView)rl.findViewById(R.id.sub_refresh);
+        subRefresh = (ImageView) rl.findViewById(R.id.sub_refresh);
 
         setupRefresh();
     }
@@ -118,9 +118,9 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
 
     @Override
     public void onDestroyView() {
+        super.onDestroyView();
         subscriptionPresenter.unregisterForEvents();
         ButterKnife.reset(this);
-        super.onDestroyView();
     }
 
     @Override

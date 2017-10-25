@@ -261,22 +261,19 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         dialogUtil.build()
                 .title("Sort By")
                 .items(R.array.fromArray)
-                .itemsCallback(new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                        if(!homeSwipeContainer.isRefreshing()){
+                .itemsCallback((materialDialog, view, i, charSequence) -> {
+                    if(!homeSwipeContainer.isRefreshing()){
 
-                            //create parameters list for the network call
-                            Map<String, String> params = new HashMap<>();
-                            params.put("t", charSequence.toString().toLowerCase());
+                        //create parameters list for the network call
+                        Map<String, String> params = new HashMap<>();
+                        params.put("t", charSequence.toString().toLowerCase());
 
-                            //perform network call
-                            linksContainerView.sortView(query.toString().toLowerCase(), params);
+                        //perform network call
+                        linksContainerView.sortView(query.toString().toLowerCase(), params);
 
-                            //change subtitle only
-                            String bullet = getContext().getResources().getString(R.string.text_bullet);
-                            setControllerSubTitle(query + " " + bullet + " " + charSequence);
-                        }
+                        //change subtitle only
+                        String bullet = getContext().getResources().getString(R.string.text_bullet);
+                        setControllerSubTitle(query + " " + bullet + " " + charSequence);
                     }
                 }).show();
     }
