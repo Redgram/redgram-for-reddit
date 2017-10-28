@@ -451,7 +451,7 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
     }
 
     @Override
-    public BaseContextView getContentContext() {
+    public BaseContextView getParentView() {
         return getBaseActivity();
     }
 

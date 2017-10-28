@@ -61,7 +61,7 @@ public class HomePresenterImpl implements HomePresenter{
         this.databaseManager = app.getDatabaseManager();
         this.subredditItems = new ArrayList<>();
 
-        this.session = homeView.getContentContext().getBaseActivity().getSession();
+        this.session = homeView.getParentView().getBaseActivity().getSession();
     }
 
     /**
@@ -128,7 +128,7 @@ public class HomePresenterImpl implements HomePresenter{
                     homeViewWrapper.setLinks(links);
                     return homeViewWrapper;
                 })
-                .compose(((BaseFragment)homeView.getContentContext()).bindToLifecycle())
+                .compose(((BaseFragment)homeView.getParentView()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<HomeViewWrapper>() {
@@ -210,7 +210,7 @@ public class HomePresenterImpl implements HomePresenter{
     }
 
     private Prefs getPrefs(){
-        Session session = homeView.getContentContext().getBaseActivity().getSession();
+        Session session = homeView.getParentView().getBaseActivity().getSession();
         if(session != null && session.getUser() != null){
             return session.getUser().getPrefs();
         }

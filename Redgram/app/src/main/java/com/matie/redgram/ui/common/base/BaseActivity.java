@@ -1,6 +1,5 @@
 package com.matie.redgram.ui.common.base;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -15,17 +14,15 @@ import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.BaseContextView;
+import com.matie.redgram.ui.common.views.BaseView;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import icepick.Icepick;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 
-/**
- * Created by matie on 09/06/15.
- */
-public abstract class BaseActivity extends RxAppCompatActivity implements BaseContextView {
+
+public abstract class BaseActivity extends RxAppCompatActivity implements BaseView {
 
     private Realm realm;
     private Session session;
@@ -134,19 +131,4 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseCo
         transaction.commit();
     }
 
-
-    @Override
-    public Context getContext() {
-        return getApplicationContext();
-    }
-
-    @Override
-    public BaseActivity getBaseActivity() {
-        return this;
-    }
-
-    @Override
-    public BaseFragment getBaseFragment() {
-        return null;
-    }
 }

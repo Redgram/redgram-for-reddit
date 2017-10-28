@@ -51,7 +51,7 @@ public class UserListPresenterImpl implements UserListPresenter {
     public UserListPresenterImpl(UserListControllerView userListView, ContentView contentView, App app, boolean enableDefault) {
         this.userListView = userListView;
         this.contentView = contentView;
-        this.contextView = contentView.getContentContext();
+        this.contextView = contentView.getParentView();
         this.app = app;
         this.databaseManager = app.getDatabaseManager();
         this.enableDefault = enableDefault;

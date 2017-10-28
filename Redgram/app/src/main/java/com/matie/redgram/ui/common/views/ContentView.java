@@ -8,5 +8,5 @@ public interface ContentView extends BaseView {
     void hideLoading();
     void showInfoMessage();
     void showErrorMessage(String error);
-    BaseContextView getContentContext();
+    BaseView getParentView();
 }

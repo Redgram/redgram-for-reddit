@@ -153,7 +153,7 @@ public class ProfileAboutFragment extends BaseFragment implements ProfileAboutVi
     }
 
     @Override
-    public BaseContextView getContentContext() {
+    public BaseContextView getParentView() {
         return this;
     }
 }

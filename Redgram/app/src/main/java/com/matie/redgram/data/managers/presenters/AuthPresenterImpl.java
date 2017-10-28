@@ -64,10 +64,11 @@ public class AuthPresenterImpl implements AuthPresenter {
 
     @Override
     public void getAccessToken(String url) {
-        if (url.contains("?code=") || url.contains("&code=")) {
-            Uri uri = Uri.parse(url);
-            String code = uri.getQueryParameter("code");
-            if(!authCode.equalsIgnoreCase(code)){
+        final String codeQuery = "code";
+        Uri uri = Uri.parse(url);
+        if (uri != null && uri.getQueryParameterNames().contains(codeQuery)) {
+            String code = uri.getQueryParameter(codeQuery);
+            if(!code.equalsIgnoreCase(authCode)){
                 authCode = code;
                 authView.showLoading();
                 bindAuthSubscription();
@@ -79,7 +80,7 @@ public class AuthPresenterImpl implements AuthPresenter {
     public void getAccessToken() {
         authView.showLoading();
         authSubscription = redditClient.getAuthWrapper()
-                .compose(((AuthActivity)authView.getContentContext()).bindToLifecycle())
+                .compose(((AuthActivity)authView.getParentView()).bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AuthWrapper>() {
@@ -102,7 +103,7 @@ public class AuthPresenterImpl implements AuthPresenter {
 
     private void bindAuthSubscription() {
         authSubscription = redditClient.getAuthWrapper(authCode)
-                .compose(((AuthActivity)authView.getContentContext()).bindToLifecycle())
+                .compose(((AuthActivity)authView.getParentView()).bindToLifecycle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AuthWrapper>() {
@@ -125,7 +126,7 @@ public class AuthPresenterImpl implements AuthPresenter {
 
     @Override
     public void updateSession(AuthWrapper wrapper) {
-        BaseActivity baseActivity = authView.getContentContext().getBaseActivity();
+        BaseActivity baseActivity = authView.getParentView().getBaseActivity();
         Session session = baseActivity.getSession();
         //if session user already exists and is of type Guest, and wrapper is of type Guest
         if(session != null && session.getUser() != null

@@ -701,7 +701,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     }
 
     @Override
-    public BaseContextView getContentContext() {
+    public BaseContextView getParentView() {
         return getBaseActivity();
     }
 }

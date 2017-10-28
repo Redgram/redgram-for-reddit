@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.links;
+package com.matie.redgram.ui.submissions;
 
 import android.content.Context;
 import android.content.Intent;
@@ -43,7 +43,7 @@ import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
-import com.matie.redgram.ui.links.views.LinksView;
+import com.matie.redgram.ui.submissions.views.LinksView;
 import com.matie.redgram.ui.thread.ThreadActivity;
 
 import java.io.File;
@@ -60,7 +60,7 @@ import io.realm.RealmChangeListener;
 /**
  * Created by matie on 2016-03-16.
  */
-public class LinksContainerView extends FrameLayout implements LinksView {
+public class SubmissionFeedView extends FrameLayout implements LinksView {
 
     @InjectView(R.id.container_linear_layout)
     LinearLayout containerLinearLayout;
@@ -72,7 +72,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     //recycler view listeners to add.
     private RecyclerView.OnScrollListener loadMoreListener;
     private LinearLayoutManager mLayoutManager;
-    private LinksComponent component;
+    private SubmissionComponent component;
     String hostingFragmentTag;
     private final Context context;
     private BaseContextView contextView;
@@ -93,17 +93,17 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     DialogUtil dialogUtil;
 
 
-    public LinksContainerView(Context context) {
+    public SubmissionFeedView(Context context) {
         super(context);
         this.context = context;
     }
 
-    public LinksContainerView(Context context, AttributeSet attrs) {
+    public SubmissionFeedView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
     }
 
-    public LinksContainerView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SubmissionFeedView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.context = context;
     }
@@ -383,7 +383,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         containerRecyclerView.setListener(this);
     }
 
-    public void setComponent(LinksComponent component) {
+    public void setComponent(SubmissionComponent component) {
         this.component = component;
         this.component.inject(this);
     }
@@ -439,7 +439,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
         if(getContext() instanceof CoordinatorLayoutInterface){
             String msg = getResources().getString(R.string.item_hidden);
             String actionMsg = getResources().getString(R.string.undo);
-            View.OnClickListener onClickListener = v -> linksPresenter.unHide();
+            OnClickListener onClickListener = v -> linksPresenter.unHide();
 
             ((CoordinatorLayoutInterface) getContext())
                 .showSnackBar(msg, Snackbar.LENGTH_LONG, actionMsg, onClickListener, null);

@@ -111,7 +111,7 @@ public class UserListView extends FrameLayout implements UserListControllerView 
     }
 
     @Override
-    public BaseContextView getContentContext() {
+    public BaseContextView getParentView() {
         if(contextView instanceof BaseActivity){
             return contextView.getBaseActivity();
         }else{

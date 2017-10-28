@@ -143,7 +143,7 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     }
 
     @Override
-    public BaseContextView getContentContext() {
+    public BaseContextView getParentView() {
         return getBaseFragment();
     }
 

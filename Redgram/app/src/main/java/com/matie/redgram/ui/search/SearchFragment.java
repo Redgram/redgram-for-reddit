@@ -419,7 +419,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     }
 
     @Override
-    public BaseContextView getContentContext() {
+    public BaseContextView getParentView() {
         return getBaseFragment();
     }
 

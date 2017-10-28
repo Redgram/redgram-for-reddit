@@ -100,7 +100,7 @@ public class ProfileAboutPresenterImpl implements ProfileAboutPresenter {
 
     private void getUserInformation(String username) {
         userSubscription = redditClient.getUserDetails(username)
-                .compose(view.getContentContext().getBaseFragment().bindToLifecycle())
+                .compose(view.getParentView().getBaseFragment().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditUser>() {
@@ -140,7 +140,7 @@ public class ProfileAboutPresenterImpl implements ProfileAboutPresenter {
 
     private void getAuthUserInformation(User user) {
         userSubscription = redditClient.getUser(user.getTokenInfo().getToken())
-                .compose(view.getContentContext().getBaseFragment().bindToLifecycle())
+                .compose(view.getParentView().getBaseFragment().bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<AuthUser>() {

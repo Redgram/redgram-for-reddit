@@ -23,13 +23,13 @@ public class UserListModule {
     public UserListModule(UserListControllerView userListView, ContentView contentView){
         this.userListView = userListView;
         this.contentView = contentView;
-        this.userListView.setBaseContextView(contentView.getContentContext());
+        this.userListView.setBaseContextView(contentView.getParentView());
     }
 
     public UserListModule(UserListControllerView userListView, ContentView contentView, boolean enableDefault){
         this.userListView = userListView;
         this.contentView = contentView;
-        this.userListView.setBaseContextView(contentView.getContentContext());
+        this.userListView.setBaseContextView(contentView.getParentView());
         this.enableDefault = enableDefault;
     }
 

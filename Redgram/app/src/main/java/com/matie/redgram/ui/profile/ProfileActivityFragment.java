@@ -59,6 +59,8 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
         View view = inflater.inflate(R.layout.fragment_profile_activity, container, false);
         ButterKnife.inject(this, view);
 
+        setupSwipeRefreshLayout();
+
         profileListings = Arrays.asList(getContext().getResources().getStringArray(R.array.profileListing));
         profileListingsFilter = Arrays.asList(getContext().getResources().getStringArray(R.array.profileListingFilter));
 
@@ -104,7 +106,7 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
         if(username == null) return;
 
         this.username = username;
-        setupSwipeRefreshLayout();
+
         setupToolbar();
         fetchData();
     }
@@ -193,7 +195,7 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
     }
 
     @Override
-    public BaseContextView getContentContext() {
+    public BaseContextView getParentView() {
         return this;
     }
 }

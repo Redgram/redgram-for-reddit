@@ -355,7 +355,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     }
 
     @Override
-    public BaseContextView getContentContext() {
+    public BaseContextView getParentView() {
         return getBaseFragment();
     }
 

@@ -51,7 +51,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         this.subredditItems = new ArrayList<>();
         this.databaseManager = app.getDatabaseManager();
 
-        session = subscriptionView.getContentContext().getBaseActivity().getSession();
+        session = subscriptionView.getParentView().getBaseActivity().getSession();
     }
 
     @Override
@@ -97,7 +97,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         }
 
         subredditSubscription = subredditsObservable
-                .compose(((BaseFragment)subscriptionView.getContentContext()).bindToLifecycle())
+                .compose(((BaseFragment)subscriptionView.getParentView()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Listing<SubredditItem>>() {

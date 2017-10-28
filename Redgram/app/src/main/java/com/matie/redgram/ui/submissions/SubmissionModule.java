@@ -1,10 +1,10 @@
-package com.matie.redgram.ui.links;
+package com.matie.redgram.ui.submissions;
 
 import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.ContentView;
-import com.matie.redgram.ui.links.views.LinksView;
+import com.matie.redgram.ui.submissions.views.LinksView;
 
 import dagger.Module;
 import dagger.Provides;
@@ -13,12 +13,12 @@ import dagger.Provides;
  * Created by matie on 2016-03-16.
  */
 @Module
-public class LinksModule {
+public class SubmissionModule {
 
     private LinksView linksView;
     private ContentView containerView;
 
-    public LinksModule(LinksView linksView, ContentView containerView) {
+    public SubmissionModule(LinksView linksView, ContentView containerView) {
         this.linksView = linksView;
         this.containerView = containerView;
         this.linksView.setBaseContextView(containerView.getParentView());
