@@ -43,8 +43,6 @@ import com.matie.redgram.ui.common.user.UserListView;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.display.CustomFragmentManager;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.ui.profile.ProfileActivity;
 import com.matie.redgram.ui.search.SearchFragment;
@@ -57,11 +55,10 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.Optional;
-import io.realm.RealmChangeListener;
 
 
 public class MainActivity extends SlidingUpPanelActivity implements CoordinatorLayoutInterface,
-                                                    NavigationView.OnNavigationItemSelectedListener, MainView{
+                                                    NavigationView.OnNavigationItemSelectedListener, MainView {
 
     private static final int SUBSCRIPTION_REQUEST_CODE = 69;
 
@@ -183,7 +180,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         if(user != null){
             if(User.USER_AUTH.equalsIgnoreCase(user.getUserType())){
                 username.setOnClickListener(view -> {
-                    Intent intent = ProfileActivity.intent(getContext());
+                    Intent intent = ProfileActivity.intent(this);
                     intent.putExtra(ProfileActivity.RESULT_USER_NAME, user.getUserName());
                     openIntent(intent);
                 });
@@ -305,7 +302,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
 
         HomeFragment homeFragment = (HomeFragment) Fragment
-                .instantiate(getBaseActivity(), Fragments.HOME.getFragment());
+                .instantiate(this, Fragments.HOME.getFragment());
         homeFragment.setArguments(bundle);
 
         openFragment(homeFragment, Fragments.HOME.toString());
@@ -436,7 +433,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditToVisitOnResult);
 
         HomeFragment homeFragment = (HomeFragment) Fragment
-                .instantiate(getBaseActivity(), Fragments.HOME.getFragment());
+                .instantiate(this, Fragments.HOME.getFragment());
         homeFragment.setArguments(bundle);
 
         // make sure only one fragment is in the stack
@@ -700,9 +697,5 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     }
 
-    @Override
-    public BaseContextView getParentView() {
-        return getBaseActivity();
-    }
 }
 

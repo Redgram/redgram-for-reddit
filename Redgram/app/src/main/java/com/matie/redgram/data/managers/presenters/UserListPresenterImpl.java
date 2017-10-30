@@ -2,6 +2,7 @@ package com.matie.redgram.data.managers.presenters;
 
 import android.util.Log;
 
+import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
@@ -11,9 +12,7 @@ import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.network.api.reddit.base.RedditAuthProvider;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.user.views.UserListControllerView;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.ContentView;
 
 import java.util.ArrayList;
@@ -31,14 +30,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-/**
- * Created by matie on 2016-09-15.
- */
-public class UserListPresenterImpl implements UserListPresenter {
+public class UserListPresenterImpl extends BasePresenterImpl implements UserListPresenter {
 
     private UserListControllerView userListView;
-    private final BaseContextView contextView;
-    private final ContentView contentView;
     private final Realm realm;
     private Session session;
     private App app;
@@ -49,14 +43,12 @@ public class UserListPresenterImpl implements UserListPresenter {
 
     @Inject
     public UserListPresenterImpl(UserListControllerView userListView, ContentView contentView, App app, boolean enableDefault) {
+        super(contentView, app);
         this.userListView = userListView;
-        this.contentView = contentView;
-        this.contextView = contentView.getParentView();
-        this.app = app;
         this.databaseManager = app.getDatabaseManager();
         this.enableDefault = enableDefault;
 
-        BaseActivity activity = contextView.getBaseActivity();
+        BaseActivity activity = parentView.getBaseActivity();
         this.realm = activity.getRealm();
         this.session = activity.getSession();
     }
@@ -77,14 +69,9 @@ public class UserListPresenterImpl implements UserListPresenter {
     public void getUsers() {
         Observable<List<UserItem>> userListObservable = getUserListObservable(realm, session.getUser());
 
-        if(contextView instanceof BaseActivity){
-            userListObservable = userListObservable.compose(((BaseActivity)contextView).bindToLifecycle());
-        }else if(contextView instanceof BaseFragment){
-            userListObservable = userListObservable.compose(((BaseFragment)contextView).bindToLifecycle());
-        }
-
         Subscription userListSubscription =
                 userListObservable
+                    .compose(getTransformer())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<List<UserItem>>() {
                         @Override
@@ -161,13 +148,10 @@ public class UserListPresenterImpl implements UserListPresenter {
                 .filter(user -> user != null)
                 .flatMap(this::updateSessionWithSelectedUser);
 
-        if(contextView instanceof BaseActivity){
-            userObservable.compose(((BaseActivity) contextView).bindToLifecycle());
-        }else if(contextView instanceof BaseFragment){
-            userObservable.compose(((BaseFragment) contextView).bindToLifecycle());
-        }
+
 
         Subscription selectUserSubscription = userObservable
+            .compose(getTransformer())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Subscriber<User>() {
                 @Override
@@ -199,6 +183,7 @@ public class UserListPresenterImpl implements UserListPresenter {
     @Override
     public void switchUser() {
        getDefaultRevokeAccessObservable()
+               .compose(getTransformer())
                .observeOn(AndroidSchedulers.mainThread())
                .subscribeOn(Schedulers.io())
                .subscribe(new SelectedUserSubscriber("Guest", 0));
@@ -207,33 +192,19 @@ public class UserListPresenterImpl implements UserListPresenter {
     @Override
     public void switchUser(String id, int position) {
         getDefaultRevokeAccessObservable()
+                .compose(getTransformer())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new SelectedUserSubscriber(id, position));
     }
 
     private Observable<AccessToken> getDefaultRevokeAccessObservable() {
-        Observable<AccessToken> revokeAccessTokenObservable = app.getRedditClient()
+        return app.getRedditClient()
                 .revokeToken(RedditAuthProvider.ACCESS_TOKEN);
-
-        if(contextView instanceof BaseActivity){
-            revokeAccessTokenObservable.compose(((BaseActivity)contextView).bindToLifecycle());
-        }else if(contextView instanceof BaseFragment){
-            revokeAccessTokenObservable.compose(((BaseFragment)contextView).bindToLifecycle());
-        }
-        return revokeAccessTokenObservable;
     }
 
     private Observable<AccessToken> getRevokeTokenObservable(String token, String type) {
-        Observable<AccessToken> revokeAccessTokenObservable = app.getRedditClient()
-                .revokeToken(token, type);
-
-        if(contextView instanceof BaseActivity){
-            revokeAccessTokenObservable.compose(((BaseActivity)contextView).bindToLifecycle());
-        }else if(contextView instanceof BaseFragment){
-            revokeAccessTokenObservable.compose(((BaseFragment)contextView).bindToLifecycle());
-        }
-        return revokeAccessTokenObservable;
+        return app.getRedditClient().revokeToken(token, type);
     }
 
 

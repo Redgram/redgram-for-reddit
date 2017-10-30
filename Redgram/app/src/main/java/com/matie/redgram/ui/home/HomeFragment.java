@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
@@ -27,7 +26,6 @@ import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.links.LinksComponent;
@@ -47,9 +45,6 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by matie on 17/01/15.
- */
 public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         SwipeRefreshLayout.OnRefreshListener {
 
@@ -352,11 +347,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     @Override
     public void showErrorMessage(String errorMsg) {
         dialogUtil.build().title("Error Message").content(errorMsg).show();
-    }
-
-    @Override
-    public BaseContextView getParentView() {
-        return getBaseFragment();
     }
 
     @Override

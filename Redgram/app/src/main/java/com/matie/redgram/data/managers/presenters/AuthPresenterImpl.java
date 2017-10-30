@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.db.Session;
@@ -27,9 +28,8 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Presenter implementation for the Authentication View.
  */
-public class AuthPresenterImpl implements AuthPresenter {
+public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresenter {
 
-    private final App app;
     private final AuthView authView;
     private final RedditClientInterface redditClient;
     private Subscription authSubscription;
@@ -38,8 +38,8 @@ public class AuthPresenterImpl implements AuthPresenter {
 
     @Inject
     public AuthPresenterImpl(AuthView authView, App app) {
-        this.app = app;
-        this.authView = authView;
+        super(authView, app);
+        this.authView = (AuthView) view;
         this.redditClient = app.getRedditClient();
     }
 
@@ -80,7 +80,7 @@ public class AuthPresenterImpl implements AuthPresenter {
     public void getAccessToken() {
         authView.showLoading();
         authSubscription = redditClient.getAuthWrapper()
-                .compose(((AuthActivity)authView.getParentView()).bindToLifecycle())
+                .compose(getTransformer())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AuthWrapper>() {
@@ -103,7 +103,7 @@ public class AuthPresenterImpl implements AuthPresenter {
 
     private void bindAuthSubscription() {
         authSubscription = redditClient.getAuthWrapper(authCode)
-                .compose(((AuthActivity)authView.getParentView()).bindToLifecycle())
+                .compose(getTransformer())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AuthWrapper>() {
@@ -112,7 +112,6 @@ public class AuthPresenterImpl implements AuthPresenter {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e("getAccessTokenObservable", e.toString());
                         authView.hideLoading();
                         authView.showErrorMessage(e.getMessage());
                     }

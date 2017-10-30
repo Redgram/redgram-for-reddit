@@ -41,8 +41,10 @@ import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.common.views.BaseContextView;
+import com.matie.redgram.ui.common.views.BaseView;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.submissions.views.CommentsView;
 import com.matie.redgram.ui.submissions.views.LinksView;
 import com.matie.redgram.ui.thread.ThreadActivity;
 
@@ -60,7 +62,7 @@ import io.realm.RealmChangeListener;
 /**
  * Created by matie on 2016-03-16.
  */
-public class SubmissionFeedView extends FrameLayout implements LinksView {
+public class SubmissionFeedView extends FrameLayout implements LinksView, CommentsView  {
 
     @InjectView(R.id.container_linear_layout)
     LinearLayout containerLinearLayout;
@@ -75,7 +77,7 @@ public class SubmissionFeedView extends FrameLayout implements LinksView {
     private SubmissionComponent component;
     String hostingFragmentTag;
     private final Context context;
-    private BaseContextView contextView;
+    private BaseView parentView;
 
     private String subredditChoice = null;
     private String filterChoice = null;
@@ -333,21 +335,13 @@ public class SubmissionFeedView extends FrameLayout implements LinksView {
     }
 
     @Override
-    public void setBaseContextView(BaseContextView baseContextView) {
-        this.contextView = baseContextView;
-    }
-
-    @Override
     public void callAgeConfirmDialog() {
-        MaterialDialog.SingleButtonCallback callback = new MaterialDialog.SingleButtonCallback() {
-            @Override
-            public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-                if(!getPrefs().isOver18()){
-                    linksPresenter.confirmAge();
-                }else if(getPrefs().isDisableNsfwPreview()){
-                    //change preferences
-                    linksPresenter.enableNsfwPreview();
-                }
+        MaterialDialog.SingleButtonCallback callback = (materialDialog, dialogAction) -> {
+            if(!getPrefs().isOver18()){
+                linksPresenter.confirmAge();
+            }else if(getPrefs().isDisableNsfwPreview()){
+                //change preferences
+                linksPresenter.enableNsfwPreview();
             }
         };
 
@@ -422,11 +416,11 @@ public class SubmissionFeedView extends FrameLayout implements LinksView {
     }
 
     @Override
-    public BaseContextView getParentView() {
-        if(contextView instanceof BaseActivity){
-            return contextView.getBaseActivity();
+    public BaseView getParentView() {
+        if(parentView instanceof BaseActivity){
+            return parentView.getBaseActivity();
         }else{
-            return contextView.getBaseFragment();
+            return parentView.getBaseFragment();
         }
     }
 

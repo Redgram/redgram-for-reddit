@@ -27,8 +27,6 @@ import com.matie.redgram.ui.common.auth.views.AuthView;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.BaseContextView;
-import com.matie.redgram.ui.common.views.BaseView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -202,11 +200,6 @@ public class AuthActivity extends BaseActivity implements AuthView {
         }else{
             app.getToastHandler().showToast(error, Toast.LENGTH_LONG);
         }
-    }
-
-    @Override
-    public BaseView getParentView() {
-        return getBaseActivity();
     }
 
     @Override

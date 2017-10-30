@@ -1,10 +1,9 @@
 package com.matie.redgram.ui.submissions;
 
-import com.matie.redgram.data.managers.presenters.LinksPresenter;
-import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
+import com.matie.redgram.data.managers.presenters.SubmissionFeedPresenter;
+import com.matie.redgram.data.managers.presenters.SubmissionFeedPresenterImpl;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.ContentView;
-import com.matie.redgram.ui.submissions.views.LinksView;
 
 import dagger.Module;
 import dagger.Provides;
@@ -15,23 +14,22 @@ import dagger.Provides;
 @Module
 public class SubmissionModule {
 
-    private LinksView linksView;
-    private ContentView containerView;
+    private SubmissionFeedView sub;
+    private ContentView parentView;
 
-    public SubmissionModule(LinksView linksView, ContentView containerView) {
-        this.linksView = linksView;
-        this.containerView = containerView;
-        this.linksView.setBaseContextView(containerView.getParentView());
+    public SubmissionModule(SubmissionFeedView linksView, ContentView containerView) {
+        this.sub = linksView;
+        this.parentView = containerView;
     }
 
     @Provides
-    public LinksView provideLinksView(){
-        return linksView;
+    public SubmissionFeedView provideSubmissionFeedView(){
+        return sub;
     }
 
     @Provides
-    public LinksPresenter provideLinksPresenter(App app){
-        return new LinksPresenterImpl(linksView, containerView, app);
+    public SubmissionFeedPresenter provideSubmissionFeedPresenter(App app){
+        return new SubmissionFeedPresenterImpl(sub, parentView, app);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.matie.redgram.data.managers.presenters;
 
+import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
@@ -27,7 +28,7 @@ import static com.matie.redgram.data.models.db.User.USER_AUTH;
  * Created by matie on 2017-09-27.
  */
 
-public class ProfileAboutPresenterImpl implements ProfileAboutPresenter {
+public class ProfileAboutPresenterImpl extends BasePresenterImpl implements ProfileAboutPresenter {
 
     private final RedditClientInterface redditClient;
     private final DatabaseManager databaseManager;
@@ -40,6 +41,7 @@ public class ProfileAboutPresenterImpl implements ProfileAboutPresenter {
 
     @Inject
     public ProfileAboutPresenterImpl(App app, ProfileAboutView view) {
+        super(view, app);
         this.view = view;
         redditClient = app.getRedditClient();
         databaseManager = app.getDatabaseManager();

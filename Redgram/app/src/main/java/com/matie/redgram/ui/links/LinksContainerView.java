@@ -40,7 +40,6 @@ import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.links.views.LinksView;
@@ -57,9 +56,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import io.realm.RealmChangeListener;
 
-/**
- * Created by matie on 2016-03-16.
- */
 public class LinksContainerView extends FrameLayout implements LinksView {
 
     @InjectView(R.id.container_linear_layout)
@@ -75,7 +71,6 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     private LinksComponent component;
     String hostingFragmentTag;
     private final Context context;
-    private BaseContextView contextView;
 
     private String subredditChoice = null;
     private String filterChoice = null;
@@ -333,11 +328,6 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     }
 
     @Override
-    public void setBaseContextView(BaseContextView baseContextView) {
-        this.contextView = baseContextView;
-    }
-
-    @Override
     public void callAgeConfirmDialog() {
         MaterialDialog.SingleButtonCallback callback = new MaterialDialog.SingleButtonCallback() {
             @Override
@@ -419,15 +409,6 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     @Override
     public void showErrorMessage(String error) {
 
-    }
-
-    @Override
-    public BaseContextView getParentView() {
-        if(contextView instanceof BaseActivity){
-            return contextView.getBaseActivity();
-        }else{
-            return contextView.getBaseFragment();
-        }
     }
 
     public LinksPresenter getLinksPresenter() {

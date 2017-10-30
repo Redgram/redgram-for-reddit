@@ -1,6 +1,7 @@
 package com.matie.redgram.data.managers.presenters;
 
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
@@ -36,8 +37,8 @@ import rx.subscriptions.CompositeSubscription;
  * Created by matie on 12/04/15.
  */
 
-public class HomePresenterImpl implements HomePresenter{
-    private final App app;
+public class HomePresenterImpl extends BasePresenterImpl implements HomePresenter {
+
     private final HomeView homeView;
     private final RedditClientInterface redditClient;
     private final DatabaseManager databaseManager;
@@ -49,14 +50,10 @@ public class HomePresenterImpl implements HomePresenter{
     private Subscription homeWrapperSubscription;
 
 
-    /**
-     * Called onCreate(View) of MainActivity/Fragment
-     * @param homeView
-     */
     @Inject
     public HomePresenterImpl(HomeView homeView, App app) {
-        this.app = app;
-        this.homeView = homeView;
+        super(homeView, app);
+        this.homeView = (HomeView) view;
         this.redditClient = app.getRedditClient();
         this.databaseManager = app.getDatabaseManager();
         this.subredditItems = new ArrayList<>();
@@ -64,9 +61,6 @@ public class HomePresenterImpl implements HomePresenter{
         this.session = homeView.getParentView().getBaseActivity().getSession();
     }
 
-    /**
-     * Called onResume of MainActivity/Fragment
-     */
     @Override
     public void registerForEvents() {
         if(subscriptions == null)
@@ -78,9 +72,7 @@ public class HomePresenterImpl implements HomePresenter{
             }
         }
     }
-    /**
-     * Called onPause of MainActivity/Fragment
-     */
+
     @Override
     public void unregisterForEvents() {
         if(subscriptions != null && subscriptions.hasSubscriptions()){
@@ -88,9 +80,6 @@ public class HomePresenterImpl implements HomePresenter{
         }
     }
 
-    /**
-     * gets Subscriptions for now
-     */
     @Override
     public void getHomeViewWrapper() {
         homeView.showLoading();
@@ -128,7 +117,7 @@ public class HomePresenterImpl implements HomePresenter{
                     homeViewWrapper.setLinks(links);
                     return homeViewWrapper;
                 })
-                .compose(((BaseFragment)homeView.getParentView()).bindToLifecycle())
+                .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<HomeViewWrapper>() {
@@ -150,13 +139,12 @@ public class HomePresenterImpl implements HomePresenter{
 
                         //dealing with the subreddits
                         Listing<SubredditItem> subredditListing = homeViewWrapper.getSubreddits();
+
                         subredditItems.addAll(subredditListing.getItems());
-                        Collections.sort(subredditItems, new Comparator<SubredditItem>() {
-                            @Override
-                            public int compare(SubredditItem lhs, SubredditItem rhs) {
-                                return lhs.getName().compareToIgnoreCase(rhs.getName());
-                            }
-                        });
+
+                        Collections.sort(subredditItems,
+                                (lhs, rhs) -> lhs.getName().compareToIgnoreCase(rhs.getName()));
+
                         //add to db
                         if(!homeViewWrapper.getIsSubredditsCached()){
                             setSubredditsInCache(homeViewWrapper.getSubreddits());

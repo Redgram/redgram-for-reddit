@@ -1,5 +1,6 @@
 package com.matie.redgram.data.managers.presenters;
 
+import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Subreddit;
@@ -30,7 +31,8 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Subscription Presenter Implementation
  */
-public class SubscriptionPresenterImpl implements SubscriptionPresenter {
+public class SubscriptionPresenterImpl extends BasePresenterImpl implements SubscriptionPresenter {
+
     final private SubscriptionView subscriptionView;
     final private SubredditRecyclerView subredditRecyclerView;
     final private RedditClientInterface redditClient;
@@ -45,7 +47,8 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
 
     @Inject
     public SubscriptionPresenterImpl(SubscriptionView subscriptionView, App app) {
-        this.subscriptionView = subscriptionView;
+        super(subscriptionView, app);
+        this.subscriptionView = (SubscriptionView) view;
         this.subredditRecyclerView = subscriptionView.getRecyclerView();
         this.redditClient = app.getRedditClient();
         this.subredditItems = new ArrayList<>();
@@ -97,7 +100,7 @@ public class SubscriptionPresenterImpl implements SubscriptionPresenter {
         }
 
         subredditSubscription = subredditsObservable
-                .compose(((BaseFragment)subscriptionView.getParentView()).bindToLifecycle())
+                .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Listing<SubredditItem>>() {

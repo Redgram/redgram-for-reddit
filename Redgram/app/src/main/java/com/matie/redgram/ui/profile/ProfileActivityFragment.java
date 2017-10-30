@@ -193,9 +193,4 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
     public void showErrorMessage(String error) {
 
     }
-
-    @Override
-    public BaseContextView getParentView() {
-        return this;
-    }
 }

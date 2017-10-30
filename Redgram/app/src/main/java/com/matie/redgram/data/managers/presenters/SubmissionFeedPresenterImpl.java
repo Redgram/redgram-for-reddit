@@ -13,12 +13,10 @@ import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.data.network.api.utils.subscriber.NullCheckSubscriber;
 import com.matie.redgram.data.network.api.utils.subscriber.NullSubscriptionExecutor;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
-import com.matie.redgram.ui.links.views.LinksView;
-import com.trello.rxlifecycle.LifecycleTransformer;
+import com.matie.redgram.ui.submissions.SubmissionFeedView;
 
 import java.util.Map;
 
@@ -35,13 +33,14 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Links Presenter Implementation
  */
-public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresenter {
-    private final LinksView linksView;
-    private final ContentView parentView;
-    private final RedditClientInterface redditClient;
-    private final ToastHandler toastHandler;
-    private CompositeSubscription subscriptions;
+public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements SubmissionFeedPresenter {
 
+    final private SubmissionFeedView submissionFeedView;
+    final private ContentView parentView;
+    final private RedditClientInterface redditClient;
+    final private ToastHandler toastHandler;
+
+    private CompositeSubscription subscriptions;
     //global subscriptions
     private Subscription listingSubscription;
 
@@ -52,15 +51,14 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
 
 
     @Inject
-    public LinksPresenterImpl(LinksView linksView, ContentView parentView, App app) {
+    public SubmissionFeedPresenterImpl(SubmissionFeedView submissionFeedView, ContentView parentView, App app) {
         super(parentView, app);
-        this.parentView = (ContentView) view;
-        this.linksView = linksView;
+        this.submissionFeedView = submissionFeedView;
+        this.parentView = parentView;
         this.redditClient = app.getRedditClient();
         this.toastHandler = app.getToastHandler();
         this.loadMoreId = "";
     }
-
 
     @Override
     public void registerForEvents() {
@@ -95,7 +93,7 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
     public void getMoreListing(String subreddit, @Nullable String front, Map<String, String> params) {
         params.put("after", loadMoreId);
         params.put("limit", getPrefs().getNumSites()+"");
-        linksView.showLoading();
+        submissionFeedView.showLoading();
         if(front != null){
             listingSubscription = getListingSubscription(subreddit, front, params, false);
         }else{
@@ -133,19 +131,19 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                     @Override
                     public void executeOnNext(JsonElement data) {
                         if(dir == 1){
-                            linksView.getItem(position).setLikes("true");
+                            submissionFeedView.getItem(position).setLikes("true");
                         }else if(dir == -1){
-                            linksView.getItem(position).setLikes("false");
+                            submissionFeedView.getItem(position).setLikes("false");
 
                         }else{
-                            linksView.getItem(position).setLikes(null);
+                            submissionFeedView.getItem(position).setLikes(null);
                         }
-                        linksView.updateItem(position, linksView.getItem(position));
+                        submissionFeedView.updateItem(position, submissionFeedView.getItem(position));
                     }
 
                     @Override
                     public void executeOnError(Throwable e) {
-                        linksView.showErrorMessage(e.toString());
+                        submissionFeedView.showErrorMessage(e.toString());
                     }
                 }));
         if(!subscriptions.isUnsubscribed()){
@@ -169,14 +167,14 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                     public void executeOnNext(JsonElement data) {
                         if(showUndo){
                             removedItemPosition = position;
-                            removedItem = linksView.removeItem(position);
-                            linksView.showHideUndoOption();
+                            removedItem = submissionFeedView.removeItem(position);
+                            submissionFeedView.showHideUndoOption();
                         } //else already removed and updated list
                     }
 
                     @Override
                     public void executeOnError(Throwable e) {
-                        linksView.showErrorMessage(e.toString());
+                        submissionFeedView.showErrorMessage(e.toString());
                     }
                 }));
 
@@ -204,12 +202,12 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                     @Override
                     public void executeOnNext(JsonElement data) {
                         //null check made
-                        linksView.insertItem(removedItemPos, removedPost);
+                        submissionFeedView.insertItem(removedItemPos, removedPost);
                     }
 
                     @Override
                     public void executeOnError(Throwable e) {
-                        linksView.showErrorMessage(e.toString());
+                        submissionFeedView.showErrorMessage(e.toString());
                     }
                 }));
         if(!subscriptions.isUnsubscribed()){
@@ -232,13 +230,13 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                     @Override
                     public void executeOnNext(JsonElement data) {
                         //null check is already done
-                        linksView.getItem(position).setSaved(save);
-                        linksView.updateItem(position, linksView.getItem(position));
+                        submissionFeedView.getItem(position).setSaved(save);
+                        submissionFeedView.updateItem(position, submissionFeedView.getItem(position));
                     }
 
                     @Override
                     public void executeOnError(Throwable e) {
-                        linksView.showErrorMessage(e.toString());
+                        submissionFeedView.showErrorMessage(e.toString());
                     }
                 }));
         if (!subscriptions.isUnsubscribed()){
@@ -254,7 +252,7 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
 
     @Override
     public void report(int position) {
-        final String name = linksView.getItem(position).getName();
+        final String name = submissionFeedView.getItem(position).getName();
         Subscription reportSubscription = redditClient.report(name)
                 .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
@@ -267,14 +265,14 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
 
                     @Override
                     public void executeOnNext(JsonElement data) {
-                        linksView.removeItem(position);
+                        submissionFeedView.removeItem(position);
                         hide(position, name, false);
                         toastHandler.showBackgroundToast("Reported", Toast.LENGTH_LONG);
                     }
 
                     @Override
                     public void executeOnError(Throwable e) {
-                        linksView.showErrorMessage(e.toString());
+                        submissionFeedView.showErrorMessage(e.toString());
                     }
                 }));
         if(!subscriptions.isUnsubscribed()){
@@ -299,7 +297,7 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
 
                     @Override
                     public void onError(Throwable e) {
-                        linksView.showErrorMessage(e.toString());
+                        submissionFeedView.showErrorMessage(e.toString());
                     }
 
                     @Override
@@ -315,7 +313,7 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
 
     @Override
     public void enableNsfwPreview() {
-        Realm realm = linksView.getParentView().getBaseActivity().getRealm();
+        Realm realm = submissionFeedView.getParentView().getBaseActivity().getRealm();
         if(realm != null){
             realm.executeTransaction(instance -> getPrefs().setDisableNsfwPreview(false));
         }
@@ -326,11 +324,11 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
 
         if(subreddit != null){
             if(filter != null)
-                targetObservable = redditClient.getSubredditListing(subreddit,filter, params, ((!isNew)? linksView.getItems() : null));
+                targetObservable = redditClient.getSubredditListing(subreddit,filter, params, ((!isNew)? submissionFeedView.getItems() : null));
             else
-                targetObservable = redditClient.getSubredditListing(subreddit, params, ((!isNew)? linksView.getItems() : null) );
+                targetObservable = redditClient.getSubredditListing(subreddit, params, ((!isNew)? submissionFeedView.getItems() : null) );
         }else{
-            targetObservable = redditClient.getListing(filter, params, ((!isNew)? linksView.getItems() : null));
+            targetObservable = redditClient.getListing(filter, params, ((!isNew)? submissionFeedView.getItems() : null));
         }
 
         return buildSubscription(targetObservable, isNew);
@@ -349,7 +347,7 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                         if(isNew){
                             parentView.hideLoading();
                         }else{
-                            linksView.hideLoading();
+                            submissionFeedView.hideLoading();
                         }
                     }
 
@@ -358,18 +356,18 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                         if(isNew){
                             parentView.hideLoading();
                         }else{
-                            linksView.hideLoading();
+                            submissionFeedView.hideLoading();
                         }
-                        linksView.showErrorMessage(e.toString());
+                        submissionFeedView.showErrorMessage(e.toString());
                     }
 
                     @Override
                     public void onNext(Listing wrapper) {
                         if(isNew){
-                            linksView.updateList(wrapper.getItems());
+                            submissionFeedView.updateList(wrapper.getItems());
                         }else{
-                            linksView.getItems().addAll(wrapper.getItems());
-                            linksView.updateList();
+                            submissionFeedView.getItems().addAll(wrapper.getItems());
+                            submissionFeedView.updateList();
                         }
                         loadMoreId = wrapper.getAfter();
                     }
@@ -378,7 +376,7 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
 
     @SuppressWarnings("unchecked")
     private Subscription getSearchSubscription(String subreddit, Map<String, String> params, boolean isNew) {
-        return redditClient.executeSearch(subreddit, params, ((!isNew) ? linksView.getItems() : null))
+        return redditClient.executeSearch(subreddit, params, ((!isNew) ? submissionFeedView.getItems() : null))
                 .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -389,7 +387,7 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                         if(isNew){
                             parentView.hideLoading();
                         }else{
-                            linksView.hideLoading();
+                            submissionFeedView.hideLoading();
                         }
                     }
 
@@ -398,7 +396,7 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                         if(isNew){
                             parentView.hideLoading();
                         }else{
-                            linksView.hideLoading();
+                            submissionFeedView.hideLoading();
                         }
                         parentView.showErrorMessage(e.toString());
                     }
@@ -406,11 +404,11 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                     @Override
                     public void onNext(Listing wrapper) {
                         if(isNew){
-                            linksView.getItems().clear();
-                            linksView.updateList(wrapper.getItems());
+                            submissionFeedView.getItems().clear();
+                            submissionFeedView.updateList(wrapper.getItems());
                         }else{
-                            linksView.getItems().addAll(wrapper.getItems());
-                            linksView.updateList();
+                            submissionFeedView.getItems().addAll(wrapper.getItems());
+                            submissionFeedView.updateList();
                         }
                         loadMoreId = wrapper.getAfter();
                     }
@@ -430,6 +428,6 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
     }
 
     private Prefs getPrefs(){
-        return linksView.getParentView().getBaseActivity().getSession().getUser().getPrefs();
+        return submissionFeedView.getParentView().getBaseActivity().getSession().getUser().getPrefs();
     }
 }

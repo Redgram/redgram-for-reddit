@@ -16,7 +16,6 @@ import com.matie.redgram.data.models.main.profile.ProfileUser;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.profile.components.DaggerProfileAboutComponent;
 import com.matie.redgram.ui.profile.components.ProfileAboutComponent;
 import com.matie.redgram.ui.profile.components.ProfileComponent;
@@ -150,10 +149,5 @@ public class ProfileAboutFragment extends BaseFragment implements ProfileAboutVi
     @Override
     public void showErrorMessage(String error) {
 
-    }
-
-    @Override
-    public BaseContextView getParentView() {
-        return this;
     }
 }
