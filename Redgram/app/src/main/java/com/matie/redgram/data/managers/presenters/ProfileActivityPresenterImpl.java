@@ -20,16 +20,6 @@ public class ProfileActivityPresenterImpl extends BasePresenterImpl implements P
     }
 
     @Override
-    public void registerForEvents() {
-
-    }
-
-    @Override
-    public void unregisterForEvents() {
-
-    }
-
-    @Override
     public void getListing(String listingType, Map<String, String> params) {
         // // TODO: 10/24/17  
     }

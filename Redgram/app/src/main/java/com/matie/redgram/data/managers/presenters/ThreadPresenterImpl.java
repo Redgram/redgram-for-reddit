@@ -1,5 +1,7 @@
 package com.matie.redgram.data.managers.presenters;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.JsonElement;
 import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.models.db.Prefs;
@@ -33,9 +35,6 @@ public class ThreadPresenterImpl extends BasePresenterImpl implements ThreadPres
     private final ThreadView threadView;
     private final RedditClientInterface redditClient;
 
-    private CompositeSubscription subscriptions;
-    private Subscription threadSubscription;
-
     @Inject
     public ThreadPresenterImpl(ThreadView threadView, App app) {
         super(threadView, app);
@@ -44,39 +43,19 @@ public class ThreadPresenterImpl extends BasePresenterImpl implements ThreadPres
     }
 
     @Override
-    public void registerForEvents() {
-        if(subscriptions == null)
-            subscriptions = new CompositeSubscription();
-
-        if(!subscriptions.hasSubscriptions()){
-            if(threadSubscription != null){
-                subscriptions.add(threadSubscription);
-            }
-        }
-    }
-
-    @Override
-    public void unregisterForEvents() {
-        if(subscriptions != null && subscriptions.hasSubscriptions()){
-            subscriptions.unsubscribe();
-        }
-    }
-
-    private Prefs getUserPrefs(){
-        Session session = threadView.getParentView().getBaseActivity().getSession();
-        if(session != null && session.getUser() != null){
-            return session.getUser().getPrefs();
-        }
-        return null;
-    }
-
-    @Override
     public void getThread(String id, Map<String, String> params) {
-        params.put("limit", getUserPrefs().getNumComments()+"");
+        Prefs prefs = getUserPrefs();
+
+        if (prefs == null) return;
+
+        params.put("limit", prefs.getNumComments() + "");
+
         //todo display the sort in action bar
-        params.put("sort", getUserPrefs().getDefaultCommentSort());
+        params.put("sort", prefs.getDefaultCommentSort());
+
         threadView.showLoading();
-        threadSubscription = redditClient.getCommentsByArticle(id, params)
+
+        Subscription threadSubscription = redditClient.getCommentsByArticle(id, params)
                 .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -100,6 +79,8 @@ public class ThreadPresenterImpl extends BasePresenterImpl implements ThreadPres
                         threadView.passDataToCommentsView(commentItems);
                     }
                 });
+
+        addSubscription(threadSubscription);
     }
 
     @Override
@@ -131,9 +112,8 @@ public class ThreadPresenterImpl extends BasePresenterImpl implements ThreadPres
                         threadView.showErrorMessage(e.toString());
                     }
                 }));
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(voteSubscription);
-        }
+
+        addSubscription(voteSubscription);
     }
 
     @Override
@@ -159,9 +139,8 @@ public class ThreadPresenterImpl extends BasePresenterImpl implements ThreadPres
                         threadView.showErrorMessage(e.toString());
                     }
                 }));
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(saveSubscription);
-        }
+
+        addSubscription(saveSubscription);
     }
 
     @Override
@@ -189,8 +168,13 @@ public class ThreadPresenterImpl extends BasePresenterImpl implements ThreadPres
 
                     }
                 }));
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(hideSubscription);
-        }
+
+        addSubscription(hideSubscription);
     }
+
+    @Nullable
+    private Prefs getUserPrefs() {
+        return databaseManager().getSessionPreferences();
+    }
+
 }

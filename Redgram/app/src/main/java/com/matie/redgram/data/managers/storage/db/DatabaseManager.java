@@ -166,4 +166,17 @@ public class DatabaseManager {
         close(realm);
         return usableList;
     }
+
+    public Prefs getSessionPreferences() {
+        final Realm realm = getInstance();
+
+        Prefs usablePrefs = null;
+        Prefs prefs = DatabaseHelper.getPrefs(realm);
+        if (prefs != null) {
+            usablePrefs = realm.copyFromRealm(prefs);
+        }
+
+        close(realm);
+        return usablePrefs;
+    }
 }

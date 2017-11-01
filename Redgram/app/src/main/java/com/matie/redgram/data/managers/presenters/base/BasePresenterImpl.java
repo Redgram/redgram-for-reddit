@@ -1,19 +1,20 @@
 package com.matie.redgram.data.managers.presenters.base;
 
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.BaseView;
 import com.trello.rxlifecycle.LifecycleTransformer;
 import com.trello.rxlifecycle.components.RxActivity;
 import com.trello.rxlifecycle.components.RxFragment;
 
-/**
- * Created by matie on 2017-10-29.
- */
+import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 
-public class BasePresenterImpl implements BasePresenter {
+public abstract class BasePresenterImpl implements BasePresenter {
 
     protected final App app;
     protected final BaseView view;
+    private CompositeSubscription subscriptions;
 
     public BasePresenterImpl(BaseView baseView, App app) {
         this.app = app;
@@ -31,12 +32,31 @@ public class BasePresenterImpl implements BasePresenter {
     }
 
     @Override
-    public void registerForEvents() {
+    public DatabaseManager databaseManager() {
+        return app.getDatabaseManager();
+    }
 
+    @Override
+    public void registerForEvents() {
+        if (subscriptions == null) {
+            subscriptions = new CompositeSubscription();
+        }
     }
 
     @Override
     public void unregisterForEvents() {
+        if (subscriptions != null) {
+            subscriptions.unsubscribe();
+        }
+    }
 
+    protected void addSubscription(Subscription subscription) {
+        if (subscription == null || subscriptions == null) return;
+        subscriptions.add(subscription);
+    }
+
+    protected void removeSubscription(Subscription subscription) {
+        if (subscription == null || subscriptions == null) return;
+        subscriptions.remove(subscription);
     }
 }

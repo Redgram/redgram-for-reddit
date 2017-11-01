@@ -17,26 +17,11 @@ public class SearchPresenterImpl extends BasePresenterImpl implements SearchPres
     private final SearchView searchView;
     private final RedditClientInterface redditClient;
 
-    private CompositeSubscription subscriptions;
-
     @Inject
     public SearchPresenterImpl(SearchView searchView, App app) {
         super(searchView, app);
         this.searchView = searchView;
         this.redditClient = app.getRedditClient();
     }
-
-    @Override
-    public void registerForEvents() {
-        if(subscriptions == null)
-            subscriptions = new CompositeSubscription();
-    }
-
-    @Override
-    public void unregisterForEvents() {
-        if(subscriptions != null && subscriptions.hasSubscriptions())
-            subscriptions.unsubscribe();
-    }
-
 
 }

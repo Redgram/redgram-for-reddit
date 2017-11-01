@@ -16,7 +16,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.binaryresource.FileBinaryResource;
@@ -29,8 +28,6 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
 import com.matie.redgram.data.models.db.Prefs;
-import com.matie.redgram.data.models.db.Session;
-import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseActivity;
@@ -54,7 +51,6 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import io.realm.RealmChangeListener;
 
 public class LinksContainerView extends FrameLayout implements LinksView {
 
@@ -67,7 +63,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     //recycler view listeners to add.
     private RecyclerView.OnScrollListener loadMoreListener;
-    private LinearLayoutManager mLayoutManager;
+    private LinearLayoutManager layoutManager;
     private LinksComponent component;
     String hostingFragmentTag;
     private final Context context;
@@ -76,9 +72,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     private String filterChoice = null;
     private Map<String,String> params = new HashMap<>();
 
-    private Prefs prefs;
     private Gson gson;
-    private RealmChangeListener prefsChangeListener;
 
     @Inject
     App app;
@@ -119,11 +113,11 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
 
     public PostItem getItem(int position){
-        return ((PostAdapterBase)containerRecyclerView.getAdapter()).getItem(position);
+        return ((PostAdapterBase) containerRecyclerView.getAdapter()).getItem(position);
     }
 
     public List<PostItem> getItems(){
-        return ((PostAdapterBase)containerRecyclerView.getAdapter()).getItems();
+        return ((PostAdapterBase) containerRecyclerView.getAdapter()).getItems();
     }
 
     @Override
@@ -183,13 +177,13 @@ public class LinksContainerView extends FrameLayout implements LinksView {
     }
 
     @Override
-    public void search(String subredditChoice, Map<String, String> params) {
+    public void search(String subredditChoice, Map<String, String> urlParams) {
         this.filterChoice = null;
         this.subredditChoice = subredditChoice;
         if(params != null){
-            this.params = params;
+            params = urlParams;
         }
-        linksPresenter.searchListing(subredditChoice, params);
+        linksPresenter.searchListing(subredditChoice, urlParams);
     }
 
     @Override
@@ -228,12 +222,8 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     @Override
     public void reportPost(int position) {
-        MaterialDialog.SingleButtonCallback callback = new MaterialDialog.SingleButtonCallback() {
-            @Override
-            public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-                linksPresenter.report(position);
-            }
-        };
+        MaterialDialog.SingleButtonCallback callback =
+                (materialDialog, dialogAction) -> linksPresenter.report(position);
         LinksHelper.callReportDialog(dialogUtil, callback);
     }
 
@@ -329,15 +319,13 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     @Override
     public void callAgeConfirmDialog() {
-        MaterialDialog.SingleButtonCallback callback = new MaterialDialog.SingleButtonCallback() {
-            @Override
-            public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-                if(!getPrefs().isOver18()){
-                    linksPresenter.confirmAge();
-                }else if(getPrefs().isDisableNsfwPreview()){
-                    //change preferences
-                    linksPresenter.enableNsfwPreview();
-                }
+        MaterialDialog.SingleButtonCallback callback = (materialDialog, dialogAction) -> {
+            final Prefs prefs = getPrefs();
+            if(!prefs.isOver18()){
+                linksPresenter.confirmAge();
+            }else if(prefs.isDisableNsfwPreview()){
+                //change preferences
+                linksPresenter.enableNsfwPreview();
             }
         };
 
@@ -357,7 +345,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
                 if(newState == RecyclerView.SCROLL_STATE_IDLE){
                     if(containerRecyclerView != null && containerRecyclerView.getChildCount() > 0){
                         int lastItemPosition = containerRecyclerView.getAdapter().getItemCount() - 1;
-                        if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
+                        if(layoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
                             linksPresenter.getMoreListing(subredditChoice, filterChoice , params);
                         }
                     }
@@ -368,7 +356,7 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     private void setupRecyclerView(){
         containerRecyclerView.getItemAnimator().setChangeDuration(0);
-        mLayoutManager = (LinearLayoutManager)containerRecyclerView.getLayoutManager();
+        layoutManager = (LinearLayoutManager)containerRecyclerView.getLayoutManager();
         containerRecyclerView.addOnScrollListener(loadMoreListener);
         containerRecyclerView.setListener(this);
     }
@@ -428,34 +416,12 @@ public class LinksContainerView extends FrameLayout implements LinksView {
 
     }
 
-    public void addChangeListeners() {
-        if(context instanceof BaseActivity){
-            Session session = ((BaseActivity) context).getSession();
-            if(session != null){
-                User user = session.getUser();
-                if(user != null){
-                    prefs = user.getPrefs();
-                    if(prefs != null){
-                        prefsChangeListener = this::updateList;
-                        prefs.addChangeListener(prefsChangeListener);
-                    }
-                }
-            }
-        }
-    }
-
-    public void removeChangeListeners() {
-        if(prefs != null){
-            prefs.removeChangeListener(prefsChangeListener);
-        }
-    }
-
     public void setLoadMoreId(String id){
         ((LinksPresenterImpl)linksPresenter).setLoadMoreId(id);
     }
 
     private Prefs getPrefs(){
-        return getParentView().getBaseActivity().getSession().getUser().getPrefs();
+        return linksPresenter.databaseManager().getSessionPreferences();
     }
 
 }

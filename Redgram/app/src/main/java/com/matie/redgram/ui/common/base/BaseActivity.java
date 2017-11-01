@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentTransaction;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
-import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
@@ -24,9 +23,6 @@ import io.realm.RealmChangeListener;
 
 public abstract class BaseActivity extends RxAppCompatActivity implements BaseView {
 
-    private Realm realm;
-    private Session session;
-
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fresco.initialize(this);
@@ -34,7 +30,6 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseVi
         setContentView(getLayoutId());
 
         AppComponent appComponent = App.get(this).component();
-        setupRealm(appComponent.getApp());
         setupComponent(appComponent);
     }
 
@@ -53,20 +48,6 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseVi
     }
 
     @Override
-    protected void onPause(){
-        super.onPause();
-        if(session != null){
-            session.removeChangeListeners();
-        }
-    }
-
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        DatabaseHelper.close(realm);
-    }
-
-    @Override
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
@@ -77,30 +58,6 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseVi
     protected abstract void setupComponent(AppComponent appComponent);
     protected abstract int getLayoutId();
     protected abstract int getContainerId();
-
-    private void setupRealm(App app) {
-        DatabaseManager databaseManager = app.getDatabaseManager();
-        realm = databaseManager.getInstance();
-        session = DatabaseHelper.getSession(realm);
-    }
-
-    public Realm getRealm() {
-        return realm;
-    }
-
-    public Session getSession() {
-        return session;
-    }
-
-    public void addSessionListener(RealmChangeListener listener) {
-        if (session == null) return;
-        session.addChangeListener(listener);
-    }
-
-    public void removeSessionListener(RealmChangeListener listener) {
-        if (session == null) return;
-        session.removeChangeListener(listener);
-    }
 
     public void openIntent(Intent intent) {
         openIntent(intent, R.anim.enter, R.anim.exit);

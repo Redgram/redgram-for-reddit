@@ -253,7 +253,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                 if (query.length() > 0 && !searchSwipeContainer.isRefreshing()) {
                     params.put("q", query);
                     subreddit = "";
-                    linksContainerView.search(subreddit,params);
+                    linksContainerView.search(subreddit, params);
                     searchView.setCursorVisible(false);
                 }
             }
@@ -369,7 +369,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         super.onResume();
         searchPresenter.registerForEvents();
         linksContainerView.getLinksPresenter().registerForEvents();
-        linksContainerView.addChangeListeners();
     }
 
     @Override
@@ -385,7 +384,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     public void onDestroyView() {
         searchPresenter.unregisterForEvents();
         linksContainerView.getLinksPresenter().unregisterForEvents();
-        linksContainerView.removeChangeListeners();
 
         ButterKnife.reset(this);
         super.onDestroyView();

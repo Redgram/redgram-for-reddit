@@ -33,44 +33,24 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class SubscriptionPresenterImpl extends BasePresenterImpl implements SubscriptionPresenter {
 
-    final private SubscriptionView subscriptionView;
-    final private SubredditRecyclerView subredditRecyclerView;
-    final private RedditClientInterface redditClient;
-    final private DatabaseManager databaseManager;
+    private final SubscriptionView subscriptionView;
+    private final SubredditRecyclerView subredditRecyclerView;
+    private final RedditClientInterface redditClient;
+    private final DatabaseManager databaseManager;
 
     private List<SubredditItem> subredditItems;
-    private String loadMoreId = "";
-
-    private CompositeSubscription subscriptions;
-    private Subscription subredditSubscription;
     private Session session;
 
     @Inject
     public SubscriptionPresenterImpl(SubscriptionView subscriptionView, App app) {
         super(subscriptionView, app);
         this.subscriptionView = (SubscriptionView) view;
-        this.subredditRecyclerView = subscriptionView.getRecyclerView();
         this.redditClient = app.getRedditClient();
         this.subredditItems = new ArrayList<>();
-        this.databaseManager = app.getDatabaseManager();
 
-        session = subscriptionView.getParentView().getBaseActivity().getSession();
-    }
-
-    @Override
-    public void registerForEvents() {
-        if (subscriptions == null) {
-            subscriptions = new CompositeSubscription();
-        }
-
-        subscriptions.add(subredditSubscription);
-    }
-
-    @Override
-    public void unregisterForEvents() {
-        if (subscriptions != null) {
-            subscriptions.unsubscribe();
-        }
+        this.subredditRecyclerView = subscriptionView.getRecyclerView();
+        this.databaseManager = databaseManager();
+        session = databaseManager.getSession();
     }
 
     @Override
@@ -81,7 +61,7 @@ public class SubscriptionPresenterImpl extends BasePresenterImpl implements Subs
         Map<String,String> params = new HashMap<>();
         params.put("limit", "100");
 
-        //check if subreddits are in db
+        // check if subreddits are in db
         Observable<Listing<SubredditItem>> subredditsObservable;
         Listing<SubredditItem> storedListing = null;
         if(!forceNetwork){
@@ -99,7 +79,7 @@ public class SubscriptionPresenterImpl extends BasePresenterImpl implements Subs
             }
         }
 
-        subredditSubscription = subredditsObservable
+        Subscription subredditSubscription = subredditsObservable
                 .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -121,16 +101,17 @@ public class SubscriptionPresenterImpl extends BasePresenterImpl implements Subs
                         //todo optimize
                         Collections.sort(subredditItems, (lhs, rhs) -> lhs.getName().compareToIgnoreCase(rhs.getName()));
 
+                        // todo set items in view
                         subredditRecyclerView.replaceWith(subredditItems);
-                        if(subredditListing.getAfter() != null){
-                            loadMoreId = subredditListing.getAfter(); //if needed
-                        }
+
                         //add to db if from network
                         if(forceNetwork){
                             databaseManager.setSubreddits(subredditItems);
                         }
                     }
                 });
+
+        addSubscription(subredditSubscription);
     }
 
     private Listing<SubredditItem> getSubredditsFromCache() {

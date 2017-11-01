@@ -9,9 +9,6 @@ import com.matie.redgram.ui.links.views.LinksView;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by matie on 2016-03-16.
- */
 @Module
 public class LinksModule {
 

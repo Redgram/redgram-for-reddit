@@ -16,7 +16,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.binaryresource.FileBinaryResource;
@@ -24,13 +23,10 @@ import com.facebook.cache.common.CacheKey;
 import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.facebook.imagepipeline.request.ImageRequest;
-import com.google.gson.Gson;
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
+import com.matie.redgram.data.managers.presenters.SubmissionFeedPresenter;
 import com.matie.redgram.data.models.db.Prefs;
-import com.matie.redgram.data.models.db.Session;
-import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.base.BaseActivity;
@@ -40,16 +36,13 @@ import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
-import com.matie.redgram.ui.common.views.BaseContextView;
-import com.matie.redgram.ui.common.views.BaseView;
-import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
-import com.matie.redgram.ui.submissions.views.CommentsView;
+import com.matie.redgram.ui.links.LinksComponent;
+import com.matie.redgram.ui.submissions.links.LinksViewDelegate;
 import com.matie.redgram.ui.submissions.views.LinksView;
 import com.matie.redgram.ui.thread.ThreadActivity;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,12 +50,8 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import io.realm.RealmChangeListener;
 
-/**
- * Created by matie on 2016-03-16.
- */
-public class SubmissionFeedView extends FrameLayout implements LinksView, CommentsView  {
+public class SubmissionFeedView extends FrameLayout implements LinksView {
 
     @InjectView(R.id.container_linear_layout)
     LinearLayout containerLinearLayout;
@@ -73,24 +62,15 @@ public class SubmissionFeedView extends FrameLayout implements LinksView, Commen
 
     //recycler view listeners to add.
     private RecyclerView.OnScrollListener loadMoreListener;
-    private LinearLayoutManager mLayoutManager;
-    private SubmissionComponent component;
+    private LinearLayoutManager layoutManager;
+    private LinksComponent component;
     String hostingFragmentTag;
     private final Context context;
-    private BaseView parentView;
-
-    private String subredditChoice = null;
-    private String filterChoice = null;
-    private Map<String,String> params = new HashMap<>();
-
-    private Prefs prefs;
-    private Gson gson;
-    private RealmChangeListener prefsChangeListener;
 
     @Inject
     App app;
     @Inject
-    LinksPresenter linksPresenter;
+    LinksView linksViewDelegate;
     @Inject
     DialogUtil dialogUtil;
 
@@ -110,13 +90,6 @@ public class SubmissionFeedView extends FrameLayout implements LinksView, Commen
         this.context = context;
     }
 
-    private void init(){
-        filterChoice = getResources().getString(R.string.default_filter).toLowerCase();
-        gson = new Gson();
-        setupListeners();
-        setupRecyclerView();
-    }
-
     @Override
     public void onFinishInflate(){
         super.onFinishInflate();
@@ -124,129 +97,106 @@ public class SubmissionFeedView extends FrameLayout implements LinksView, Commen
         init();
     }
 
-
-    public PostItem getItem(int position){
-        return ((PostAdapterBase)containerRecyclerView.getAdapter()).getItem(position);
+    private void init() {
+        filterChoice = getResources().getString(R.string.default_filter).toLowerCase();
+        setupListeners();
+        setupRecyclerView();
+        setupLinksDelegate();
     }
 
-    public List<PostItem> getItems(){
-        return ((PostAdapterBase)containerRecyclerView.getAdapter()).getItems();
+    private void setupLinksDelegate() {
+        if (linksViewDelegate instanceof LinksViewDelegate) {
+            ((LinksViewDelegate) linksViewDelegate).setContainerRecyclerView(containerRecyclerView);
+            ((LinksViewDelegate) linksViewDelegate).setContainerProgressBar(containerProgressBar);
+        }
+    }
+
+    public PostItem getItem(int position) {
+        return linksViewDelegate.getItem(position);
+    }
+
+    public List<PostItem> getItems() {
+        return linksViewDelegate.getItems();
     }
 
     @Override
     public void updateList() {
-        containerRecyclerView.getAdapter().notifyDataSetChanged();
+        linksViewDelegate.updateList();
     }
 
     @Override
     public void updateRestOfList(int position) {
-        RecyclerView.Adapter adapter = containerRecyclerView.getAdapter();
-        adapter.notifyItemRangeChanged(position, adapter.getItemCount() - position);
+        linksViewDelegate.updateRestOfList(position);
     }
 
     @Override
     public void updateItem(int position, PostItem postItem) {
-        getItems().set(position, postItem);
-        containerRecyclerView.getAdapter().notifyItemChanged(position);
+        linksViewDelegate.updateItem(position, postItem);
     }
 
     @Override
     public PostItem removeItem(int position) {
-        PostItem removedItem = getItems().remove(position);
-        containerRecyclerView.getAdapter().notifyItemRemoved(position);
-        updateRestOfList(position);
-        return removedItem;
+        return linksViewDelegate.removeItem(position);
     }
 
     @Override
     public void insertItem(int position, PostItem removedPost) {
-        getItems().add(position, removedPost);
-        containerRecyclerView.getAdapter().notifyItemInserted(position);
-        updateRestOfList(position);
+        linksViewDelegate.insertItem(position, removedPost);
     }
 
     @Override
     public void updateList(List<PostItem> items) {
-        containerRecyclerView.replaceWith(items);
+        linksViewDelegate.updateList(items);
     }
 
     @Override
     public void refreshView() {
-        linksPresenter.getListing(subredditChoice, filterChoice, params);
+        linksViewDelegate.refreshView();
     }
 
     @Override
-    public void refreshView(String subreddit, String filter, Map<String, String> urlParams) {
-        //could be null
-        this.subredditChoice = subreddit;
-
-        if(filterChoice != null){
-            this.filterChoice = filter;
-        }
-        if(params != null){
-            this.params = urlParams;
-        }
-        refreshView();
+    public void refreshView(String subreddit, @NonNull String filter, @NonNull Map<String, String> urlParams) {
+        linksViewDelegate.refreshView(subreddit, filter, urlParams);
     }
 
     @Override
-    public void search(String subredditChoice, Map<String, String> params) {
-        this.filterChoice = null;
-        this.subredditChoice = subredditChoice;
-        if(params != null){
-            this.params = params;
-        }
-        linksPresenter.searchListing(subredditChoice, params);
+    public void search(String subredditChoice, Map<String, String> urlParams) {
+        linksViewDelegate.search(subredditChoice, urlParams);
     }
 
     @Override
     public void sortView(@NonNull String filterChoice, @Nullable Map<String, String> params) {
-        if(params == null){
-            this.params.clear();
-        }else{
-            this.params = params;
-        }
-
-        this.filterChoice = filterChoice;
-        linksPresenter.getListing(subredditChoice, filterChoice, this.params);
+        linksViewDelegate.sortView(filterChoice, params);
     }
 
     @Override
     public void votePost(int position, Integer dir) {
-        linksPresenter.voteFor(position, getItem(position).getName(), dir);
+        linksViewDelegate.votePost(position, dir);
     }
 
     @Override
-    public void sharePost(int position) {
-        PostItem item = getItem(position);
-        MaterialDialog.ListCallback callback = LinksHelper.getShareCallback(context, item);
-        LinksHelper.showExternalDialog(dialogUtil, "Share" ,callback);
+    public void sharePost(final Context context, int position) {
+        linksViewDelegate.sharePost(context, position);
     }
 
     @Override
     public void savePost(int position, boolean save) {
-        linksPresenter.save(position, getItem(position).getName(), save);
+        linksViewDelegate.savePost(position, save);
     }
 
     @Override
     public void hidePost(int position) {
-        linksPresenter.hide(position, getItem(position).getName(), true);
+        linksViewDelegate.hidePost(position);
     }
 
     @Override
     public void reportPost(int position) {
-        MaterialDialog.SingleButtonCallback callback = new MaterialDialog.SingleButtonCallback() {
-            @Override
-            public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-                linksPresenter.report(position);
-            }
-        };
-        LinksHelper.callReportDialog(dialogUtil, callback);
+       linksViewDelegate.reportPost(position);
     }
 
     @Override
     public void deletePost(int position) {
-        linksPresenter.delete(position);
+        linksViewDelegate.deletePost(position);
     }
 
     @Override
@@ -282,22 +232,8 @@ public class SubmissionFeedView extends FrameLayout implements LinksView, Commen
     }
 
     @Override
-    public void loadCommentsForPost(int position) {
-        Intent intent = new Intent(context, ThreadActivity.class);
-        String key = getResources().getString(R.string.main_data_key);
-        String posKey = getResources().getString(R.string.main_data_position);
-        intent.putExtra(key, gson.toJson(getItem(position)));
-        intent.putExtra(posKey, position);
-
-        Fragment hostingFragment =
-                ((BaseActivity) context).getSupportFragmentManager().findFragmentByTag(getHostingFragmentTag());
-        if(hostingFragment != null){
-            ((BaseFragment)hostingFragment)
-                    .openIntentForResult(intent, ThreadActivity.REQ_CODE);
-        }else{
-            ((BaseActivity) context)
-                    .openIntentForResult(intent, ThreadActivity.REQ_CODE);
-        }
+    public void loadCommentsForPost(final Context context, int position) {
+        linksViewDelegate.loadCommentsForPost(context, position);
     }
 
     @Override
@@ -337,19 +273,16 @@ public class SubmissionFeedView extends FrameLayout implements LinksView, Commen
     @Override
     public void callAgeConfirmDialog() {
         MaterialDialog.SingleButtonCallback callback = (materialDialog, dialogAction) -> {
-            if(!getPrefs().isOver18()){
-                linksPresenter.confirmAge();
-            }else if(getPrefs().isDisableNsfwPreview()){
+            final Prefs prefs = getPrefs();
+            if (!prefs.isOver18()) {
+                submissionFeedPresenter.confirmAge();
+            } else if (prefs.isDisableNsfwPreview()) {
                 //change preferences
-                linksPresenter.enableNsfwPreview();
+                submissionFeedPresenter.enableNsfwPreview();
             }
         };
 
         LinksHelper.callAgeConfirmDialog(dialogUtil, callback);
-    }
-
-    public PostRecyclerView getContainerRecyclerView() {
-        return containerRecyclerView;
     }
 
     private void setupListeners() {
@@ -361,8 +294,8 @@ public class SubmissionFeedView extends FrameLayout implements LinksView, Commen
                 if(newState == RecyclerView.SCROLL_STATE_IDLE){
                     if(containerRecyclerView != null && containerRecyclerView.getChildCount() > 0){
                         int lastItemPosition = containerRecyclerView.getAdapter().getItemCount() - 1;
-                        if(mLayoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
-                            linksPresenter.getMoreListing(subredditChoice, filterChoice , params);
+                        if(layoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
+                            submissionFeedPresenter.getMoreListing(subredditChoice, filterChoice , params);
                         }
                     }
                 }
@@ -372,14 +305,14 @@ public class SubmissionFeedView extends FrameLayout implements LinksView, Commen
 
     private void setupRecyclerView(){
         containerRecyclerView.getItemAnimator().setChangeDuration(0);
-        mLayoutManager = (LinearLayoutManager)containerRecyclerView.getLayoutManager();
+        layoutManager = (LinearLayoutManager) containerRecyclerView.getLayoutManager();
         containerRecyclerView.addOnScrollListener(loadMoreListener);
-        containerRecyclerView.setListener(this);
+//        containerRecyclerView.setListener(linksViewDelegate);
     }
 
-    public void setComponent(SubmissionComponent component) {
+    public void setComponent(LinksComponent component) {
         this.component = component;
-        this.component.inject(this);
+//        this.component.inject(this);
     }
 
     public void setHostingFragmentTag(String hostingFragmentTag) {
@@ -415,17 +348,8 @@ public class SubmissionFeedView extends FrameLayout implements LinksView, Commen
 
     }
 
-    @Override
-    public BaseView getParentView() {
-        if(parentView instanceof BaseActivity){
-            return parentView.getBaseActivity();
-        }else{
-            return parentView.getBaseFragment();
-        }
-    }
-
-    public LinksPresenter getLinksPresenter() {
-        return linksPresenter;
+    public SubmissionFeedPresenter getSubmissionFeedPresenter() {
+        return submissionFeedPresenter;
     }
 
     @Override
@@ -433,42 +357,20 @@ public class SubmissionFeedView extends FrameLayout implements LinksView, Commen
         if(getContext() instanceof CoordinatorLayoutInterface){
             String msg = getResources().getString(R.string.item_hidden);
             String actionMsg = getResources().getString(R.string.undo);
-            OnClickListener onClickListener = v -> linksPresenter.unHide();
+            View.OnClickListener onClickListener = v -> submissionFeedPresenter.unHide();
 
             ((CoordinatorLayoutInterface) getContext())
-                .showSnackBar(msg, Snackbar.LENGTH_LONG, actionMsg, onClickListener, null);
+                    .showSnackBar(msg, Snackbar.LENGTH_LONG, actionMsg, onClickListener, null);
         }
 
-    }
-
-    public void addChangeListeners() {
-        if(context instanceof BaseActivity){
-            Session session = ((BaseActivity) context).getSession();
-            if(session != null){
-                User user = session.getUser();
-                if(user != null){
-                    prefs = user.getPrefs();
-                    if(prefs != null){
-                        prefsChangeListener = this::updateList;
-                        prefs.addChangeListener(prefsChangeListener);
-                    }
-                }
-            }
-        }
-    }
-
-    public void removeChangeListeners() {
-        if(prefs != null){
-            prefs.removeChangeListener(prefsChangeListener);
-        }
     }
 
     public void setLoadMoreId(String id){
-        ((LinksPresenterImpl)linksPresenter).setLoadMoreId(id);
+        ((LinksPresenterImpl) submissionFeedPresenter).setLoadMoreId(id);
     }
 
     private Prefs getPrefs(){
-        return getParentView().getBaseActivity().getSession().getUser().getPrefs();
+        return submissionFeedPresenter.databaseManager().getSessionPreferences();
     }
 
 }

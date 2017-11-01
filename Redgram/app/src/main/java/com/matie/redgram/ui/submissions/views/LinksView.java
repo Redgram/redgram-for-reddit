@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.submissions.views;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -9,9 +10,7 @@ import com.matie.redgram.ui.common.views.ContentView;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by matie on 2016-03-16.
- */
+
 public interface LinksView extends ContentView {
     int UP_VOTE = 1;
     int DOWN_VOTE = -1;
@@ -36,9 +35,9 @@ public interface LinksView extends ContentView {
     void hidePost(int position);
     void reportPost(int position);
     void deletePost(int position);
-    void loadCommentsForPost(int position);
+    void loadCommentsForPost(final Context context, int position);
 
-    void sharePost(int position);
+    void sharePost(final Context context, int position);
     void visitSubreddit(String subredditName);
     void visitProfile(String username);
     void openInBrowser(int position);

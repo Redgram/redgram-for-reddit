@@ -24,19 +24,12 @@ import rx.subscriptions.CompositeSubscription;
 
 import static com.matie.redgram.data.models.db.User.USER_AUTH;
 
-/**
- * Created by matie on 2017-09-27.
- */
-
 public class ProfileAboutPresenterImpl extends BasePresenterImpl implements ProfileAboutPresenter {
 
     private final RedditClientInterface redditClient;
     private final DatabaseManager databaseManager;
     private final ProfileAboutView view;
-    private final CompositeSubscription subscriptions = new CompositeSubscription();
-    private Subscription userSubscription;
 
-    private Realm realm;
     private Session session;
 
     @Inject
@@ -44,32 +37,18 @@ public class ProfileAboutPresenterImpl extends BasePresenterImpl implements Prof
         super(view, app);
         this.view = view;
         redditClient = app.getRedditClient();
-        databaseManager = app.getDatabaseManager();
+        databaseManager = databaseManager();
         init();
     }
 
     private void init() {
-        realm = databaseManager.getInstance();
-        session = DatabaseHelper.getSession(realm);
+        session = databaseManager.getSession();
     }
 
     @Override
     public void registerForEvents() {
+        super.registerForEvents();
         init();
-
-        if (subscriptions.isUnsubscribed()) {
-            if (userSubscription != null) {
-                subscriptions.add(userSubscription);
-            }
-        }
-    }
-
-    @Override
-    public void unregisterForEvents() {
-        DatabaseHelper.close(realm);
-        if (subscriptions.hasSubscriptions()) {
-            subscriptions.unsubscribe();
-        }
     }
 
     @Override
@@ -101,8 +80,8 @@ public class ProfileAboutPresenterImpl extends BasePresenterImpl implements Prof
     }
 
     private void getUserInformation(String username) {
-        userSubscription = redditClient.getUserDetails(username)
-                .compose(view.getParentView().getBaseFragment().bindToLifecycle())
+        Subscription userSubscription = redditClient.getUserDetails(username)
+                .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<RedditUser>() {
@@ -123,6 +102,8 @@ public class ProfileAboutPresenterImpl extends BasePresenterImpl implements Prof
                         view.hideLoading();
                     }
                 });
+
+        addSubscription(userSubscription);
     }
 
     private ProfileUser mapToProfileUser(RedditUser redditUser) {
@@ -141,8 +122,8 @@ public class ProfileAboutPresenterImpl extends BasePresenterImpl implements Prof
     }
 
     private void getAuthUserInformation(User user) {
-        userSubscription = redditClient.getUser(user.getTokenInfo().getToken())
-                .compose(view.getParentView().getBaseFragment().bindToLifecycle())
+        Subscription userSubscription = redditClient.getUser(user.getTokenInfo().getToken())
+                .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<AuthUser>() {
@@ -162,6 +143,8 @@ public class ProfileAboutPresenterImpl extends BasePresenterImpl implements Prof
                         view.hideLoading();
                     }
                 });
+
+        addSubscription(userSubscription);
     }
 
     private ProfileUser mapToProfileUser(AuthUser authUser) {

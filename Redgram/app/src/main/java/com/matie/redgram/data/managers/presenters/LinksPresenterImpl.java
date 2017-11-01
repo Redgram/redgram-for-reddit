@@ -40,10 +40,6 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
     private final ContentView parentView;
     private final RedditClientInterface redditClient;
     private final ToastHandler toastHandler;
-    private CompositeSubscription subscriptions;
-
-    //global subscriptions
-    private Subscription listingSubscription;
 
     //states
     private String loadMoreId;
@@ -61,47 +57,32 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
         this.loadMoreId = "";
     }
 
-
-    @Override
-    public void registerForEvents() {
-        if(subscriptions == null)
-            subscriptions = new CompositeSubscription();
-
-        if(!subscriptions.isUnsubscribed()) {
-            if (listingSubscription != null) {
-                subscriptions.add(listingSubscription);
-            }
-        }
-    }
-
-    @Override
-    public void unregisterForEvents() {
-        if(subscriptions != null && subscriptions.hasSubscriptions()){
-            subscriptions.unsubscribe();
-        }
-    }
-
     @Override
     public void getListing(String subreddit, String front, Map<String, String> params) {
         if(params.containsKey("after")){
             params.remove("after");
         }
-        params.put("limit", getPrefs().getNumSites()+"");
+        params.put("limit", getPrefs().getNumSites() + "");
         parentView.showLoading();
-        listingSubscription = getListingSubscription(subreddit, front, params, true);
+
+        Subscription listingSubscription = getListingSubscription(subreddit, front, params, true);
+        addSubscription(listingSubscription);
     }
 
     @Override
     public void getMoreListing(String subreddit, @Nullable String front, Map<String, String> params) {
         params.put("after", loadMoreId);
-        params.put("limit", getPrefs().getNumSites()+"");
+        params.put("limit", getPrefs().getNumSites() + "");
         linksView.showLoading();
-        if(front != null){
+
+        Subscription listingSubscription;
+        if (front != null) {
             listingSubscription = getListingSubscription(subreddit, front, params, false);
-        }else{
+        } else {
             listingSubscription = getSearchSubscription(subreddit, params, false);
         }
 
+        addSubscription(listingSubscription);
     }
 
     @Override
@@ -111,11 +92,9 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
         }
 
         parentView.showLoading();
-        listingSubscription = getSearchSubscription(subreddit, params, true);
 
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(listingSubscription);
-        }
+        Subscription listingSubscription = getSearchSubscription(subreddit, params, true);
+        addSubscription(listingSubscription);
     }
 
     @Override
@@ -148,9 +127,8 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                         linksView.showErrorMessage(e.toString());
                     }
                 }));
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(voteSubscription);
-        }
+
+        addSubscription(voteSubscription);
     }
 
     @Override
@@ -180,9 +158,7 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                     }
                 }));
 
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(hideSubscription);
-        }
+        addSubscription(hideSubscription);
     }
 
     @Override
@@ -212,9 +188,8 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                         linksView.showErrorMessage(e.toString());
                     }
                 }));
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(unHideSubscription);
-        }
+
+        addSubscription(unHideSubscription);
     }
 
     @Override
@@ -241,9 +216,8 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                         linksView.showErrorMessage(e.toString());
                     }
                 }));
-        if (!subscriptions.isUnsubscribed()){
-            subscriptions.add(saveSubscription);
-        }
+
+        addSubscription(saveSubscription);
     }
 
     // TODO: 2016-03-25 when the user is able to submit
@@ -277,9 +251,8 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                         linksView.showErrorMessage(e.toString());
                     }
                 }));
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(reportSubscription);
-        }
+
+        addSubscription(reportSubscription);
     }
 
     @Override
@@ -308,16 +281,20 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
                         //realm Prefs object will recognize a change a refresh the list in the UI
                     }
                 });
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(subscription);
-        }
+
+        addSubscription(subscription);
     }
 
     @Override
     public void enableNsfwPreview() {
-        Realm realm = linksView.getParentView().getBaseActivity().getRealm();
-        if(realm != null){
-            realm.executeTransaction(instance -> getPrefs().setDisableNsfwPreview(false));
+        Realm realm = databaseManager().getInstance();
+        if(realm != null) {
+            realm.executeTransaction(instance -> getPrefs().setDisableNsfwPreview(false), new Realm.Transaction.Callback() {
+                @Override
+                public void onSuccess() {
+                    linksView.updateList();
+                }
+            });
         }
     }
 
@@ -429,7 +406,7 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
         this.loadMoreId = loadMoreId;
     }
 
-    private Prefs getPrefs(){
-        return linksView.getParentView().getBaseActivity().getSession().getUser().getPrefs();
+    private Prefs getPrefs() {
+        return databaseManager().getSessionPreferences();
     }
 }

@@ -32,42 +32,33 @@ import rx.subscriptions.CompositeSubscription;
 
 public class UserListPresenterImpl extends BasePresenterImpl implements UserListPresenter {
 
-    private UserListControllerView userListView;
     private final Realm realm;
+    private UserListControllerView userListView;
     private Session session;
-    private App app;
     private DatabaseManager databaseManager;
     private boolean enableDefault;
-
-    private CompositeSubscription subscriptions;
 
     @Inject
     public UserListPresenterImpl(UserListControllerView userListView, ContentView contentView, App app, boolean enableDefault) {
         super(contentView, app);
         this.userListView = userListView;
-        this.databaseManager = app.getDatabaseManager();
+        this.databaseManager = databaseManager();
         this.enableDefault = enableDefault;
 
-        BaseActivity activity = parentView.getBaseActivity();
-        this.realm = activity.getRealm();
-        this.session = activity.getSession();
-    }
-
-    @Override
-    public void registerForEvents() {
-        initializeSubscriptions();
+        session = databaseManager.getSession();
+        realm = databaseManager().getInstance();
     }
 
     @Override
     public void unregisterForEvents() {
-        if(subscriptions != null && subscriptions.hasSubscriptions()){
-            subscriptions.unsubscribe();
-        }
+        super.unregisterForEvents();
+
+        DatabaseHelper.close(realm);
     }
 
     @Override
     public void getUsers() {
-        Observable<List<UserItem>> userListObservable = getUserListObservable(realm, session.getUser());
+        Observable<List<UserItem>> userListObservable = getUserListObservable();
 
         Subscription userListSubscription =
                 userListObservable
@@ -90,37 +81,39 @@ public class UserListPresenterImpl extends BasePresenterImpl implements UserList
                         }
                     });
 
-        if(!getSubscriptions().isUnsubscribed()){
-            subscriptions.add(userListSubscription);
-        }
+        addSubscription(userListSubscription);
     }
 
-    private Observable<List<UserItem>> getUserListObservable(Realm realm, User sessionUser){
+    private Observable<List<UserItem>> getUserListObservable() {
         return DatabaseHelper.getUsersAsync(realm)
                 .filter(RealmResults::isLoaded)
                 .map(list -> {
                     List<UserItem> userItems = new ArrayList<>();
-                    for(User user : list){
+
+                    for(User user : list) {
                         if((enableDefault && User.USER_GUEST.equalsIgnoreCase(user.getUserType()))
                             || !User.USER_GUEST.equalsIgnoreCase(user.getUserType())){
-                            userItems.add(buildUserItem(user, sessionUser));
+                            userItems.add(buildUserItem(user, session.getUser()));
                         }
                     }
+
                     return userItems;
                 });
     }
 
     private UserItem buildUserItem(User user, User sessionUser) {
         UserItem userItem = new UserItem(user.getId(), user.getUserName());
-        if(sessionUser != null){
-            if(user.getId().equalsIgnoreCase(sessionUser.getId())) {
+
+        if (sessionUser != null) {
+            if (user.getId().equalsIgnoreCase(sessionUser.getId())) {
                 userItem.setSelected(true);
             }
 
-            if(User.USER_GUEST.equalsIgnoreCase(user.getUserType())){
+            if (User.USER_GUEST.equalsIgnoreCase(user.getUserType())) {
                 userItem.setDefault(true);
             }
         }
+
         return userItem;
     }
 
@@ -148,8 +141,6 @@ public class UserListPresenterImpl extends BasePresenterImpl implements UserList
                 .filter(user -> user != null)
                 .flatMap(this::updateSessionWithSelectedUser);
 
-
-
         Subscription selectUserSubscription = userObservable
             .compose(getTransformer())
             .observeOn(AndroidSchedulers.mainThread())
@@ -175,9 +166,7 @@ public class UserListPresenterImpl extends BasePresenterImpl implements UserList
                 }
             });
 
-        if(!getSubscriptions().isUnsubscribed()){
-            subscriptions.add(selectUserSubscription);
-        }
+        addSubscription(selectUserSubscription);
     }
 
     @Override
@@ -220,24 +209,12 @@ public class UserListPresenterImpl extends BasePresenterImpl implements UserList
         return user.asObservable();
     }
 
-
-    private void initializeSubscriptions() {
-        if(subscriptions == null){
-            subscriptions = new CompositeSubscription();
-        }
-    }
-
-    private CompositeSubscription getSubscriptions() {
-        initializeSubscriptions();
-        return subscriptions;
-    }
-
-    private class SelectedUserSubscriber extends Subscriber<Object>{
+    private class SelectedUserSubscriber extends Subscriber<Object> {
 
         private String id;
         private int position;
 
-        public SelectedUserSubscriber(String id, int position) {
+        private SelectedUserSubscriber(String id, int position) {
             this.id = id;
             this.position = position;
         }

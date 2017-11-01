@@ -40,10 +40,6 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
     final private RedditClientInterface redditClient;
     final private ToastHandler toastHandler;
 
-    private CompositeSubscription subscriptions;
-    //global subscriptions
-    private Subscription listingSubscription;
-
     //states
     private String loadMoreId;
     private PostItem removedItem;
@@ -60,46 +56,33 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
         this.loadMoreId = "";
     }
 
-    @Override
-    public void registerForEvents() {
-        if(subscriptions == null)
-            subscriptions = new CompositeSubscription();
 
-        if(!subscriptions.isUnsubscribed()) {
-            if (listingSubscription != null) {
-                subscriptions.add(listingSubscription);
-            }
-        }
-    }
-
-    @Override
-    public void unregisterForEvents() {
-        if(subscriptions != null && subscriptions.hasSubscriptions()){
-            subscriptions.unsubscribe();
-        }
-    }
 
     @Override
     public void getListing(String subreddit, String front, Map<String, String> params) {
         if(params.containsKey("after")){
             params.remove("after");
         }
-        params.put("limit", getPrefs().getNumSites()+"");
+        params.put("limit", getPrefs().getNumSites() + "");
         parentView.showLoading();
-        listingSubscription = getListingSubscription(subreddit, front, params, true);
+        Subscription listingSubscription = getListingSubscription(subreddit, front, params, true);
+        addSubscription(listingSubscription);
     }
 
     @Override
     public void getMoreListing(String subreddit, @Nullable String front, Map<String, String> params) {
         params.put("after", loadMoreId);
-        params.put("limit", getPrefs().getNumSites()+"");
+        params.put("limit", getPrefs().getNumSites() + "");
         submissionFeedView.showLoading();
+
+        Subscription listingSubscription;
         if(front != null){
             listingSubscription = getListingSubscription(subreddit, front, params, false);
         }else{
             listingSubscription = getSearchSubscription(subreddit, params, false);
         }
 
+        addSubscription(listingSubscription);
     }
 
     @Override
@@ -109,11 +92,9 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
         }
 
         parentView.showLoading();
-        listingSubscription = getSearchSubscription(subreddit, params, true);
+        Subscription listingSubscription = getSearchSubscription(subreddit, params, true);
 
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(listingSubscription);
-        }
+        addSubscription(listingSubscription);
     }
 
     @Override
@@ -146,9 +127,8 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                         submissionFeedView.showErrorMessage(e.toString());
                     }
                 }));
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(voteSubscription);
-        }
+
+        addSubscription(voteSubscription);
     }
 
     @Override
@@ -178,9 +158,7 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                     }
                 }));
 
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(hideSubscription);
-        }
+        addSubscription(hideSubscription);
     }
 
     @Override
@@ -210,9 +188,8 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                         submissionFeedView.showErrorMessage(e.toString());
                     }
                 }));
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(unHideSubscription);
-        }
+
+        addSubscription(unHideSubscription);
     }
 
     @Override
@@ -239,9 +216,8 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                         submissionFeedView.showErrorMessage(e.toString());
                     }
                 }));
-        if (!subscriptions.isUnsubscribed()){
-            subscriptions.add(saveSubscription);
-        }
+
+        addSubscription(saveSubscription);
     }
 
     // TODO: 2016-03-25 when the user is able to submit
@@ -275,9 +251,8 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                         submissionFeedView.showErrorMessage(e.toString());
                     }
                 }));
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(reportSubscription);
-        }
+
+        addSubscription(reportSubscription);
     }
 
     @Override
@@ -306,16 +281,20 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                         //realm Prefs object will recognize a change a refresh the list in the UI
                     }
                 });
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(subscription);
-        }
+
+        addSubscription(subscription);
     }
 
     @Override
     public void enableNsfwPreview() {
-        Realm realm = submissionFeedView.getParentView().getBaseActivity().getRealm();
-        if(realm != null){
-            realm.executeTransaction(instance -> getPrefs().setDisableNsfwPreview(false));
+        Realm realm = databaseManager().getInstance();
+        if(realm != null) {
+            realm.executeTransaction(instance -> getPrefs().setDisableNsfwPreview(false), new Realm.Transaction.Callback() {
+                @Override
+                public void onSuccess() {
+                    submissionFeedView.updateList();
+                }
+            });
         }
     }
 
@@ -428,6 +407,6 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
     }
 
     private Prefs getPrefs(){
-        return submissionFeedView.getParentView().getBaseActivity().getSession().getUser().getPrefs();
+        return databaseManager().getSessionPreferences();
     }
 }
