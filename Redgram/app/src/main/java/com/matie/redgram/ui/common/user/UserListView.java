@@ -17,7 +17,7 @@ import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.main.views.MainView;
 import com.matie.redgram.ui.common.user.views.UserListControllerView;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.BaseContextView;
+import com.matie.redgram.ui.common.views.BaseView;
 import com.matie.redgram.ui.common.views.adapters.UserAdapter;
 import com.matie.redgram.ui.common.views.widgets.drawer.UserRecyclerView;
 
@@ -29,9 +29,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-/**
- * Created by matie on 2016-09-15.
- */
 public class UserListView extends FrameLayout implements UserListControllerView {
 
     public static final int ADD_ACCOUNT = 11;
@@ -51,7 +48,7 @@ public class UserListView extends FrameLayout implements UserListControllerView 
     DialogUtil dialogUtil;
 
     private final Context context;
-    private BaseContextView contextView;
+    private BaseView contextView;
     private UserListComponent component;
 
     public UserListView(Context context) {
@@ -111,18 +108,9 @@ public class UserListView extends FrameLayout implements UserListControllerView 
     }
 
     @Override
-    public BaseContextView getParentView() {
-        if(contextView instanceof BaseActivity){
-            return contextView.getBaseActivity();
-        }else{
-            return contextView.getBaseFragment();
-        }
-    }
-
-    @Override
     public void addAccount() {
-        if(context instanceof BaseActivity){
-            ((BaseActivity)context).openIntentForResult(AuthActivity.intent(context, false), ADD_ACCOUNT);
+        if (context instanceof BaseActivity) {
+            ((BaseActivity) context).openIntentForResult(AuthActivity.intent(context, false), ADD_ACCOUNT);
         }
     }
 
@@ -155,8 +143,8 @@ public class UserListView extends FrameLayout implements UserListControllerView 
 
     @Override
     public void close() {
-        if(context instanceof MainView){
-            ((MainView)context).resetNavDrawer();
+        if (context instanceof MainView) {
+            ((MainView) context).resetNavDrawer();
         }
     }
 
@@ -172,9 +160,8 @@ public class UserListView extends FrameLayout implements UserListControllerView 
 
     @Override
     public void restartContext(){
-        BaseContextView contextView = (BaseContextView) context;
-        if(contextView != null){
-            contextView.getBaseActivity().recreate();
+        if (context instanceof BaseActivity) {
+            ((BaseActivity) context).recreate();
         }
     }
 
@@ -200,8 +187,4 @@ public class UserListView extends FrameLayout implements UserListControllerView 
         return presenter;
     }
 
-    @Override
-    public void setBaseContextView(BaseContextView baseContextView) {
-        this.contextView = baseContextView;
-    }
 }

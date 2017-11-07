@@ -3,8 +3,11 @@
         android:id="@+id/swipe_container"
         style="@style/Match">
 
+     <!--<include android:id="@+id/links_container_view"-->
+            <!--layout="@layout/links_container_view"/>-->
+
      <include android:id="@+id/links_container_view"
-            layout="@layout/links_container_view"/>
+            layout="@layout/submission_feed_view"/>
 
 </android.support.v4.widget.SwipeRefreshLayout>
 

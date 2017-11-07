@@ -5,13 +5,10 @@ import com.matie.redgram.ui.submissions.views.LinksView;
 
 import dagger.Subcomponent;
 
-/**
- * Created by matie on 2016-03-17.
- */
 @Subcomponent(modules = SubmissionModule.class)
 public interface SubmissionComponent {
     void inject(SubmissionFeedView submissionFeedView);
 
-    LinksView getLinksView();
+    LinksView getLinksViewDelegate();
     LinksPresenter getLinksPresenter();
 }

@@ -13,12 +13,9 @@ import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.data.network.api.utils.subscriber.NullCheckSubscriber;
 import com.matie.redgram.data.network.api.utils.subscriber.NullSubscriptionExecutor;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
 import com.matie.redgram.ui.links.views.LinksView;
-import com.trello.rxlifecycle.LifecycleTransformer;
 
 import java.util.Map;
 
@@ -30,7 +27,6 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Links Presenter Implementation

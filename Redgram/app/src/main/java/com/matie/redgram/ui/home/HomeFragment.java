@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
-import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
@@ -28,11 +27,11 @@ import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.home.views.HomeView;
-import com.matie.redgram.ui.links.LinksComponent;
-import com.matie.redgram.ui.links.LinksContainerView;
 import com.matie.redgram.ui.links.LinksControlView;
-import com.matie.redgram.ui.links.LinksModule;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
+import com.matie.redgram.ui.submissions.SubmissionComponent;
+import com.matie.redgram.ui.submissions.SubmissionFeedView;
+import com.matie.redgram.ui.submissions.SubmissionModule;
 import com.matie.redgram.ui.thread.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -51,7 +50,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     @InjectView(R.id.swipe_container)
     SwipeRefreshLayout homeSwipeContainer;
     @InjectView(R.id.links_container_view)
-    LinksContainerView linksContainerView;
+    SubmissionFeedView submissionFeedView;
 
     LinearLayoutManager mLayoutManager;
 
@@ -59,7 +58,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     LinksControlView linksControlView;
 
     HomeComponent component;
-    LinksComponent linksComponent;
+    SubmissionComponent submissionComponent;
 
     @Inject
     App app;
@@ -82,8 +81,8 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     }
 
     private void setUpRecyclerView() {
-        homeRecyclerView = linksContainerView.getContainerRecyclerView();
-        mLayoutManager = (LinearLayoutManager)homeRecyclerView.getLayoutManager();
+        homeRecyclerView = (PostRecyclerView) submissionFeedView.findViewById(R.id.container_recycler_view);
+        mLayoutManager = (LinearLayoutManager) homeRecyclerView.getLayoutManager();
 
         //this listener is responsible for invoking SWIPE-TO-REFRESH if the first item is fully visible.
         homeRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -108,7 +107,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         if(getArguments() != null && getArguments().containsKey(SubscriptionActivity.RESULT_SUBREDDIT_NAME)){
             String subredditChoice = getArguments().getString(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
             Map<String, String> params = new HashMap<>();
-            linksContainerView.refreshView(subredditChoice, filter.toLowerCase(), params);
+            submissionFeedView.refreshView(subredditChoice, filter.toLowerCase(), params);
             setControllerTitle(subredditChoice);
             setControllerSubTitle(filter);
         } else{
@@ -121,17 +120,23 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     protected void setupComponent() {
         AppComponent appComponent = ((BaseActivity)getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
-        LinksModule linksModule = new LinksModule(linksContainerView, this);
+
+        SubmissionModule submissionModule = new SubmissionModule(submissionFeedView, this);
+
         component = DaggerHomeComponent.builder()
                 .mainComponent(mainComponent)
                 .homeModule(new HomeModule(this))
-                .linksModule(linksModule)
+                .submissionModule(submissionModule)
                 .build();
+
         component.inject(this);
-        linksComponent = component.getLinksComponent(linksModule);
-        linksContainerView.setComponent(linksComponent);
-        linksContainerView.setHostingFragmentTag(Fragments.HOME.toString());
+
+        submissionComponent = component.getSubmissionComponent(submissionModule);
+        submissionComponent.inject(submissionFeedView);
+        // set the delegate(s) that are delegate the interface
+        submissionFeedView.setLinksViewDelegate(submissionComponent.getLinksViewDelegate());
     }
+
     @Override
     protected void setupToolbar() {
         ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
@@ -155,7 +160,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         if (linksControlView == null) return;
         linksControlView.setRefreshListener(v -> {
             if (!homeSwipeContainer.isRefreshing()) {
-                linksContainerView.refreshView();
+                submissionFeedView.refreshView();
             }
         });
     }
@@ -172,7 +177,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                     } else {
                         if(!homeSwipeContainer.isRefreshing()){
                             String filterChoice = charSequence.toString();
-                            linksContainerView.sortView(filterChoice.toLowerCase(), null);
+                            submissionFeedView.sortView(filterChoice.toLowerCase(), null);
                             setControllerSubTitle(filterChoice);
                         }
                     }
@@ -215,10 +220,10 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
                             if (i == 0 && "Return to Frontpage".equalsIgnoreCase(charSequence.toString())) {
                                 setControllerTitle(getResources().getString(R.string.frontpage));
-                                linksContainerView.refreshView(null, filterChoice.toLowerCase(), params);
+                                submissionFeedView.refreshView(null, filterChoice.toLowerCase(), params);
                             } else {
                                 setControllerTitle(subredditChoice);
-                                linksContainerView.refreshView(subredditChoice, filterChoice.toLowerCase(), params);
+                                submissionFeedView.refreshView(subredditChoice, filterChoice.toLowerCase(), params);
                             }
 
                         })
@@ -264,7 +269,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                         params.put("t", charSequence.toString().toLowerCase());
 
                         //perform network call
-                        linksContainerView.sortView(query.toString().toLowerCase(), params);
+                        submissionFeedView.sortView(query.toString().toLowerCase(), params);
 
                         //change subtitle only
                         String bullet = getContext().getResources().getString(R.string.text_bullet);
@@ -297,12 +302,12 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                 PostItem postItem = new Gson()
                         .fromJson(data.getStringExtra(ThreadActivity.RESULT_POST_CHANGE), PostItem.class);
                 int pos = data.getIntExtra(ThreadActivity.RESULT_POST_POS, -1);
-                if(linksContainerView.getItems().contains(postItem) && pos >= 0){
+                if(submissionFeedView.getItems().contains(postItem) && pos >= 0){
                     // TODO: 2016-04-18 override hashcode to check whether item has actually changed before calling update
                     if(postItem.isHidden()){
-                        linksContainerView.removeItem(pos);
+                        submissionFeedView.removeItem(pos);
                     }else{
-                        linksContainerView.updateItem(pos, postItem);
+                        submissionFeedView.updateItem(pos, postItem);
                     }
                 }
             }
@@ -313,14 +318,14 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     public void onResume() {
         super.onResume();
         homePresenter.registerForEvents();
-        linksContainerView.getLinksPresenter().registerForEvents();
+        submissionComponent.getLinksPresenter().registerForEvents();
     }
 
     @Override
     public void onDestroyView() {
         homeRecyclerView.clearOnScrollListeners();
         homePresenter.unregisterForEvents();
-        linksContainerView.getLinksPresenter().unregisterForEvents();
+        submissionComponent.getLinksPresenter().unregisterForEvents();
 
         ButterKnife.reset(this);
         super.onDestroyView();
@@ -358,15 +363,8 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     }
 
     @Override
-    public void loadLinksContainer(Listing<PostItem> links) {
-        linksContainerView.setLoadMoreId(links.getAfter());
-        linksContainerView.updateList(links.getItems());
-    }
-
-
-    @Override
     public void onRefresh() {
-        linksContainerView.refreshView();
+        submissionFeedView.refreshView();
     }
 
     @Override
@@ -402,9 +400,5 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     @Override
     public SlidingUpPanelLayout.PanelState getPanelState() {
         return ((SlidingUpPanelActivity) getActivity()).getPanelState();
-    }
-
-    public SwipeRefreshLayout getHomeSwipeContainer() {
-        return homeSwipeContainer;
     }
 }

@@ -6,21 +6,21 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import javax.inject.Inject;
 
-/**
- * Created by matie on 16/07/15.
- */
+
 public class DialogUtil {
 
-    private Context mContext;
-    private MaterialDialog.Builder mDialogBuilder;
+    private Context context;
 
     @Inject
     public DialogUtil(Context context) {
-        mContext = context;
+        this.context = context;
     }
 
     public MaterialDialog.Builder build(){
-        return new MaterialDialog.Builder(mContext);
+        return new MaterialDialog.Builder(context);
     }
 
+    public static MaterialDialog.Builder builder(Context context) {
+        return new MaterialDialog.Builder(context);
+    }
 }

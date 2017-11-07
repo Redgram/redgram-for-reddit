@@ -22,18 +22,12 @@ public class SubmissionModule {
     }
 
     @Provides
-    public LinksView provideLinksViewDelegate() {
-        return new LinksViewDelegate();
-    }
-
-    @Provides
-    public SubmissionFeedView provideSubmissionFeedView() {
-        return sub;
-    }
-
-    @Provides
     public SubmissionFeedPresenter provideSubmissionFeedPresenter(App app) {
         return new SubmissionFeedPresenterImpl(sub, parentView, app);
     }
 
+    @Provides
+    public LinksView provideLinksViewDelegate(SubmissionFeedPresenter presenter) {
+        return new LinksViewDelegate(presenter);
+    }
 }

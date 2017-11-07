@@ -13,8 +13,6 @@ import com.matie.redgram.data.models.main.items.SubredditItem;
 public class HomeViewWrapper {
     // TODO: 2016-06-04 also get trending if enabled in settings
     private Listing<SubredditItem> subreddits;
-    private Listing<PostItem> links;
-
     private Boolean isSubredditsCached;
 
     public Listing<SubredditItem> getSubreddits() {
@@ -25,17 +23,10 @@ public class HomeViewWrapper {
         this.subreddits = subreddits;
     }
 
-    public Listing<PostItem> getLinks() {
-        return links;
-    }
-
-    public void setLinks(Listing<PostItem> links) {
-        this.links = links;
-    }
-
     public Boolean getIsSubredditsCached() {
         return isSubredditsCached;
     }
+
     public void setIsSubredditsCached(Boolean isSubredditsCached) {
         this.isSubredditsCached = isSubredditsCached;
     }

@@ -28,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
@@ -106,10 +105,10 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getSession() == null || DatabaseHelper.getUserById(getRealm(), "Guest") == null){
+        if (mainComponent.getMainPresenter().getSessionUser() != null) {
             //launch auth activity with specific flags and create a guest user
             startActivity(AuthActivity.intent(this, true));
-        }else{
+        } else {
 
             ButterKnife.inject(this);
 
@@ -139,10 +138,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             setUpToolbar();
             setup(savedInstanceState);
             setUpPanel();
-            if(getSession() != null){
-                setupNavUserLayout(getSession().getUser());
-            }
-
+            setupNavUserLayout();
         }
     }
 
@@ -164,7 +160,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
-    private void setupNavUserLayout(User user){
+    private void setupNavUserLayout() {
+        final User user = mainComponent.getMainPresenter().getSessionUser();
+
         FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);
 
         ImageView accountsView = ((ImageView) headerView.findViewById(R.id.drawerAccounts));
@@ -206,7 +204,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                         .mainModule(new MainModule(this))
                         .userListModule(userListModule)
                         .build();
+
         mainComponent.inject(this);
+
         UserListComponent userListComponent = mainComponent.getUserListComponent(userListModule);
         userListLayout.setComponent(userListComponent);
     }

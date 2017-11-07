@@ -14,9 +14,6 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 
-/**
- * Created by matie on 04/04/15.
- */
 public class PostRecyclerView extends RecyclerView {
 
     private final Context context;

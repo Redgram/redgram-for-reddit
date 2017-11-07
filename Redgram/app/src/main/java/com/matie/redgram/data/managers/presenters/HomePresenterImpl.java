@@ -1,6 +1,5 @@
 package com.matie.redgram.data.managers.presenters;
 
-import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Prefs;
@@ -9,16 +8,13 @@ import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.home.HomeViewWrapper;
-import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.home.views.HomeView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,12 +26,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
-
-/**
- * Created by matie on 12/04/15.
- */
 
 public class HomePresenterImpl extends BasePresenterImpl implements HomePresenter {
 
@@ -60,16 +51,6 @@ public class HomePresenterImpl extends BasePresenterImpl implements HomePresente
     public void getHomeViewWrapper() {
         homeView.showLoading();
 
-        Map<String, String> params = new HashMap<>();
-        final Prefs prefs = getPrefs();
-        if(prefs != null){
-            params.put("limit", prefs.getNumSites()+"");
-        }
-
-        Observable<Listing<PostItem>> linksObservable =
-                redditClient.getListing(app.getResources().getString(R.string.default_filter).toLowerCase(),
-                        params, null);
-
         Map<String,String> subparams = new HashMap<String, String>();
         subparams.put("limit", "100");
 
@@ -87,11 +68,10 @@ public class HomePresenterImpl extends BasePresenterImpl implements HomePresente
         }
 
         Subscription homeWrapperSubscription = Observable
-                .zip(linksObservable, subredditsObservable, Observable.just((storedListing != null)), (links, subredditListing, inStore) -> {
+                .zip(subredditsObservable, Observable.just((storedListing != null)), (subredditListing, inStore) -> {
                     HomeViewWrapper homeViewWrapper = new HomeViewWrapper();
                     homeViewWrapper.setSubreddits(subredditListing);
                     homeViewWrapper.setIsSubredditsCached(inStore);
-                    homeViewWrapper.setLinks(links);
                     return homeViewWrapper;
                 })
                 .compose(getTransformer())
@@ -111,9 +91,6 @@ public class HomePresenterImpl extends BasePresenterImpl implements HomePresente
 
                     @Override
                     public void onNext(HomeViewWrapper homeViewWrapper) {
-                        //dealing with links
-                        homeView.loadLinksContainer(homeViewWrapper.getLinks());
-
                         //dealing with the subreddits
                         Listing<SubredditItem> subredditListing = homeViewWrapper.getSubreddits();
 

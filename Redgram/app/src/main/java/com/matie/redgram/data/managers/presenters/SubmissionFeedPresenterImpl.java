@@ -13,7 +13,6 @@ import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.data.network.api.utils.subscriber.NullCheckSubscriber;
 import com.matie.redgram.data.network.api.utils.subscriber.NullSubscriptionExecutor;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
 import com.matie.redgram.ui.submissions.SubmissionFeedView;
@@ -28,7 +27,6 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Links Presenter Implementation
@@ -55,8 +53,6 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
         this.toastHandler = app.getToastHandler();
         this.loadMoreId = "";
     }
-
-
 
     @Override
     public void getListing(String subreddit, String front, Map<String, String> params) {
@@ -148,7 +144,7 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                         if(showUndo){
                             removedItemPosition = position;
                             removedItem = submissionFeedView.removeItem(position);
-                            submissionFeedView.showHideUndoOption();
+                            submissionFeedView.showHideUndoOption(submissionFeedView.getContext());
                         } //else already removed and updated list
                     }
 
@@ -400,10 +396,6 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
 
     public void setRemovedItemPosition(int removedItemPosition) {
         this.removedItemPosition = removedItemPosition;
-    }
-
-    public void setLoadMoreId(String loadMoreId) {
-        this.loadMoreId = loadMoreId;
     }
 
     private Prefs getPrefs(){

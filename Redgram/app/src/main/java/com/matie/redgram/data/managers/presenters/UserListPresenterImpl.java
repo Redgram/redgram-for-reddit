@@ -11,7 +11,6 @@ import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.network.api.reddit.base.RedditAuthProvider;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.user.views.UserListControllerView;
 import com.matie.redgram.ui.common.views.ContentView;
 
@@ -28,7 +27,6 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 public class UserListPresenterImpl extends BasePresenterImpl implements UserListPresenter {
 

@@ -14,7 +14,6 @@ import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.links.LinksContainerView;
 import com.matie.redgram.ui.links.LinksControlView;
 import com.matie.redgram.ui.profile.components.DaggerProfileActivityComponent;
