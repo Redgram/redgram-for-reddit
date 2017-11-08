@@ -74,7 +74,6 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         ButterKnife.inject(this, view);
 
         setUpRecyclerView();
-
         setupSwipeContainer();
 
         return view;
@@ -118,7 +117,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     @Override
     protected void setupComponent() {
-        AppComponent appComponent = ((BaseActivity)getActivity()).component();
+        AppComponent appComponent = ((BaseActivity) getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
 
         SubmissionModule submissionModule = new SubmissionModule(submissionFeedView, this);
@@ -369,27 +368,27 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     @Override
     public void showPanel() {
-        ((SlidingUpPanelActivity)getActivity()).showPanel();
+        ((SlidingUpPanelActivity) getActivity()).showPanel();
     }
 
     @Override
     public void hidePanel() {
-        ((SlidingUpPanelActivity)getActivity()).hidePanel();
+        ((SlidingUpPanelActivity) getActivity()).hidePanel();
     }
 
     @Override
     public void togglePanel() {
-        ((SlidingUpPanelActivity)getActivity()).togglePanel();
+        ((SlidingUpPanelActivity) getActivity()).togglePanel();
     }
 
     @Override
     public void setPanelHeight(int height) {
-        ((SlidingUpPanelActivity)getActivity()).setPanelHeight(height);
+        ((SlidingUpPanelActivity) getActivity()).setPanelHeight(height);
     }
 
     @Override
     public void setPanelView(Fragments fragmentEnum, Bundle bundle) {
-        ((SlidingUpPanelActivity)getActivity()).setPanelView(fragmentEnum, bundle);
+        ((SlidingUpPanelActivity) getActivity()).setPanelView(fragmentEnum, bundle);
     }
 
     @Override

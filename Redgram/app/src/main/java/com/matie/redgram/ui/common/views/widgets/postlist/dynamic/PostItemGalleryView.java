@@ -104,7 +104,7 @@ public class PostItemGalleryView extends PostItemSubView {
 
     @OnClick({R.id.gallery_overlay, R.id.overlay_image, R.id.overlay_text})
     public void onGalleryClick(){
-        if(postItem.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
+        if(postItem.isAdult() && (!getSessionPrefs().isOver18() || getSessionPrefs().isDisableNsfwPreview())){
             listener.callAgeConfirmDialog();
         }else{
             listener.viewWebMedia(position);

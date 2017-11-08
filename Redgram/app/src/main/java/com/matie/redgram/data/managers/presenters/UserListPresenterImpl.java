@@ -43,8 +43,8 @@ public class UserListPresenterImpl extends BasePresenterImpl implements UserList
         this.databaseManager = databaseManager();
         this.enableDefault = enableDefault;
 
-        session = databaseManager.getSession();
         realm = databaseManager().getInstance();
+        session = DatabaseHelper.getSession(realm);
     }
 
     @Override
@@ -89,8 +89,10 @@ public class UserListPresenterImpl extends BasePresenterImpl implements UserList
                     List<UserItem> userItems = new ArrayList<>();
 
                     for(User user : list) {
-                        if((enableDefault && User.USER_GUEST.equalsIgnoreCase(user.getUserType()))
-                            || !User.USER_GUEST.equalsIgnoreCase(user.getUserType())){
+                        if(session != null &&
+                                (enableDefault && User.USER_GUEST.equalsIgnoreCase(user.getUserType())) ||
+                                    !User.USER_GUEST.equalsIgnoreCase(user.getUserType())
+                        ){
                             userItems.add(buildUserItem(user, session.getUser()));
                         }
                     }

@@ -1,30 +1,28 @@
 package com.matie.redgram.data.managers.presenters;
 
 import android.net.Uri;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
+import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.auth.views.AuthView;
-import com.matie.redgram.ui.common.base.BaseActivity;
 
 import javax.inject.Inject;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
-
 
 /**
  * Presenter implementation for the Authentication View.
@@ -33,8 +31,7 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
 
     private final AuthView authView;
     private final RedditClientInterface redditClient;
-    private final Realm realm;
-    private Subscription authSubscription;
+    private Realm realm;
     private String authCode = "";
 
     @Inject
@@ -42,12 +39,30 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
         super(authView, app);
         this.authView = (AuthView) view;
         this.redditClient = app.getRedditClient();
-        this.realm = databaseManager().getInstance();
+        this.realm = getRealmInstance();
+    }
+
+    private Realm getRealmInstance() {
+        return databaseManager().getInstance();
+    }
+
+    public void addRealmChangeListener(RealmChangeListener realmChangeListener) {
+        if (realm == null || realmChangeListener == null) return;
+        realm.addChangeListener(realmChangeListener);
+    }
+
+    @Override
+    public void registerForEvents() {
+        super.registerForEvents();
+        if (realm == null || realm.isClosed()) {
+            realm = getRealmInstance();
+        }
     }
 
     @Override
     public void unregisterForEvents() {
         super.unregisterForEvents();
+        realm.removeAllChangeListeners();
         DatabaseHelper.close(realm);
     }
 
@@ -68,7 +83,7 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
     @Override
     public void getAccessToken() {
         authView.showLoading();
-        authSubscription = redditClient.getAuthWrapper()
+        Subscription authSubscription = redditClient.getAuthWrapper()
                 .compose(getTransformer())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -93,7 +108,7 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
     }
 
     private void bindAuthSubscription() {
-        authSubscription = redditClient.getAuthWrapper(authCode)
+        Subscription authSubscription = redditClient.getAuthWrapper(authCode)
                 .compose(getTransformer())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -130,7 +145,19 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
         // important - this is used in the services to capture the token of the current user
         if(session != null && session.getUser() != null){
             Token token = realm.copyFromRealm(session.getUser().getTokenInfo());
-            app.getDatabaseManager().setCurrentToken(token);
+            databaseManager().setCurrentToken(token);
         }
+    }
+
+    @Override
+    public RealmResults<User> getExistingUsers() {
+        if (realm == null || realm.isClosed()) return null;
+        return DatabaseHelper.getUsers(realm);
+    }
+
+    @Override
+    public Prefs getPrefsByUserId(String userId) {
+        if (realm == null || userId == null) return null;
+        return DatabaseHelper.getPrefsByUserId(realm, userId);
     }
 }

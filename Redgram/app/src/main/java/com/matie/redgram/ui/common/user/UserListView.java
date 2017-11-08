@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.UserListPresenter;
+import com.matie.redgram.data.managers.presenters.UserListPresenterImpl;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.auth.AuthActivity;
@@ -40,16 +41,9 @@ public class UserListView extends FrameLayout implements UserListControllerView 
     @InjectView(R.id.user_cancel)
     ImageView cancelView;
 
-    @Inject
-    App app;
-    @Inject
-    UserListPresenter presenter;
-    @Inject
-    DialogUtil dialogUtil;
-
     private final Context context;
-    private BaseView contextView;
     private UserListComponent component;
+    private UserListPresenterImpl userListPresenter;
 
     public UserListView(Context context) {
         super(context);
@@ -104,7 +98,7 @@ public class UserListView extends FrameLayout implements UserListControllerView 
 
     @Override
     public void showErrorMessage(String error) {
-        dialogUtil.build().title("Oops!").content(error).show();
+        DialogUtil.builder(getContext()).title("Oops!").content(error).show();
     }
 
     @Override
@@ -118,16 +112,16 @@ public class UserListView extends FrameLayout implements UserListControllerView 
     public void selectAccount(String id, int position) {
         UserItem userItem = getItem(position);
         if(!userItem.isSelected()){
-            presenter.switchUser(id, position);
+            userListPresenter.switchUser(id, position);
         }
     }
 
     @Override
     public void removeAccount(String id, int position) {
-        dialogUtil.build()
+        DialogUtil.builder(getContext())
                 .title("Remove this account?")
                 .content(getItem(position).getUserName())
-                .onPositive((dialog, which) -> presenter.removeUser(id, position))
+                .onPositive((dialog, which) -> userListPresenter.removeUser(id, position))
                 .onNegative((dialog1, which1) -> dialog1.dismiss())
                 .positiveText("Yes")
                 .negativeText("Cancel")
@@ -150,12 +144,12 @@ public class UserListView extends FrameLayout implements UserListControllerView 
 
     @Override
     public UserItem getItem(int position) {
-        return ((UserAdapter)userRecyclerView.getAdapter()).getItem(position);
+        return ((UserAdapter) userRecyclerView.getAdapter()).getItem(position);
     }
 
     @Override
     public List<UserItem> getItems() {
-        return ((UserAdapter)userRecyclerView.getAdapter()).getItems();
+        return ((UserAdapter) userRecyclerView.getAdapter()).getItems();
     }
 
     @Override
@@ -172,19 +166,11 @@ public class UserListView extends FrameLayout implements UserListControllerView 
 
     public void setComponent(UserListComponent component) {
         this.component = component;
-        this.component.inject(this);
-    }
-
-    public UserListComponent getComponent() {
-        return component;
+        userListPresenter = (UserListPresenterImpl) component.getUserListPresenter();
     }
 
     public void setUp() {
-        presenter.getUsers();
-    }
-
-    public UserListPresenter getPresenter(){
-        return presenter;
+        userListPresenter.getUsers();
     }
 
 }

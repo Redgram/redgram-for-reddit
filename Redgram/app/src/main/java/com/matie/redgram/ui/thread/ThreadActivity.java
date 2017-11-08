@@ -279,11 +279,6 @@ public class ThreadActivity extends ViewPagerActivity
     }
 
     @Override
-    public DialogUtil getDialogUtil() {
-        return dialogUtil;
-    }
-
-    @Override
     protected int getLayoutId() {
         return R.layout.activity_comments;
     }

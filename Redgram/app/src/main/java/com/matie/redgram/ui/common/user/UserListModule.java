@@ -36,7 +36,7 @@ public class UserListModule {
     }
 
     @Provides
-    public UserListPresenter providesUserListPresenter(App app){
+    public UserListPresenter providesUserListPresenter(App app) {
         return new UserListPresenterImpl(userListView, contentView, app, enableDefault);
     }
 

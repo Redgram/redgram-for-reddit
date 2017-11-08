@@ -149,11 +149,6 @@ public class ProfileActivity extends BottomNavigationActivity {
     }
 
     @Override
-    public DialogUtil getDialogUtil() {
-        return null;
-    }
-
-    @Override
     protected int getLayoutId() {
         return R.layout.activity_profile;
     }

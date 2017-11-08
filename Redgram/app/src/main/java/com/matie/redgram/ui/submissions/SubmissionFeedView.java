@@ -40,6 +40,13 @@ public class SubmissionFeedView extends FrameLayout implements LinksView {
     @Inject
     DialogUtil dialogUtil;
 
+    public SubmissionFeedView(@NonNull Context context) {
+        super(context);
+    }
+
+    public SubmissionFeedView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+    }
 
     public SubmissionFeedView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);

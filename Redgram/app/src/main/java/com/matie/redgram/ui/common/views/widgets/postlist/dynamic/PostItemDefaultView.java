@@ -68,9 +68,9 @@ public class PostItemDefaultView extends PostItemSubView {
         postSourceText.setText(item.getDomain());
         postLinkText.setText(item.getUrl());
 
-        if(getUserPrefs().getMedia().equalsIgnoreCase("on") && !isNsfw()){
+        if(getSessionPrefs().getMedia().equalsIgnoreCase("on") && !isNsfw()){
             setupThumbnail();
-        }else if(getUserPrefs().getMedia().equalsIgnoreCase("subreddit")){
+        }else if(getSessionPrefs().getMedia().equalsIgnoreCase("subreddit")){
             if(!postItem.getThumbnail().isEmpty() && !isNsfw()){
                 setupThumbnail();
             }else if(isNsfw()){
@@ -114,7 +114,7 @@ public class PostItemDefaultView extends PostItemSubView {
     }
 
     private boolean isNsfw(){
-        if(postItem.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
+        if(postItem.isAdult() && (!getSessionPrefs().isOver18() || getSessionPrefs().isDisableNsfwPreview())){
             return true;
         }
         return false;

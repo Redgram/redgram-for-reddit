@@ -6,6 +6,7 @@ import com.matie.redgram.ui.common.views.BaseView;
 import com.trello.rxlifecycle.LifecycleTransformer;
 import com.trello.rxlifecycle.components.RxActivity;
 import com.trello.rxlifecycle.components.RxFragment;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -22,8 +23,8 @@ public abstract class BasePresenterImpl implements BasePresenter {
     }
 
     protected <T> LifecycleTransformer<T> getTransformer() {
-        if (view instanceof RxActivity) {
-            return ((RxActivity) view).bindToLifecycle();
+        if (view instanceof RxAppCompatActivity) {
+            return ((RxAppCompatActivity) view).bindToLifecycle();
         } else if (view instanceof RxFragment) {
             return ((RxFragment) view).bindToLifecycle();
         }

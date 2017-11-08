@@ -10,9 +10,7 @@ import com.trello.rxlifecycle.components.support.RxFragment;
 
 import icepick.Icepick;
 
-/**
- * Created by matie on 09/06/15.
- */
+
 public abstract class BaseFragment extends RxFragment implements BaseView {
 
     @Override

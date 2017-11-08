@@ -54,7 +54,6 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseVi
     }
 
     public abstract AppComponent component();
-    public abstract DialogUtil getDialogUtil();
     protected abstract void setupComponent(AppComponent appComponent);
     protected abstract int getLayoutId();
     protected abstract int getContainerId();

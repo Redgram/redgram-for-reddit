@@ -11,7 +11,7 @@ public class MainPresenterImpl extends BasePresenterImpl implements MainPresente
 
     public MainPresenterImpl(MainView mainView, App app) {
         super(mainView, app);
-
+        // you could get a live realm copy and register changes in the UI - example
         user = databaseManager().getSessionUser();
     }
 

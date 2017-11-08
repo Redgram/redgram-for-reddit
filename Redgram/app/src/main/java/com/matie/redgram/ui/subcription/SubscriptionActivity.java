@@ -89,11 +89,6 @@ public class SubscriptionActivity extends BaseActivity{
     }
 
     @Override
-    public DialogUtil getDialogUtil() {
-        return null;
-    }
-
-    @Override
     protected int getLayoutId() {
         return R.layout.activity_sub;
     }

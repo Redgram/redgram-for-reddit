@@ -100,12 +100,13 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     private Window window;
     private boolean isDrawerOpen = false;
     private String subredditToVisitOnResult;
+    private UserListComponent userListComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (mainComponent.getMainPresenter().getSessionUser() != null) {
+        if (mainComponent.getMainPresenter().getSessionUser() == null) {
             //launch auth activity with specific flags and create a guest user
             startActivity(AuthActivity.intent(this, true));
         } else {
@@ -207,7 +208,8 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         mainComponent.inject(this);
 
-        UserListComponent userListComponent = mainComponent.getUserListComponent(userListModule);
+        userListComponent = mainComponent.getUserListComponent(userListModule);
+        userListComponent.inject(userListLayout);
         userListLayout.setComponent(userListComponent);
     }
 
@@ -322,7 +324,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     protected void onDestroy() {
-        userListLayout.getPresenter().unregisterForEvents();
+        userListComponent.getUserListPresenter().unregisterForEvents();
         ButterKnife.reset(this);
         super.onDestroy();
     }
@@ -330,7 +332,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     @Override
     public void onResume() {
         super.onResume();
-        userListLayout.getPresenter().registerForEvents();
+        userListComponent.getUserListPresenter().registerForEvents();
         selectItem(currentSelectedMenuId);
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(mainFragmentManager, true);
     }
@@ -515,11 +517,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     private void logoutCurrentUser() {
         //switches to Guest user automatically - default
-        userListLayout.getPresenter().switchUser();
-    }
-
-    public DialogUtil getDialogUtil() {
-        return dialogUtil;
+        userListComponent.getUserListPresenter().switchUser();
     }
 
     @Override
