@@ -4,8 +4,7 @@ import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.BaseView;
 import com.trello.rxlifecycle.LifecycleTransformer;
-import com.trello.rxlifecycle.components.RxActivity;
-import com.trello.rxlifecycle.components.RxFragment;
+import com.trello.rxlifecycle.components.support.RxFragment;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import rx.Subscription;

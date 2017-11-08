@@ -9,9 +9,6 @@ import com.matie.redgram.ui.home.views.HomeView;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by matie on 09/06/15.
- */
 @Module
 public class HomeModule {
 

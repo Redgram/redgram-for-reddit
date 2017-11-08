@@ -16,7 +16,7 @@ import dagger.Component;
         dependencies = MainComponent.class,
         modules = {
                 HomeModule.class,
-                LinksModule.class,
+//                LinksModule.class,
                 SubmissionModule.class
         }
 )
@@ -26,6 +26,6 @@ public interface HomeComponent {
 
     HomeView getHomeView();
     HomePresenter getHomePresenter();
-    LinksComponent getLinksComponent(LinksModule linksModule);
+//    LinksComponent getLinksComponent(LinksModule linksModule);
     SubmissionComponent getSubmissionComponent(SubmissionModule linksModule);
 }
