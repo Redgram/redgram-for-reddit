@@ -38,7 +38,7 @@ import butterknife.InjectView;
 /**
  * Created by matie on 2016-01-07.
  */
-public class CommentsFragment extends BaseFragment implements CommentsView{
+public class CommentsFragment extends BaseFragment implements CommentsView {
 
     @InjectView(R.id.comment_recycler_view)
     CommentRecyclerView commentRecyclerView;

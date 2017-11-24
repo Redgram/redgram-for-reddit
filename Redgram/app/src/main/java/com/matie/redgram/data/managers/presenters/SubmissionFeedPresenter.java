@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Links Presenter Interface.
  */
-public interface SubmissionFeedPresenter extends BasePresenter{
+public interface SubmissionFeedPresenter extends BasePresenter {
     void getListing(String subreddit, String front, Map<String, String> params);
     void getMoreListing(String subreddit, String front, Map<String, String> params);
     void searchListing(String subreddit, Map<String, String> params);

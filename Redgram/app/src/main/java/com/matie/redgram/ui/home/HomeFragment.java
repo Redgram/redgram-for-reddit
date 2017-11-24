@@ -29,9 +29,10 @@ import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.links.LinksControlView;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
-import com.matie.redgram.ui.submissions.SubmissionComponent;
-import com.matie.redgram.ui.submissions.SubmissionFeedView;
-import com.matie.redgram.ui.submissions.SubmissionModule;
+import com.matie.redgram.ui.submission.links.LinksComponent;
+import com.matie.redgram.ui.submission.SubmissionFeedView;
+import com.matie.redgram.ui.submission.SubmissionModule;
+import com.matie.redgram.ui.submission.links.views.LinksView;
 import com.matie.redgram.ui.thread.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -58,7 +59,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     LinksControlView linksControlView;
 
     HomeComponent component;
-    SubmissionComponent submissionComponent;
+    LinksComponent submissionComponent;
 
     @Inject
     App app;
@@ -106,7 +107,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         if(getArguments() != null && getArguments().containsKey(SubscriptionActivity.RESULT_SUBREDDIT_NAME)){
             String subredditChoice = getArguments().getString(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
             Map<String, String> params = new HashMap<>();
-            submissionFeedView.refreshView(subredditChoice, filter.toLowerCase(), params);
+            submissionComponent.getLinksViewDelegate().refreshView(subredditChoice, filter.toLowerCase(), params);
             setControllerTitle(subredditChoice);
             setControllerSubTitle(filter);
         } else{
@@ -137,6 +138,13 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     }
 
     @Override
+    protected void setup() {
+        super.setup();
+
+//        submissionFeedView.populateView();
+    }
+
+    @Override
     protected void setupToolbar() {
         ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
         if (supportActionBar != null) {
@@ -159,7 +167,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         if (linksControlView == null) return;
         linksControlView.setRefreshListener(v -> {
             if (!homeSwipeContainer.isRefreshing()) {
-                submissionFeedView.refreshView();
+                submissionComponent.getLinksViewDelegate().refreshView();
             }
         });
     }
@@ -176,7 +184,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                     } else {
                         if(!homeSwipeContainer.isRefreshing()){
                             String filterChoice = charSequence.toString();
-                            submissionFeedView.sortView(filterChoice.toLowerCase(), null);
+                            submissionComponent.getLinksViewDelegate().sortView(filterChoice.toLowerCase(), null);
                             setControllerSubTitle(filterChoice);
                         }
                     }
@@ -219,10 +227,10 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
                             if (i == 0 && "Return to Frontpage".equalsIgnoreCase(charSequence.toString())) {
                                 setControllerTitle(getResources().getString(R.string.frontpage));
-                                submissionFeedView.refreshView(null, filterChoice.toLowerCase(), params);
+                                submissionComponent.getLinksViewDelegate().refreshView(null, filterChoice.toLowerCase(), params);
                             } else {
                                 setControllerTitle(subredditChoice);
-                                submissionFeedView.refreshView(subredditChoice, filterChoice.toLowerCase(), params);
+                                submissionComponent.getLinksViewDelegate().refreshView(subredditChoice, filterChoice.toLowerCase(), params);
                             }
 
                         })
@@ -268,7 +276,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                         params.put("t", charSequence.toString().toLowerCase());
 
                         //perform network call
-                        submissionFeedView.sortView(query.toString().toLowerCase(), params);
+                        submissionComponent.getLinksViewDelegate().sortView(query.toString().toLowerCase(), params);
 
                         //change subtitle only
                         String bullet = getContext().getResources().getString(R.string.text_bullet);
@@ -296,17 +304,19 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        LinksView linksViewDelegate = submissionComponent.getLinksViewDelegate();
+
         if(requestCode == ThreadActivity.REQ_CODE){
             if(resultCode == Activity.RESULT_OK){
                 PostItem postItem = new Gson()
                         .fromJson(data.getStringExtra(ThreadActivity.RESULT_POST_CHANGE), PostItem.class);
                 int pos = data.getIntExtra(ThreadActivity.RESULT_POST_POS, -1);
-                if(submissionFeedView.getItems().contains(postItem) && pos >= 0){
+                if(linksViewDelegate.getItems().contains(postItem) && pos >= 0){
                     // TODO: 2016-04-18 override hashcode to check whether item has actually changed before calling update
                     if(postItem.isHidden()){
-                        submissionFeedView.removeItem(pos);
+                        linksViewDelegate.removeItem(pos);
                     }else{
-                        submissionFeedView.updateItem(pos, postItem);
+                        linksViewDelegate.updateItem(pos, postItem);
                     }
                 }
             }
@@ -363,7 +373,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     @Override
     public void onRefresh() {
-        submissionFeedView.refreshView();
+        submissionComponent.getLinksViewDelegate().refreshView();
     }
 
     @Override

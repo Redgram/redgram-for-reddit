@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.submissions.links;
+package com.matie.redgram.ui.submission;
 
 import android.content.Context;
 import android.os.Build;
@@ -14,7 +14,7 @@ import com.matie.redgram.R;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class LinksControlView extends RelativeLayout {
+public class SubmissionControlView extends RelativeLayout {
 
     @InjectView(R.id.control_title_linear_layout)
     LinearLayout itemPicker;
@@ -31,20 +31,20 @@ public class LinksControlView extends RelativeLayout {
     @InjectView(R.id.toolbar_subtitle)
     TextView subtitleView;
 
-    public LinksControlView(Context context) {
+    public SubmissionControlView(Context context) {
         super(context);
     }
 
-    public LinksControlView(Context context, AttributeSet attrs) {
+    public SubmissionControlView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public LinksControlView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SubmissionControlView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public LinksControlView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public SubmissionControlView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 

@@ -40,7 +40,7 @@ import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.links.LinksComponent;
 import com.matie.redgram.ui.links.LinksContainerView;
-import com.matie.redgram.ui.links.LinksModule;
+import com.matie.redgram.ui.submission.links.LinksModule;
 import com.matie.redgram.ui.search.views.SearchView;
 import com.matie.redgram.ui.thread.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -150,7 +150,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     protected void setupComponent() {
         AppComponent appComponent = ((BaseActivity)getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
-        LinksModule linksModule = new LinksModule(linksContainerView, this);
+        LinksModule linksModule = new LinksModule();
         component = DaggerSearchComponent.builder()
                 .mainComponent(mainComponent)
                 .searchModule(new SearchModule(this))

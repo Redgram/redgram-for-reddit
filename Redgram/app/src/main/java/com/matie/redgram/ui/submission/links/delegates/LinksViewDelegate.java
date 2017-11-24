@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.submissions.links;
+package com.matie.redgram.ui.submission.links.delegates;
 
 import android.content.Context;
 import android.content.Intent;
@@ -32,7 +32,7 @@ import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
-import com.matie.redgram.ui.submissions.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.LinksView;
 import com.matie.redgram.ui.thread.ThreadActivity;
 
 import java.io.File;
@@ -42,14 +42,14 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-
 public class LinksViewDelegate implements LinksView {
 
     private final SubmissionFeedPresenter submissionFeedPresenter;
     private final Gson gson = new Gson();
 
     private PostRecyclerView containerRecyclerView;
-    private ProgressBar containerProgressBar;
+    protected ProgressBar containerProgressBar;
+
     private String subredditChoice = null;
     private String filterChoice = null;
     private Map<String,String> params = new HashMap<>();
@@ -74,17 +74,39 @@ public class LinksViewDelegate implements LinksView {
         return submissionFeedPresenter.databaseManager().getSessionPreferences();
     }
 
-
     //region setters
-    public void setContainerProgressBar(ProgressBar containerProgressBar) {
-        this.containerProgressBar = containerProgressBar;
+
+    @Override
+    public void showLoading() {
+        containerProgressBar.setVisibility(View.VISIBLE);
+        containerRecyclerView.removeOnScrollListener(loadMoreListener);
     }
 
-    public void setContainerRecyclerView(PostRecyclerView containerRecyclerView) {
-        this.containerRecyclerView = containerRecyclerView;
+    @Override
+    public void hideLoading() {
+        containerRecyclerView.addOnScrollListener(loadMoreListener);
+        containerProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showInfoMessage() {
+
+    }
+
+    @Override
+    public void showErrorMessage(String error) {
+
+    }
+
+    public void setContentView(RecyclerView contentView) {
+        containerRecyclerView = (PostRecyclerView) contentView;
 
         setupRecyclerView();
         setupListeners();
+    }
+
+    public void setLoadingView(ProgressBar loadingView) {
+        containerProgressBar = loadingView;
     }
 
     private void setupListeners() {
@@ -94,8 +116,8 @@ public class LinksViewDelegate implements LinksView {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if(containerRecyclerView != null && containerRecyclerView.getChildCount() > 0){
-                        int lastItemPosition = containerRecyclerView.getAdapter().getItemCount() - 1;
+                    if(containerRecyclerView != null && containerRecyclerView.getChildCount() > 0) {
+                        int lastItemPosition = getItems().size() - 1;
                         if(layoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
                             submissionFeedPresenter.getMoreListing(subredditChoice, filterChoice , params);
                         }
@@ -120,28 +142,6 @@ public class LinksViewDelegate implements LinksView {
     //endregion
 
     //region LinksView interface
-    @Override
-    public void showLoading() {
-        containerRecyclerView.removeOnScrollListener(loadMoreListener);
-        containerProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideLoading() {
-        containerRecyclerView.addOnScrollListener(loadMoreListener);
-        containerProgressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void showInfoMessage() {
-
-    }
-
-    @Override
-    public void showErrorMessage(String error) {
-
-    }
-
     @Override
     public PostItem getItem(int position) {
         return ((PostAdapterBase) containerRecyclerView.getAdapter()).getItem(position);

@@ -15,7 +15,8 @@ import com.matie.redgram.data.network.api.utils.subscriber.NullSubscriptionExecu
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
-import com.matie.redgram.ui.submissions.SubmissionFeedView;
+import com.matie.redgram.ui.submission.SubmissionFeedView;
+import com.matie.redgram.ui.submission.links.views.LinksView;
 
 import java.util.Map;
 
@@ -33,32 +34,38 @@ import rx.schedulers.Schedulers;
  */
 public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements SubmissionFeedPresenter {
 
-    final private SubmissionFeedView submissionFeedView;
-    final private ContentView parentView;
-    final private RedditClientInterface redditClient;
-    final private ToastHandler toastHandler;
+    private final ContentView parentView;
+    private final SubmissionFeedView submissionFeedView;
+    private final RedditClientInterface redditClient;
+    private final ToastHandler toastHandler;
 
-    //states
+    // states
     private String loadMoreId;
     private PostItem removedItem;
     private int removedItemPosition;
 
+    // delegates
+    private LinksView linksViewDelegate;
 
     @Inject
     public SubmissionFeedPresenterImpl(SubmissionFeedView submissionFeedView, ContentView parentView, App app) {
         super(parentView, app);
-        this.submissionFeedView = submissionFeedView;
         this.parentView = parentView;
-        this.redditClient = app.getRedditClient();
-        this.toastHandler = app.getToastHandler();
-        this.loadMoreId = "";
+        this.submissionFeedView = submissionFeedView;
+
+        redditClient = app.getRedditClient();
+        toastHandler = app.getToastHandler();
+        loadMoreId = "";
+
+        linksViewDelegate = submissionFeedView.getLinksViewDelegate();
     }
 
     @Override
     public void getListing(String subreddit, String front, Map<String, String> params) {
-        if(params.containsKey("after")){
+        if (params.containsKey("after")) {
             params.remove("after");
         }
+
         params.put("limit", getPrefs().getNumSites() + "");
         parentView.showLoading();
         Subscription listingSubscription = getListingSubscription(subreddit, front, params, true);
@@ -69,12 +76,12 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
     public void getMoreListing(String subreddit, @Nullable String front, Map<String, String> params) {
         params.put("after", loadMoreId);
         params.put("limit", getPrefs().getNumSites() + "");
-        submissionFeedView.showLoading();
+        linksViewDelegate.showLoading();
 
         Subscription listingSubscription;
-        if(front != null){
+        if (front != null) {
             listingSubscription = getListingSubscription(subreddit, front, params, false);
-        }else{
+        } else {
             listingSubscription = getSearchSubscription(subreddit, params, false);
         }
 
@@ -108,19 +115,19 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                     @Override
                     public void executeOnNext(JsonElement data) {
                         if(dir == 1){
-                            submissionFeedView.getItem(position).setLikes("true");
+                            linksViewDelegate.getItem(position).setLikes("true");
                         }else if(dir == -1){
-                            submissionFeedView.getItem(position).setLikes("false");
+                            linksViewDelegate.getItem(position).setLikes("false");
 
                         }else{
-                            submissionFeedView.getItem(position).setLikes(null);
+                            linksViewDelegate.getItem(position).setLikes(null);
                         }
-                        submissionFeedView.updateItem(position, submissionFeedView.getItem(position));
+                        linksViewDelegate.updateItem(position, linksViewDelegate.getItem(position));
                     }
 
                     @Override
                     public void executeOnError(Throwable e) {
-                        submissionFeedView.showErrorMessage(e.toString());
+                        linksViewDelegate.showErrorMessage(e.toString());
                     }
                 }));
 
@@ -143,14 +150,14 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                     public void executeOnNext(JsonElement data) {
                         if(showUndo){
                             removedItemPosition = position;
-                            removedItem = submissionFeedView.removeItem(position);
-                            submissionFeedView.showHideUndoOption(submissionFeedView.getContext());
+                            removedItem = linksViewDelegate.removeItem(position);
+                            linksViewDelegate.showHideUndoOption(submissionFeedView.getContext());
                         } //else already removed and updated list
                     }
 
                     @Override
                     public void executeOnError(Throwable e) {
-                        submissionFeedView.showErrorMessage(e.toString());
+                        linksViewDelegate.showErrorMessage(e.toString());
                     }
                 }));
 
@@ -176,12 +183,12 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                     @Override
                     public void executeOnNext(JsonElement data) {
                         //null check made
-                        submissionFeedView.insertItem(removedItemPos, removedPost);
+                        linksViewDelegate.insertItem(removedItemPos, removedPost);
                     }
 
                     @Override
                     public void executeOnError(Throwable e) {
-                        submissionFeedView.showErrorMessage(e.toString());
+                        linksViewDelegate.showErrorMessage(e.toString());
                     }
                 }));
 
@@ -203,13 +210,13 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                     @Override
                     public void executeOnNext(JsonElement data) {
                         //null check is already done
-                        submissionFeedView.getItem(position).setSaved(save);
-                        submissionFeedView.updateItem(position, submissionFeedView.getItem(position));
+                        linksViewDelegate.getItem(position).setSaved(save);
+                        linksViewDelegate.updateItem(position, linksViewDelegate.getItem(position));
                     }
 
                     @Override
                     public void executeOnError(Throwable e) {
-                        submissionFeedView.showErrorMessage(e.toString());
+                        linksViewDelegate.showErrorMessage(e.toString());
                     }
                 }));
 
@@ -224,7 +231,7 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
 
     @Override
     public void report(int position) {
-        final String name = submissionFeedView.getItem(position).getName();
+        final String name = linksViewDelegate.getItem(position).getName();
         Subscription reportSubscription = redditClient.report(name)
                 .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
@@ -237,14 +244,14 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
 
                     @Override
                     public void executeOnNext(JsonElement data) {
-                        submissionFeedView.removeItem(position);
+                        linksViewDelegate.removeItem(position);
                         hide(position, name, false);
                         toastHandler.showBackgroundToast("Reported", Toast.LENGTH_LONG);
                     }
 
                     @Override
                     public void executeOnError(Throwable e) {
-                        submissionFeedView.showErrorMessage(e.toString());
+                        linksViewDelegate.showErrorMessage(e.toString());
                     }
                 }));
 
@@ -268,7 +275,7 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
 
                     @Override
                     public void onError(Throwable e) {
-                        submissionFeedView.showErrorMessage(e.toString());
+                        linksViewDelegate.showErrorMessage(e.toString());
                     }
 
                     @Override
@@ -288,7 +295,7 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
             realm.executeTransaction(instance -> getPrefs().setDisableNsfwPreview(false), new Realm.Transaction.Callback() {
                 @Override
                 public void onSuccess() {
-                    submissionFeedView.updateList();
+                    linksViewDelegate.updateList();
                 }
             });
         }
@@ -299,11 +306,11 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
 
         if(subreddit != null){
             if(filter != null)
-                targetObservable = redditClient.getSubredditListing(subreddit,filter, params, ((!isNew)? submissionFeedView.getItems() : null));
+                targetObservable = redditClient.getSubredditListing(subreddit,filter, params, ((!isNew)? linksViewDelegate.getItems() : null));
             else
-                targetObservable = redditClient.getSubredditListing(subreddit, params, ((!isNew)? submissionFeedView.getItems() : null) );
+                targetObservable = redditClient.getSubredditListing(subreddit, params, ((!isNew)? linksViewDelegate.getItems() : null) );
         }else{
-            targetObservable = redditClient.getListing(filter, params, ((!isNew)? submissionFeedView.getItems() : null));
+            targetObservable = redditClient.getListing(filter, params, ((!isNew)? linksViewDelegate.getItems() : null));
         }
 
         return buildSubscription(targetObservable, isNew);
@@ -322,7 +329,7 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                         if(isNew){
                             parentView.hideLoading();
                         }else{
-                            submissionFeedView.hideLoading();
+                            linksViewDelegate.hideLoading();
                         }
                     }
 
@@ -331,18 +338,18 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                         if(isNew){
                             parentView.hideLoading();
                         }else{
-                            submissionFeedView.hideLoading();
+                            linksViewDelegate.hideLoading();
                         }
-                        submissionFeedView.showErrorMessage(e.toString());
+                        linksViewDelegate.showErrorMessage(e.toString());
                     }
 
                     @Override
                     public void onNext(Listing wrapper) {
                         if(isNew){
-                            submissionFeedView.updateList(wrapper.getItems());
+                            linksViewDelegate.updateList(wrapper.getItems());
                         }else{
-                            submissionFeedView.getItems().addAll(wrapper.getItems());
-                            submissionFeedView.updateList();
+                            linksViewDelegate.getItems().addAll(wrapper.getItems());
+                            linksViewDelegate.updateList();
                         }
                         loadMoreId = wrapper.getAfter();
                     }
@@ -351,7 +358,7 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
 
     @SuppressWarnings("unchecked")
     private Subscription getSearchSubscription(String subreddit, Map<String, String> params, boolean isNew) {
-        return redditClient.executeSearch(subreddit, params, ((!isNew) ? submissionFeedView.getItems() : null))
+        return redditClient.executeSearch(subreddit, params, ((!isNew) ? linksViewDelegate.getItems() : null))
                 .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -362,7 +369,7 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                         if(isNew){
                             parentView.hideLoading();
                         }else{
-                            submissionFeedView.hideLoading();
+                            linksViewDelegate.hideLoading();
                         }
                     }
 
@@ -371,7 +378,7 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                         if(isNew){
                             parentView.hideLoading();
                         }else{
-                            submissionFeedView.hideLoading();
+                            linksViewDelegate.hideLoading();
                         }
                         parentView.showErrorMessage(e.toString());
                     }
@@ -379,11 +386,11 @@ public class SubmissionFeedPresenterImpl extends BasePresenterImpl implements Su
                     @Override
                     public void onNext(Listing wrapper) {
                         if(isNew){
-                            submissionFeedView.getItems().clear();
-                            submissionFeedView.updateList(wrapper.getItems());
+                            linksViewDelegate.getItems().clear();
+                            linksViewDelegate.updateList(wrapper.getItems());
                         }else{
-                            submissionFeedView.getItems().addAll(wrapper.getItems());
-                            submissionFeedView.updateList();
+                            linksViewDelegate.getItems().addAll(wrapper.getItems());
+                            linksViewDelegate.updateList();
                         }
                         loadMoreId = wrapper.getAfter();
                     }

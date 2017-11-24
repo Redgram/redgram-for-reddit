@@ -16,6 +16,7 @@ import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.common.views.ContentView;
 import com.matie.redgram.ui.links.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.LinksView;
 
 import java.util.Map;
 
@@ -33,7 +34,6 @@ import rx.schedulers.Schedulers;
  */
 public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresenter {
     private final LinksView linksView;
-    private final ContentView parentView;
     private final RedditClientInterface redditClient;
     private final ToastHandler toastHandler;
 
@@ -44,10 +44,10 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
 
 
     @Inject
-    public LinksPresenterImpl(LinksView linksView, ContentView parentView, App app) {
-        super(parentView, app);
-        this.parentView = (ContentView) view;
-        this.linksView = linksView;
+    public LinksPresenterImpl(LinksView linksView, App app) {
+        super(linksView, app);
+
+        this.linksView = (LinksView) view;
         this.redditClient = app.getRedditClient();
         this.toastHandler = app.getToastHandler();
         this.loadMoreId = "";

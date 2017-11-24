@@ -3,6 +3,7 @@ package com.matie.redgram.data.managers.presenters.base;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.BaseView;
+import com.matie.redgram.ui.common.views.ContentView;
 import com.trello.rxlifecycle.LifecycleTransformer;
 import com.trello.rxlifecycle.components.support.RxFragment;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
@@ -13,19 +14,21 @@ import rx.subscriptions.CompositeSubscription;
 public abstract class BasePresenterImpl implements BasePresenter {
 
     protected final App app;
-    protected final BaseView view;
+    protected final ContentView view;
     private CompositeSubscription subscriptions;
 
-    public BasePresenterImpl(BaseView baseView, App app) {
+    public BasePresenterImpl(ContentView contentView, App app) {
         this.app = app;
-        this.view = baseView;
+        this.view = contentView;
     }
 
     protected <T> LifecycleTransformer<T> getTransformer() {
-        if (view instanceof RxAppCompatActivity) {
-            return ((RxAppCompatActivity) view).bindToLifecycle();
-        } else if (view instanceof RxFragment) {
-            return ((RxFragment) view).bindToLifecycle();
+        final BaseView baseView = view.getContext();
+
+        if (baseView instanceof RxAppCompatActivity) {
+            return ((RxAppCompatActivity) baseView).bindToLifecycle();
+        } else if (baseView instanceof RxFragment) {
+            return ((RxFragment) baseView).bindToLifecycle();
         }
 
         return null;
