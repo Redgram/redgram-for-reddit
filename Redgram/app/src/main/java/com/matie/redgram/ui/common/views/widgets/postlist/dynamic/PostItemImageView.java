@@ -12,7 +12,7 @@ import com.facebook.imagepipeline.image.ImageInfo;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.media.video.ImageManager;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.links.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -37,7 +37,7 @@ public class PostItemImageView extends PostItemSubView{
     PostItem postItem;
     int position;
     boolean imageLoaded;
-    LinksView listener;
+    SingleLinkView listener;
 
     private ControllerListener<? super ImageInfo> controllerListener;
 
@@ -52,7 +52,7 @@ public class PostItemImageView extends PostItemSubView{
     }
 
     @Override
-    public void setupView(PostItem item, int position, LinksView listener) {
+    public void setupView(PostItem item, int position, SingleLinkView listener) {
         this.imageLoaded = false;
         this.postItem = item;
         this.listener = listener;
@@ -91,12 +91,12 @@ public class PostItemImageView extends PostItemSubView{
 
     @OnClick(R.id.image_overlay)
     public void onOverlayClick(){
-        listener.callAgeConfirmDialog();
+        listener.callAgeConfirmDialog(getContext());
     }
 
     @OnClick(R.id.image_view)
     public void onImageClick(){
-        listener.viewImageMedia(position, imageLoaded);
+        listener.viewImageMedia(getContext(), position, imageLoaded);
     }
 
 

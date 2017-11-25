@@ -14,8 +14,6 @@ import com.matie.redgram.data.network.api.utils.subscriber.NullCheckSubscriber;
 import com.matie.redgram.data.network.api.utils.subscriber.NullSubscriptionExecutor;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
-import com.matie.redgram.ui.common.views.ContentView;
-import com.matie.redgram.ui.links.views.LinksView;
 import com.matie.redgram.ui.submission.links.views.LinksView;
 
 import java.util.Map;
@@ -41,7 +39,6 @@ public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresen
     private String loadMoreId;
     private PostItem removedItem;
     private int removedItemPosition;
-
 
     @Inject
     public LinksPresenterImpl(LinksView linksView, App app) {

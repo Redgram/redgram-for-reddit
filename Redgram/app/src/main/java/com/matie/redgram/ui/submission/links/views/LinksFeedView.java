@@ -6,11 +6,11 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
 import com.matie.redgram.ui.submission.SubmissionFeedView;
-import com.matie.redgram.ui.submission.links.delegates.LinksViewDelegate;
+import com.matie.redgram.ui.submission.links.delegates.LinksFeedDelegate;
 
 public class LinksFeedView extends SubmissionFeedView {
 
-    private LinksViewDelegate linksViewDelegate;
+    private LinksFeedDelegate linksFeedDelegate;
 
     public LinksFeedView(@NonNull Context context) {
         super(context);
@@ -24,12 +24,12 @@ public class LinksFeedView extends SubmissionFeedView {
         super(context, attrs, defStyleAttr);
     }
 
-    public LinksViewDelegate getLinksViewDelegate() {
-        return linksViewDelegate;
+    public LinksFeedDelegate getLinksFeedDelegate() {
+        return linksFeedDelegate;
     }
 
-    public void setLinksViewDelegate(LinksViewDelegate delegate) {
-        this.linksViewDelegate = delegate;
+    public void setLinksFeedDelegate(LinksFeedDelegate delegate) {
+        this.linksFeedDelegate = delegate;
     }
 
     @Override
@@ -39,12 +39,12 @@ public class LinksFeedView extends SubmissionFeedView {
     }
 
     private void fetchData() {
-        linksViewDelegate.fetchLinks(getContext());
+        linksFeedDelegate.fetchLinks(getContext());
     }
 
     private void setupLinksDelegate() {
-        linksViewDelegate.setContentView(containerRecyclerView);
-        linksViewDelegate.setLoadingView(containerProgressBar);
+        linksFeedDelegate.setContentView(containerRecyclerView);
+        linksFeedDelegate.setLoadingView(containerProgressBar);
     }
 
 }

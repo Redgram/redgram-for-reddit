@@ -6,10 +6,9 @@ import android.widget.RelativeLayout;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Prefs;
-import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.links.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 /**
  * Created by matie on 19/05/15.
@@ -32,7 +31,7 @@ public abstract class PostItemSubView extends RelativeLayout {
         }
     }
 
-    public abstract void setupView(PostItem item, int position, LinksView listener);
+    public abstract void setupView(PostItem item, int position, SingleLinkView listener);
 
     public Prefs getSessionPrefs() {
         if (databaseManager == null) return null;

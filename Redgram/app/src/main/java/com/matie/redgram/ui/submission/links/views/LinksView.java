@@ -1,6 +1,5 @@
 package com.matie.redgram.ui.submission.links.views;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -12,10 +11,6 @@ import java.util.Map;
 
 
 public interface LinksView extends ContentView {
-    int UP_VOTE = 1;
-    int DOWN_VOTE = -1;
-    int UN_VOTE = 0;
-
     PostItem getItem(int position);
     List<PostItem> getItems();
     void updateList();

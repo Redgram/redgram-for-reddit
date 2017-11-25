@@ -16,10 +16,10 @@ import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.utils.text.spans.CustomClickable;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 import com.matie.redgram.ui.common.utils.text.StringDecorator;
-import com.matie.redgram.ui.links.views.LinksView;
+import com.matie.redgram.ui.common.utils.text.spans.CustomClickable;
+import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 import java.util.HashMap;
 
@@ -27,9 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-/**
- * Created by matie on 04/04/15.
- */
+
 public class PostItemHeaderView extends PostItemSubView implements CustomSpanListener {
 
     @InjectView(R.id.header_time_subreddit_view)
@@ -39,7 +37,7 @@ public class PostItemHeaderView extends PostItemSubView implements CustomSpanLis
 
     PostItem postItem;
     PopupMenu popupMenu;
-    LinksView listener;
+    SingleLinkView listener;
     int position;
 
     private final Resources res;
@@ -56,7 +54,7 @@ public class PostItemHeaderView extends PostItemSubView implements CustomSpanLis
     }
 
     @Override
-    public void setupView(PostItem item, int position, LinksView listener) {
+    public void setupView(PostItem item, int position, SingleLinkView listener) {
         this.postItem = item;
         this.position = position;
         this.listener = listener;
@@ -72,26 +70,26 @@ public class PostItemHeaderView extends PostItemSubView implements CustomSpanLis
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.view_subreddit) {
-                    listener.visitSubreddit(postItem.getSubreddit());
+                    listener.visitSubreddit(getContext(), postItem.getSubreddit());
                     return true;
                 }
                 if (item.getItemId() == R.id.open_browser) {
-                    listener.openInBrowser(position);
+                    listener.openInBrowser(getContext(), position);
                     return true;
                 }
 
                 if (item.getItemId() == R.id.copy_link) {
-                    listener.copyItemLink(position);
+                    listener.copyItemLink(getContext(), position);
                     return true;
                 }
 
                 if (item.getItemId() == R.id.report) {
-                    listener.reportPost(position);
+                    listener.reportPost(getContext(), position);
                     return true;
                 }
 
                 if (item.getItemId() == R.id.view_profile) {
-                    listener.visitProfile(postItem.getAuthor());
+                    listener.visitProfile(getContext(), postItem.getAuthor());
                     return true;
                 }
 
@@ -112,9 +110,9 @@ public class PostItemHeaderView extends PostItemSubView implements CustomSpanLis
         String target = targetString.toString();
         if(target.contains("/r/")){
             String subredditName = target.substring(target.lastIndexOf('/')+1, target.length());
-            listener.visitSubreddit(subredditName);
+            listener.visitSubreddit(getContext(), subredditName);
         }else{
-            listener.visitProfile(target);
+            listener.visitProfile(getContext(), target);
         }
     }
 

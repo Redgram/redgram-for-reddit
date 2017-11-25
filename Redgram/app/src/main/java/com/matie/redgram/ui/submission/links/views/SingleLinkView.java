@@ -6,6 +6,10 @@ import android.content.Context;
 import com.matie.redgram.ui.common.views.ContentView;
 
 public interface SingleLinkView extends ContentView {
+    int UP_VOTE = 1;
+    int DOWN_VOTE = -1;
+    int UN_VOTE = 0;
+
     void showHideUndoOption(final Context context);
     void votePost(int position, Integer dir);
     void savePost(int position, boolean save);

@@ -5,7 +5,7 @@ import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
 import com.matie.redgram.data.managers.presenters.SubmissionFeedPresenter;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.submission.SubmissionView;
-import com.matie.redgram.ui.submission.links.delegates.LinksViewDelegate;
+import com.matie.redgram.ui.submission.links.delegates.LinksFeedDelegate;
 import com.matie.redgram.ui.submission.links.delegates.SingleLinkViewDelegate;
 import com.matie.redgram.ui.submission.links.views.LinksView;
 
@@ -16,7 +16,7 @@ import dagger.Provides;
 public class LinksModule {
     @Provides
     public LinksView provideLinksViewDelegate(LinksPresenter linksPresenter){
-        return new LinksViewDelegate(linksPresenter);
+        return new LinksFeedDelegate(linksPresenter);
     }
 
     @Provides
