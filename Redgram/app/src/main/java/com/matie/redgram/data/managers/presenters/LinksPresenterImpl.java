@@ -27,10 +27,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
- * Links Presenter Implementation
- */
-public class LinksPresenterImpl extends BasePresenterImpl implements LinksPresenter {
+public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements LinksPresenter {
     private final LinksView linksView;
     private final RedditClientInterface redditClient;
     private final ToastHandler toastHandler;

@@ -3,9 +3,9 @@ package com.matie.redgram.ui.submission.links.views;
 
 import android.content.Context;
 
-import com.matie.redgram.ui.common.views.ContentView;
+import com.matie.redgram.ui.submission.SubmissionView;
 
-public interface SingleLinkView extends ContentView {
+public interface SingleLinkView extends SubmissionView {
     int UP_VOTE = 1;
     int DOWN_VOTE = -1;
     int UN_VOTE = 0;

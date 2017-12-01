@@ -15,17 +15,17 @@ import dagger.Provides;
 @Module
 public class LinksModule {
     @Provides
-    public LinksView provideLinksViewDelegate(LinksPresenter linksPresenter){
+    public LinksView provideLinksViewDelegate(LinksPresenter linksPresenter) {
         return new LinksFeedDelegate(linksPresenter);
     }
 
     @Provides
-    public SubmissionView provideSingleLinkViewDelegate(LinksPresenter linksPresenter){
+    public SubmissionView provideSingleLinkViewDelegate(LinksPresenter linksPresenter) {
         return new SingleLinkViewDelegate(linksPresenter);
     }
 
     @Provides
-    public SubmissionFeedPresenter provideLinksPresenter(LinksView linksView, App app){
+    public SubmissionFeedPresenter provideLinksPresenter(LinksView linksView, App app) {
         return new LinksPresenterImpl(linksView, app);
     }
 }
