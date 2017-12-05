@@ -27,11 +27,11 @@ import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.home.views.HomeView;
-import com.matie.redgram.ui.links.LinksControlView;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
+import com.matie.redgram.ui.submission.SubmissionControlView;
 import com.matie.redgram.ui.submission.links.LinksComponent;
-import com.matie.redgram.ui.submission.SubmissionFeedView;
-import com.matie.redgram.ui.submission.SubmissionModule;
+import com.matie.redgram.ui.submission.links.LinksModule;
+import com.matie.redgram.ui.submission.links.views.LinksFeedLayout;
 import com.matie.redgram.ui.submission.links.views.LinksView;
 import com.matie.redgram.ui.thread.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -51,15 +51,15 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     @InjectView(R.id.swipe_container)
     SwipeRefreshLayout homeSwipeContainer;
     @InjectView(R.id.links_container_view)
-    SubmissionFeedView submissionFeedView;
+    LinksFeedLayout linksFeedLayout;
 
     LinearLayoutManager mLayoutManager;
 
     PostRecyclerView homeRecyclerView;
-    LinksControlView linksControlView;
+    SubmissionControlView controlView;
 
     HomeComponent component;
-    LinksComponent submissionComponent;
+    LinksComponent linksComponent;
 
     @Inject
     App app;
@@ -81,7 +81,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     }
 
     private void setUpRecyclerView() {
-        homeRecyclerView = (PostRecyclerView) submissionFeedView.findViewById(R.id.container_recycler_view);
+        homeRecyclerView = (PostRecyclerView) linksFeedLayout.findViewById(R.id.container_recycler_view);
         mLayoutManager = (LinearLayoutManager) homeRecyclerView.getLayoutManager();
 
         //this listener is responsible for invoking SWIPE-TO-REFRESH if the first item is fully visible.
@@ -107,7 +107,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         if(getArguments() != null && getArguments().containsKey(SubscriptionActivity.RESULT_SUBREDDIT_NAME)){
             String subredditChoice = getArguments().getString(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
             Map<String, String> params = new HashMap<>();
-            submissionComponent.getLinksViewDelegate().refreshView(subredditChoice, filter.toLowerCase(), params);
+            linksComponent.getLinksViewDelegate().refreshView(subredditChoice, filter.toLowerCase(), params);
             setControllerTitle(subredditChoice);
             setControllerSubTitle(filter);
         } else{
@@ -121,20 +121,20 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         AppComponent appComponent = ((BaseActivity) getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
 
-        SubmissionModule submissionModule = new SubmissionModule(submissionFeedView, this);
+        LinksModule linksModule = new LinksModule();
 
         component = DaggerHomeComponent.builder()
                 .mainComponent(mainComponent)
                 .homeModule(new HomeModule(this))
-                .submissionModule(submissionModule)
+                .linksModule(linksModule)
                 .build();
 
         component.inject(this);
 
-        submissionComponent = component.getSubmissionComponent(submissionModule);
-        submissionComponent.inject(submissionFeedView);
+        linksComponent = component.getLinksComponent(linksModule);
+        linksComponent.inject(linksFeedLayout);
         // set the delegate(s) that are delegate the interface
-        submissionFeedView.setLinksViewDelegate(submissionComponent.getLinksViewDelegate());
+        linksFeedLayout.setLinksDelegate(linksComponent.getLinksViewDelegate());
     }
 
     @Override
@@ -152,8 +152,8 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
             supportActionBar.setCustomView(R.layout.links_control_view);
 
             View controlView = supportActionBar.getCustomView();
-            if (controlView instanceof LinksControlView) {
-                linksControlView = (LinksControlView) controlView;
+            if (controlView instanceof SubmissionControlView) {
+                this.controlView = (SubmissionControlView) controlView;
 
                 setupToolbarTitle();
                 setupToolbarSubredditPicker();
@@ -164,17 +164,17 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     }
 
     private void setupToolbarRefresh() {
-        if (linksControlView == null) return;
-        linksControlView.setRefreshListener(v -> {
+        if (controlView == null) return;
+        controlView.setRefreshListener(v -> {
             if (!homeSwipeContainer.isRefreshing()) {
-                submissionComponent.getLinksViewDelegate().refreshView();
+                linksComponent.getLinksViewDelegate().refreshView();
             }
         });
     }
 
     private void setupToolbarFilter() {
-        if (linksControlView == null) return;
-        linksControlView.setFilterListener(v -> dialogUtil.build()
+        if (controlView == null) return;
+        controlView.setFilterListener(v -> dialogUtil.build()
                 .title("Filter Links By")
                 .items(R.array.frontArray)
                 .itemsCallback((materialDialog, view, i, charSequence) -> {
@@ -184,7 +184,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                     } else {
                         if(!homeSwipeContainer.isRefreshing()){
                             String filterChoice = charSequence.toString();
-                            submissionComponent.getLinksViewDelegate().sortView(filterChoice.toLowerCase(), null);
+                            linksComponent.getLinksViewDelegate().sortView(filterChoice.toLowerCase(), null);
                             setControllerSubTitle(filterChoice);
                         }
                     }
@@ -195,13 +195,13 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     }
 
     private void setupToolbarTitle() {
-        if (linksControlView == null) return;
-        linksControlView.setTitle(getResources().getString(R.string.frontpage));
+        if (controlView == null) return;
+        controlView.setTitle(getResources().getString(R.string.frontpage));
     }
 
     private void setupToolbarSubredditPicker() {
-        if (linksControlView == null) return;
-        linksControlView.setItemPickerListener(v -> {
+        if (controlView == null) return;
+        controlView.setItemPickerListener(v -> {
             List<String> subreddits = homePresenter.getSubreddits();
             if(homeRecyclerView.getVisibility() == View.VISIBLE && subreddits != null){
                 if(userOnFrontPage()) {
@@ -227,10 +227,10 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
                             if (i == 0 && "Return to Frontpage".equalsIgnoreCase(charSequence.toString())) {
                                 setControllerTitle(getResources().getString(R.string.frontpage));
-                                submissionComponent.getLinksViewDelegate().refreshView(null, filterChoice.toLowerCase(), params);
+                                linksComponent.getLinksViewDelegate().refreshView(null, filterChoice.toLowerCase(), params);
                             } else {
                                 setControllerTitle(subredditChoice);
-                                submissionComponent.getLinksViewDelegate().refreshView(subredditChoice, filterChoice.toLowerCase(), params);
+                                linksComponent.getLinksViewDelegate().refreshView(subredditChoice, filterChoice.toLowerCase(), params);
                             }
 
                         })
@@ -241,7 +241,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     private boolean userOnFrontPage() {
         final String frontPageResource = getResources().getString(R.string.frontpage);
-        final String currentOption = linksControlView.getTitleView().getText().toString();
+        final String currentOption = controlView.getTitleView().getText().toString();
         return frontPageResource.equalsIgnoreCase(currentOption);
     }
 
@@ -276,7 +276,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                         params.put("t", charSequence.toString().toLowerCase());
 
                         //perform network call
-                        submissionComponent.getLinksViewDelegate().sortView(query.toString().toLowerCase(), params);
+                        linksComponent.getLinksViewDelegate().sortView(query.toString().toLowerCase(), params);
 
                         //change subtitle only
                         String bullet = getContext().getResources().getString(R.string.text_bullet);
@@ -287,13 +287,13 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
 
     private void setControllerTitle(String value) {
-        if (linksControlView == null) return;
-        linksControlView.setTitle(value);
+        if (controlView == null) return;
+        controlView.setTitle(value);
     }
 
     private void setControllerSubTitle(String value) {
-        if (linksControlView == null) return;
-        linksControlView.setSubTitle(value);
+        if (controlView == null) return;
+        controlView.setSubTitle(value);
     }
 
     @Override
@@ -304,7 +304,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        LinksView linksViewDelegate = submissionComponent.getLinksViewDelegate();
+        LinksView linksViewDelegate = linksComponent.getLinksViewDelegate();
 
         if(requestCode == ThreadActivity.REQ_CODE){
             if(resultCode == Activity.RESULT_OK){
@@ -327,14 +327,14 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     public void onResume() {
         super.onResume();
         homePresenter.registerForEvents();
-        submissionComponent.getSubmissionFeedPresenter().registerForEvents();
+        linksComponent.getSubmissionFeedPresenter().registerForEvents();
     }
 
     @Override
     public void onDestroyView() {
         homeRecyclerView.clearOnScrollListeners();
         homePresenter.unregisterForEvents();
-        submissionComponent.getSubmissionFeedPresenter().unregisterForEvents();
+        linksComponent.getSubmissionFeedPresenter().unregisterForEvents();
 
         ButterKnife.reset(this);
         super.onDestroyView();
@@ -373,7 +373,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     @Override
     public void onRefresh() {
-        submissionComponent.getLinksViewDelegate().refreshView();
+        linksComponent.getLinksViewDelegate().refreshView();
     }
 
     @Override

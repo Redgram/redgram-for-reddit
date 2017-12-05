@@ -9,15 +9,12 @@ import android.view.ViewGroup;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostViewHolder;
-import com.matie.redgram.ui.links.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.LinksView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by matie on 04/04/15.
- */
 public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolder>{
 
     private final Context context;

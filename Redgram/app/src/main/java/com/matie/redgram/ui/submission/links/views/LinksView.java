@@ -4,13 +4,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.views.ContentView;
+import com.matie.redgram.ui.submission.SubmissionFeedView;
 
 import java.util.List;
 import java.util.Map;
 
 
-public interface LinksView extends ContentView {
+public interface LinksView extends SubmissionFeedView {
     PostItem getItem(int position);
     List<PostItem> getItems();
     void updateList();

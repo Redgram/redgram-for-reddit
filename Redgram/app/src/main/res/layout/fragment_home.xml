@@ -7,7 +7,7 @@
             <!--layout="@layout/links_container_view"/>-->
 
      <include android:id="@+id/links_container_view"
-            layout="@layout/submission_feed_view"/>
+            layout="@layout/layout_links_feed"/>
 
 </android.support.v4.widget.SwipeRefreshLayout>
 

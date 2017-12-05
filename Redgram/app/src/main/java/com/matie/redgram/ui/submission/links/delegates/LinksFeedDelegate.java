@@ -10,8 +10,8 @@ import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 import com.matie.redgram.R;
+import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
-import com.matie.redgram.data.managers.presenters.SubmissionFeedPresenter;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
@@ -26,11 +26,11 @@ import javax.inject.Inject;
 
 public class LinksFeedDelegate implements LinksView {
 
-    private final SubmissionFeedPresenter submissionFeedPresenter;
+    private final LinksPresenter linksPresenter;
     private final Gson gson = new Gson();
 
     private PostRecyclerView containerRecyclerView;
-    protected ProgressBar containerProgressBar;
+    private ProgressBar containerProgressBar;
 
     private String subredditChoice = null;
     private String filterChoice = null;
@@ -41,19 +41,21 @@ public class LinksFeedDelegate implements LinksView {
     private LinearLayoutManager layoutManager;
 
     @Inject
-    public LinksFeedDelegate(final SubmissionFeedPresenter submissionFeedPresenter) {
-        this.submissionFeedPresenter = submissionFeedPresenter;
+    public LinksFeedDelegate(final LinksPresenter linksPresenter) {
+        this.linksPresenter = linksPresenter;
     }
 
-    public void fetchLinks(final Context context) {
-        if (context == null) return;
+    @Override
+    public void fetchFeed() {
+        if (containerRecyclerView == null) return;
 
+        final Context context = containerRecyclerView.getContext();
         filterChoice = context.getResources().getString(R.string.default_filter).toLowerCase();
-        submissionFeedPresenter.getListing(subredditChoice, filterChoice, params);
+        linksPresenter.getListing(subredditChoice, filterChoice, params);
     }
 
     private Prefs getPrefs() {
-        return submissionFeedPresenter.databaseManager().getSessionPreferences();
+        return linksPresenter.databaseManager().getSessionPreferences();
     }
 
     //region setters
@@ -80,15 +82,17 @@ public class LinksFeedDelegate implements LinksView {
 
     }
 
-    public void setContentView(RecyclerView contentView) {
+    @Override
+    public void setContentView(View contentView) {
         containerRecyclerView = (PostRecyclerView) contentView;
 
         setupRecyclerView();
         setupListeners();
     }
 
-    public void setLoadingView(ProgressBar loadingView) {
-        containerProgressBar = loadingView;
+    @Override
+    public void setLoadingView(View loadingView) {
+        containerProgressBar = (ProgressBar) loadingView;
     }
 
     private void setupListeners() {
@@ -101,7 +105,7 @@ public class LinksFeedDelegate implements LinksView {
                     if(containerRecyclerView != null && containerRecyclerView.getChildCount() > 0) {
                         int lastItemPosition = getItems().size() - 1;
                         if(layoutManager.findLastCompletelyVisibleItemPosition() == lastItemPosition) {
-                            submissionFeedPresenter.getMoreListing(subredditChoice, filterChoice , params);
+                            linksPresenter.getMoreListing(subredditChoice, filterChoice , params);
                         }
                     }
                 }
@@ -114,12 +118,11 @@ public class LinksFeedDelegate implements LinksView {
         layoutManager = (LinearLayoutManager) containerRecyclerView.getLayoutManager();
 
         containerRecyclerView.addOnScrollListener(loadMoreListener);
-
-//        containerRecyclerView.setListener(this);
+        containerRecyclerView.setListener(this);
     }
 
     public void setLoadMoreId(String id) {
-        ((LinksPresenterImpl) submissionFeedPresenter).setLoadMoreId(id);
+        ((LinksPresenterImpl) linksPresenter).setLoadMoreId(id);
     }
     //endregion
 
@@ -173,7 +176,7 @@ public class LinksFeedDelegate implements LinksView {
 
     @Override
     public void refreshView() {
-        submissionFeedPresenter.getListing(subredditChoice, filterChoice, params);
+        linksPresenter.getListing(subredditChoice, filterChoice, params);
     }
 
     @Override
@@ -198,7 +201,7 @@ public class LinksFeedDelegate implements LinksView {
 
         this.filterChoice = filterChoice;
 
-        submissionFeedPresenter.getListing(subredditChoice, filterChoice, this.params);
+        linksPresenter.getListing(subredditChoice, filterChoice, this.params);
     }
 
     @Override
@@ -209,7 +212,7 @@ public class LinksFeedDelegate implements LinksView {
         this.subredditChoice = subredditChoice;
         this.params = params;
 
-        submissionFeedPresenter.searchListing(subredditChoice, params);
+        linksPresenter.searchListing(subredditChoice, params);
     }
     //endregion
 }
