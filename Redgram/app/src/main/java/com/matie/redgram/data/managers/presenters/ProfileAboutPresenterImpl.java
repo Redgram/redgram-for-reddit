@@ -1,7 +1,6 @@
 package com.matie.redgram.data.managers.presenters;
 
 import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
-import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
 import com.matie.redgram.data.models.api.reddit.main.RedditUser;
@@ -15,12 +14,10 @@ import com.matie.redgram.ui.profile.views.ProfileAboutView;
 
 import javax.inject.Inject;
 
-import io.realm.Realm;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 import static com.matie.redgram.data.models.db.User.USER_AUTH;
 
@@ -28,16 +25,17 @@ public class ProfileAboutPresenterImpl extends BasePresenterImpl implements Prof
 
     private final RedditClientInterface redditClient;
     private final DatabaseManager databaseManager;
-    private final ProfileAboutView view;
+    private final ProfileAboutView aboutView;
 
     private Session session;
 
     @Inject
-    public ProfileAboutPresenterImpl(App app, ProfileAboutView view) {
-        super(view, app);
-        this.view = view;
-        redditClient = app.getRedditClient();
-        databaseManager = databaseManager();
+    public ProfileAboutPresenterImpl(App app, ProfileAboutView aboutView) {
+        super(aboutView, app);
+
+        this.aboutView = aboutView;
+        this.redditClient = app.getRedditClient();
+        this.databaseManager = databaseManager();
         init();
     }
 
@@ -55,7 +53,7 @@ public class ProfileAboutPresenterImpl extends BasePresenterImpl implements Prof
     public void getUserDetails(String username) {
         if (session == null || session.getUser() == null || username == null || username.isEmpty()) return;
 
-        view.showLoading();
+        aboutView.showLoading();
 
         final User user = session.getUser();
         if (isAuthUser(user, username)) {
@@ -88,7 +86,7 @@ public class ProfileAboutPresenterImpl extends BasePresenterImpl implements Prof
                     @Override
                     public void onCompleted() {
                         // TODO: 10/19/17 see why this isn't being called
-                        view.hideLoading();
+                        aboutView.hideLoading();
                     }
 
                     @Override
@@ -99,7 +97,7 @@ public class ProfileAboutPresenterImpl extends BasePresenterImpl implements Prof
                     @Override
                     public void onNext(RedditUser redditUser) {
                         onSuccess(mapToProfileUser(redditUser));
-                        view.hideLoading();
+                        aboutView.hideLoading();
                     }
                 });
 
@@ -129,7 +127,7 @@ public class ProfileAboutPresenterImpl extends BasePresenterImpl implements Prof
                 .subscribe(new Subscriber<AuthUser>() {
                     @Override
                     public void onCompleted() {
-                        view.hideLoading();
+                        aboutView.hideLoading();
                     }
 
                     @Override
@@ -140,7 +138,7 @@ public class ProfileAboutPresenterImpl extends BasePresenterImpl implements Prof
                     @Override
                     public void onNext(AuthUser authUser) {
                         onSuccess(mapToProfileUser(authUser));
-                        view.hideLoading();
+                        aboutView.hideLoading();
                     }
                 });
 
@@ -163,12 +161,12 @@ public class ProfileAboutPresenterImpl extends BasePresenterImpl implements Prof
     }
 
     private void showError(Throwable e) {
-        view.showErrorMessage(e.toString());
+        aboutView.showErrorMessage(e.toString());
     }
 
     private void onSuccess(ProfileUser profileUser) {
         if (profileUser == null) return;
-        view.updateProfile(profileUser);
+        aboutView.updateProfile(profileUser);
     }
 
 

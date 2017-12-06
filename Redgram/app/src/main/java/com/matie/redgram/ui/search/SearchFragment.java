@@ -37,9 +37,6 @@ import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
-import com.matie.redgram.ui.links.LinksComponent;
-import com.matie.redgram.ui.links.LinksContainerView;
 import com.matie.redgram.ui.submission.links.LinksComponent;
 import com.matie.redgram.ui.submission.links.LinksModule;
 import com.matie.redgram.ui.search.views.SearchView;
@@ -58,11 +55,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by matie on 28/06/15.
- *
- */
-public class SearchFragment extends SlidingUpPanelFragment implements SearchView{
+public class SearchFragment extends SlidingUpPanelFragment implements SearchView {
 
     @InjectView(R.id.links_container_view)
     LinksFeedLayout linksFeedLayout;
@@ -112,11 +105,10 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         mContentView = getActivity().findViewById(R.id.container);
         mInflater = inflater;
 
-        sortArray = Arrays.asList(getContext().getResources().getStringArray(R.array.searchSortArray));
-        fromArray = Arrays.asList(getContext().getResources().getStringArray(R.array.fromArray));
+        sortArray = Arrays.asList(getViewContext().getResources().getStringArray(R.array.searchSortArray));
+        fromArray = Arrays.asList(getViewContext().getResources().getStringArray(R.array.fromArray));
 
         setupSwipeContainer();
-        setupRecyclerView();
 
         return view;
 
@@ -304,17 +296,13 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                 android.R.color.holo_orange_dark);
 
         TypedValue tv = new TypedValue();
-        if (getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        if (getViewContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
         {
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
-                    getContext().getResources().getDisplayMetrics());
+                    getViewContext().getResources().getDisplayMetrics());
             //push it down to the same position as the first item to be loaded
             searchSwipeContainer.setProgressViewOffset(false, 0 , 50);
         }
-    }
-
-    private void setupRecyclerView() {
-        searchRecyclerView = linksFeedLayout.getContainerRecyclerView();
     }
 
     private void setupFilterContentLayout() {
@@ -396,14 +384,14 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     @Override
     public void showLoading() {
-        searchRecyclerView.setVisibility(View.GONE);
+//        searchRecyclerView.setVisibility(View.GONE);
         searchSwipeContainer.setRefreshing(true);
     }
 
     @Override
     public void hideLoading() {
         searchSwipeContainer.setRefreshing(false);
-        searchRecyclerView.setVisibility(View.VISIBLE);
+//        searchRecyclerView.setVisibility(View.VISIBLE);
     }
 
 
@@ -419,22 +407,22 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     @Override
     public void showPanel() {
-        ((SlidingUpPanelActivity)getActivity()).showPanel();
+        ((SlidingUpPanelActivity) getActivity()).showPanel();
     }
 
     @Override
     public void hidePanel() {
-        ((SlidingUpPanelActivity)getActivity()).hidePanel();
+        ((SlidingUpPanelActivity) getActivity()).hidePanel();
     }
 
     @Override
     public void togglePanel() {
-        ((SlidingUpPanelActivity)getActivity()).togglePanel();
+        ((SlidingUpPanelActivity) getActivity()).togglePanel();
     }
 
     @Override
     public void setPanelHeight(int height) {
-        ((SlidingUpPanelActivity)getActivity()).setPanelHeight(height);
+        ((SlidingUpPanelActivity) getActivity()).setPanelHeight(height);
     }
 
     @Override
@@ -444,7 +432,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     @Override
     public void setDraggable(View view) {
-        //no implementation
+        // no implementation
     }
 
     @Override

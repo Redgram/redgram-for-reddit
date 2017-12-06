@@ -1,5 +1,6 @@
 package com.matie.redgram.ui.submission.links.views;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -23,4 +24,5 @@ public interface LinksView extends SubmissionFeedView {
     void refreshView(@Nullable String subredditChoice, @NonNull String filterChoice, @NonNull Map<String, String> params);
     void sortView(@NonNull String filterChoice, @Nullable Map<String, String> params);
     void search(String subredditChoice, @NonNull Map<String, String> params);
+    void showHideUndoOption(final Context context);
 }

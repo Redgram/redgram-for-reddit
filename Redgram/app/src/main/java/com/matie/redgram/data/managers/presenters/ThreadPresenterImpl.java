@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import com.google.gson.JsonElement;
 import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.models.db.Prefs;
-import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
@@ -13,7 +12,6 @@ import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.data.network.api.utils.subscriber.NullCheckSubscriber;
 import com.matie.redgram.data.network.api.utils.subscriber.NullSubscriptionExecutor;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.thread.views.ThreadView;
 
 import java.util.List;
@@ -25,11 +23,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
-/**
- * Thread Presenter Implementation
- */
 public class ThreadPresenterImpl extends BasePresenterImpl implements ThreadPresenter {
 
     private final ThreadView threadView;

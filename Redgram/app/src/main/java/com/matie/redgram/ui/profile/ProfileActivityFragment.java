@@ -60,8 +60,8 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
 
         setupSwipeRefreshLayout();
 
-        profileListings = Arrays.asList(getContext().getResources().getStringArray(R.array.profileListing));
-        profileListingsFilter = Arrays.asList(getContext().getResources().getStringArray(R.array.profileListingFilter));
+        profileListings = Arrays.asList(getViewContext().getResources().getStringArray(R.array.profileListing));
+        profileListingsFilter = Arrays.asList(getViewContext().getResources().getStringArray(R.array.profileListingFilter));
 
         return view;
     }

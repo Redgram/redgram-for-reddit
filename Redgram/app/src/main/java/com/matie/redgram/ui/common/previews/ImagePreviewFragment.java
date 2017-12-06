@@ -26,7 +26,6 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.thread.ThreadActivity;
@@ -38,9 +37,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-/**
- * Created by matie on 2015-11-03.
- */
 public class ImagePreviewFragment extends BasePreviewFragment {
 
 
@@ -79,12 +75,12 @@ public class ImagePreviewFragment extends BasePreviewFragment {
             preFetchToDiskCacheAndDisplay();
         }
 
-        if(getContext() instanceof MainActivity){
-            MainActivity mainActivity = (MainActivity)getContext();
+        if(getViewContext() instanceof MainActivity){
+            MainActivity mainActivity = (MainActivity) getViewContext();
             mainActivity.setDraggable(topBanner);
         }
 
-        if(getContext() instanceof ThreadActivity){
+        if(getViewContext() instanceof ThreadActivity){
             topBanner.setVisibility(View.GONE);
         }
 
@@ -96,7 +92,7 @@ public class ImagePreviewFragment extends BasePreviewFragment {
         ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
                 .build();
         DataSource<Void> dataSource
-                = Fresco.getImagePipeline().prefetchToDiskCache(request, getContext());
+                = Fresco.getImagePipeline().prefetchToDiskCache(request, getViewContext());
         dataSource.subscribe(new BaseDataSubscriber<Void>() {
             @Override
             protected void onNewResultImpl(DataSource<Void> dataSource) {
@@ -155,8 +151,8 @@ public class ImagePreviewFragment extends BasePreviewFragment {
     @OnClick(R.id.close_fragment)
     public void OnCloseFragment() {
         imagePreview.setVisibility(View.GONE);
-        if (getContext() instanceof SlidingUpPanelActivity) {
-            ((SlidingUpPanelActivity) getContext()).hidePanel();
+        if (getViewContext() instanceof SlidingUpPanelActivity) {
+            ((SlidingUpPanelActivity) getViewContext()).hidePanel();
         }
     }
 

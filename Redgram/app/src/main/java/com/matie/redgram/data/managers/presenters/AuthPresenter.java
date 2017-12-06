@@ -7,9 +7,6 @@ import com.matie.redgram.data.models.db.User;
 
 import io.realm.RealmResults;
 
-/**
- * Authentication Presenter Interface
- */
 public interface AuthPresenter extends BasePresenter {
     void getAccessToken(String url);
     void getAccessToken();

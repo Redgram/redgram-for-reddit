@@ -9,7 +9,6 @@ import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView;
 import com.matie.redgram.ui.subcription.views.SubscriptionView;
 
@@ -26,11 +25,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
-/**
- * Subscription Presenter Implementation
- */
 public class SubscriptionPresenterImpl extends BasePresenterImpl implements SubscriptionPresenter {
 
     private final SubscriptionView subscriptionView;

@@ -24,9 +24,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
- * Presenter implementation for the Authentication View.
- */
 public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresenter {
 
     private final AuthView authView;

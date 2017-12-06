@@ -8,10 +8,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-/**
- * Created by matie on 2017-09-27.
- */
-
 public class ProfileActivityPresenterImpl extends BasePresenterImpl implements ProfileActivityPresenter {
 
     @Inject

@@ -10,7 +10,6 @@ public interface SingleLinkView extends SubmissionView {
     int DOWN_VOTE = -1;
     int UN_VOTE = 0;
 
-    void showHideUndoOption(final Context context);
     void votePost(int position, Integer dir);
     void savePost(int position, boolean save);
     void hidePost(int position);

@@ -52,7 +52,7 @@ public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements L
             params.remove("after");
         }
         params.put("limit", getPrefs().getNumSites() + "");
-        parentView.showLoading();
+        linksView.showLoading();
 
         Subscription listingSubscription = getListingSubscription(subreddit, front, params, true);
         addSubscription(listingSubscription);
@@ -80,7 +80,7 @@ public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements L
             params.remove("after");
         }
 
-        parentView.showLoading();
+        linksView.showLoading();
 
         Subscription listingSubscription = getSearchSubscription(subreddit, params, true);
         addSubscription(listingSubscription);
@@ -134,11 +134,12 @@ public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements L
 
                     @Override
                     public void executeOnNext(JsonElement data) {
-                        if(showUndo){
-                            removedItemPosition = position;
-                            removedItem = linksView.removeItem(position);
-                            linksView.showHideUndoOption();
-                        } //else already removed and updated list
+                        if (!showUndo) return; // else already removed and updated list
+
+                        removedItemPosition = position;
+                        removedItem = linksView.removeItem(position);
+                        // TODO: 2017-12-05 show unhide
+//                        linksView.showHideUndoOption();
                     }
 
                     @Override
@@ -304,6 +305,7 @@ public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements L
 
     @SuppressWarnings("unchecked")
     // TODO: 2016-04-21 share Subscriber with getSearchSubscription
+    // TODO: 2017-12-05 do not use isNew
     private Subscription buildSubscription(Observable<Listing<PostItem>> observable, boolean isNew){
         return observable
                 .compose(getTransformer())
@@ -312,18 +314,18 @@ public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements L
                 .subscribe(new Subscriber<Listing>() {
                     @Override
                     public void onCompleted() {
-                        if(isNew){
-                            parentView.hideLoading();
-                        }else{
+                        if(isNew) {
+//                            linksView.hideLoading();
+                        } else {
                             linksView.hideLoading();
                         }
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        if(isNew){
-                            parentView.hideLoading();
-                        }else{
+                        if(isNew) {
+//                            parentView.hideLoading();
+                        } else {
                             linksView.hideLoading();
                         }
                         linksView.showErrorMessage(e.toString());
@@ -331,9 +333,9 @@ public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements L
 
                     @Override
                     public void onNext(Listing wrapper) {
-                        if(isNew){
+                        if (isNew) {
                             linksView.updateList(wrapper.getItems());
-                        }else{
+                        } else {
                             linksView.getItems().addAll(wrapper.getItems());
                             linksView.updateList();
                         }
@@ -352,29 +354,29 @@ public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements L
                     @Override
                     public void onCompleted() {
                         //hide progress and show list
-                        if(isNew){
-                            parentView.hideLoading();
-                        }else{
+                        if (isNew) {
+//                            parentView.hideLoading();
+                        } else {
                             linksView.hideLoading();
                         }
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        if(isNew){
-                            parentView.hideLoading();
-                        }else{
+                        if (isNew) {
+//                            parentView.hideLoading();
+                        } else {
                             linksView.hideLoading();
                         }
-                        parentView.showErrorMessage(e.toString());
+//                        parentView.showErrorMessage(e.toString());
                     }
 
                     @Override
                     public void onNext(Listing wrapper) {
-                        if(isNew){
+                        if (isNew) {
                             linksView.getItems().clear();
                             linksView.updateList(wrapper.getItems());
-                        }else{
+                        } else {
                             linksView.getItems().addAll(wrapper.getItems());
                             linksView.updateList();
                         }

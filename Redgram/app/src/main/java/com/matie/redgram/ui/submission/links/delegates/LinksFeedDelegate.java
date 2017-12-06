@@ -3,6 +3,7 @@ package com.matie.redgram.ui.submission.links.delegates;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -14,6 +15,7 @@ import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.submission.links.views.LinksView;
@@ -28,15 +30,15 @@ public class LinksFeedDelegate implements LinksView {
 
     private final LinksPresenter linksPresenter;
     private final Gson gson = new Gson();
-
-    private PostRecyclerView containerRecyclerView;
     private ProgressBar containerProgressBar;
 
+    // state
     private String subredditChoice = null;
     private String filterChoice = null;
     private Map<String,String> params = new HashMap<>();
 
-    //recycler view listeners to add.
+    // recycler view
+    private PostRecyclerView containerRecyclerView;
     private RecyclerView.OnScrollListener loadMoreListener;
     private LinearLayoutManager layoutManager;
 
@@ -82,7 +84,6 @@ public class LinksFeedDelegate implements LinksView {
 
     }
 
-    @Override
     public void setContentView(View contentView) {
         containerRecyclerView = (PostRecyclerView) contentView;
 
@@ -90,7 +91,6 @@ public class LinksFeedDelegate implements LinksView {
         setupListeners();
     }
 
-    @Override
     public void setLoadingView(View loadingView) {
         containerProgressBar = (ProgressBar) loadingView;
     }
@@ -213,6 +213,23 @@ public class LinksFeedDelegate implements LinksView {
         this.params = params;
 
         linksPresenter.searchListing(subredditChoice, params);
+    }
+
+    @Override
+    public void showHideUndoOption(final Context context) {
+        if (context instanceof CoordinatorLayoutInterface) {
+            String msg = context.getResources().getString(R.string.item_hidden);
+            String actionMsg = context.getResources().getString(R.string.undo);
+            View.OnClickListener onClickListener = v -> linksPresenter.unHide();
+
+            ((CoordinatorLayoutInterface) context)
+                    .showSnackBar(msg, Snackbar.LENGTH_LONG, actionMsg, onClickListener, null);
+        }
+    }
+
+    @Override
+    public Context getViewContext() {
+        return containerRecyclerView.getContext();
     }
     //endregion
 }

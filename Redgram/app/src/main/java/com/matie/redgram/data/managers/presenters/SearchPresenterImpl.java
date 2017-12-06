@@ -7,11 +7,6 @@ import com.matie.redgram.ui.search.views.SearchView;
 
 import javax.inject.Inject;
 
-import rx.subscriptions.CompositeSubscription;
-
-/**
- * Search Presenter Implementation
- */
 public class SearchPresenterImpl extends BasePresenterImpl implements SearchPresenter {
 
     private final SearchView searchView;

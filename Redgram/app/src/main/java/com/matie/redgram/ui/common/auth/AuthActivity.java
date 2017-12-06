@@ -14,14 +14,11 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.AuthPresenterImpl;
-import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
-import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.auth.views.AuthView;
 import com.matie.redgram.ui.common.base.BaseActivity;
@@ -31,8 +28,6 @@ import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

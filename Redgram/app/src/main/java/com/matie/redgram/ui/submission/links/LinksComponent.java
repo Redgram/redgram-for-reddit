@@ -3,6 +3,7 @@ package com.matie.redgram.ui.submission.links;
 import com.matie.redgram.data.managers.presenters.SubmissionFeedPresenter;
 import com.matie.redgram.ui.submission.SubmissionFeedLayout;
 import com.matie.redgram.ui.submission.links.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 import dagger.Subcomponent;
 
@@ -11,5 +12,6 @@ public interface LinksComponent {
     void inject(SubmissionFeedLayout submissionFeedLayout);
 
     LinksView getLinksViewDelegate();
+    SingleLinkView getSingleLinkViewDelegate();
     SubmissionFeedPresenter getSubmissionFeedPresenter();
 }

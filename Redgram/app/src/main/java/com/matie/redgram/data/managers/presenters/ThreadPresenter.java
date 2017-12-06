@@ -5,9 +5,6 @@ import com.matie.redgram.data.models.main.items.PostItem;
 
 import java.util.Map;
 
-/**
- * Thread Presenter Interface
- */
 public interface ThreadPresenter extends BasePresenter {
     void getThread(String id, Map<String, String> params);
     void vote(PostItem item, int dir);

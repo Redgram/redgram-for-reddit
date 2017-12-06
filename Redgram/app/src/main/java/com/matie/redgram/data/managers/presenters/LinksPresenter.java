@@ -1,12 +1,7 @@
 package com.matie.redgram.data.managers.presenters;
 
-import com.matie.redgram.data.managers.presenters.base.BasePresenter;
-
 import java.util.Map;
 
-/**
- * Links Presenter Interface.
- */
 public interface LinksPresenter extends SubmissionFeedPresenter {
     void getListing(String subreddit, String front, Map<String,String> params);
     void getMoreListing(String subreddit, String front, Map<String,String> params);

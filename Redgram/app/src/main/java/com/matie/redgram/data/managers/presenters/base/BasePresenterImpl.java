@@ -23,7 +23,7 @@ public abstract class BasePresenterImpl implements BasePresenter {
     }
 
     protected <T> LifecycleTransformer<T> getTransformer() {
-        final BaseView baseView = view.getContext();
+        final BaseView baseView = view.getViewContext();
 
         if (baseView instanceof RxAppCompatActivity) {
             return ((RxAppCompatActivity) baseView).bindToLifecycle();

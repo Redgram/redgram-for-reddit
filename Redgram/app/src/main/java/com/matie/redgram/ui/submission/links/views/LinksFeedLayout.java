@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
 import com.matie.redgram.ui.submission.SubmissionFeedLayout;
+import com.matie.redgram.ui.submission.links.delegates.LinksFeedDelegate;
 
 public class LinksFeedLayout extends SubmissionFeedLayout {
 
@@ -38,8 +39,10 @@ public class LinksFeedLayout extends SubmissionFeedLayout {
     }
 
     private void setupLinksDelegate() {
-        linksView.setContentView(containerRecyclerView);
-        linksView.setLoadingView(containerProgressBar);
+        if (!(linksView instanceof LinksFeedDelegate)) return;
+
+        ((LinksFeedDelegate) linksView).setContentView(containerRecyclerView);
+        ((LinksFeedDelegate) linksView).setLoadingView(containerProgressBar);
     }
 
 }

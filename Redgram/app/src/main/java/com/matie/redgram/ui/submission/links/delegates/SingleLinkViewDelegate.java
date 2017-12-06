@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.binaryresource.BinaryResource;
@@ -23,7 +21,6 @@ import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
-import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
 import com.matie.redgram.ui.submission.SubmissionViewDelegate;
@@ -48,18 +45,6 @@ public class SingleLinkViewDelegate extends SubmissionViewDelegate implements Si
 
         if (itemView != null) {
             this.item = itemView.getItem();
-        }
-    }
-
-    @Override
-    public void showHideUndoOption(final Context context) {
-        if (context instanceof CoordinatorLayoutInterface) {
-            String msg = context.getResources().getString(R.string.item_hidden);
-            String actionMsg = context.getResources().getString(R.string.undo);
-            View.OnClickListener onClickListener = v -> linksPresenter.unHide();
-
-            ((CoordinatorLayoutInterface) context)
-                    .showSnackBar(msg, Snackbar.LENGTH_LONG, actionMsg, onClickListener, null);
         }
     }
 

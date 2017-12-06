@@ -56,12 +56,12 @@ public class WebPreviewFragment extends BasePreviewFragment{
         webView.setWebViewClient(getWebViewClient());
         webView.setWebChromeClient(getWebChromeClient());
 
-        if(getContext() instanceof MainActivity){
-            MainActivity mainActivity = (MainActivity)getContext();
+        if(getViewContext() instanceof MainActivity){
+            MainActivity mainActivity = (MainActivity) getViewContext();
             mainActivity.setDraggable(topBanner);
         }
 
-        if(getContext() instanceof ThreadActivity){
+        if(getViewContext() instanceof ThreadActivity){
             topBanner.setVisibility(View.GONE);
         }
 
@@ -101,8 +101,8 @@ public class WebPreviewFragment extends BasePreviewFragment{
 
     @OnClick(R.id.close_fragment)
     public void OnCloseFragment() {
-        if (getContext() instanceof SlidingUpPanelActivity) {
-            ((SlidingUpPanelActivity) getContext()).hidePanel();
+        if (getViewContext() instanceof SlidingUpPanelActivity) {
+            ((SlidingUpPanelActivity) getViewContext()).hidePanel();
         }
     }
 

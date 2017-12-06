@@ -219,7 +219,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                         .itemsCallback((materialDialog, view, i, charSequence) -> {
 
                             String subredditChoice = charSequence.toString();
-                            String filterChoice = getContext().getResources().getString(R.string.default_filter);
+                            String filterChoice = getViewContext().getResources().getString(R.string.default_filter);
                             Map<String, String> params = new HashMap<>();
 
                             //common
@@ -254,10 +254,10 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                 android.R.color.holo_orange_dark);
 
         TypedValue tv = new TypedValue();
-        if (getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        if (getViewContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
         {
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
-                    getContext().getResources().getDisplayMetrics());
+                    getViewContext().getResources().getDisplayMetrics());
             //push it down to the same position as the first item to be loaded
             homeSwipeContainer.setProgressViewOffset(false, 0 , 50);
         }
@@ -279,7 +279,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                         linksComponent.getLinksViewDelegate().sortView(query.toString().toLowerCase(), params);
 
                         //change subtitle only
-                        String bullet = getContext().getResources().getString(R.string.text_bullet);
+                        String bullet = getViewContext().getResources().getString(R.string.text_bullet);
                         setControllerSubTitle(query + " " + bullet + " " + charSequence);
                     }
                 }).show();

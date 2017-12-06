@@ -9,17 +9,12 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.matie.redgram.R;
-import com.matie.redgram.ui.common.views.ContentView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public abstract class SubmissionFeedLayout extends FrameLayout {
-
-    public interface FeedListener extends ContentView {
-
-    }
 
     @InjectView(R.id.container_linear_layout)
     protected LinearLayout containerLinearLayout;
