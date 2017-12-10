@@ -2,9 +2,17 @@ package com.matie.redgram.ui.submission;
 
 import android.view.View;
 
+import com.matie.redgram.ui.common.views.BaseView;
+
 public abstract class SubmissionViewDelegate implements SubmissionView {
+
+    protected final BaseView baseView;
     protected View contentView;
     protected View loadingView;
+
+    public SubmissionViewDelegate(BaseView baseView) {
+        this.baseView = baseView;
+    }
 
     public void setContentView(View contentView) {
         this.contentView = contentView;
@@ -29,4 +37,9 @@ public abstract class SubmissionViewDelegate implements SubmissionView {
 
     @Override
     public void showErrorMessage(String error) {}
+
+    @Override
+    public BaseView getBaseInstance() {
+        return baseView;
+    }
 }

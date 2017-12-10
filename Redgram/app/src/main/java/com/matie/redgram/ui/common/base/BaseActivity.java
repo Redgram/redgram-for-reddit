@@ -1,6 +1,5 @@
 package com.matie.redgram.ui.common.base;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -50,8 +49,11 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseVi
     }
 
     public abstract AppComponent component();
+
     protected abstract void setupComponent(AppComponent appComponent);
+
     protected abstract int getLayoutId();
+
     protected abstract int getContainerId();
 
     public void openIntent(Intent intent) {
@@ -84,7 +86,7 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseVi
     }
 
     @Override
-    public Context getViewContext() {
+    public BaseView getBaseInstance() {
         return this;
     }
 }

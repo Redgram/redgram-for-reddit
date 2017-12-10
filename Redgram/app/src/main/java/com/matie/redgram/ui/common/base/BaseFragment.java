@@ -1,6 +1,5 @@
 package com.matie.redgram.ui.common.base;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -57,7 +56,7 @@ public abstract class BaseFragment extends RxFragment implements BaseView {
     protected abstract void setupComponent();
 
     @Override
-    public Context getViewContext() {
-        return getContext();
+    public BaseView getBaseInstance() {
+        return this;
     }
 }

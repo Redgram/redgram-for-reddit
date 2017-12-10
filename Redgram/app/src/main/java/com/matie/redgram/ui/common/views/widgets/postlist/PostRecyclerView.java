@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.views.adapters.PostAdapter;
-import com.matie.redgram.ui.submission.links.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 import java.util.List;
 
@@ -34,8 +34,8 @@ public class PostRecyclerView extends RecyclerView {
         setAdapter(postAdapter);
     }
 
-    public void setListener(LinksView linksView){
-        postAdapter.setPostItemListener(linksView);
+    public void setListener(SingleLinkView singleLinkView){
+        postAdapter.setPostItemListener(singleLinkView);
     }
 
     public void replaceWith(List<PostItem> items){

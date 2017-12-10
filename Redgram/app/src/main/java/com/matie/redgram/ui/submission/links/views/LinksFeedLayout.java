@@ -26,11 +26,11 @@ public class LinksFeedLayout extends SubmissionFeedLayout {
 
     public void setLinksDelegate(LinksView delegate) {
         this.linksView = delegate;
+        setupLinksDelegate();
     }
 
     @Override
     public void populateView() {
-        setupLinksDelegate();
         fetchFeed();
     }
 

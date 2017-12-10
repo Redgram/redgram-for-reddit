@@ -14,13 +14,13 @@ import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.links.LinksContainerView;
-import com.matie.redgram.ui.links.LinksControlView;
 import com.matie.redgram.ui.profile.components.DaggerProfileActivityComponent;
 import com.matie.redgram.ui.profile.components.ProfileActivityComponent;
 import com.matie.redgram.ui.profile.components.ProfileComponent;
 import com.matie.redgram.ui.profile.modules.ProfileActivityModule;
 import com.matie.redgram.ui.profile.views.ProfileActivityView;
+import com.matie.redgram.ui.submission.SubmissionControlView;
+import com.matie.redgram.ui.submission.links.views.LinksFeedLayout;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,12 +39,12 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
     ProfileActivityComponent component;
 
     @InjectView(R.id.links_container_view)
-    LinksContainerView linksContainerView;
+    LinksFeedLayout linksContainerView;
 
     @InjectView(R.id.swipe_container)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    LinksControlView linksControlView;
+    SubmissionControlView submissionControlView;
     String username;
     List<String> profileListings;
     List<String> profileListingsFilter;
@@ -60,8 +60,8 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
 
         setupSwipeRefreshLayout();
 
-        profileListings = Arrays.asList(getViewContext().getResources().getStringArray(R.array.profileListing));
-        profileListingsFilter = Arrays.asList(getViewContext().getResources().getStringArray(R.array.profileListingFilter));
+        profileListings = Arrays.asList(getContext().getResources().getStringArray(R.array.profileListing));
+        profileListingsFilter = Arrays.asList(getContext().getResources().getStringArray(R.array.profileListingFilter));
 
         return view;
     }
@@ -130,8 +130,8 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
             supportActionBar.setCustomView(R.layout.links_control_view);
 
             View controlView = supportActionBar.getCustomView();
-            if (controlView instanceof LinksControlView) {
-                linksControlView = (LinksControlView) controlView;
+            if (controlView instanceof SubmissionControlView) {
+                submissionControlView = (SubmissionControlView) controlView;
 
                 setupToolbarTitle();
                 setupToolbarFeedPicker();
@@ -141,13 +141,13 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
     }
 
     private void setupToolbarFilter() {
-        if (linksControlView == null) return;
+        if (submissionControlView == null) return;
 
     }
 
     private void setupToolbarFeedPicker() {
-        if (linksControlView == null) return;
-        linksControlView.setItemPickerListener(view -> {
+        if (submissionControlView == null) return;
+        submissionControlView.setItemPickerListener(view -> {
             dialogUtil.build()
                     .items(profileListings)
                     .itemsCallback((dialog, itemView, pos, text) -> {
@@ -165,12 +165,12 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
     }
 
     private void setupToolbarTitle() {
-        if (linksControlView == null) return;
+        if (submissionControlView == null) return;
         setToolbarTitle(profileListings.get(0));
     }
 
     private void setToolbarTitle(String title) {
-        linksControlView.setTitle(title);
+        submissionControlView.setTitle(title);
     }
 
     @Override

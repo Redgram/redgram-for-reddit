@@ -75,12 +75,12 @@ public class ImagePreviewFragment extends BasePreviewFragment {
             preFetchToDiskCacheAndDisplay();
         }
 
-        if(getViewContext() instanceof MainActivity){
-            MainActivity mainActivity = (MainActivity) getViewContext();
+        if(getBaseInstance() instanceof MainActivity){
+            MainActivity mainActivity = (MainActivity) getBaseInstance();
             mainActivity.setDraggable(topBanner);
         }
 
-        if(getViewContext() instanceof ThreadActivity){
+        if(getBaseInstance() instanceof ThreadActivity){
             topBanner.setVisibility(View.GONE);
         }
 
@@ -92,7 +92,7 @@ public class ImagePreviewFragment extends BasePreviewFragment {
         ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
                 .build();
         DataSource<Void> dataSource
-                = Fresco.getImagePipeline().prefetchToDiskCache(request, getViewContext());
+                = Fresco.getImagePipeline().prefetchToDiskCache(request, getBaseInstance());
         dataSource.subscribe(new BaseDataSubscriber<Void>() {
             @Override
             protected void onNewResultImpl(DataSource<Void> dataSource) {
@@ -151,8 +151,8 @@ public class ImagePreviewFragment extends BasePreviewFragment {
     @OnClick(R.id.close_fragment)
     public void OnCloseFragment() {
         imagePreview.setVisibility(View.GONE);
-        if (getViewContext() instanceof SlidingUpPanelActivity) {
-            ((SlidingUpPanelActivity) getViewContext()).hidePanel();
+        if (getBaseInstance() instanceof SlidingUpPanelActivity) {
+            ((SlidingUpPanelActivity) getBaseInstance()).hidePanel();
         }
     }
 

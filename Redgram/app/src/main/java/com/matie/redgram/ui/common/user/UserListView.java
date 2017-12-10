@@ -9,10 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.presenters.UserListPresenter;
 import com.matie.redgram.data.managers.presenters.UserListPresenterImpl;
 import com.matie.redgram.data.models.main.items.UserItem;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.main.views.MainView;
@@ -23,8 +21,6 @@ import com.matie.redgram.ui.common.views.adapters.UserAdapter;
 import com.matie.redgram.ui.common.views.widgets.drawer.UserRecyclerView;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -173,4 +169,12 @@ public class UserListView extends FrameLayout implements UserListControllerView 
         userListPresenter.getUsers();
     }
 
+    @Override
+    public BaseView getBaseInstance() {
+        if (context instanceof BaseActivity) {
+            return (BaseActivity) context;
+        }
+
+        return null;
+    }
 }

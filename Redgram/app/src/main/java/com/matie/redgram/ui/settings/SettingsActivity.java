@@ -327,4 +327,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Bas
     public User getUser() {
         return user;
     }
+
+    @Override
+    public BaseView getBaseInstance() {
+        return this;
+    }
 }

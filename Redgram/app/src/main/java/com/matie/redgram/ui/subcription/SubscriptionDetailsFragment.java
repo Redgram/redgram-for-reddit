@@ -60,7 +60,7 @@ public class SubscriptionDetailsFragment extends BaseFragment {
 //            String temp = sp.toString();
 //            sp = Html.fromHtml(temp);
 //            subredditDesc.setText(sp);
-//            subredditDesc.setMovementMethod(LinkMovementMethod.getInstance());
+//            subredditDesc.setMovementMethod(LinkMovementMethod.getBaseInstance());
         }
 
         return view;

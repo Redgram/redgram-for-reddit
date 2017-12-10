@@ -22,6 +22,7 @@ import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
+import com.matie.redgram.ui.common.views.BaseView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
 import com.matie.redgram.ui.submission.SubmissionViewDelegate;
 import com.matie.redgram.ui.submission.links.views.SingleLinkView;
@@ -36,7 +37,8 @@ public class SingleLinkViewDelegate extends SubmissionViewDelegate implements Si
     private PostItem item;
     private final Gson gson = new Gson();
 
-    public SingleLinkViewDelegate(LinksPresenter linksPresenter) {
+    public SingleLinkViewDelegate(BaseView baseView, LinksPresenter linksPresenter) {
+        super(baseView);
         this.linksPresenter = linksPresenter;
     }
 

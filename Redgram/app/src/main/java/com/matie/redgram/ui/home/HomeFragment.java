@@ -31,6 +31,7 @@ import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.matie.redgram.ui.submission.SubmissionControlView;
 import com.matie.redgram.ui.submission.links.LinksComponent;
 import com.matie.redgram.ui.submission.links.LinksModule;
+import com.matie.redgram.ui.submission.links.delegates.LinksFeedDelegate;
 import com.matie.redgram.ui.submission.links.views.LinksFeedLayout;
 import com.matie.redgram.ui.submission.links.views.LinksView;
 import com.matie.redgram.ui.thread.ThreadActivity;
@@ -107,7 +108,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         if(getArguments() != null && getArguments().containsKey(SubscriptionActivity.RESULT_SUBREDDIT_NAME)){
             String subredditChoice = getArguments().getString(SubscriptionActivity.RESULT_SUBREDDIT_NAME);
             Map<String, String> params = new HashMap<>();
-            linksComponent.getLinksViewDelegate().refreshView(subredditChoice, filter.toLowerCase(), params);
+            linksComponent.getLinksView().refreshView(subredditChoice, filter.toLowerCase(), params);
             setControllerTitle(subredditChoice);
             setControllerSubTitle(filter);
         } else{
@@ -121,7 +122,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         AppComponent appComponent = ((BaseActivity) getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
 
-        LinksModule linksModule = new LinksModule();
+        LinksModule linksModule = new LinksModule(this);
 
         component = DaggerHomeComponent.builder()
                 .mainComponent(mainComponent)
@@ -132,16 +133,25 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         component.inject(this);
 
         linksComponent = component.getLinksComponent(linksModule);
-        linksComponent.inject(linksFeedLayout);
+
         // set the delegate(s) that are delegate the interface
-        linksFeedLayout.setLinksDelegate(linksComponent.getLinksViewDelegate());
+        setupLinksFeedLayout();
+    }
+
+    private void setupLinksFeedLayout() {
+        LinksView linksView = linksComponent.getLinksView();
+
+        if (linksView != null && linksView instanceof LinksFeedDelegate) {
+            ((LinksFeedDelegate) linksView).setLinksPresenter(linksComponent.getLinksPresenter());
+            linksFeedLayout.setLinksDelegate(linksView);
+        }
     }
 
     @Override
     protected void setup() {
         super.setup();
 
-//        submissionFeedView.populateView();
+        linksFeedLayout.populateView();
     }
 
     @Override
@@ -167,7 +177,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         if (controlView == null) return;
         controlView.setRefreshListener(v -> {
             if (!homeSwipeContainer.isRefreshing()) {
-                linksComponent.getLinksViewDelegate().refreshView();
+                linksComponent.getLinksView().refreshView();
             }
         });
     }
@@ -184,7 +194,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                     } else {
                         if(!homeSwipeContainer.isRefreshing()){
                             String filterChoice = charSequence.toString();
-                            linksComponent.getLinksViewDelegate().sortView(filterChoice.toLowerCase(), null);
+                            linksComponent.getLinksView().sortView(filterChoice.toLowerCase(), null);
                             setControllerSubTitle(filterChoice);
                         }
                     }
@@ -219,7 +229,8 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                         .itemsCallback((materialDialog, view, i, charSequence) -> {
 
                             String subredditChoice = charSequence.toString();
-                            String filterChoice = getViewContext().getResources().getString(R.string.default_filter);
+                            String filterChoice =
+                                    getContext().getResources().getString(R.string.default_filter);
                             Map<String, String> params = new HashMap<>();
 
                             //common
@@ -227,10 +238,10 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
                             if (i == 0 && "Return to Frontpage".equalsIgnoreCase(charSequence.toString())) {
                                 setControllerTitle(getResources().getString(R.string.frontpage));
-                                linksComponent.getLinksViewDelegate().refreshView(null, filterChoice.toLowerCase(), params);
+                                linksComponent.getLinksView().refreshView(null, filterChoice.toLowerCase(), params);
                             } else {
                                 setControllerTitle(subredditChoice);
-                                linksComponent.getLinksViewDelegate().refreshView(subredditChoice, filterChoice.toLowerCase(), params);
+                                linksComponent.getLinksView().refreshView(subredditChoice, filterChoice.toLowerCase(), params);
                             }
 
                         })
@@ -254,10 +265,10 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                 android.R.color.holo_orange_dark);
 
         TypedValue tv = new TypedValue();
-        if (getViewContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        if (getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
         {
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
-                    getViewContext().getResources().getDisplayMetrics());
+                    getContext().getResources().getDisplayMetrics());
             //push it down to the same position as the first item to be loaded
             homeSwipeContainer.setProgressViewOffset(false, 0 , 50);
         }
@@ -276,10 +287,10 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
                         params.put("t", charSequence.toString().toLowerCase());
 
                         //perform network call
-                        linksComponent.getLinksViewDelegate().sortView(query.toString().toLowerCase(), params);
+                        linksComponent.getLinksView().sortView(query.toString().toLowerCase(), params);
 
                         //change subtitle only
-                        String bullet = getViewContext().getResources().getString(R.string.text_bullet);
+                        String bullet = getContext().getResources().getString(R.string.text_bullet);
                         setControllerSubTitle(query + " " + bullet + " " + charSequence);
                     }
                 }).show();
@@ -304,7 +315,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        LinksView linksViewDelegate = linksComponent.getLinksViewDelegate();
+        LinksView linksViewDelegate = linksComponent.getLinksView();
 
         if(requestCode == ThreadActivity.REQ_CODE){
             if(resultCode == Activity.RESULT_OK){
@@ -327,14 +338,14 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
     public void onResume() {
         super.onResume();
         homePresenter.registerForEvents();
-        linksComponent.getSubmissionFeedPresenter().registerForEvents();
+        linksComponent.getLinksPresenter().registerForEvents();
     }
 
     @Override
     public void onDestroyView() {
         homeRecyclerView.clearOnScrollListeners();
         homePresenter.unregisterForEvents();
-        linksComponent.getSubmissionFeedPresenter().unregisterForEvents();
+        linksComponent.getLinksPresenter().unregisterForEvents();
 
         ButterKnife.reset(this);
         super.onDestroyView();
@@ -373,7 +384,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
 
     @Override
     public void onRefresh() {
-        linksComponent.getLinksViewDelegate().refreshView();
+        linksComponent.getLinksView().refreshView();
     }
 
     @Override

@@ -40,6 +40,7 @@ import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.submission.links.LinksComponent;
 import com.matie.redgram.ui.submission.links.LinksModule;
 import com.matie.redgram.ui.search.views.SearchView;
+import com.matie.redgram.ui.submission.links.delegates.LinksFeedDelegate;
 import com.matie.redgram.ui.submission.links.views.LinksFeedLayout;
 import com.matie.redgram.ui.submission.links.views.LinksView;
 import com.matie.redgram.ui.thread.ThreadActivity;
@@ -105,8 +106,8 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         mContentView = getActivity().findViewById(R.id.container);
         mInflater = inflater;
 
-        sortArray = Arrays.asList(getViewContext().getResources().getStringArray(R.array.searchSortArray));
-        fromArray = Arrays.asList(getViewContext().getResources().getStringArray(R.array.fromArray));
+        sortArray = Arrays.asList(getContext().getResources().getStringArray(R.array.searchSortArray));
+        fromArray = Arrays.asList(getContext().getResources().getStringArray(R.array.fromArray));
 
         setupSwipeContainer();
 
@@ -118,7 +119,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ThreadActivity.REQ_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                final LinksView linksView = linksComponent.getLinksViewDelegate();
+                final LinksView linksView = linksComponent.getLinksView();
 
                 PostItem postItem = new Gson()
                         .fromJson(data.getStringExtra(ThreadActivity.RESULT_POST_CHANGE), PostItem.class);
@@ -146,7 +147,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     protected void setupComponent() {
         AppComponent appComponent = ((BaseActivity)getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
-        LinksModule linksModule = new LinksModule();
+        LinksModule linksModule = new LinksModule(this);
 
         component = DaggerSearchComponent.builder()
                 .mainComponent(mainComponent)
@@ -156,7 +157,17 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         component.inject(this);
 
         linksComponent = component.getLinksComponent(linksModule);
-        linksFeedLayout.setLinksDelegate(linksComponent.getLinksViewDelegate());
+
+        setupLinksFeedLayout();
+    }
+
+    private void setupLinksFeedLayout() {
+        LinksView linksView = linksComponent.getLinksView();
+
+        if (linksView != null && linksView instanceof LinksFeedDelegate) {
+            ((LinksFeedDelegate) linksView).setLinksPresenter(linksComponent.getLinksPresenter());
+            linksFeedLayout.setLinksDelegate(linksView);
+        }
     }
 
     @Override
@@ -250,7 +261,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                 if (query.length() > 0 && !searchSwipeContainer.isRefreshing()) {
                     params.put("q", query);
                     subreddit = "";
-                    linksComponent.getLinksViewDelegate().search(subreddit, params);
+                    linksComponent.getLinksView().search(subreddit, params);
                     searchView.setCursorVisible(false);
                 }
             }
@@ -296,10 +307,10 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
                 android.R.color.holo_orange_dark);
 
         TypedValue tv = new TypedValue();
-        if (getViewContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        if (getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
         {
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
-                    getViewContext().getResources().getDisplayMetrics());
+                    getContext().getResources().getDisplayMetrics());
             //push it down to the same position as the first item to be loaded
             searchSwipeContainer.setProgressViewOffset(false, 0 , 50);
         }
@@ -338,7 +349,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
             subreddit = limitTo.trim();
 
-            linksComponent.getLinksViewDelegate().search(subreddit, params);
+            linksComponent.getLinksView().search(subreddit, params);
 
             if (!searchView.getText().toString().equals(query)) {
                 searchView.setText(query);
@@ -361,7 +372,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     public void onResume() {
         super.onResume();
         searchPresenter.registerForEvents();
-        linksComponent.getSubmissionFeedPresenter().registerForEvents();
+        linksComponent.getLinksPresenter().registerForEvents();
     }
 
     @Override
@@ -376,7 +387,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     @Override
     public void onDestroyView() {
         searchPresenter.unregisterForEvents();
-        linksComponent.getSubmissionFeedPresenter().unregisterForEvents();
+        linksComponent.getLinksPresenter().unregisterForEvents();
 
         ButterKnife.reset(this);
         super.onDestroyView();

@@ -16,8 +16,10 @@ import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
+import com.matie.redgram.ui.common.views.BaseView;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
+import com.matie.redgram.ui.submission.SubmissionFeedDelegate;
 import com.matie.redgram.ui.submission.links.views.LinksView;
 
 import java.util.HashMap;
@@ -26,9 +28,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-public class LinksFeedDelegate implements LinksView {
+public class LinksFeedDelegate extends SubmissionFeedDelegate implements LinksView {
 
-    private final LinksPresenter linksPresenter;
+    private LinksPresenter linksPresenter;
     private final Gson gson = new Gson();
     private ProgressBar containerProgressBar;
 
@@ -43,8 +45,8 @@ public class LinksFeedDelegate implements LinksView {
     private LinearLayoutManager layoutManager;
 
     @Inject
-    public LinksFeedDelegate(final LinksPresenter linksPresenter) {
-        this.linksPresenter = linksPresenter;
+    public LinksFeedDelegate(final BaseView baseView) {
+        super(baseView);
     }
 
     @Override
@@ -74,6 +76,21 @@ public class LinksFeedDelegate implements LinksView {
         containerProgressBar.setVisibility(View.GONE);
     }
 
+    public void setContentView(View contentView) {
+        containerRecyclerView = (PostRecyclerView) contentView;
+
+        setupRecyclerView();
+        setupListeners();
+    }
+
+    public void setLinksPresenter(LinksPresenter linksPresenter) {
+        this.linksPresenter = linksPresenter;
+    }
+
+    public void setLoadingView(View loadingView) {
+        containerProgressBar = (ProgressBar) loadingView;
+    }
+
     @Override
     public void showInfoMessage() {
 
@@ -82,17 +99,6 @@ public class LinksFeedDelegate implements LinksView {
     @Override
     public void showErrorMessage(String error) {
 
-    }
-
-    public void setContentView(View contentView) {
-        containerRecyclerView = (PostRecyclerView) contentView;
-
-        setupRecyclerView();
-        setupListeners();
-    }
-
-    public void setLoadingView(View loadingView) {
-        containerProgressBar = (ProgressBar) loadingView;
     }
 
     private void setupListeners() {
@@ -118,7 +124,7 @@ public class LinksFeedDelegate implements LinksView {
         layoutManager = (LinearLayoutManager) containerRecyclerView.getLayoutManager();
 
         containerRecyclerView.addOnScrollListener(loadMoreListener);
-        containerRecyclerView.setListener(this);
+//        containerRecyclerView.setListener(this);
     }
 
     public void setLoadMoreId(String id) {
@@ -225,11 +231,6 @@ public class LinksFeedDelegate implements LinksView {
             ((CoordinatorLayoutInterface) context)
                     .showSnackBar(msg, Snackbar.LENGTH_LONG, actionMsg, onClickListener, null);
         }
-    }
-
-    @Override
-    public Context getViewContext() {
-        return containerRecyclerView.getContext();
     }
     //endregion
 }
