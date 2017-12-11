@@ -4,7 +4,6 @@ import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.BaseView;
-import com.matie.redgram.ui.submission.links.delegates.LinksFeedDelegate;
 import com.matie.redgram.ui.submission.links.views.LinksView;
 
 import dagger.Module;
@@ -14,9 +13,11 @@ import dagger.Provides;
 public class LinksModule {
 
     private final BaseView baseView;
+    private final LinksView linksView;
 
-    public LinksModule(BaseView baseView) {
+    public LinksModule(BaseView baseView, LinksView linksView) {
         this.baseView = baseView;
+        this.linksView = linksView;
     }
 
     @Provides
@@ -26,11 +27,11 @@ public class LinksModule {
 
     @Provides
     public LinksView provideLinksView() {
-        return new LinksFeedDelegate(baseView);
+        return linksView;
     }
 
     @Provides
-    public LinksPresenter provideLinksPresenter(LinksView linksView, App app) {
+    public LinksPresenter provideLinksPresenter(App app) {
         return new LinksPresenterImpl(linksView, app);
     }
 }

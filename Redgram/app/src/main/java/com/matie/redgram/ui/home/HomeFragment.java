@@ -122,7 +122,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         AppComponent appComponent = ((BaseActivity) getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
 
-        LinksModule linksModule = new LinksModule(this);
+        LinksModule linksModule = new LinksModule(this, new LinksFeedDelegate(this));
 
         component = DaggerHomeComponent.builder()
                 .mainComponent(mainComponent)
@@ -159,7 +159,7 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayShowCustomEnabled(true);
-            supportActionBar.setCustomView(R.layout.links_control_view);
+            supportActionBar.setCustomView(R.layout.submission_control_view);
 
             View controlView = supportActionBar.getCustomView();
             if (controlView instanceof SubmissionControlView) {

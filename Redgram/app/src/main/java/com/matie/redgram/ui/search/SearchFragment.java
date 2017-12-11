@@ -147,7 +147,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     protected void setupComponent() {
         AppComponent appComponent = ((BaseActivity)getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
-        LinksModule linksModule = new LinksModule(this);
+        LinksModule linksModule = new LinksModule(this, new LinksFeedDelegate(this));
 
         component = DaggerSearchComponent.builder()
                 .mainComponent(mainComponent)

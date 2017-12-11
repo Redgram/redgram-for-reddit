@@ -127,7 +127,7 @@ public class ProfileActivityFragment extends BaseFragment implements ProfileActi
         ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayShowCustomEnabled(true);
-            supportActionBar.setCustomView(R.layout.links_control_view);
+            supportActionBar.setCustomView(R.layout.submission_control_view);
 
             View controlView = supportActionBar.getCustomView();
             if (controlView instanceof SubmissionControlView) {
