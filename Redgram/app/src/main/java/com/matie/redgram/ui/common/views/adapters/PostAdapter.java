@@ -1,23 +1,19 @@
 package com.matie.redgram.ui.common.views.adapters;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 
-/**
- * Created by matie on 18/05/15.
- */
 public class PostAdapter extends PostAdapterBase {
     private static final int TYPE_DEFAULT = 0;
     private static final int TYPE_SELF = 1;
     private static final int TYPE_IMAGE = 2;
     private static final int TYPE_ANIMATED = 3;
     private static final int TYPE_GALLERY = 4;
-    private static final int TYPE_MAX_COUNT = TYPE_GALLERY+1;
-
 
     public PostAdapter(Context context, int layoutResId) {
         super(context, layoutResId);
@@ -26,54 +22,33 @@ public class PostAdapter extends PostAdapterBase {
     @Override
     public View getDynamicView(int type, View dynamicView, ViewGroup dynamicParent) {
         if(dynamicView == null){
-            dynamicView = inflateViewByType(type, dynamicView, dynamicParent);
+            dynamicView = inflateViewByType(type, dynamicParent);
         }
+
         return dynamicView;
     }
 
-    /**
-     * Click events
-     * -----------------------------------------------------
-     * default uses a web view
-     * imgur fetches the image URL from IMGUR api
-     * imgur gallery fetches set of images and creates a slideshow
-     *
-     * GIF - video sign
-     * youtube calls youtube app
-     * gifv becomes .mp4
-     * gfycat fetches .mp4 url
-     *
-     * GALLERY - icon - different layout
-     * loads the set of images from imgur
-     *
-     * @param type
-     * @param dynamicView
-     * @param dynamicParent
-     * @return
-     */
-    private View inflateViewByType(int type, View dynamicView, ViewGroup dynamicParent) {
-        switch (type){
+    private View inflateViewByType(int type, ViewGroup dynamicParent) {
+        final LayoutInflater inflater = LayoutInflater.from(dynamicParent.getContext());
+
+        switch (type) {
             case TYPE_DEFAULT:
-                dynamicView = getInflater().inflate(R.layout.post_item_default_view, dynamicParent, false);
-                break;
+                return inflater.inflate(R.layout.post_item_default_view, dynamicParent, false);
             case TYPE_SELF:
-                dynamicView = getInflater().inflate(R.layout.post_item_text_view, dynamicParent, false);
-                break;
+                return inflater.inflate(R.layout.post_item_text_view, dynamicParent, false);
             case TYPE_IMAGE:
-                dynamicView = getInflater().inflate(R.layout.post_item_image_view, dynamicParent, false);
-                break;
+                return inflater.inflate(R.layout.post_item_image_view, dynamicParent, false);
             case TYPE_GALLERY:
-                dynamicView = getInflater().inflate(R.layout.post_item_gallery_view, dynamicParent, false);
-                break;
+                return inflater.inflate(R.layout.post_item_gallery_view, dynamicParent, false);
             case TYPE_ANIMATED:
-                dynamicView = getInflater().inflate(R.layout.post_item_animated_view, dynamicParent, false);
-                break;
+                return inflater.inflate(R.layout.post_item_animated_view, dynamicParent, false);
+            default:
+                return null;
         }
-        return dynamicView;
     }
 
     @Override
-    public int getItemType(int position) {
+    public int getItemViewType(int position) {
         int id = 0; //default
         PostItem item = getItem(position);
 
@@ -101,10 +76,5 @@ public class PostAdapter extends PostAdapterBase {
             return id;
         }
         return id;
-    }
-
-    @Override
-    public int getTypeCount() {
-        return TYPE_MAX_COUNT;
     }
 }

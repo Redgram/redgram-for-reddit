@@ -15,28 +15,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolder>{
+abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolder>{
 
-    private final Context context;
     private final int layoutResId;
-
-    private final LayoutInflater inflater;
     private List<PostItem> items = Collections.emptyList();
     private SingleLinkView singleLinkView;
 
 
-    public PostAdapterBase(Context context, int layoutResId){
-        this.context = context;
+    PostAdapterBase(Context context, int layoutResId) {
         this.layoutResId = layoutResId;
-        this.inflater = LayoutInflater.from(context);
     }
 
-    public void replaceWith(List<PostItem> items){
+    public void replaceWith(List<PostItem> items) {
         this.items = new ArrayList<>(items);
         notifyDataSetChanged();
     }
 
-    public void setPostItemListener(SingleLinkView singleLinkView){
+    public void setPostItemListener(SingleLinkView singleLinkView) {
         this.singleLinkView = singleLinkView;
     }
 
@@ -48,45 +43,36 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
         return items;
     }
 
-    public int getViewTypeCount() {
-        return getTypeCount();
-    }
-
-    public LayoutInflater getInflater() {
-        return inflater;
-    }
-
-    //has to be implemented in sub-class and will inflate the specified view according to type
-    public abstract View getDynamicView(int type, View dynamicView, ViewGroup dynamicParent);
-
-    public abstract int getItemType(int position);
-
-    public abstract int getTypeCount();
-
     @Override
     public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        final Context context = parent.getContext();
 
-        PostItemView v = (PostItemView)inflater.inflate(layoutResId, parent, false);
+        PostItemView v =
+                (PostItemView) LayoutInflater.from(context).inflate(layoutResId, parent, false);
 
         View dynamicView = getDynamicView(viewType, v.getDynamicView(), v.getDynamicParent());
 
-        if(!dynamicView.equals(v.getDynamicView())){
-            v.getDynamicParent().removeAllViews();
-            v.getDynamicParent().addView(dynamicView);
-        }
-        v.setDynamicView(dynamicView);
+        if (dynamicView != null) {
+            if (!dynamicView.equals(v.getDynamicView())) {
+                v.getDynamicParent().removeAllViews();
+                v.getDynamicParent().addView(dynamicView);
+            }
 
-        if(singleLinkView != null){
+            v.setDynamicView(dynamicView);
+        }
+
+        if (singleLinkView != null) {
            return new PostViewHolder(v, singleLinkView);
         }
 
         return new PostViewHolder(v);
     }
 
+    //has to be implemented in sub-class and will inflate the specified view according to type
+    public abstract View getDynamicView(int type, View dynamicView, ViewGroup dynamicParent);
+
     @Override
     public void onBindViewHolder(PostViewHolder holder, int position) {
-//        Log.d("ITEM VIEW HOLDER" , holder+"");
-//        Log.d("ITEM VIEW" , holder.getItemView()+"");
          holder.getItemView().bindTo(items.get(position), position);
     }
 
@@ -94,11 +80,5 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
     public int getItemCount() {
         return items.size();
     }
-
-    @Override
-    public int getItemViewType(int position) {
-        return getItemType(position);
-    }
-
 
 }

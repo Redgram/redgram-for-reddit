@@ -7,8 +7,7 @@ import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 public class PostViewHolder extends RecyclerView.ViewHolder {
 
-    SingleLinkView linksViewListener;
-    PostItemView itemView;
+    private PostItemView itemView;
 
     public PostViewHolder(PostItemView itemView) {
         super(itemView);
@@ -18,17 +17,12 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public PostViewHolder(PostItemView itemView, SingleLinkView listener) {
         super(itemView);
         this.itemView = itemView;
-        this.linksViewListener = listener;
 
-        itemView.setListener(linksViewListener);
+        itemView.setListener(listener);
     }
 
     public PostItemView getItemView() {
         return itemView;
-    }
-
-    public void setItemView(PostItemView itemView) {
-        this.itemView = itemView;
     }
 
 }
