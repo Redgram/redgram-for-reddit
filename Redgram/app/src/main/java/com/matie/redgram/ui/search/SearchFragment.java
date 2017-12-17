@@ -64,8 +64,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     SwipeRefreshLayout searchSwipeContainer;
 
     View mContentView;
-    LayoutInflater mInflater;
-
     SearchComponent component;
     LinksComponent linksComponent;
 
@@ -104,7 +102,6 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         ButterKnife.inject(this,view);
 
         mContentView = getActivity().findViewById(R.id.container);
-        mInflater = inflater;
 
         sortArray = Arrays.asList(getContext().getResources().getStringArray(R.array.searchSortArray));
         fromArray = Arrays.asList(getContext().getResources().getStringArray(R.array.fromArray));
@@ -317,7 +314,8 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     }
 
     private void setupFilterContentLayout() {
-        filterContentLayout = (RelativeLayout)mInflater.inflate(R.layout.fragment_search_toolbar_filter, null);
+        filterContentLayout = (RelativeLayout)
+                getLayoutInflater().inflate(R.layout.fragment_search_toolbar_filter, customToolbar);
         fromSpinner = (Spinner) filterContentLayout.findViewById(R.id.spinner_from);
         sortSpinner = (Spinner) filterContentLayout.findViewById(R.id.spinner_sort);
 

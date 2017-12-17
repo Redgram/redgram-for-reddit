@@ -79,8 +79,8 @@ public class LinksFeedDelegate extends SubmissionFeedDelegate implements LinksVi
     public void setContentView(View contentView) {
         containerRecyclerView = (PostRecyclerView) contentView;
 
-        setupRecyclerView();
         setupListeners();
+        setupRecyclerView();
     }
 
     public void setLinksPresenter(LinksPresenter linksPresenter) {
