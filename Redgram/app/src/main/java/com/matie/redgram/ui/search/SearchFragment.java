@@ -5,8 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -21,12 +20,9 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
@@ -41,12 +37,12 @@ import com.matie.redgram.ui.common.base.SlidingUpPanelFragment;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.BaseContextView;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
-import com.matie.redgram.ui.posts.LinksComponent;
-import com.matie.redgram.ui.posts.LinksContainerView;
-import com.matie.redgram.ui.posts.LinksModule;
+import com.matie.redgram.ui.submission.links.LinksComponent;
+import com.matie.redgram.ui.submission.links.LinksModule;
 import com.matie.redgram.ui.search.views.SearchView;
+import com.matie.redgram.ui.submission.links.delegates.LinksFeedDelegate;
+import com.matie.redgram.ui.submission.links.views.LinksFeedLayout;
+import com.matie.redgram.ui.submission.links.views.LinksView;
 import com.matie.redgram.ui.thread.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -60,35 +56,26 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by matie on 28/06/15.
- *
- */
-public class SearchFragment extends SlidingUpPanelFragment implements SearchView{
+public class SearchFragment extends SlidingUpPanelFragment implements SearchView {
 
     @InjectView(R.id.links_container_view)
-    LinksContainerView linksContainerView;
+    LinksFeedLayout linksFeedLayout;
     @InjectView(R.id.swipe_container)
     SwipeRefreshLayout searchSwipeContainer;
 
-    Toolbar mToolbar;
     View mContentView;
-    LayoutInflater mInflater;
-    LinearLayoutManager mLayoutManager;
-
     SearchComponent component;
     LinksComponent linksComponent;
 
-    FrameLayout frameLayout;
     EditText searchView;
     ImageView searchClear;
 
-    PostRecyclerView searchRecyclerView;
     ImageView searchFilter;
     Spinner sortSpinner;
     Spinner fromSpinner;
     EditText limitToView;
     RelativeLayout filterContentLayout;
+    RelativeLayout customToolbar;
 
     List<String> sortArray;
     List<String> fromArray;
@@ -115,13 +102,11 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         ButterKnife.inject(this,view);
 
         mContentView = getActivity().findViewById(R.id.container);
-        mInflater = inflater;
 
         sortArray = Arrays.asList(getContext().getResources().getStringArray(R.array.searchSortArray));
         fromArray = Arrays.asList(getContext().getResources().getStringArray(R.array.fromArray));
 
         setupSwipeContainer();
-        setupRecyclerView();
 
         return view;
 
@@ -129,19 +114,21 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == ThreadActivity.REQ_CODE){
-            if(resultCode == Activity.RESULT_OK){
+        if (requestCode == ThreadActivity.REQ_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                final LinksView linksView = linksComponent.getLinksView();
+
                 PostItem postItem = new Gson()
                         .fromJson(data.getStringExtra(ThreadActivity.RESULT_POST_CHANGE), PostItem.class);
                 int pos = data.getIntExtra(ThreadActivity.RESULT_POST_POS, -1);
-                if(linksContainerView.getItems().contains(postItem) && pos >= 0){
+                if (linksView.getItems().contains(postItem) && pos >= 0) {
                     // TODO: 2016-04-18 override hashcode to check whether item has actually changed before calling update
                     // TODO: 2016-04-18 Also, use the same mechanism for single item operations in LinkContainerView
                     // TODO: 2016-04-18 handle 400 errors - some posts cannot be modified (archived)
-                    if(postItem.isHidden()){
-                        linksContainerView.removeItem(pos);
-                    }else{
-                        linksContainerView.updateItem(pos, postItem);
+                    if (postItem.isHidden()) {
+                        linksView.removeItem(pos);
+                    } else {
+                        linksView.updateItem(pos, postItem);
                     }
                 }
             }
@@ -157,81 +144,51 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     protected void setupComponent() {
         AppComponent appComponent = ((BaseActivity)getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
-        LinksModule linksModule = new LinksModule(linksContainerView, this);
+        LinksModule linksModule = new LinksModule(this, new LinksFeedDelegate(this));
+
         component = DaggerSearchComponent.builder()
                 .mainComponent(mainComponent)
                 .searchModule(new SearchModule(this))
                 .linksModule(linksModule)
                 .build();
         component.inject(this);
+
         linksComponent = component.getLinksComponent(linksModule);
-        linksContainerView.setComponent(linksComponent);
-        linksContainerView.setHostingFragmentTag(Fragments.SEARCH.toString());
+
+        setupLinksFeedLayout();
+    }
+
+    private void setupLinksFeedLayout() {
+        LinksView linksView = linksComponent.getLinksView();
+
+        if (linksView != null && linksView instanceof LinksFeedDelegate) {
+            ((LinksFeedDelegate) linksView).setLinksPresenter(linksComponent.getLinksPresenter());
+            linksFeedLayout.setLinksDelegate(linksView);
+        }
     }
 
     @Override
     protected void setupToolbar() {
-        mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
-        frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
+        ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setDisplayShowCustomEnabled(true);
+            supportActionBar.setCustomView(R.layout.fragment_search_toolbar);
 
-        LinearLayout ll = (LinearLayout) mInflater.inflate(R.layout.fragment_search_toolbar, frameLayout, false);
-        frameLayout.removeAllViews();
-        frameLayout.addView(ll);
+            View customView = supportActionBar.getCustomView();
+            if (customView instanceof RelativeLayout) {
+                customToolbar = (RelativeLayout) customView;
 
-        searchView = (EditText)ll.findViewById(R.id.search_view);
-        searchClear = (ImageView)ll.findViewById(R.id.search_clear);
-        searchFilter = (ImageView)ll.findViewById(R.id.search_filter);
-
-        searchView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (event != null && event.getAction() != KeyEvent.ACTION_DOWN) {
-                    return false;
-                } else if (actionId == EditorInfo.IME_ACTION_SEARCH || event == null || event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                    //clear params
-                    params.clear();
-                    String query = v.getText().toString();
-                    if (query.length() > 0 && !searchSwipeContainer.isRefreshing()) {
-                        params.put("q", query);
-                        subreddit = "";
-                        linksContainerView.search(subreddit,params);
-                        searchView.setCursorVisible(false);
-                    }
-                }
-                //hide keyboard
-                toggleKeyboard(false);
-                return true;
+                setupToolbarSearch();
+                setupToolbarSearchClear();
+                setupToolbarSearchFilter();
             }
-        });
+        }
+    }
 
-        searchView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    private void setupToolbarSearchFilter() {
+        if(customToolbar == null) return;
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() > 0)
-                    searchClear.setVisibility(View.VISIBLE);
-                else
-                    searchClear.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
-        searchClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchView.setText("");
-                searchView.setHint(getResources().getString(R.string.enter_search_term));
-                searchView.setCursorVisible(true);
-                toggleKeyboard(true);
-            }
-        });
+        searchFilter = customToolbar.findViewById(R.id.search_filter);
 
         setupFilterContentLayout();
 
@@ -269,6 +226,68 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
             }
         });
 
+    }
+
+    private void setupToolbarSearchClear() {
+        if (customToolbar == null) return;
+
+        searchClear = customToolbar.findViewById(R.id.search_clear);
+
+        searchClear.setOnClickListener(v -> {
+            searchView.setText("");
+            searchView.setHint(getResources().getString(R.string.enter_search_term));
+            searchView.setCursorVisible(true);
+            toggleKeyboard(true);
+        });
+    }
+
+    private void setupToolbarSearch() {
+        if (customToolbar == null) return;
+
+        searchView = customToolbar.findViewById(R.id.search_view);
+
+        searchView.setOnEditorActionListener((v, actionId, event) -> {
+            if (event != null && event.getAction() != KeyEvent.ACTION_DOWN) {
+                return false;
+            } else if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    event == null ||
+                    event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                //clear params
+                params.clear();
+                String query = v.getText().toString();
+                if (query.length() > 0 && !searchSwipeContainer.isRefreshing()) {
+                    params.put("q", query);
+                    subreddit = "";
+                    linksComponent.getLinksView().search(subreddit, params);
+                    searchView.setCursorVisible(false);
+                }
+            }
+
+            //hide keyboard
+            toggleKeyboard(false);
+
+            return true;
+        });
+
+        searchView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0)
+                    searchClear.setVisibility(View.VISIBLE);
+                else
+                    searchClear.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
         //focus on edit text and show keyboard
         searchView.setFocusable(true);
         searchView.requestFocus();
@@ -294,14 +313,11 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         }
     }
 
-    private void setupRecyclerView() {
-        searchRecyclerView = linksContainerView.getContainerRecyclerView();
-    }
-
     private void setupFilterContentLayout() {
-        filterContentLayout = (RelativeLayout)mInflater.inflate(R.layout.fragment_search_toolbar_filter, null);
-        fromSpinner = (Spinner)filterContentLayout.findViewById(R.id.spinner_from);
-        sortSpinner = (Spinner)filterContentLayout.findViewById(R.id.spinner_sort);
+        filterContentLayout = (RelativeLayout)
+                getLayoutInflater().inflate(R.layout.fragment_search_toolbar_filter, customToolbar);
+        fromSpinner = (Spinner) filterContentLayout.findViewById(R.id.spinner_from);
+        sortSpinner = (Spinner) filterContentLayout.findViewById(R.id.spinner_sort);
 
         ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(
                 getActivity(), R.layout.support_simple_spinner_dropdown_item, fromArray);
@@ -313,7 +329,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
         fromSpinner.setAdapter(fromAdapter);
         sortSpinner.setAdapter(sortAdapter);
 
-        limitToView = (EditText)filterContentLayout.findViewById(R.id.limit_view);
+        limitToView = (EditText) filterContentLayout.findViewById(R.id.limit_view);
     }
 
     private void performPositiveEvent(MaterialDialog dialog) {
@@ -331,7 +347,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
             subreddit = limitTo.trim();
 
-            linksContainerView.search(subreddit, params);
+            linksComponent.getLinksView().search(subreddit, params);
 
             if (!searchView.getText().toString().equals(query)) {
                 searchView.setText(query);
@@ -354,8 +370,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     public void onResume() {
         super.onResume();
         searchPresenter.registerForEvents();
-        linksContainerView.getLinksPresenter().registerForEvents();
-        linksContainerView.addChangeListeners();
+        linksComponent.getLinksPresenter().registerForEvents();
     }
 
     @Override
@@ -370,8 +385,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     @Override
     public void onDestroyView() {
         searchPresenter.unregisterForEvents();
-        linksContainerView.getLinksPresenter().unregisterForEvents();
-        linksContainerView.removeChangeListeners();
+        linksComponent.getLinksPresenter().unregisterForEvents();
 
         ButterKnife.reset(this);
         super.onDestroyView();
@@ -379,14 +393,14 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     @Override
     public void showLoading() {
-        searchRecyclerView.setVisibility(View.GONE);
+//        searchRecyclerView.setVisibility(View.GONE);
         searchSwipeContainer.setRefreshing(true);
     }
 
     @Override
     public void hideLoading() {
         searchSwipeContainer.setRefreshing(false);
-        searchRecyclerView.setVisibility(View.VISIBLE);
+//        searchRecyclerView.setVisibility(View.VISIBLE);
     }
 
 
@@ -401,28 +415,23 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     }
 
     @Override
-    public BaseContextView getContentContext() {
-        return getBaseFragment();
-    }
-
-    @Override
     public void showPanel() {
-        ((SlidingUpPanelActivity)getActivity()).showPanel();
+        ((SlidingUpPanelActivity) getActivity()).showPanel();
     }
 
     @Override
     public void hidePanel() {
-        ((SlidingUpPanelActivity)getActivity()).hidePanel();
+        ((SlidingUpPanelActivity) getActivity()).hidePanel();
     }
 
     @Override
     public void togglePanel() {
-        ((SlidingUpPanelActivity)getActivity()).togglePanel();
+        ((SlidingUpPanelActivity) getActivity()).togglePanel();
     }
 
     @Override
     public void setPanelHeight(int height) {
-        ((SlidingUpPanelActivity)getActivity()).setPanelHeight(height);
+        ((SlidingUpPanelActivity) getActivity()).setPanelHeight(height);
     }
 
     @Override
@@ -432,7 +441,7 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     @Override
     public void setDraggable(View view) {
-        //no implementation
+        // no implementation
     }
 
     @Override

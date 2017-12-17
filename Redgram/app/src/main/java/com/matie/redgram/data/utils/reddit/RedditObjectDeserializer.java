@@ -59,9 +59,9 @@ public class RedditObjectDeserializer implements JsonDeserializer<RedditObject> 
     private void modifyUserListChildren(JsonArray children) {
         for(int i = 0 ; i < children.size() ; i++){
             JsonElement child = children.get(i);
-            if(child.isJsonObject()){
+            if(child.isJsonObject()) {
                 JsonObject obj = new JsonObject();
-                obj.add(KIND, new JsonPrimitive(RedditType.User.toString()));
+                obj.add(KIND, new JsonPrimitive(RedditType.t2.toString()));
                 obj.add(DATA, child);
                 children.set(i, obj);
             }

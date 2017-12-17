@@ -8,24 +8,19 @@ import android.util.AttributeSet;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.views.adapters.PostAdapter;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 
-/**
- * Created by matie on 04/04/15.
- */
 public class PostRecyclerView extends RecyclerView {
 
-    private final Context context;
     private final LayoutManager layoutManager;
     private final PostAdapter postAdapter;
 
     public PostRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.context = context;
         this.layoutManager = new LinearLayoutManager(context);
         this.postAdapter = new PostAdapter(context, R.layout.post_item_view);
     }
@@ -39,8 +34,8 @@ public class PostRecyclerView extends RecyclerView {
         setAdapter(postAdapter);
     }
 
-    public void setListener(LinksView linksView){
-        postAdapter.setPostItemListener(linksView);
+    public void setListener(SingleLinkView singleLinkView){
+        postAdapter.setPostItemListener(singleLinkView);
     }
 
     public void replaceWith(List<PostItem> items){

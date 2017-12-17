@@ -37,9 +37,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-/**
- * Created by matie on 2015-11-03.
- */
 public class ImagePreviewFragment extends BasePreviewFragment {
 
 
@@ -78,12 +75,12 @@ public class ImagePreviewFragment extends BasePreviewFragment {
             preFetchToDiskCacheAndDisplay();
         }
 
-        if(getContext() instanceof MainActivity){
-            MainActivity mainActivity = (MainActivity)getContext();
+        if(getBaseInstance() instanceof MainActivity){
+            MainActivity mainActivity = (MainActivity) getBaseInstance();
             mainActivity.setDraggable(topBanner);
         }
 
-        if(getContext() instanceof ThreadActivity){
+        if(getBaseInstance() instanceof ThreadActivity){
             topBanner.setVisibility(View.GONE);
         }
 
@@ -95,7 +92,7 @@ public class ImagePreviewFragment extends BasePreviewFragment {
         ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
                 .build();
         DataSource<Void> dataSource
-                = Fresco.getImagePipeline().prefetchToDiskCache(request, getContext());
+                = Fresco.getImagePipeline().prefetchToDiskCache(request, getBaseInstance());
         dataSource.subscribe(new BaseDataSubscriber<Void>() {
             @Override
             protected void onNewResultImpl(DataSource<Void> dataSource) {
@@ -120,11 +117,6 @@ public class ImagePreviewFragment extends BasePreviewFragment {
 
     @Override
     protected void setupComponent() {
-
-    }
-
-    @Override
-    protected void setupToolbar() {
 
     }
 
@@ -157,9 +149,11 @@ public class ImagePreviewFragment extends BasePreviewFragment {
     }
 
     @OnClick(R.id.close_fragment)
-    public void OnCloseFragment(){
+    public void OnCloseFragment() {
         imagePreview.setVisibility(View.GONE);
-        ((SlidingUpPanelActivity)getBaseActivity()).hidePanel();
+        if (getBaseInstance() instanceof SlidingUpPanelActivity) {
+            ((SlidingUpPanelActivity) getBaseInstance()).hidePanel();
+        }
     }
 
     private void displayCachedImageFromBackgroundThread(ImageRequest request){

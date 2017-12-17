@@ -34,14 +34,14 @@ public class RedditModule {
                         new Class[]{RedditClientInterface.class}, handler);
     }
 
-    class RedditClientInvocationHandler implements InvocationHandler{
+    private class RedditClientInvocationHandler implements InvocationHandler{
 
         private final RedditClient redditClient;
         private final DatabaseManager databaseManager;
         private final RedditClientUserNullProxy nullProxy;
         private ToastHandler toastHandler;
 
-        public RedditClientInvocationHandler(RedditClient redditClient, DatabaseManager databaseManager, ToastHandler toastHandler) {
+        RedditClientInvocationHandler(RedditClient redditClient, DatabaseManager databaseManager, ToastHandler toastHandler) {
             this.redditClient = redditClient;
             this.databaseManager = databaseManager;
             this.nullProxy = new RedditClientUserNullProxy();

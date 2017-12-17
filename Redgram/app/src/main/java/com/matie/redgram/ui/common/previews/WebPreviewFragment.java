@@ -56,12 +56,12 @@ public class WebPreviewFragment extends BasePreviewFragment{
         webView.setWebViewClient(getWebViewClient());
         webView.setWebChromeClient(getWebChromeClient());
 
-        if(getContext() instanceof MainActivity){
-            MainActivity mainActivity = (MainActivity)getContext();
+        if(getBaseInstance() instanceof MainActivity){
+            MainActivity mainActivity = (MainActivity) getBaseInstance();
             mainActivity.setDraggable(topBanner);
         }
 
-        if(getContext() instanceof ThreadActivity){
+        if(getBaseInstance() instanceof ThreadActivity){
             topBanner.setVisibility(View.GONE);
         }
 
@@ -87,11 +87,6 @@ public class WebPreviewFragment extends BasePreviewFragment{
     }
 
     @Override
-    protected void setupToolbar() {
-
-    }
-
-    @Override
     public void refreshPreview(Bundle bundle) {
         if(bundle.containsKey(getMainKey())){
             String data = bundle.getString(getMainKey());
@@ -105,8 +100,10 @@ public class WebPreviewFragment extends BasePreviewFragment{
     }
 
     @OnClick(R.id.close_fragment)
-    public void OnCloseFragment(){
-        ((SlidingUpPanelActivity)getBaseActivity()).hidePanel();
+    public void OnCloseFragment() {
+        if (getBaseInstance() instanceof SlidingUpPanelActivity) {
+            ((SlidingUpPanelActivity) getBaseInstance()).hidePanel();
+        }
     }
 
     // TODO: 2015-11-06 create a separate if needed in future

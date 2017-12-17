@@ -10,7 +10,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -29,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
@@ -42,8 +40,8 @@ import com.matie.redgram.ui.common.user.UserListComponent;
 import com.matie.redgram.ui.common.user.UserListModule;
 import com.matie.redgram.ui.common.user.UserListView;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
+import com.matie.redgram.ui.common.utils.display.CustomFragmentManager;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.home.HomeFragment;
 import com.matie.redgram.ui.profile.ProfileActivity;
 import com.matie.redgram.ui.search.SearchFragment;
@@ -56,11 +54,10 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.Optional;
-import io.realm.RealmChangeListener;
 
 
 public class MainActivity extends SlidingUpPanelActivity implements CoordinatorLayoutInterface,
-                                                    NavigationView.OnNavigationItemSelectedListener, MainView{
+                                                    NavigationView.OnNavigationItemSelectedListener, MainView {
 
     private static final int SUBSCRIPTION_REQUEST_CODE = 69;
 
@@ -98,27 +95,28 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     private ActionBarDrawerToggle mDrawerToggle;
     private MainComponent mainComponent;
+    private CustomFragmentManager mainFragmentManager;
 
     private Window window;
     private boolean isDrawerOpen = false;
     private String subredditToVisitOnResult;
-    private RealmChangeListener realmSessionListener;
+    private UserListComponent userListComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getSession() == null || DatabaseHelper.getUserById(getRealm(), "Guest") == null){
+        if (mainComponent.getMainPresenter().getSessionUser() == null) {
             //launch auth activity with specific flags and create a guest user
             startActivity(AuthActivity.intent(this, true));
-        }else{
+        } else {
 
             ButterKnife.inject(this);
 
             mDrawerLayout.setStatusBarBackgroundColor(
                     getResources().getColor(R.color.material_red600));
 
-            //this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
+            // this code causes the drawer to be drawn below the status bar as it clears FLAG_TRANSLUCENT_STATUS
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 window = getWindow();
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -141,10 +139,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             setUpToolbar();
             setup(savedInstanceState);
             setUpPanel();
-            if(getSession() != null){
-                setupNavUserLayout(getSession().getUser());
-            }
-
+            setupNavUserLayout();
         }
     }
 
@@ -158,12 +153,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         return R.id.container;
     }
 
-    @Override
-    protected RealmChangeListener getRealmSessionChangeListener() {
-        //keep null as
-        return realmSessionListener;
-    }
-
     private void setUpToolbar() {
         //ActionBar setup
         setSupportActionBar(toolbar);
@@ -172,7 +161,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
-    private void setupNavUserLayout(User user){
+    private void setupNavUserLayout() {
+        final User user = mainComponent.getMainPresenter().getSessionUser();
+
         FrameLayout headerView = (FrameLayout) navigationView.getHeaderView(0);
 
         ImageView accountsView = ((ImageView) headerView.findViewById(R.id.drawerAccounts));
@@ -187,7 +178,11 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         username.setText(user != null ? user.getUserName() : "Guest");
         if(user != null){
             if(User.USER_AUTH.equalsIgnoreCase(user.getUserType())){
-                username.setOnClickListener(v -> startActivity(ProfileActivity.intent(MainActivity.this)));
+                username.setOnClickListener(view -> {
+                    Intent intent = ProfileActivity.intent(this);
+                    intent.putExtra(ProfileActivity.RESULT_USER_NAME, user.getUserName());
+                    openIntent(intent);
+                });
             }else if(User.USER_GUEST.equalsIgnoreCase(user.getUserType())){
                 navigationView.getMenu().findItem(R.id.nav_logout).setVisible(false);
             }
@@ -210,8 +205,11 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
                         .mainModule(new MainModule(this))
                         .userListModule(userListModule)
                         .build();
+
         mainComponent.inject(this);
-        UserListComponent userListComponent = mainComponent.getUserListComponent(userListModule);
+
+        userListComponent = mainComponent.getUserListComponent(userListModule);
+        userListComponent.inject(userListLayout);
         userListLayout.setComponent(userListComponent);
     }
 
@@ -262,6 +260,9 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+        mainFragmentManager = new CustomFragmentManager();
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(mainFragmentManager, true);
+
         getSupportFragmentManager().addOnBackStackChangedListener(
                 () -> { selectItem(currentSelectedMenuId); }
         );
@@ -303,18 +304,17 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditName);
 
         HomeFragment homeFragment = (HomeFragment) Fragment
-                .instantiate(getBaseActivity(), Fragments.HOME.getFragment());
+                .instantiate(this, Fragments.HOME.getFragment());
         homeFragment.setArguments(bundle);
 
-        openFragmentWithResult(homeFragment, Fragments.HOME.toString());
+        openFragment(homeFragment, Fragments.HOME.toString());
     }
 
     private void setUpPanel() {
-        //fix the height of the panel to start below the status bar
-        int statusBarHeight = 0;
+        // fix the height of the panel to start below the status bar
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
         if(resourceId > 0){
-            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+            int statusBarHeight = getResources().getDimensionPixelSize(resourceId);
 
             SlidingUpPanelLayout.LayoutParams fl = new SlidingUpPanelLayout.LayoutParams(slidingUpFrameLayout.getLayoutParams());
             fl.setMargins(0, statusBarHeight, 0, 0);
@@ -324,7 +324,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     protected void onDestroy() {
-        userListLayout.getPresenter().unregisterForEvents();
+        userListComponent.getUserListPresenter().unregisterForEvents();
         ButterKnife.reset(this);
         super.onDestroy();
     }
@@ -332,8 +332,15 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     @Override
     public void onResume() {
         super.onResume();
-        userListLayout.getPresenter().registerForEvents();
+        userListComponent.getUserListPresenter().registerForEvents();
         selectItem(currentSelectedMenuId);
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(mainFragmentManager, true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getSupportFragmentManager().unregisterFragmentLifecycleCallbacks(mainFragmentManager);
     }
 
     @Override
@@ -378,13 +385,13 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     public void onBackPressed() {
-        if(getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED){
+        if (getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
             hidePanel();
-        }else if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+        } else if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             closeDrawer();
-        }else {
+        } else {
             super.onBackPressed();
-            if(getSupportFragmentManager().getBackStackEntryCount() == 0){
+            if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
                 currentSelectedMenuId = R.id.nav_home;
                 selectItem(currentSelectedMenuId);
             }
@@ -428,17 +435,17 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         bundle.putString(SubscriptionActivity.RESULT_SUBREDDIT_NAME, subredditToVisitOnResult);
 
         HomeFragment homeFragment = (HomeFragment) Fragment
-                .instantiate(getBaseActivity(), Fragments.HOME.getFragment());
+                .instantiate(this, Fragments.HOME.getFragment());
         homeFragment.setArguments(bundle);
 
-        //makes sure only one fragment is in the stack
+        // make sure only one fragment is in the stack
         if(!getSupportFragmentManager().findFragmentByTag(Fragments.HOME.toString()).isVisible()){
-            getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            getSupportFragmentManager().popBackStack(null, android.support.v4.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
             currentSelectedMenuId = R.id.nav_home;
             selectItem(currentSelectedMenuId);
         }
 
-        openFragmentWithResult(homeFragment, Fragments.HOME.toString());
+        openFragment(homeFragment, Fragments.HOME.toString());
     }
 
     @Override
@@ -465,19 +472,17 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        int currentFragmentPos = getSupportFragmentManager().getFragments().size()-1;
+        Fragment fragment = mainFragmentManager.getActiveFragment();
 
         if(id == R.id.nav_home){
-            if (!(getSupportFragmentManager().getFragments()
-                    .get(currentFragmentPos) instanceof HomeFragment)) {
-                //this fragment is added on activity entry, choosing it from the menu when not visible,
-                //will pop all stack to return to it, and re-create it
-                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            if (!(fragment instanceof HomeFragment)) {
+                // this fragment is added on activity entry, choosing it from the menu when not visible,
+                // will pop all stack to return to it, and re-create it
+                getSupportFragmentManager().popBackStack(null, android.support.v4.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 currentSelectedMenuId = item.getItemId();
             }
         } else if(id == R.id.nav_search){
-            if (!(getSupportFragmentManager().getFragments()
-                    .get(currentFragmentPos) instanceof SearchFragment)) {
+            if (!(fragment instanceof SearchFragment)) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, Fragment
                                 .instantiate(MainActivity.this, Fragments.SEARCH.getFragment()), Fragments.SEARCH.toString());
@@ -512,11 +517,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     private void logoutCurrentUser() {
         //switches to Guest user automatically - default
-        userListLayout.getPresenter().switchUser();
-    }
-
-    public DialogUtil getDialogUtil() {
-        return dialogUtil;
+        userListComponent.getUserListPresenter().switchUser();
     }
 
     @Override
@@ -554,7 +555,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
         //show panel
         togglePanel();
         //load data
-        if(getSupportFragmentManager().getFragments().contains(previewFragment) && previewFragment != null
+        if(mainFragmentManager.contains(previewFragment) && previewFragment != null
                 && currentPreviewFragment != null && fragmentEnum == currentPreviewFragment){
             previewFragment.refreshPreview(bundle);
         }else{
@@ -694,9 +695,5 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     }
 
-    @Override
-    public BaseContextView getContentContext() {
-        return getBaseActivity();
-    }
 }
 

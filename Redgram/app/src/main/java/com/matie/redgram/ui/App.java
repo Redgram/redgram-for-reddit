@@ -2,15 +2,11 @@ package com.matie.redgram.ui;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.res.Resources;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
-import com.matie.redgram.data.network.api.reddit.RedditClient;
 import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
-
-import javax.inject.Inject;
 
 /**
  * Created by matie on 21/05/15.
@@ -19,25 +15,9 @@ public class App extends Application {
 
     private AppComponent component;
 
-    @Inject
-    ToastHandler toastHandler;
-
-    @Inject
-    ConnectionManager connectionManager;
-
-    @Inject
-    DatabaseManager databaseManager;
-
-    @Inject
-    RedditClientInterface redditClient;
-
-    Resources mResources;
-
-
     @Override
     public void onCreate() {
         super.onCreate();
-        mResources = getResources();
         setupGraph();
     }
 
@@ -48,10 +28,6 @@ public class App extends Application {
         component.inject(this);
     }
 
-    public AppComponent component() {
-        return component;
-    }
-
     /**
      * @param context - current activity/fragment context
      * @return Application context
@@ -60,20 +36,24 @@ public class App extends Application {
         return (App) context.getApplicationContext();
     }
 
+    public AppComponent component() {
+        return component;
+    }
+
     public ConnectionManager getConnectionManager() {
-        return connectionManager;
+        return component.getConnectionManager();
     }
 
     public DatabaseManager getDatabaseManager() {
-        return databaseManager;
+        return component.getDatabaseManager();
     }
 
     public RedditClientInterface getRedditClient() {
-        return redditClient;
+        return component.getRedditClient();
     }
 
     public ToastHandler getToastHandler() {
-        return toastHandler;
+        return component.getToastHandler();
     }
 
 }

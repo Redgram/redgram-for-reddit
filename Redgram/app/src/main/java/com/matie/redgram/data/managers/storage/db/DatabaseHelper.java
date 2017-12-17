@@ -119,6 +119,15 @@ public class DatabaseHelper {
         return realm.where(User.class).equalTo("id", userId).findFirst();
     }
 
+    public static Prefs getPrefs(Realm realm) {
+        User sessionUser = getSessionUser(realm);
+        if (sessionUser != null) {
+            return getPrefsByUserId(realm, sessionUser.getId());
+        }
+
+        return null;
+    }
+
     public static Prefs getPrefsByUserId(Realm realm, String userId) {
         return realm.where(Prefs.class).equalTo("id", userId).findFirst();
     }
@@ -221,7 +230,7 @@ public class DatabaseHelper {
 
     public static Session buildSession(User user){
         Session session = new Session();
-        session.setId(DatabaseManager.id());
+        session.setId(DatabaseManager.SESSION_DEFAULT_ID);
         session.setUser(user);
         return session;
     }

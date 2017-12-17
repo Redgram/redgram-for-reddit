@@ -25,9 +25,7 @@ import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.base.BaseFragment;
-import com.matie.redgram.ui.common.views.BaseContextView;
+import com.matie.redgram.ui.common.views.BaseView;
 import com.matie.redgram.ui.settings.fragments.CommentsPreferenceFragment;
 import com.matie.redgram.ui.settings.fragments.GeneralPreferenceFragment;
 import com.matie.redgram.ui.settings.fragments.NotificationPreferenceFragment;
@@ -50,7 +48,7 @@ import io.realm.RealmChangeListener;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends AppCompatPreferenceActivity implements BaseContextView, SharedPreferences.OnSharedPreferenceChangeListener {
+public class SettingsActivity extends AppCompatPreferenceActivity implements BaseView, SharedPreferences.OnSharedPreferenceChangeListener {
 
     //general
     public static final String general_show_trending = "general_show_trending";
@@ -331,17 +329,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Bas
     }
 
     @Override
-    public Context getContext() {
-        return getApplicationContext();
-    }
-
-    @Override
-    public BaseActivity getBaseActivity() {
-        return null;
-    }
-
-    @Override
-    public BaseFragment getBaseFragment() {
-        return null;
+    public BaseView getBaseInstance() {
+        return this;
     }
 }

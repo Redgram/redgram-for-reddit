@@ -1,23 +1,20 @@
 package com.matie.redgram.data.managers.presenters;
 
-import com.matie.redgram.R;
+import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.User;
+import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.home.HomeViewWrapper;
-import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.home.views.HomeView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,89 +26,36 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 
-/**
- * Created by matie on 12/04/15.
- */
+public class HomePresenterImpl extends BasePresenterImpl implements HomePresenter {
 
-public class HomePresenterImpl implements HomePresenter{
-    private final App app;
     private final HomeView homeView;
     private final RedditClientInterface redditClient;
     private final DatabaseManager databaseManager;
     private final Session session;
-
-    private LinksPresenter linksPresenter;
-    private CompositeSubscription subscriptions;
-
     private List<SubredditItem> subredditItems;
 
-    //global subscriptions
-    private Subscription homeWrapperSubscription;
-
-
-    /**
-     * Called onCreate(View) of MainActivity/Fragment
-     * @param homeView
-     */
     @Inject
     public HomePresenterImpl(HomeView homeView, App app) {
-        this.app = app;
-        this.homeView = homeView;
+        super(homeView, app);
+        this.homeView = (HomeView) view;
         this.redditClient = app.getRedditClient();
-        this.databaseManager = app.getDatabaseManager();
-        this.subredditItems = new ArrayList<SubredditItem>();
+        this.databaseManager = databaseManager();
+        this.subredditItems = new ArrayList<>();
 
-        this.session = homeView.getContentContext().getBaseActivity().getSession();
+        this.session = databaseManager.getSession();
     }
 
-    /**
-     * Called onResume of MainActivity/Fragment
-     */
-    @Override
-    public void registerForEvents() {
-        if(subscriptions == null)
-            subscriptions = new CompositeSubscription();
-
-        if(!subscriptions.isUnsubscribed()){
-            if(homeWrapperSubscription != null){
-                subscriptions.add(homeWrapperSubscription);
-            }
-        }
-    }
-    /**
-     * Called onPause of MainActivity/Fragment
-     */
-    @Override
-    public void unregisterForEvents() {
-        if(subscriptions != null && subscriptions.hasSubscriptions()){
-            subscriptions.unsubscribe();
-        }
-    }
-
-    /**
-     * gets Subscriptions for now
-     */
     @Override
     public void getHomeViewWrapper() {
         homeView.showLoading();
 
-        Map<String, String> params = new HashMap<>();
-        if(getPrefs() != null){
-            params.put("limit", getPrefs().getNumSites()+"");
-        }
-
-        Observable<RedditListing<PostItem>> linksObservable =
-                redditClient.getListing(app.getResources().getString(R.string.default_filter).toLowerCase(),
-                        params, null);
-
         Map<String,String> subparams = new HashMap<String, String>();
         subparams.put("limit", "100");
 
-        RedditListing<SubredditItem> storedListing =  getSubredditsFromCache();
-        Observable<RedditListing<SubredditItem>> subredditsObservable;
+        Listing<SubredditItem> storedListing =  getSubredditsFromCache();
+        Observable<Listing<SubredditItem>> subredditsObservable;
         if(storedListing != null){
             subredditsObservable = Observable.just(storedListing);
         }else{
@@ -123,15 +67,14 @@ public class HomePresenterImpl implements HomePresenter{
             }
         }
 
-        homeWrapperSubscription = Observable
-                .zip(linksObservable, subredditsObservable, Observable.just((storedListing != null)), (links, subredditListing, inStore) -> {
+        Subscription homeWrapperSubscription = Observable
+                .zip(subredditsObservable, Observable.just((storedListing != null)), (subredditListing, inStore) -> {
                     HomeViewWrapper homeViewWrapper = new HomeViewWrapper();
                     homeViewWrapper.setSubreddits(subredditListing);
                     homeViewWrapper.setIsSubredditsCached(inStore);
-                    homeViewWrapper.setLinks(links);
                     return homeViewWrapper;
                 })
-                .compose(((BaseFragment)homeView.getContentContext()).bindToLifecycle())
+                .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<HomeViewWrapper>() {
@@ -148,24 +91,22 @@ public class HomePresenterImpl implements HomePresenter{
 
                     @Override
                     public void onNext(HomeViewWrapper homeViewWrapper) {
-                        //dealing with links
-                        homeView.loadLinksContainer(homeViewWrapper.getLinks());
-
                         //dealing with the subreddits
-                        RedditListing<SubredditItem> subredditListing = homeViewWrapper.getSubreddits();
+                        Listing<SubredditItem> subredditListing = homeViewWrapper.getSubreddits();
+
                         subredditItems.addAll(subredditListing.getItems());
-                        Collections.sort(subredditItems, new Comparator<SubredditItem>() {
-                            @Override
-                            public int compare(SubredditItem lhs, SubredditItem rhs) {
-                                return lhs.getName().compareToIgnoreCase(rhs.getName());
-                            }
-                        });
+
+                        Collections.sort(subredditItems,
+                                (lhs, rhs) -> lhs.getName().compareToIgnoreCase(rhs.getName()));
+
                         //add to db
                         if(!homeViewWrapper.getIsSubredditsCached()){
                             setSubredditsInCache(homeViewWrapper.getSubreddits());
                         }
                     }
                 });
+
+        addSubscription(homeWrapperSubscription);
     }
 
     @Override
@@ -177,7 +118,7 @@ public class HomePresenterImpl implements HomePresenter{
                 subredditNames.add(item.getName());
             }
         }else{
-            RedditListing<SubredditItem> storedListing = getSubredditsFromCache();
+            Listing<SubredditItem> storedListing = getSubredditsFromCache();
             if(storedListing != null){
                 for(SubredditItem item : storedListing.getItems()){
                     subredditNames.add(item.getName());
@@ -188,7 +129,7 @@ public class HomePresenterImpl implements HomePresenter{
         return subredditNames;
     }
 
-    public RedditListing<SubredditItem> getSubredditsFromCache() {
+    private Listing<SubredditItem> getSubredditsFromCache() {
         List<Subreddit> subreddits = databaseManager.getSubreddits();
         if(!subreddits.isEmpty()){
             return buildSubredditListing(subreddits);
@@ -196,12 +137,12 @@ public class HomePresenterImpl implements HomePresenter{
         return null;
     }
 
-    private void setSubredditsInCache(RedditListing<SubredditItem> listing) {
+    private void setSubredditsInCache(Listing<SubredditItem> listing) {
         databaseManager.setSubreddits(listing.getItems());
     }
 
-    private RedditListing<SubredditItem> buildSubredditListing(List<Subreddit> subreddits) {
-        RedditListing<SubredditItem> listing = new RedditListing<>();
+    private Listing<SubredditItem> buildSubredditListing(List<Subreddit> subreddits) {
+        Listing<SubredditItem> listing = new Listing<>();
         List<SubredditItem> items = new ArrayList<>();
         for(Subreddit subreddit : subreddits){
             SubredditItem item = new SubredditItem();
@@ -212,11 +153,7 @@ public class HomePresenterImpl implements HomePresenter{
         return listing;
     }
 
-    private Prefs getPrefs(){
-        Session session = homeView.getContentContext().getBaseActivity().getSession();
-        if(session != null && session.getUser() != null){
-            return session.getUser().getPrefs();
-        }
-        return null;
+    private Prefs getPrefs() {
+        return databaseManager.getSessionPreferences();
     }
 }

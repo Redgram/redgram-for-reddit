@@ -9,19 +9,16 @@ import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.utils.text.spans.CustomClickable;
 import com.matie.redgram.ui.common.utils.text.CustomSpanListener;
 import com.matie.redgram.ui.common.utils.text.StringDecorator;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.common.utils.text.spans.CustomClickable;
+import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 import java.util.HashMap;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by matie on 21/06/15.
- */
 public class PostItemTagView extends PostItemSubView implements CustomSpanListener {
 
     private static final String SPACE = " ";
@@ -34,7 +31,7 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
 
     PostItem item;
     int position;
-    LinksView listener;
+    SingleLinkView listener;
 
     final Resources res;
 
@@ -50,7 +47,7 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
     }
 
     @Override
-    public void setupView(PostItem item, int position, LinksView listener) {
+    public void setupView(PostItem item, int position, SingleLinkView listener) {
         this.item = item;
         this.position = position;
         this.listener = listener;
@@ -75,10 +72,10 @@ public class PostItemTagView extends PostItemSubView implements CustomSpanListen
     public void onClickableEvent(CharSequence targetString) {
         if(targetString.toString().startsWith("[ ") && targetString.toString().endsWith(" ]")){
             //open webview
-            listener.viewWebMedia(position);
+            listener.viewWebMedia(getContext(), position);
         }else if(targetString.toString().endsWith("comments")){
             //navigate to comments
-            listener.loadCommentsForPost(position);
+            listener.loadCommentsForPost(getContext(), position);
         }
     }
 

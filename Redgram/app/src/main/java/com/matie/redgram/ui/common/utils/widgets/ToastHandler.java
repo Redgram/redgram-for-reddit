@@ -21,17 +21,22 @@ public class ToastHandler {
         handler = new Handler(Looper.getMainLooper());
     }
 
+    @Deprecated
     public void showToast(String msg, int length){
         Toast.makeText(mContext, msg, length).show();
     }
 
+    @Deprecated
     public void showBackgroundToast(String msg, int length){
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(mContext, msg, length).show();
-            }
-        });
+        handler.post(() -> Toast.makeText(mContext, msg, length).show());
+    }
+
+    public static void showToast(Context context, String msg, int length) {
+        Toast.makeText(context, msg, length).show();
+    }
+
+    public static void showBackgroundToast(Context context, String msg, int length) {
+        new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(context, msg, length).show());
     }
 
 

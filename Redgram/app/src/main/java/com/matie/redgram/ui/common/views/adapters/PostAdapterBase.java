@@ -9,15 +9,12 @@ import android.view.ViewGroup;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostViewHolder;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by matie on 04/04/15.
- */
 public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolder>{
 
     private final Context context;
@@ -25,7 +22,7 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
 
     private final LayoutInflater inflater;
     private List<PostItem> items = Collections.emptyList();
-    private LinksView linksView;
+    private SingleLinkView singleLinkView;
 
 
     public PostAdapterBase(Context context, int layoutResId){
@@ -39,8 +36,8 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
         notifyDataSetChanged();
     }
 
-    public void setPostItemListener(LinksView linksView){
-        this.linksView = linksView;
+    public void setPostItemListener(SingleLinkView singleLinkView){
+        this.singleLinkView = singleLinkView;
     }
 
     public PostItem getItem(int position){
@@ -79,8 +76,8 @@ public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolde
         }
         v.setDynamicView(dynamicView);
 
-        if(linksView != null){
-           return new PostViewHolder(v, linksView);
+        if(singleLinkView != null){
+           return new PostViewHolder(v, singleLinkView);
         }
 
         return new PostViewHolder(v);

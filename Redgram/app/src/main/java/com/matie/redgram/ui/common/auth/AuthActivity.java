@@ -14,25 +14,20 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.AuthPresenterImpl;
-import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
-import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceBase;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.auth.views.AuthView;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.BaseContextView;
+import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -60,26 +55,19 @@ public class AuthActivity extends BaseActivity implements AuthView {
     private String userId;
     private String userName;
 
-    @Inject
-    App app;
-    @Inject
-    DatabaseManager databaseManager;
-    @Inject
     AuthPresenterImpl authPresenter;
-    @Inject
-    DialogUtil dialogUtil;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.inject(this);
+
         checkIntent(getIntent());
         setUpRealm();
-        if(!requestAppOAuth){
+
+        if (!requestAppOAuth) {
             setUpWebView();
-        }else{
+        } else {
             authPresenter.getAccessToken();
         }
     }
@@ -96,7 +84,8 @@ public class AuthActivity extends BaseActivity implements AuthView {
             //changes made in this context are related to the session being set
             transitionToMainActivity(resultIncluded, true);
         };
-        getRealm().addChangeListener(realmChangeListener);
+
+        authPresenter.addRealmChangeListener(realmChangeListener);
     }
 
     private void setResult(boolean isSuccess) {
@@ -134,16 +123,12 @@ public class AuthActivity extends BaseActivity implements AuthView {
                         .authModule(new AuthModule(this))
                         .build();
         authComponent.inject(this);
+        authPresenter = (AuthPresenterImpl) authComponent.getAuthPresenter();
     }
 
     @Override
     public AppComponent component() {
         return authComponent;
-    }
-
-    @Override
-    public DialogUtil getDialogUtil() {
-        return null;
     }
 
     @Override
@@ -157,19 +142,8 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
     @Override
-    protected RealmChangeListener getRealmSessionChangeListener() {
-        return null;
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-    }
-
-    @Override
     protected void onDestroy() {
         authPresenter.unregisterForEvents();
-        getRealm().removeAllChangeListeners();
         ButterKnife.reset(this);
         super.onDestroy();
     }
@@ -178,7 +152,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
     public void onResume() {
         super.onResume();
         authPresenter.registerForEvents();
-        getRealm().addChangeListener(realmChangeListener);
+        authPresenter.addRealmChangeListener(realmChangeListener);
     }
 
     @Override
@@ -201,16 +175,11 @@ public class AuthActivity extends BaseActivity implements AuthView {
     @Override
     public void showErrorMessage(String error) {
         mContentView.setVisibility(View.VISIBLE);
-        if(resultIncluded){
+        if (resultIncluded) {
             transitionToMainActivity(resultIncluded, false);
-        }else{
-            app.getToastHandler().showToast(error, Toast.LENGTH_LONG);
+        } else {
+            ToastHandler.showToast(this, error, Toast.LENGTH_LONG);
         }
-    }
-
-    @Override
-    public BaseContextView getContentContext() {
-        return getBaseActivity();
     }
 
     @Override
@@ -233,10 +202,6 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
     private class WebViewCustomClient extends WebViewClient {
-
-        public WebViewCustomClient() {
-        }
-
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
@@ -252,34 +217,35 @@ public class AuthActivity extends BaseActivity implements AuthView {
 
     @Override
     public void showPreferencesOptions(AuthWrapper wrapper) {
-        if(getRealm() != null && !getRealm().isClosed()){
-            users = DatabaseHelper.getUsers(getRealm());
-            List<String> userNames = new ArrayList<>();
-            for(User user : users){
-                if(wrapper.getAuthUser().getId().equalsIgnoreCase(user.getId())){
-                    showUserExistsDialog();
-                    return;
-                }else{
-                    userNames.add(user.getUserName());
-                }
-            }
+        users = authPresenter.getExistingUsers();
 
-            //add the results after making sure the new user doesn't exist
-            userId = wrapper.getAuthUser().getId();
-            userName = wrapper.getAuthUser().getName();
+        if (users == null) return;
 
-            //preferences
-            if(!userNames.isEmpty()){
-                showExistingPreferencesDialog(userNames, wrapper);
+        List<String> userNames = new ArrayList<>();
+
+        for(User user : users){
+            if(wrapper.getAuthUser().getId().equalsIgnoreCase(user.getId())){
+                showUserExistsDialog();
+                return;
             }else{
-                showPreferencesSyncDialog(wrapper);
+                userNames.add(user.getUserName());
             }
+        }
 
+        //add the results after making sure the new user doesn't exist
+        userId = wrapper.getAuthUser().getId();
+        userName = wrapper.getAuthUser().getName();
+
+        //preferences
+        if (!userNames.isEmpty()) {
+            showExistingPreferencesDialog(userNames, wrapper);
+        } else {
+            showPreferencesSyncDialog(wrapper);
         }
     }
 
     private void showUserExistsDialog() {
-        MaterialDialog.Builder builder = dialogUtil.build()
+        MaterialDialog.Builder builder = DialogUtil.builder(this)
                 .title("Account Exists")
                 .positiveText("Login Again")
                 .onPositive((dialog, which) -> {
@@ -288,6 +254,7 @@ public class AuthActivity extends BaseActivity implements AuthView {
                     mContentView.loadUrl(getAuthUrl());
                     hideLoading();
                 });
+
         if(resultIncluded){
             builder.negativeText("Cancel")
                 .onNegative((dialog, which) -> {
@@ -304,13 +271,15 @@ public class AuthActivity extends BaseActivity implements AuthView {
     }
 
     private void showExistingPreferencesDialog(List<String> userNames, AuthWrapper wrapper) {
-        dialogUtil.build()
+        DialogUtil.builder(this)
                 .title("Would you like to use settings from an existing account?")
                 .items(userNames)
                 .itemsCallback((dialog, itemView, which, text) -> {
                     for(User user : users){
                         if(user.getUserName().equalsIgnoreCase(text.toString())){
-                            Prefs prefs = DatabaseHelper.getPrefsByUserId(getRealm(), user.getId());
+                            Prefs prefs = authPresenter.getPrefsByUserId(user.getId());
+
+                            if (prefs == null) return;
 
                             AuthPrefs authPrefs = new AuthPrefs();
                             authPrefs.setDefaultCommentSort(prefs.getDefaultCommentSort());
@@ -338,9 +307,8 @@ public class AuthActivity extends BaseActivity implements AuthView {
                 .canceledOnTouchOutside(false)
                 .show();
     }
-
     private void showPreferencesSyncDialog(AuthWrapper wrapper) {
-        dialogUtil.build()
+        DialogUtil.builder(this)
                 .title("Use preferences from your Reddit account?")
                 .positiveText("Yes")
                 .negativeText("No")

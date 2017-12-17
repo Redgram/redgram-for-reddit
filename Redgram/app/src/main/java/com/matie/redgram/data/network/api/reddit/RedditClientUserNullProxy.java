@@ -7,12 +7,13 @@ import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
+import com.matie.redgram.data.models.api.reddit.main.RedditUser;
+import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
-import com.matie.redgram.data.models.main.reddit.RedditObject;
+import com.matie.redgram.data.models.main.base.BaseModel;
 
 import java.util.List;
 import java.util.Map;
@@ -36,32 +37,37 @@ public class RedditClientUserNullProxy implements RedditClientInterface {
     }
 
     @Override
-    public Observable<RedditListing<RedditObject>> getUserOverview(String username) {
+    public Observable<RedditUser> getUserDetails(String username) {
         return null;
     }
 
     @Override
-    public Observable<RedditListing<PostItem>> getSubredditListing(String query, @Nullable Map<String, String> params, List<PostItem> postItems) {
+    public Observable<Listing<BaseModel>> getUserOverview(String username) {
         return null;
     }
 
     @Override
-    public Observable<RedditListing<PostItem>> getSubredditListing(String query, @Nullable String filter, @Nullable Map<String, String> params, List<PostItem> postItems) {
+    public Observable<Listing<PostItem>> getSubredditListing(String query, @Nullable Map<String, String> params, List<PostItem> postItems) {
         return null;
     }
 
     @Override
-    public Observable<RedditListing<PostItem>> executeSearch(String subreddit, @Nullable Map<String, String> params, List<PostItem> postItems) {
+    public Observable<Listing<PostItem>> getSubredditListing(String query, @Nullable String filter, @Nullable Map<String, String> params, List<PostItem> postItems) {
         return null;
     }
 
     @Override
-    public Observable<RedditListing<PostItem>> getListing(String front, @Nullable Map<String, String> params, List<PostItem> postItems) {
+    public Observable<Listing<PostItem>> executeSearch(String subreddit, @Nullable Map<String, String> params, List<PostItem> postItems) {
         return null;
     }
 
     @Override
-    public Observable<RedditListing<SubredditItem>> getSubreddits(String filter, @Nullable Map<String, String> params) {
+    public Observable<Listing<PostItem>> getListing(String front, @Nullable Map<String, String> params, List<PostItem> postItems) {
+        return null;
+    }
+
+    @Override
+    public Observable<Listing<SubredditItem>> getSubreddits(String filter, @Nullable Map<String, String> params) {
         return null;
     }
 
@@ -73,7 +79,7 @@ public class RedditClientUserNullProxy implements RedditClientInterface {
     //users
 
     @Override
-    public Observable<RedditListing<SubredditItem>> getSubscriptions(@Nullable Map<String, String> params) {
+    public Observable<Listing<SubredditItem>> getSubscriptions(@Nullable Map<String, String> params) {
         return Observable.just(null);
     }
 
@@ -118,12 +124,12 @@ public class RedditClientUserNullProxy implements RedditClientInterface {
     }
 
     @Override
-    public Observable<RedditListing<UserItem>> getFriends() {
+    public Observable<Listing<UserItem>> getFriends() {
         return Observable.just(null);
     }
 
     @Override
-    public Observable<RedditListing<UserItem>> getBlockedUsers() {
+    public Observable<Listing<UserItem>> getBlockedUsers() {
         return Observable.just(null);
     }
 

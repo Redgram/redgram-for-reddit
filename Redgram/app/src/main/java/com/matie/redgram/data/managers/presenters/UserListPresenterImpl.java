@@ -2,6 +2,7 @@ package com.matie.redgram.data.managers.presenters;
 
 import android.util.Log;
 
+import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
@@ -10,10 +11,7 @@ import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.network.api.reddit.base.RedditAuthProvider;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.user.views.UserListControllerView;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.ContentView;
 
 import java.util.ArrayList;
@@ -29,62 +27,40 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
-/**
- * Created by matie on 2016-09-15.
- */
-public class UserListPresenterImpl implements UserListPresenter {
+public class UserListPresenterImpl extends BasePresenterImpl implements UserListPresenter {
 
-    private UserListControllerView userListView;
-    private final BaseContextView contextView;
-    private final ContentView contentView;
     private final Realm realm;
+    private UserListControllerView userListView;
     private Session session;
-    private App app;
     private DatabaseManager databaseManager;
     private boolean enableDefault;
 
-    private CompositeSubscription subscriptions;
-
     @Inject
     public UserListPresenterImpl(UserListControllerView userListView, ContentView contentView, App app, boolean enableDefault) {
+        super(contentView, app);
         this.userListView = userListView;
-        this.contentView = contentView;
-        this.contextView = contentView.getContentContext();
-        this.app = app;
-        this.databaseManager = app.getDatabaseManager();
+        this.databaseManager = databaseManager();
         this.enableDefault = enableDefault;
 
-        BaseActivity activity = contextView.getBaseActivity();
-        this.realm = activity.getRealm();
-        this.session = activity.getSession();
-    }
-
-    @Override
-    public void registerForEvents() {
-        initializeSubscriptions();
+        realm = databaseManager().getInstance();
+        session = DatabaseHelper.getSession(realm);
     }
 
     @Override
     public void unregisterForEvents() {
-        if(subscriptions != null && subscriptions.hasSubscriptions()){
-            subscriptions.unsubscribe();
-        }
+        super.unregisterForEvents();
+
+        DatabaseHelper.close(realm);
     }
 
     @Override
     public void getUsers() {
-        Observable<List<UserItem>> userListObservable = getUserListObservable(realm, session.getUser());
-
-        if(contextView instanceof BaseActivity){
-            userListObservable = userListObservable.compose(((BaseActivity)contextView).bindToLifecycle());
-        }else if(contextView instanceof BaseFragment){
-            userListObservable = userListObservable.compose(((BaseFragment)contextView).bindToLifecycle());
-        }
+        Observable<List<UserItem>> userListObservable = getUserListObservable();
 
         Subscription userListSubscription =
                 userListObservable
+                    .compose(getTransformer())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<List<UserItem>>() {
                         @Override
@@ -102,37 +78,42 @@ public class UserListPresenterImpl implements UserListPresenter {
                             userListView.populateView(userItems);
                         }
                     });
-        if(!getSubscriptions().isUnsubscribed()){
-            subscriptions.add(userListSubscription);
-        }
+
+        addSubscription(userListSubscription);
     }
 
-    private Observable<List<UserItem>> getUserListObservable(Realm realm, User sessionUser){
+    private Observable<List<UserItem>> getUserListObservable() {
         return DatabaseHelper.getUsersAsync(realm)
                 .filter(RealmResults::isLoaded)
                 .map(list -> {
                     List<UserItem> userItems = new ArrayList<>();
-                    for(User user : list){
-                        if((enableDefault && User.USER_GUEST.equalsIgnoreCase(user.getUserType()))
-                            || !User.USER_GUEST.equalsIgnoreCase(user.getUserType())){
-                            userItems.add(buildUserItem(user, sessionUser));
+
+                    for(User user : list) {
+                        if(session != null &&
+                                (enableDefault && User.USER_GUEST.equalsIgnoreCase(user.getUserType())) ||
+                                    !User.USER_GUEST.equalsIgnoreCase(user.getUserType())
+                        ){
+                            userItems.add(buildUserItem(user, session.getUser()));
                         }
                     }
+
                     return userItems;
                 });
     }
 
     private UserItem buildUserItem(User user, User sessionUser) {
         UserItem userItem = new UserItem(user.getId(), user.getUserName());
-        if(sessionUser != null){
-            if(user.getId().equalsIgnoreCase(sessionUser.getId())) {
+
+        if (sessionUser != null) {
+            if (user.getId().equalsIgnoreCase(sessionUser.getId())) {
                 userItem.setSelected(true);
             }
 
-            if(User.USER_GUEST.equalsIgnoreCase(user.getUserType())){
+            if (User.USER_GUEST.equalsIgnoreCase(user.getUserType())) {
                 userItem.setDefault(true);
             }
         }
+
         return userItem;
     }
 
@@ -141,12 +122,12 @@ public class UserListPresenterImpl implements UserListPresenter {
     public void removeUser(String id, int position) {
         try {
             DatabaseHelper.deleteUserById(realm, id, null);
-            if(userListView.getItem(position).isSelected()){
+            if (userListView.getItem(position).isSelected()) {
                 selectUser("Guest", 0);
-            }else{
+            } else {
                 userListView.removeItem(position);
             }
-        }catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             Log.d("Remove User", e.getMessage());
             userListView.showErrorMessage(e.getMessage());
         }
@@ -160,13 +141,8 @@ public class UserListPresenterImpl implements UserListPresenter {
                 .filter(user -> user != null)
                 .flatMap(this::updateSessionWithSelectedUser);
 
-        if(contextView instanceof BaseActivity){
-            userObservable.compose(((BaseActivity)contextView).bindToLifecycle());
-        }else if(contextView instanceof BaseFragment){
-            userObservable.compose(((BaseFragment)contextView).bindToLifecycle());
-        }
-
         Subscription selectUserSubscription = userObservable
+            .compose(getTransformer())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Subscriber<User>() {
                 @Override
@@ -190,14 +166,13 @@ public class UserListPresenterImpl implements UserListPresenter {
                 }
             });
 
-        if(!getSubscriptions().isUnsubscribed()){
-            subscriptions.add(selectUserSubscription);
-        }
+        addSubscription(selectUserSubscription);
     }
 
     @Override
     public void switchUser() {
        getDefaultRevokeAccessObservable()
+               .compose(getTransformer())
                .observeOn(AndroidSchedulers.mainThread())
                .subscribeOn(Schedulers.io())
                .subscribe(new SelectedUserSubscriber("Guest", 0));
@@ -206,33 +181,19 @@ public class UserListPresenterImpl implements UserListPresenter {
     @Override
     public void switchUser(String id, int position) {
         getDefaultRevokeAccessObservable()
+                .compose(getTransformer())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new SelectedUserSubscriber(id, position));
     }
 
     private Observable<AccessToken> getDefaultRevokeAccessObservable() {
-        Observable<AccessToken> revokeAccessTokenObservable = app.getRedditClient()
+        return app.getRedditClient()
                 .revokeToken(RedditAuthProvider.ACCESS_TOKEN);
-
-        if(contextView instanceof BaseActivity){
-            revokeAccessTokenObservable.compose(((BaseActivity)contextView).bindToLifecycle());
-        }else if(contextView instanceof BaseFragment){
-            revokeAccessTokenObservable.compose(((BaseFragment)contextView).bindToLifecycle());
-        }
-        return revokeAccessTokenObservable;
     }
 
     private Observable<AccessToken> getRevokeTokenObservable(String token, String type) {
-        Observable<AccessToken> revokeAccessTokenObservable = app.getRedditClient()
-                .revokeToken(token, type);
-
-        if(contextView instanceof BaseActivity){
-            revokeAccessTokenObservable.compose(((BaseActivity)contextView).bindToLifecycle());
-        }else if(contextView instanceof BaseFragment){
-            revokeAccessTokenObservable.compose(((BaseFragment)contextView).bindToLifecycle());
-        }
-        return revokeAccessTokenObservable;
+        return app.getRedditClient().revokeToken(token, type);
     }
 
 
@@ -248,24 +209,12 @@ public class UserListPresenterImpl implements UserListPresenter {
         return user.asObservable();
     }
 
-
-    private void initializeSubscriptions() {
-        if(subscriptions == null){
-            subscriptions = new CompositeSubscription();
-        }
-    }
-
-    private CompositeSubscription getSubscriptions() {
-        initializeSubscriptions();
-        return subscriptions;
-    }
-
-    private class SelectedUserSubscriber extends Subscriber<Object>{
+    private class SelectedUserSubscriber extends Subscriber<Object> {
 
         private String id;
         private int position;
 
-        public SelectedUserSubscriber(String id, int position) {
+        private SelectedUserSubscriber(String id, int position) {
             this.id = id;
             this.position = position;
         }

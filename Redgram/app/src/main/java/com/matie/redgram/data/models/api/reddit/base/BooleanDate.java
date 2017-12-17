@@ -9,7 +9,7 @@ public class BooleanDate {
 
     private BooleanDate() {}
 
-    public class DateInstance extends BooleanDate{
+    public static class DateInstance extends BooleanDate {
         private DateTime data;
 
         public DateTime getData() {
@@ -17,7 +17,7 @@ public class BooleanDate {
         }
     }
 
-    public class BooleanInstance extends BooleanDate{
+    public static class BooleanInstance extends BooleanDate {
         private Boolean data;
 
         public Boolean getData() {

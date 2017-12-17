@@ -9,29 +9,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.managers.presenters.UserListPresenter;
+import com.matie.redgram.data.managers.presenters.UserListPresenterImpl;
 import com.matie.redgram.data.models.main.items.UserItem;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.main.views.MainView;
 import com.matie.redgram.ui.common.user.views.UserListControllerView;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
-import com.matie.redgram.ui.common.views.BaseContextView;
+import com.matie.redgram.ui.common.views.BaseView;
 import com.matie.redgram.ui.common.views.adapters.UserAdapter;
 import com.matie.redgram.ui.common.views.widgets.drawer.UserRecyclerView;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-/**
- * Created by matie on 2016-09-15.
- */
 public class UserListView extends FrameLayout implements UserListControllerView {
 
     public static final int ADD_ACCOUNT = 11;
@@ -43,16 +37,9 @@ public class UserListView extends FrameLayout implements UserListControllerView 
     @InjectView(R.id.user_cancel)
     ImageView cancelView;
 
-    @Inject
-    App app;
-    @Inject
-    UserListPresenter presenter;
-    @Inject
-    DialogUtil dialogUtil;
-
     private final Context context;
-    private BaseContextView contextView;
     private UserListComponent component;
+    private UserListPresenterImpl userListPresenter;
 
     public UserListView(Context context) {
         super(context);
@@ -107,22 +94,13 @@ public class UserListView extends FrameLayout implements UserListControllerView 
 
     @Override
     public void showErrorMessage(String error) {
-        dialogUtil.build().title("Oops!").content(error).show();
-    }
-
-    @Override
-    public BaseContextView getContentContext() {
-        if(contextView instanceof BaseActivity){
-            return contextView.getBaseActivity();
-        }else{
-            return contextView.getBaseFragment();
-        }
+        DialogUtil.builder(getContext()).title("Oops!").content(error).show();
     }
 
     @Override
     public void addAccount() {
-        if(context instanceof BaseActivity){
-            ((BaseActivity)context).openIntentForResult(AuthActivity.intent(context, false), ADD_ACCOUNT, 0, 0);
+        if (context instanceof BaseActivity) {
+            ((BaseActivity) context).openIntentForResult(AuthActivity.intent(context, false), ADD_ACCOUNT);
         }
     }
 
@@ -130,16 +108,16 @@ public class UserListView extends FrameLayout implements UserListControllerView 
     public void selectAccount(String id, int position) {
         UserItem userItem = getItem(position);
         if(!userItem.isSelected()){
-            presenter.switchUser(id, position);
+            userListPresenter.switchUser(id, position);
         }
     }
 
     @Override
     public void removeAccount(String id, int position) {
-        dialogUtil.build()
+        DialogUtil.builder(getContext())
                 .title("Remove this account?")
                 .content(getItem(position).getUserName())
-                .onPositive((dialog, which) -> presenter.removeUser(id, position))
+                .onPositive((dialog, which) -> userListPresenter.removeUser(id, position))
                 .onNegative((dialog1, which1) -> dialog1.dismiss())
                 .positiveText("Yes")
                 .negativeText("Cancel")
@@ -155,26 +133,25 @@ public class UserListView extends FrameLayout implements UserListControllerView 
 
     @Override
     public void close() {
-        if(context instanceof MainView){
-            ((MainView)context).resetNavDrawer();
+        if (context instanceof MainView) {
+            ((MainView) context).resetNavDrawer();
         }
     }
 
     @Override
     public UserItem getItem(int position) {
-        return ((UserAdapter)userRecyclerView.getAdapter()).getItem(position);
+        return ((UserAdapter) userRecyclerView.getAdapter()).getItem(position);
     }
 
     @Override
     public List<UserItem> getItems() {
-        return ((UserAdapter)userRecyclerView.getAdapter()).getItems();
+        return ((UserAdapter) userRecyclerView.getAdapter()).getItems();
     }
 
     @Override
     public void restartContext(){
-        BaseContextView contextView = (BaseContextView) context;
-        if(contextView != null){
-            contextView.getBaseActivity().recreate();
+        if (context instanceof BaseActivity) {
+            ((BaseActivity) context).recreate();
         }
     }
 
@@ -185,23 +162,19 @@ public class UserListView extends FrameLayout implements UserListControllerView 
 
     public void setComponent(UserListComponent component) {
         this.component = component;
-        this.component.inject(this);
-    }
-
-    public UserListComponent getComponent() {
-        return component;
+        userListPresenter = (UserListPresenterImpl) component.getUserListPresenter();
     }
 
     public void setUp() {
-        presenter.getUsers();
-    }
-
-    public UserListPresenter getPresenter(){
-        return presenter;
+        userListPresenter.getUsers();
     }
 
     @Override
-    public void setBaseContextView(BaseContextView baseContextView) {
-        this.contextView = baseContextView;
+    public BaseView getBaseInstance() {
+        if (context instanceof BaseActivity) {
+            return (BaseActivity) context;
+        }
+
+        return null;
     }
 }

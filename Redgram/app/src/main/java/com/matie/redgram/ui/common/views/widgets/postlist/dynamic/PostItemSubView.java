@@ -4,11 +4,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Prefs;
-import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 /**
  * Created by matie on 19/05/15.
@@ -20,22 +20,22 @@ import com.matie.redgram.ui.posts.views.LinksView;
  */
 public abstract class PostItemSubView extends RelativeLayout {
 
-    private final BaseActivity baseActivity;
-    private final Session session;
+    private DatabaseManager databaseManager;
 
     public PostItemSubView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.baseActivity = (BaseActivity) getContext();
-        this.session = baseActivity.getSession();
+
+        if (getContext() instanceof  BaseActivity) {
+            BaseActivity baseActivity = (BaseActivity) getContext();
+            databaseManager = baseActivity.component().getDatabaseManager();
+        }
     }
 
-    public abstract void setupView(PostItem item, int position, LinksView listener);
+    public abstract void setupView(PostItem item, int position, SingleLinkView listener);
 
-    public Prefs getUserPrefs() {
-        if(session.getUser() != null){
-            return session.getUser().getPrefs();
-        }
-        return null;
+    public Prefs getSessionPrefs() {
+        if (databaseManager == null) return null;
+        return databaseManager.getSessionPreferences();
     }
 
 }

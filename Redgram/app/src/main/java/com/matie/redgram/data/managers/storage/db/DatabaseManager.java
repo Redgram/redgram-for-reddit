@@ -40,20 +40,13 @@ import io.realm.annotations.RealmModule;
 @RealmModule(classes = {Session.class, User.class, Token.class, Prefs.class, State.class, Subreddit.class})
 public class DatabaseManager {
 
-//    public static final String DB_NAME = "redgram.realm.session";
     public static final Integer SESSION_DEFAULT_ID = 69;
     private RealmConfiguration configuration;
-    private final App app;
-    private final Context context;
-
     private Token currentAccessToken;
 
     @Inject
     public DatabaseManager(App app) {
-        this.app = app;
-        this.context = app.getApplicationContext();
-        this.configuration = new RealmConfiguration.Builder(context)
-//                .name(DB_NAME)
+        this.configuration = new RealmConfiguration.Builder(app.getApplicationContext())
                 .deleteRealmIfMigrationNeeded()
                 .setModules(this)
                 .build();
@@ -69,9 +62,6 @@ public class DatabaseManager {
         }
     }
 
-    public static Integer id() {
-        return SESSION_DEFAULT_ID;
-    }
 
     public Token getCurrentToken() {
         return currentAccessToken;
@@ -84,7 +74,6 @@ public class DatabaseManager {
     public Realm getInstance(){
         return Realm.getDefaultInstance();
     }
-
 
     public RealmConfiguration getSessionConfig(){
         return configuration;
@@ -176,5 +165,18 @@ public class DatabaseManager {
         List<Subreddit> usableList = realm.copyFromRealm(subreddits);
         close(realm);
         return usableList;
+    }
+
+    public Prefs getSessionPreferences() {
+        final Realm realm = getInstance();
+
+        Prefs usablePrefs = null;
+        Prefs prefs = DatabaseHelper.getPrefs(realm);
+        if (prefs != null) {
+            usablePrefs = realm.copyFromRealm(prefs);
+        }
+
+        close(realm);
+        return usablePrefs;
     }
 }

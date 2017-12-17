@@ -14,6 +14,8 @@
     <string name="user_email">atiyaleb@gmail.com</string>
     <string name="fragment_home">Home</string>
     <string name="fragment_profile">Profile</string>
+    <string name="profile_about">About</string>
+    <string name="profile_activity">Activity</string>
     <string name="fragment_inbox">Inbox</string>
     <string name="fragment_friends">Friends</string>
     <string name="fragment_search">Search</string>
@@ -71,6 +73,24 @@
     <string-array name="shareOptions">
         <item>Link</item>
         <item>Comments</item>
+    </string-array>
+
+    <string-array name="profileListing">
+        <item>Overview</item>
+        <item>Comments</item>
+        <item>Submitted</item>
+        <item>Gilded</item>
+        <item>Upvoted</item>
+        <item>Downvoted</item>
+        <item>Hidden</item>
+        <item>Saved</item>
+    </string-array>
+
+    <string-array name="profileListingFilter">
+        <item>Hot</item>
+        <item>New</item>
+        <item>Top</item>
+        <item>Controversial</item>
     </string-array>
 
     <!--always lower case them with API-->
@@ -272,5 +292,10 @@
     <string name="pref_posts_hide_ups_title">Hide upvoted links</string>
     <string name="pref_posts_hide_downs_title">Hide downvoted links</string>
 
+    <!-- profile -->
+    <string name="link_karma">Link Karma</string>
+    <string name="comment_karma">Comment Karma</string>
+    <string name="option_friends">Friends</string>
+    <string name="option_blocked_users">Blocked Users</string>
 
 </resources>

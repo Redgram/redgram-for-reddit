@@ -1,7 +1,5 @@
 package com.matie.redgram.ui.subcription.views;
 
-import com.matie.redgram.ui.common.views.BaseContextView;
-import com.matie.redgram.ui.common.views.BaseView;
 import com.matie.redgram.ui.common.views.ContentView;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView;
 

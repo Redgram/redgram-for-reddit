@@ -6,11 +6,13 @@ import com.google.gson.JsonElement;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
+import com.matie.redgram.data.models.api.reddit.main.RedditUser;
+import com.matie.redgram.data.models.main.base.Listing;
+import com.matie.redgram.data.models.main.base.BaseModel;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
-import com.matie.redgram.data.models.main.reddit.RedditListing;
 import com.matie.redgram.data.network.api.reddit.base.RedditServiceInterface;
 import com.matie.redgram.data.network.api.utils.AccessLevel;
 import com.matie.redgram.data.network.api.utils.Security;
@@ -34,29 +36,32 @@ public interface RedditClientInterface extends RedditServiceInterface {
 
     //public + user
     @Security(accessLevel = AccessLevel.ANY)
-    Observable<RedditListing<com.matie.redgram.data.models.main.reddit.RedditObject>> getUserOverview(String username);
+    Observable<RedditUser> getUserDetails(String username);
 
     @Security(accessLevel = AccessLevel.ANY)
-    Observable<RedditListing<PostItem>> getSubredditListing(String query, @Nullable Map<String, String> params, List<PostItem> postItems);
+    Observable<Listing<BaseModel>> getUserOverview(String username);
 
     @Security(accessLevel = AccessLevel.ANY)
-    Observable<RedditListing<PostItem>> getSubredditListing(String query, @Nullable String filter, @Nullable Map<String, String> params, List<PostItem> postItems);
+    Observable<Listing<PostItem>> getSubredditListing(String query, @Nullable Map<String, String> params, List<PostItem> postItems);
 
     @Security(accessLevel = AccessLevel.ANY)
-    Observable<RedditListing<PostItem>> executeSearch(String subreddit, @Nullable Map<String, String> params, List<PostItem> postItems);
+    Observable<Listing<PostItem>> getSubredditListing(String query, @Nullable String filter, @Nullable Map<String, String> params, List<PostItem> postItems);
 
     @Security(accessLevel = AccessLevel.ANY)
-    Observable<RedditListing<PostItem>> getListing(String front, @Nullable Map<String, String> params, List<PostItem> postItems);
+    Observable<Listing<PostItem>> executeSearch(String subreddit, @Nullable Map<String, String> params, List<PostItem> postItems);
 
     @Security(accessLevel = AccessLevel.ANY)
-    Observable<RedditListing<SubredditItem>> getSubreddits(String filter, @Nullable Map<String, String> params);
+    Observable<Listing<PostItem>> getListing(String front, @Nullable Map<String, String> params, List<PostItem> postItems);
+
+    @Security(accessLevel = AccessLevel.ANY)
+    Observable<Listing<SubredditItem>> getSubreddits(String filter, @Nullable Map<String, String> params);
 
     @Security(accessLevel = AccessLevel.ANY)
     Observable<CommentsWrapper> getCommentsByArticle(String article, @Nullable Map<String, String> params);
 
-    //require users
+    //requires user
     @Security(accessLevel = AccessLevel.USER)
-    Observable<RedditListing<SubredditItem>> getSubscriptions(@Nullable Map<String, String> params);
+    Observable<Listing<SubredditItem>> getSubscriptions(@Nullable Map<String, String> params);
 
     @Security(accessLevel = AccessLevel.USER)
     Observable<AuthUser> getUser(@Nullable String accessToken);
@@ -83,9 +88,9 @@ public interface RedditClientInterface extends RedditServiceInterface {
     Observable<AuthPrefs> updatePrefs(AuthPrefs prefs);
 
     @Security(accessLevel = AccessLevel.USER)
-    Observable<RedditListing<UserItem>> getFriends();
+    Observable<Listing<UserItem>> getFriends();
 
     @Security(accessLevel = AccessLevel.USER)
-    Observable<RedditListing<UserItem>> getBlockedUsers();
+    Observable<Listing<UserItem>> getBlockedUsers();
 
 }

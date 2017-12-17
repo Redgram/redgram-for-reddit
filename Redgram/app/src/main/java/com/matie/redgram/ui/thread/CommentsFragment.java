@@ -35,10 +35,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by matie on 2016-01-07.
- */
-public class CommentsFragment extends BaseFragment implements CommentsView{
+public class CommentsFragment extends BaseFragment implements CommentsView {
 
     @InjectView(R.id.comment_recycler_view)
     CommentRecyclerView commentRecyclerView;
@@ -79,11 +76,6 @@ public class CommentsFragment extends BaseFragment implements CommentsView{
     }
 
     @Override
-    protected void setupToolbar() {
-        return;
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.reset(this);
@@ -93,12 +85,6 @@ public class CommentsFragment extends BaseFragment implements CommentsView{
     public void onAttach(Context context) {
         super.onAttach(context);
         ((ThreadActivity)context).commentsView = this;
-    }
-
-    private void refreshComments(List<CommentBaseItem> items){
-        setComments(items);
-        //refresh adapter
-        commentRecyclerView.replaceWith(commentItems);
     }
 
     public void setComments(List<CommentBaseItem> items){
@@ -175,11 +161,37 @@ public class CommentsFragment extends BaseFragment implements CommentsView{
         refreshComments(items);
     }
 
+    private void refreshComments(List<CommentBaseItem> items){
+        setComments(items);
+        //refresh adapter
+        commentRecyclerView.replaceWith(commentItems);
+    }
+
     private CommentBaseItem getItem(int position){
         return ((CommentsAdapter)commentRecyclerView.getAdapter()).getItem(position);
     }
+
     private List<CommentBaseItem> getCommentItems(){
         return ((CommentsAdapter)commentRecyclerView.getAdapter()).getCommentItems();
     }
 
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void showInfoMessage() {
+
+    }
+
+    @Override
+    public void showErrorMessage(String error) {
+
+    }
 }

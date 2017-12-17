@@ -9,27 +9,23 @@ import com.matie.redgram.ui.common.views.ContentView;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by matie on 2016-09-15.
- */
 @Module
 public class UserListModule {
 
     private UserListControllerView userListView;
     private ContentView contentView;
+
     //flag to enable showing the Guest user in the list, if any presented
     private boolean enableDefault = false;
 
     public UserListModule(UserListControllerView userListView, ContentView contentView){
         this.userListView = userListView;
         this.contentView = contentView;
-        this.userListView.setBaseContextView(contentView.getContentContext());
     }
 
     public UserListModule(UserListControllerView userListView, ContentView contentView, boolean enableDefault){
         this.userListView = userListView;
         this.contentView = contentView;
-        this.userListView.setBaseContextView(contentView.getContentContext());
         this.enableDefault = enableDefault;
     }
 
@@ -40,7 +36,7 @@ public class UserListModule {
     }
 
     @Provides
-    public UserListPresenter providesUserListPresenter(App app){
+    public UserListPresenter providesUserListPresenter(App app) {
         return new UserListPresenterImpl(userListView, contentView, app, enableDefault);
     }
 

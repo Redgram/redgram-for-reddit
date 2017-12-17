@@ -20,15 +20,13 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-/**
- * Created by matie on 19/05/15.
- */
+
 public class PostItemGalleryView extends PostItemSubView {
 
     public static final int OVERLAY_OPACITY = 120;
@@ -53,7 +51,7 @@ public class PostItemGalleryView extends PostItemSubView {
 
     PostItem postItem;
     int position;
-    LinksView listener;
+    SingleLinkView listener;
 
     public PostItemGalleryView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -66,7 +64,7 @@ public class PostItemGalleryView extends PostItemSubView {
     }
 
     @Override
-    public void setupView(PostItem item, int position, LinksView listener) {
+    public void setupView(PostItem item, int position, SingleLinkView listener) {
         this.postItem = item;
         this.position = position;
         this.listener = listener;
@@ -104,10 +102,10 @@ public class PostItemGalleryView extends PostItemSubView {
 
     @OnClick({R.id.gallery_overlay, R.id.overlay_image, R.id.overlay_text})
     public void onGalleryClick(){
-        if(postItem.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
-            listener.callAgeConfirmDialog();
+        if(postItem.isAdult() && (!getSessionPrefs().isOver18() || getSessionPrefs().isDisableNsfwPreview())){
+            listener.callAgeConfirmDialog(getContext());
         }else{
-            listener.viewWebMedia(position);
+            listener.viewWebMedia(getContext(), position);
         }
     }
 }

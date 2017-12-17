@@ -31,16 +31,11 @@
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent">
 
-                        <android.support.v7.widget.Toolbar android:id="@+id/toolbar"
+                        <android.support.v7.widget.Toolbar
+                            android:id="@+id/toolbar"
                             style="@style/MainActivityToolbar"
                             android:layout_height="?attr/actionBarSize" android:layout_width="match_parent"
-                            app:layout_scrollFlags="scroll|enterAlways">
-
-                            <FrameLayout
-                                style="@style/Match"
-                                android:id="@+id/toolbar_child_view"/>
-
-                        </android.support.v7.widget.Toolbar>
+                            app:layout_scrollFlags="scroll|enterAlways"/>
 
                 </android.support.design.widget.AppBarLayout>
 

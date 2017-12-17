@@ -1,7 +1,6 @@
 package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -9,16 +8,12 @@ import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.common.main.MainActivity;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-/**
- * Created by matie on 04/04/15.
- */
 public class PostItemTextView extends PostItemSubView {
 
     @InjectView(R.id.text_title_view)
@@ -30,13 +25,10 @@ public class PostItemTextView extends PostItemSubView {
 
     PostItem postItem;
     int position;
-    LinksView listener;
+    SingleLinkView listener;
 
     final Resources res;
-    MainActivity mainActivity;
-    SharedPreferences sharedPreferences;
 
-    String contentText;
 
     public PostItemTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -50,7 +42,7 @@ public class PostItemTextView extends PostItemSubView {
     }
 
     @Override
-    public void setupView(PostItem item, int position, LinksView listener) {
+    public void setupView(PostItem item, int position, SingleLinkView listener) {
         this.postItem = item;
         this.position = position;
         this.listener = listener;
@@ -86,17 +78,14 @@ public class PostItemTextView extends PostItemSubView {
     @OnClick({R.id.text_title_view, R.id.text_content_view})
     public void onClick(){
         if(isNsfw()){
-            listener.callAgeConfirmDialog();
+            listener.callAgeConfirmDialog(getContext());
         }else{
-            listener.loadCommentsForPost(position);
+            listener.loadCommentsForPost(getContext(), position);
         }
     }
 
     private boolean isNsfw(){
-        if(postItem.isAdult() && (!getUserPrefs().isOver18() || getUserPrefs().isDisableNsfwPreview())){
-            return true;
-        }
-        return false;
+        return postItem.isAdult() && (!getSessionPrefs().isOver18() || getSessionPrefs().isDisableNsfwPreview());
     }
 
 }

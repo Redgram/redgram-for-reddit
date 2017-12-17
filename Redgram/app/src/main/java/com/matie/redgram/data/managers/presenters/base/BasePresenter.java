@@ -1,9 +1,10 @@
 package com.matie.redgram.data.managers.presenters.base;
 
-/**
- * Created by matie on 2016-09-25.
- */
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+
+
 public interface BasePresenter {
     void registerForEvents();
     void unregisterForEvents();
+    DatabaseManager databaseManager();
 }

@@ -1,73 +1,75 @@
 package com.matie.redgram.data.managers.presenters;
 
 import android.net.Uri;
-import android.util.Log;
 import android.widget.Toast;
 
+import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
+import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.auth.AuthActivity;
 import com.matie.redgram.ui.common.auth.views.AuthView;
-import com.matie.redgram.ui.common.base.BaseActivity;
 
 import javax.inject.Inject;
 
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
+public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresenter {
 
-/**
- * Presenter implementation for the Authentication View.
- */
-public class AuthPresenterImpl implements AuthPresenter {
-
-    private final App app;
     private final AuthView authView;
     private final RedditClientInterface redditClient;
-    private Subscription authSubscription;
-    private CompositeSubscription subscriptions;
+    private Realm realm;
     private String authCode = "";
 
     @Inject
     public AuthPresenterImpl(AuthView authView, App app) {
-        this.app = app;
-        this.authView = authView;
+        super(authView, app);
+        this.authView = (AuthView) view;
         this.redditClient = app.getRedditClient();
+        this.realm = getRealmInstance();
+    }
+
+    private Realm getRealmInstance() {
+        return databaseManager().getInstance();
+    }
+
+    public void addRealmChangeListener(RealmChangeListener realmChangeListener) {
+        if (realm == null || realmChangeListener == null) return;
+        realm.addChangeListener(realmChangeListener);
     }
 
     @Override
     public void registerForEvents() {
-        if(subscriptions == null)
-            subscriptions = new CompositeSubscription();
-
-        if(subscriptions.isUnsubscribed()){
-            if(authSubscription != null){
-                subscriptions.add(authSubscription);
-            }
+        super.registerForEvents();
+        if (realm == null || realm.isClosed()) {
+            realm = getRealmInstance();
         }
     }
 
     @Override
     public void unregisterForEvents() {
-        if(subscriptions != null && subscriptions.hasSubscriptions()){
-            subscriptions.unsubscribe();
-        }
+        super.unregisterForEvents();
+        realm.removeAllChangeListeners();
+        DatabaseHelper.close(realm);
     }
 
     @Override
     public void getAccessToken(String url) {
-        if (url.contains("?code=") || url.contains("&code=")) {
-            Uri uri = Uri.parse(url);
-            String code = uri.getQueryParameter("code");
-            if(!authCode.equalsIgnoreCase(code)){
+        final String codeQuery = "code";
+        Uri uri = Uri.parse(url);
+        if (uri != null && uri.getQueryParameterNames().contains(codeQuery)) {
+            String code = uri.getQueryParameter(codeQuery);
+            if(!code.equalsIgnoreCase(authCode)){
                 authCode = code;
                 authView.showLoading();
                 bindAuthSubscription();
@@ -78,8 +80,8 @@ public class AuthPresenterImpl implements AuthPresenter {
     @Override
     public void getAccessToken() {
         authView.showLoading();
-        authSubscription = redditClient.getAuthWrapper()
-                .compose(((AuthActivity)authView.getContentContext()).bindToLifecycle())
+        Subscription authSubscription = redditClient.getAuthWrapper()
+                .compose(getTransformer())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AuthWrapper>() {
@@ -98,11 +100,13 @@ public class AuthPresenterImpl implements AuthPresenter {
                         updateSession(authWrapper);
                     }
                 });
+
+        addSubscription(authSubscription);
     }
 
     private void bindAuthSubscription() {
-        authSubscription = redditClient.getAuthWrapper(authCode)
-                .compose(((AuthActivity)authView.getContentContext()).bindToLifecycle())
+        Subscription authSubscription = redditClient.getAuthWrapper(authCode)
+                .compose(getTransformer())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<AuthWrapper>() {
@@ -111,7 +115,6 @@ public class AuthPresenterImpl implements AuthPresenter {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e("getAccessTokenObservable", e.toString());
                         authView.hideLoading();
                         authView.showErrorMessage(e.getMessage());
                     }
@@ -121,24 +124,37 @@ public class AuthPresenterImpl implements AuthPresenter {
                         authView.showPreferencesOptions(wrapper);
                     }
                 });
+
+        addSubscription(authSubscription);
     }
 
     @Override
     public void updateSession(AuthWrapper wrapper) {
-        BaseActivity baseActivity = authView.getContentContext().getBaseActivity();
-        Session session = baseActivity.getSession();
-        //if session user already exists and is of type Guest, and wrapper is of type Guest
+        Session session = DatabaseHelper.getSession(realm);
+        // if session user already exists and is of type Guest, and wrapper is of type Guest
         if(session != null && session.getUser() != null
                 && User.USER_GUEST.equalsIgnoreCase(session.getUser().getUserType())
                 && User.USER_GUEST.equalsIgnoreCase(wrapper.getType())){
-            DatabaseHelper.setTokenInfo(baseActivity.getRealm(), wrapper.getAccessToken());
-        }else{ //otherwise it's a new user or a null session/user
-            DatabaseHelper.setSession(baseActivity.getRealm(), wrapper);
+            DatabaseHelper.setTokenInfo(databaseManager().getInstance(), wrapper.getAccessToken());
+        }else{ // otherwise it's a new user or a null session/user
+            DatabaseHelper.setSession(realm, wrapper);
         }
-        //important - this is used in the services to capture the token of the current user
+        // important - this is used in the services to capture the token of the current user
         if(session != null && session.getUser() != null){
-            Token token = baseActivity.getRealm().copyFromRealm(session.getUser().getTokenInfo());
-            app.getDatabaseManager().setCurrentToken(token);
+            Token token = realm.copyFromRealm(session.getUser().getTokenInfo());
+            databaseManager().setCurrentToken(token);
         }
+    }
+
+    @Override
+    public RealmResults<User> getExistingUsers() {
+        if (realm == null || realm.isClosed()) return null;
+        return DatabaseHelper.getUsers(realm);
+    }
+
+    @Override
+    public Prefs getPrefsByUserId(String userId) {
+        if (realm == null || userId == null) return null;
+        return DatabaseHelper.getPrefsByUserId(realm, userId);
     }
 }

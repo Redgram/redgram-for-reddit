@@ -7,15 +7,12 @@ import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.ui.posts.views.LinksView;
+import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-/**
- * Created by matie on 04/04/15.
- */
 public class PostItemActionView extends PostItemSubView {
     public static final String TRUE = "true";
     public static final String FALSE = "false";
@@ -35,7 +32,7 @@ public class PostItemActionView extends PostItemSubView {
 
     PostItem postItem;
     int position;
-    LinksView listener;
+    SingleLinkView listener;
 
     public PostItemActionView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -48,7 +45,7 @@ public class PostItemActionView extends PostItemSubView {
     }
 
     @Override
-    public void setupView(PostItem item, int position, LinksView listener) {
+    public void setupView(PostItem item, int position, SingleLinkView listener) {
         this.position = position;
         postItem = item;
         this.listener = listener;
@@ -75,24 +72,24 @@ public class PostItemActionView extends PostItemSubView {
 
     @OnClick(R.id.action_share)
     public void onActionShare(){
-        listener.sharePost(position);
+        listener.sharePost(getContext(), position);
     }
 
     @OnClick(R.id.action_vote_up)
     public void onUpVoteClick(){
         if (!TRUE.equalsIgnoreCase(postItem.getLikes())){
-            listener.votePost(position, LinksView.UP_VOTE);
+            listener.votePost(position, SingleLinkView.UP_VOTE);
         }else{
-            listener.votePost(position, LinksView.UN_VOTE);
+            listener.votePost(position, SingleLinkView.UN_VOTE);
         }
     }
 
     @OnClick(R.id.action_vote_down)
     public void onDownVoteClick(){
         if (!FALSE.equalsIgnoreCase(postItem.getLikes())){
-            listener.votePost(position, LinksView.DOWN_VOTE);
+            listener.votePost(position, SingleLinkView.DOWN_VOTE);
         }else{
-            listener.votePost(position, LinksView.UN_VOTE);
+            listener.votePost(position, SingleLinkView.UN_VOTE);
         }
     }
 

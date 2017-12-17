@@ -19,7 +19,6 @@ import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.common.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditViewHolder;
 import com.matie.redgram.ui.subcription.views.SubscriptionView;
@@ -29,10 +28,9 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by matie on 2015-11-26.
- */
-public class SubscriptionFragment extends BaseFragment implements SubscriptionView, SubredditViewHolder.SubredditViewHolderListener{
+
+public class SubscriptionFragment extends BaseFragment
+        implements SubscriptionView, SubredditViewHolder.SubredditViewHolderListener {
 
     @InjectView(R.id.subreddit_recycler_view)
     SubredditRecyclerView subredditRecyclerView;
@@ -44,7 +42,7 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
 
     ToastHandler toastHandler;
 
-    Toolbar mToolbar;
+    Toolbar toolbar;
     LayoutInflater mInflater;
 
     FrameLayout frameLayout;
@@ -58,7 +56,7 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
 
         toastHandler = ((App)getActivity().getApplication()).getToastHandler();
 
-        mToolbar = (Toolbar)getActivity().findViewById(R.id.toolbar);
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         mInflater = inflater;
 
         subredditRecyclerView.setAdapterListener(this);
@@ -80,32 +78,28 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
 
     @Override
     protected void setupToolbar() {
-        //add refresh
-        //setting up toolbar
-        frameLayout = (FrameLayout)mToolbar.findViewById(R.id.toolbar_child_view);
+        // add refresh
+        // setting up toolbar
+        frameLayout = (FrameLayout) toolbar.findViewById(R.id.toolbar_child_view);
         frameLayout.removeAllViews();
 
         RelativeLayout rl = (RelativeLayout) mInflater.inflate(R.layout.fragment_sub_toolbar, frameLayout, false);
         frameLayout.addView(rl);
 
-        subRefresh = (ImageView)rl.findViewById(R.id.sub_refresh);
+        subRefresh = (ImageView) rl.findViewById(R.id.sub_refresh);
 
         setupRefresh();
     }
 
     private void setupRefresh() {
-        subRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(subredditRecyclerView.getVisibility() == View.VISIBLE){
-                    //force load from network
-                    // TODO: 2015-12-10 only call network call a minute after the last call was made
-                    subscriptionPresenter.getSubreddits(true);
-                }
+        subRefresh.setOnClickListener(v -> {
+            if(subredditRecyclerView.getVisibility() == View.VISIBLE){
+                //force load from network
+                // TODO: 2015-12-10 only call network call a minute after the last call was made
+                subscriptionPresenter.getSubreddits(true);
             }
         });
     }
-
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -121,9 +115,9 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
 
     @Override
     public void onDestroyView() {
+        super.onDestroyView();
         subscriptionPresenter.unregisterForEvents();
         ButterKnife.reset(this);
-        super.onDestroyView();
     }
 
     @Override
@@ -143,11 +137,6 @@ public class SubscriptionFragment extends BaseFragment implements SubscriptionVi
     @Override
     public void showErrorMessage(String error) {
 
-    }
-
-    @Override
-    public BaseContextView getContentContext() {
-        return getBaseFragment();
     }
 
     @Override

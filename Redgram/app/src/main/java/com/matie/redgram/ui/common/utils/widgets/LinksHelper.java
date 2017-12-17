@@ -16,9 +16,6 @@ import com.matie.redgram.ui.common.main.MainActivity;
 import com.matie.redgram.ui.profile.ProfileActivity;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
 
-/**
- * Created by matie on 2016-04-04.
- */
 public class LinksHelper {
 
     public static final String SUB = "subreddit";
@@ -26,8 +23,17 @@ public class LinksHelper {
 
     private LinksHelper(){}
 
+    @Deprecated
     public static void showExternalDialog(DialogUtil dialogUtil, String title, MaterialDialog.ListCallback callback) {
         dialogUtil.build()
+                .title(title)
+                .items(R.array.shareOptions)
+                .itemsCallback(callback)
+                .show();
+    }
+
+    public static void showExternalDialog(Context context, String title, MaterialDialog.ListCallback callback) {
+        DialogUtil.builder(context)
                 .title(title)
                 .items(R.array.shareOptions)
                 .itemsCallback(callback)
@@ -42,6 +48,7 @@ public class LinksHelper {
         context.startActivity(Intent.createChooser(sendIntent, context.getResources().getText(R.string.send_to)));
     }
 
+    @Deprecated
     public static void callReportDialog(DialogUtil dialogUtil, MaterialDialog.SingleButtonCallback callback) {
         dialogUtil.build()
                 .title("Report Post?")
@@ -51,21 +58,31 @@ public class LinksHelper {
                 .show();
     }
 
+    public static void callReportDialog(Context context, MaterialDialog.SingleButtonCallback callback) {
+        DialogUtil.builder(context)
+                .title("Report Post?")
+                .positiveText("Report")
+                .negativeText("Cancel")
+                .onPositive(callback)
+                .show();
+    }
+
     public static void openResult(Context context, String result, String type) {
         Intent intent = null;
-        if(SUB.equalsIgnoreCase(type)){
+        if (SUB.equalsIgnoreCase(type)) {
             intent = new Intent(context, MainActivity.class);
             intent.putExtra(SubscriptionActivity.RESULT_SUBREDDIT_NAME, result);
-        }else if(PROFILE.equalsIgnoreCase(type)){
-            intent = new Intent(context, ProfileActivity.class);
+        } else if (PROFILE.equalsIgnoreCase(type)) {
+            intent = ProfileActivity.intent(context);
             intent.putExtra(ProfileActivity.RESULT_USER_NAME, result);
         }
-        if(intent != null){
-            ((BaseActivity) context).openIntent(intent, 0, 0);
+
+        if (intent != null) {
+            ((BaseActivity) context).openIntent(intent);
         }
     }
 
-    public static Uri getUriToOpen(PostItem item, CharSequence charSequence) {
+    private static Uri getUriToOpen(PostItem item, CharSequence charSequence) {
         Uri urlToOpen = null;
         if (charSequence.toString().equalsIgnoreCase("Link")) {
             urlToOpen = Uri.parse(item.getUrl());
@@ -86,6 +103,7 @@ public class LinksHelper {
         };
     }
 
+    @Deprecated
     public static MaterialDialog.ListCallback getCopyCallback(Context context, ToastHandler toastHandler, PostItem item) {
         return (materialDialog, view, i, charSequence) -> {
             Uri urlToOpen = getUriToOpen(item, charSequence);
@@ -95,6 +113,19 @@ public class LinksHelper {
                 ClipData clip = ClipData.newUri(context.getContentResolver(), "URI", urlToOpen);
                 clipboard.setPrimaryClip(clip);
                 toastHandler.showToast("Link Copied", Toast.LENGTH_SHORT);
+            }
+        };
+    }
+
+    public static MaterialDialog.ListCallback getCopyCallback(Context context, PostItem item) {
+        return (materialDialog, view, i, charSequence) -> {
+            Uri urlToOpen = getUriToOpen(item, charSequence);
+            if (urlToOpen != null) {
+                ClipboardManager clipboard = (ClipboardManager)
+                        context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newUri(context.getContentResolver(), "URI", urlToOpen);
+                clipboard.setPrimaryClip(clip);
+                ToastHandler.showToast(context, "Link Copied", Toast.LENGTH_SHORT);
             }
         };
     }
@@ -117,6 +148,7 @@ public class LinksHelper {
         };
     }
 
+    @Deprecated
     public static void callAgeConfirmDialog(DialogUtil dialogUtil, MaterialDialog.SingleButtonCallback callback) {
         if(dialogUtil != null){
             dialogUtil.build()
@@ -127,4 +159,15 @@ public class LinksHelper {
                     .show();
         }
     }
+
+    public static void callAgeConfirmDialog(Context context, MaterialDialog.SingleButtonCallback callback) {
+        DialogUtil.builder(context)
+            .title("Are you over 18?")
+            .positiveText("Yes")
+            .negativeText("Cancel")
+            .onPositive(callback)
+            .show();
+    }
+
 }
+

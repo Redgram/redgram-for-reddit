@@ -1,8 +1,10 @@
 package com.matie.redgram.data.managers.presenters;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.JsonElement;
+import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.models.db.Prefs;
-import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.main.items.PostItem;
 import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
@@ -10,7 +12,6 @@ import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.data.network.api.utils.subscriber.NullCheckSubscriber;
 import com.matie.redgram.data.network.api.utils.subscriber.NullSubscriptionExecutor;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.thread.views.ThreadView;
 
 import java.util.List;
@@ -22,62 +23,34 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
-/**
- * Thread Presenter Implementation
- */
-public class ThreadPresenterImpl implements ThreadPresenter {
+public class ThreadPresenterImpl extends BasePresenterImpl implements ThreadPresenter {
 
-    private final App app;
     private final ThreadView threadView;
     private final RedditClientInterface redditClient;
 
-    private CompositeSubscription subscriptions;
-    private Subscription threadSubscription;
-
     @Inject
     public ThreadPresenterImpl(ThreadView threadView, App app) {
-        this.app = app;
-        this.threadView = threadView;
+        super(threadView, app);
+        this.threadView = (ThreadView) view;
         this.redditClient = app.getRedditClient();
     }
 
     @Override
-    public void registerForEvents() {
-        if(subscriptions == null)
-            subscriptions = new CompositeSubscription();
-
-        if(!subscriptions.hasSubscriptions()){
-            if(threadSubscription != null){
-                subscriptions.add(threadSubscription);
-            }
-        }
-    }
-
-    @Override
-    public void unregisterForEvents() {
-        if(subscriptions != null && subscriptions.hasSubscriptions()){
-            subscriptions.unsubscribe();
-        }
-    }
-
-    private Prefs getUserPrefs(){
-        Session session = threadView.getContentContext().getBaseActivity().getSession();
-        if(session != null && session.getUser() != null){
-            return session.getUser().getPrefs();
-        }
-        return null;
-    }
-
-    @Override
     public void getThread(String id, Map<String, String> params) {
-        params.put("limit", getUserPrefs().getNumComments()+"");
+        Prefs prefs = getUserPrefs();
+
+        if (prefs == null) return;
+
+        params.put("limit", prefs.getNumComments() + "");
+
         //todo display the sort in action bar
-        params.put("sort", getUserPrefs().getDefaultCommentSort());
+        params.put("sort", prefs.getDefaultCommentSort());
+
         threadView.showLoading();
-        threadSubscription = redditClient.getCommentsByArticle(id, params)
-                .compose(((BaseActivity)threadView.getContentContext()).bindToLifecycle())
+
+        Subscription threadSubscription = redditClient.getCommentsByArticle(id, params)
+                .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<CommentsWrapper>() {
@@ -100,12 +73,14 @@ public class ThreadPresenterImpl implements ThreadPresenter {
                         threadView.passDataToCommentsView(commentItems);
                     }
                 });
+
+        addSubscription(threadSubscription);
     }
 
     @Override
     public void vote(PostItem item, int dir) {
         Subscription voteSubscription = redditClient.voteFor(item.getName(), dir)
-                .compose(((BaseActivity)threadView.getContentContext()).bindToLifecycle())
+                .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new NullCheckSubscriber<>(new NullSubscriptionExecutor<JsonElement>() {
@@ -131,15 +106,14 @@ public class ThreadPresenterImpl implements ThreadPresenter {
                         threadView.showErrorMessage(e.toString());
                     }
                 }));
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(voteSubscription);
-        }
+
+        addSubscription(voteSubscription);
     }
 
     @Override
     public void save(PostItem item, boolean save) {
         Subscription saveSubscription = redditClient.save(item.getName(), save)
-                .compose(((BaseActivity)threadView.getContentContext()).bindToLifecycle())
+                .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new NullCheckSubscriber<>(new NullSubscriptionExecutor<JsonElement>() {
@@ -159,15 +133,14 @@ public class ThreadPresenterImpl implements ThreadPresenter {
                         threadView.showErrorMessage(e.toString());
                     }
                 }));
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(saveSubscription);
-        }
+
+        addSubscription(saveSubscription);
     }
 
     @Override
     public void hide(PostItem item, boolean hide) {
         Subscription hideSubscription = redditClient.hide(item.getName(), hide)
-                .compose(((BaseActivity)threadView.getContentContext()).bindToLifecycle())
+                .compose(getTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new NullCheckSubscriber<>(new NullSubscriptionExecutor<JsonElement>() {
@@ -189,8 +162,13 @@ public class ThreadPresenterImpl implements ThreadPresenter {
 
                     }
                 }));
-        if(!subscriptions.isUnsubscribed()){
-            subscriptions.add(hideSubscription);
-        }
+
+        addSubscription(hideSubscription);
     }
+
+    @Nullable
+    private Prefs getUserPrefs() {
+        return databaseManager().getSessionPreferences();
+    }
+
 }

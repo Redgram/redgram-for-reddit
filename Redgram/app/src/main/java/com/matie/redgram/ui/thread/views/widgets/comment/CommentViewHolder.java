@@ -33,10 +33,6 @@ public class CommentViewHolder extends RecyclerView.ViewHolder implements View.O
         return commentBaseItemView;
     }
 
-    public void setCommentItemView(CommentBaseItemView commentBaseItemView) {
-        this.commentBaseItemView = commentBaseItemView;
-    }
-
     @Override
     public void onClick(View v) {
         CommentBaseItemView view = (CommentBaseItemView)v;
@@ -62,7 +58,6 @@ public class CommentViewHolder extends RecyclerView.ViewHolder implements View.O
     }
 
     private void loadMore(CommentItemView v, int itemPosition) {
-        CommentMoreItemView targetView = (CommentMoreItemView) v;
         commentListener.loadMore(itemPosition);
     }
 

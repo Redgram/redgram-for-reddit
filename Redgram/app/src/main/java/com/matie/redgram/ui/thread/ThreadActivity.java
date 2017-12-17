@@ -37,7 +37,6 @@ import com.matie.redgram.ui.common.base.ViewPagerActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
-import com.matie.redgram.ui.common.views.BaseContextView;
 import com.matie.redgram.ui.common.views.adapters.SectionsPagerAdapter;
 import com.matie.redgram.ui.thread.components.DaggerThreadComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
@@ -60,15 +59,13 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
-import io.realm.RealmChangeListener;
 
-public class ThreadActivity extends ViewPagerActivity implements ThreadView, CoordinatorLayoutInterface{
+public class ThreadActivity extends ViewPagerActivity
+        implements ThreadView, CoordinatorLayoutInterface {
 
     public static final int REQ_CODE = 99;
     public static final String RESULT_POST_CHANGE = "result_post_change";
     public static final String RESULT_POST_POS = "post_position";
-
-    private CommentsPagerAdapter commentsPagerAdapter;
 
     @InjectView(R.id.commentsFab)
     FloatingActionButton commentsFab;
@@ -142,7 +139,7 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
         threadPresenter.getThread(postItem.getId(), new HashMap<>());
 
         title.setText(postItem.getTitle());
-        //if position is passed, call other method with position as param
+        // if position is passed, call other method with position as param
         optionsView.setup(postItem, this);
     }
 
@@ -258,10 +255,10 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
                 android.R.color.holo_orange_dark);
 
         TypedValue tv = new TypedValue();
-        if (getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
         {
             int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,
-                    getContext().getResources().getDisplayMetrics());
+                    getResources().getDisplayMetrics());
             //push it down to the same position as the first item to be loaded
             commentsSwipeContainer.setProgressViewOffset(false, 0 , actionBarHeight);
         }
@@ -282,11 +279,6 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
     }
 
     @Override
-    public DialogUtil getDialogUtil() {
-        return dialogUtil;
-    }
-
-    @Override
     protected int getLayoutId() {
         return R.layout.activity_comments;
     }
@@ -294,11 +286,6 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
     @Override
     protected int getContainerId() {
         return R.id.container;
-    }
-
-    @Override
-    protected RealmChangeListener getRealmSessionChangeListener() {
-        return null;
     }
 
     @Override
@@ -315,7 +302,6 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
         }else{
             setResult();
             super.onBackPressed();
-            overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
         }
     }
 
@@ -456,11 +442,6 @@ public class ThreadActivity extends ViewPagerActivity implements ThreadView, Coo
     @Override
     public void showErrorMessage(String error) {
         dialogUtil.build().title("Error Message").content(error).show();
-    }
-
-    @Override
-    public BaseContextView getContentContext() {
-        return getBaseActivity();
     }
 
     @Override

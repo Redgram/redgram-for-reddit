@@ -33,7 +33,7 @@ public interface AppComponent {
     //modules.
     App getApp();
     ToastHandler getToastHandler();
-    ConnectionManager getConnectionStatus();
+    ConnectionManager getConnectionManager();
     RedditClientInterface getRedditClient();
-    DatabaseManager getSessionManager();
+    DatabaseManager getDatabaseManager();
 }

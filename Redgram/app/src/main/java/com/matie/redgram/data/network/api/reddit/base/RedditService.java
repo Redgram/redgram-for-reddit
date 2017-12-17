@@ -57,7 +57,6 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
     private static final String BEARER = "bearer";
 
     private final App app;
-    private final Context mContext;
     private final ConnectionManager connectionManager;
     private final Retrofit.Builder retrofitBuilder;
     private final DatabaseManager sm;
@@ -67,10 +66,12 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
     @Inject
     public RedditService(App application) {
         app = application;
-        mContext = app.getApplicationContext();
         connectionManager = app.getConnectionManager();
         sm = app.getDatabaseManager();
-        retrofitBuilder = getRetrofitBuilder();
+
+        final Context context = app.getApplicationContext();
+        retrofitBuilder = getRetrofitBuilder(context);
+
         authProvider = buildRetrofit(REDDIT_HOST_ABSOLUTE).create(RedditAuthProvider.class);
         uuid = UUID.randomUUID().toString();
     }
@@ -79,20 +80,20 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
         return retrofitBuilder.baseUrl(host).build();
     }
 
-    protected Retrofit.Builder getRetrofitBuilder() {
+    protected Retrofit.Builder getRetrofitBuilder(final Context context) {
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(getGson()))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .client(myHttpClient());
+                .client(myHttpClient(context));
     }
 
-    protected OkHttpClient myHttpClient(){
+    protected OkHttpClient myHttpClient(final Context context){
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
         builder.addInterceptor(getMainInterceptor());
         builder.authenticator(new MyAuthenticator());
 //        builder.addInterceptor(getCachingInterceptor());
-        builder.cache(myCache());
+        builder.cache(myCache(context));
         return builder.build();
     }
 
@@ -104,9 +105,9 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
                 .create();
     }
 
-    protected Cache myCache(){
+    protected Cache myCache(final Context context){
         //setup cache
-        File httpCacheDir = new File(mContext.getCacheDir(), "HttpCacheDir");
+        File httpCacheDir = new File(context.getCacheDir(), "HttpCacheDir");
         return new Cache(httpCacheDir, CACHE_DIR_SIZE);
     }
 
