@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostViewHolder;
 import com.matie.redgram.ui.submission.links.views.SingleLinkView;

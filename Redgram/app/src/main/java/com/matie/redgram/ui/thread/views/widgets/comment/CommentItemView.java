@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
-import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
 
 /**
  * Created by matie on 2016-02-12.

@@ -17,13 +17,13 @@ import com.matie.redgram.data.models.api.reddit.main.RedditUser;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.base.BaseModel;
 import com.matie.redgram.data.models.main.base.Listing;
-import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.items.UserItem;
-import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
-import com.matie.redgram.data.models.main.items.comment.CommentItem;
-import com.matie.redgram.data.models.main.items.comment.CommentMoreItem;
-import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentMoreItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentsWrapper;
 import com.matie.redgram.data.network.api.reddit.base.RedditProvider;
 import com.matie.redgram.data.network.api.reddit.base.RedditService;
 import com.matie.redgram.ui.App;
@@ -36,7 +36,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.functions.Func2;
 
 /**
  * Created by matie on 17/04/15.

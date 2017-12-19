@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.items.submission.PostItem;
 
 public class PostAdapter extends PostAdapterBase {
     private static final int TYPE_DEFAULT = 0;

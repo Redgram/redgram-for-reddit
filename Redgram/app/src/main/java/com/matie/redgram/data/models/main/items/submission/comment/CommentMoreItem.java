@@ -1,10 +1,7 @@
-package com.matie.redgram.data.models.main.items.comment;
+package com.matie.redgram.data.models.main.items.submission.comment;
 
 import java.util.List;
 
-/**
- * Created by matie on 2016-02-08.
- */
 public class CommentMoreItem extends CommentBaseItem {
     private int count;
     private String name;

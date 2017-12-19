@@ -1,10 +1,7 @@
-package com.matie.redgram.data.models.main.items.comment;
+package com.matie.redgram.data.models.main.items.submission.comment;
 
 import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 
-/**
- * Created by matie on 2016-02-08.
- */
 public class CommentItem extends CommentBaseItem {
     private String author;
     private String body;

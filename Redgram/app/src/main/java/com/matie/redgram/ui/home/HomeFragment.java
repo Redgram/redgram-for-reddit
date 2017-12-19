@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
-import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;

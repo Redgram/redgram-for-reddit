@@ -8,7 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
 
 import java.util.Map;
 

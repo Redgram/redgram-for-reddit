@@ -9,10 +9,10 @@ import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.api.reddit.main.RedditUser;
 import com.matie.redgram.data.models.main.base.Listing;
-import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.items.UserItem;
-import com.matie.redgram.data.models.main.items.comment.CommentsWrapper;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentsWrapper;
 import com.matie.redgram.data.models.main.base.BaseModel;
 
 import java.util.List;

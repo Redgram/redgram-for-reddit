@@ -5,8 +5,8 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
-import com.matie.redgram.data.models.main.items.comment.CommentMoreItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentMoreItem;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

@@ -5,9 +5,6 @@ import android.view.View;
 
 import com.matie.redgram.ui.thread.views.CommentsView;
 
-/**
- * Created by matie on 2016-01-30.
- */
 public class CommentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
     //main parent view

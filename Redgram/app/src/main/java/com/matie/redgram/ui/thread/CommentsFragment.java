@@ -9,9 +9,9 @@ import android.widget.Toast;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.CommentsPresenterImpl;
-import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
-import com.matie.redgram.data.models.main.items.comment.CommentItem;
-import com.matie.redgram.data.models.main.items.comment.CommentMoreItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentMoreItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.BaseActivity;

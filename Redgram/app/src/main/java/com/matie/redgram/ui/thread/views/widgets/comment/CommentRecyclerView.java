@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 
-import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
 import com.matie.redgram.ui.thread.views.CommentsView;
 import com.matie.redgram.ui.thread.views.adapters.CommentsAdapter;
 

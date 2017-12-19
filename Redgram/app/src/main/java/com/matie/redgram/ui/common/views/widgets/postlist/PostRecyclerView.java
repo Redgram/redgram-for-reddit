@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
 import com.matie.redgram.R;
-import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.ui.common.views.adapters.PostAdapter;
 import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 

@@ -1,12 +1,10 @@
-package com.matie.redgram.data.models.main.items.comment;
+package com.matie.redgram.data.models.main.items.submission.comment;
 
-import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.items.submission.PostItem;
 
 import java.util.List;
 
-/**
- * Created by matie on 2016-02-08.
- */
+
 public class CommentsWrapper {
     private List<CommentBaseItem> commentItems;
     private PostItem postItem;

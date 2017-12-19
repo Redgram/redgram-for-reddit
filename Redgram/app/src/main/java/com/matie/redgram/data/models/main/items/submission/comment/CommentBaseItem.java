@@ -1,13 +1,10 @@
-package com.matie.redgram.data.models.main.items.comment;
+package com.matie.redgram.data.models.main.items.submission.comment;
 
-import com.matie.redgram.data.models.main.base.BaseModel;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
 
-/**
- * Created by matie on 2016-01-31.
- */
-public class CommentBaseItem extends BaseModel {
+public class CommentBaseItem extends SubmissionItem {
 
-    public enum CommentType{
+    public enum CommentType {
         REGULAR,
         MORE
     }

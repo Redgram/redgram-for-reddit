@@ -2,7 +2,7 @@ package com.matie.redgram.ui.thread.views;
 
 import android.support.annotation.Nullable;
 
-import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
 import com.matie.redgram.ui.common.views.ContentView;
 
 import java.util.List;

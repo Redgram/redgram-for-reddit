@@ -1,16 +1,11 @@
-package com.matie.redgram.data.models.main.items;
+package com.matie.redgram.data.models.main.items.submission;
 
 import android.net.Uri;
-
-import com.matie.redgram.data.models.main.base.BaseModel;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by matie on 09/05/15.
- */
-public class PostItem extends BaseModel {
+public class PostItem extends SubmissionItem {
 
     public enum Type{
         DEFAULT,
