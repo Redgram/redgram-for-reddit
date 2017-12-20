@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.thread.views.widgets.comment;
+package com.matie.redgram.ui.submission.adapters.comment;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,13 +8,11 @@ import com.matie.redgram.R;
 import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentItem;
+import com.matie.redgram.ui.thread.views.widgets.comment.ExpandableIndicator;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by matie on 2016-02-12.
- */
 public class CommentRegularItemView extends CommentItemView{
 
     @InjectView(R.id.reg_body)

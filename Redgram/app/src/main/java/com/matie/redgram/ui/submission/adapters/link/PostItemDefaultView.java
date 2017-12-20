@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
+package com.matie.redgram.ui.submission.adapters.link;
 
 import android.content.Context;
 import android.util.AttributeSet;

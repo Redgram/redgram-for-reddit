@@ -3,6 +3,10 @@ package com.matie.redgram.ui.thread.views.widgets.comment;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.matie.redgram.ui.submission.adapters.comment.CommentBaseItemView;
+import com.matie.redgram.ui.submission.adapters.comment.CommentItemView;
+import com.matie.redgram.ui.submission.adapters.comment.CommentMoreItemView;
+import com.matie.redgram.ui.submission.adapters.comment.CommentRegularItemView;
 import com.matie.redgram.ui.thread.views.CommentsView;
 
 public class CommentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {

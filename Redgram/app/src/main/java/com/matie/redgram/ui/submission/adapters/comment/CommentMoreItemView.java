@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.thread.views.widgets.comment;
+package com.matie.redgram.ui.submission.adapters.comment;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -11,9 +11,6 @@ import com.matie.redgram.data.models.main.items.submission.comment.CommentMoreIt
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by matie on 2016-02-12.
- */
 public class CommentMoreItemView extends CommentItemView {
 
     @InjectView(R.id.more_body)

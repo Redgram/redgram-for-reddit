@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.thread.views.widgets.comment;
+package com.matie.redgram.ui.submission.adapters.comment;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -15,11 +15,6 @@ import java.util.Map;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * common click events
- *
- * Created by matie on 2016-01-30.
- */
 public class CommentBaseItemView extends RelativeLayout{
 
     @InjectView(R.id.level_view)

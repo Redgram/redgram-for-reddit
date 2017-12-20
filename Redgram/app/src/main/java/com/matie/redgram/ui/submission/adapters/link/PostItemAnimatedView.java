@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
+package com.matie.redgram.ui.submission.adapters.link;
 
 import android.content.Context;
 import android.graphics.PointF;
@@ -27,18 +27,19 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 
-public class PostItemGalleryView extends PostItemSubView {
+public class PostItemAnimatedView extends PostItemSubView {
 
     public static final int OVERLAY_OPACITY = 120;
 
+    @InjectView(R.id.gif_text_view)
+    PostItemTextView postItemTextView;
+
     @InjectView(R.id.image_view)
     SimpleDraweeView thumbnailView;
-    //    include tag
-    @InjectView(R.id.gallery_overlay)
-    FrameLayout galleryOverlay;
 
-    @InjectView(R.id.gallery_text_view)
-    PostItemTextView postItemTextView;
+    // include tag
+    @InjectView(R.id.animated_overlay)
+    FrameLayout animatedOverlay;
 
     @InjectView(R.id.overlay_image)
     ImageView overlayImage;
@@ -50,19 +51,17 @@ public class PostItemGalleryView extends PostItemSubView {
     View overlay;
 
     PostItem postItem;
-    int position;
     SingleLinkView listener;
+    int position;
 
-    public PostItemGalleryView(Context context, AttributeSet attrs) {
+    public PostItemAnimatedView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-
     @Override
     public void onFinishInflate(){
         super.onFinishInflate();
         ButterKnife.inject(this);
     }
-
     @Override
     public void setupView(PostItem item, int position, SingleLinkView listener) {
         this.postItem = item;
@@ -76,8 +75,8 @@ public class PostItemGalleryView extends PostItemSubView {
 
 //        add transparency
         overlay.setBackgroundColor(OVERLAY_OPACITY * 0x1000000);
-        overlayText.setVisibility(GONE);
-        overlayImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_photo_library));
+        overlayText.setText(item.getType().toString());
+        overlayImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_action_play_circle_fill));
     }
 
     private GenericDraweeHierarchy getDraweeHierarchy(PostItem item) {
@@ -96,11 +95,11 @@ public class PostItemGalleryView extends PostItemSubView {
         PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
                 .setImageRequest(thumbnail)
                 .setOldController(thumbnailView.getController());
+
         return builder.build();
     }
 
-
-    @OnClick({R.id.gallery_overlay, R.id.overlay_image, R.id.overlay_text})
+    @OnClick({R.id.animated_overlay, R.id.overlay_image, R.id.overlay_text})
     public void onGalleryClick(){
         if(postItem.isAdult() && (!getSessionPrefs().isOver18() || getSessionPrefs().isDisableNsfwPreview())){
             listener.callAgeConfirmDialog(getContext());
@@ -108,4 +107,5 @@ public class PostItemGalleryView extends PostItemSubView {
             listener.viewWebMedia(getContext(), position);
         }
     }
+
 }

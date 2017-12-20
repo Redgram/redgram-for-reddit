@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.views.widgets.postlist.dynamic;
+package com.matie.redgram.ui.submission.adapters.link;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -11,8 +11,6 @@ import com.matie.redgram.ui.common.base.BaseActivity;
 import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 /**
- * Created by matie on 19/05/15.
- *
  * This class will be extended by all other view types that will inherit the
  * CardView layout and binding the items wil be according to the instance in hand.
  *

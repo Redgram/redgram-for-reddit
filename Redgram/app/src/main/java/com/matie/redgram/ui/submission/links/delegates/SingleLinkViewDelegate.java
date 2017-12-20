@@ -23,7 +23,7 @@ import com.matie.redgram.ui.common.base.Fragments;
 import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.common.utils.widgets.LinksHelper;
 import com.matie.redgram.ui.common.views.BaseView;
-import com.matie.redgram.ui.common.views.widgets.postlist.PostItemView;
+import com.matie.redgram.ui.submission.adapters.link.PostItemView;
 import com.matie.redgram.ui.submission.SubmissionViewDelegate;
 import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 import com.matie.redgram.ui.thread.ThreadActivity;

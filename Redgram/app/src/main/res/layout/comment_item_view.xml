@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.ui.thread.views.widgets.comment.CommentBaseItemView
+<com.matie.redgram.ui.submission.adapters.comment.CommentBaseItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -25,4 +25,4 @@
     <View
         style="@style/Separator"/>
 
-</com.matie.redgram.ui.thread.views.widgets.comment.CommentBaseItemView>
+</com.matie.redgram.ui.submission.adapters.comment.CommentBaseItemView>

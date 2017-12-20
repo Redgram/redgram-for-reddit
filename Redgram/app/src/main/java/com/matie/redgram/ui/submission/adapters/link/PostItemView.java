@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.common.views.widgets.postlist;
+package com.matie.redgram.ui.submission.adapters.link;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -14,9 +14,6 @@ import android.widget.RelativeLayout;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.submission.PostItem;
-import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemActionView;
-import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemHeaderView;
-import com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemSubView;
 import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 import butterknife.ButterKnife;
