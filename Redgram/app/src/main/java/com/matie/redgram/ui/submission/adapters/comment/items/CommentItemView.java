@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.submission.adapters.comment;
+package com.matie.redgram.ui.submission.adapters.comment.items;
 
 import android.content.Context;
 import android.util.AttributeSet;

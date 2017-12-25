@@ -15,6 +15,7 @@ import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.items.submission.PostItem;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.views.BaseView;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
@@ -176,7 +177,7 @@ public class LinksFeedDelegate extends SubmissionFeedDelegate implements LinksVi
     }
 
     @Override
-    public void updateList(List<PostItem> items) {
+    public void updateList(List<SubmissionItem> items) {
         containerRecyclerView.replaceWith(items);
     }
 

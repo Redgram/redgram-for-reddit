@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.matie.redgram.data.models.main.items.submission.PostItem;
-import com.matie.redgram.ui.submission.adapters.link.PostItemView;
+import com.matie.redgram.ui.submission.adapters.link.items.PostItemView;
 import com.matie.redgram.ui.submission.adapters.link.PostViewHolder;
 import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolder>{
+public abstract class PostAdapterBase extends RecyclerView.Adapter<PostViewHolder>{
 
     private final int layoutResId;
     private List<PostItem> items = Collections.emptyList();

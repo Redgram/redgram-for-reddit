@@ -1,15 +1,20 @@
-package com.matie.redgram.ui.thread.views.widgets.comment;
+package com.matie.redgram.ui.submission.adapters.comment;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.matie.redgram.ui.submission.adapters.comment.CommentBaseItemView;
-import com.matie.redgram.ui.submission.adapters.comment.CommentItemView;
-import com.matie.redgram.ui.submission.adapters.comment.CommentMoreItemView;
-import com.matie.redgram.ui.submission.adapters.comment.CommentRegularItemView;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
+import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
+import com.matie.redgram.ui.submission.adapters.SubmissionViewHolder;
+import com.matie.redgram.ui.submission.adapters.comment.items.CommentBaseItemView;
+import com.matie.redgram.ui.submission.adapters.comment.items.CommentItemView;
+import com.matie.redgram.ui.submission.adapters.comment.items.CommentMoreItemView;
+import com.matie.redgram.ui.submission.adapters.comment.items.CommentRegularItemView;
 import com.matie.redgram.ui.thread.views.CommentsView;
 
-public class CommentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+import java.util.HashMap;
+
+public class CommentViewHolder extends SubmissionViewHolder
+        implements View.OnClickListener, View.OnLongClickListener {
 
     //main parent view
     private CommentBaseItemView commentBaseItemView;
@@ -23,11 +28,19 @@ public class CommentViewHolder extends RecyclerView.ViewHolder implements View.O
 
     public CommentViewHolder(CommentBaseItemView itemView, CommentsView listener) {
         super(itemView);
+
         this.commentBaseItemView = itemView;
         this.commentListener = listener;
 
         commentBaseItemView.setOnClickListener(this);
         commentBaseItemView.setOnLongClickListener(this);
+    }
+
+    @Override
+    public void bind(int position, SubmissionItem item) {
+        if (commentBaseItemView == null) return;
+
+        commentBaseItemView.setUp((CommentBaseItem) item, position, new HashMap<>());
     }
 
     public CommentBaseItemView getCommentItemView() {
@@ -40,20 +53,23 @@ public class CommentViewHolder extends RecyclerView.ViewHolder implements View.O
         resolveCommentType(view);
     }
 
-
     @Override
     public boolean onLongClick(View v) {
+        if (commentListener == null) return false;
+
         CommentBaseItemView view = (CommentBaseItemView)v;
         commentListener.collapseItem(view.getItemPosition());
         return true;
     }
 
     private void resolveCommentType(CommentBaseItemView v) {
+        if (commentListener == null) return;
+
         CommentItemView commentItemView = (CommentItemView)v.getDynamicView();
 
-        if(commentItemView instanceof CommentRegularItemView){
+        if (commentItemView instanceof CommentRegularItemView) {
             resolveExpandCollapse(commentItemView, v.getItemPosition());
-        }else if(commentItemView instanceof CommentMoreItemView){
+        } else if (commentItemView instanceof CommentMoreItemView) {
             loadMore(commentItemView, v.getItemPosition());
         }
     }
@@ -64,11 +80,13 @@ public class CommentViewHolder extends RecyclerView.ViewHolder implements View.O
 
     private void resolveExpandCollapse(CommentItemView v, int position) {
         CommentRegularItemView targetView = (CommentRegularItemView) v;
+
         //toggles between expand/collapse
         boolean isExpanded = targetView.getIndicator().isExpanded();
-        if(isExpanded){
+
+        if (isExpanded) {
             commentListener.collapseItem(position);
-        }else{
+        } else {
             commentListener.expandItem(position);
         }
     }

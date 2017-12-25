@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.matie.redgram.data.models.main.items.submission.PostItem;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
 import com.matie.redgram.ui.submission.SubmissionFeedView;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface LinksView extends SubmissionFeedView {
     void updateItem(int position, PostItem postItem);
     PostItem removeItem(int position);
     void insertItem(int position, PostItem postItem);
-    void updateList(List<PostItem> items);
+    void updateList(List<SubmissionItem> items);
     void refreshView();
     void refreshView(@Nullable String subredditChoice, @NonNull String filterChoice, @NonNull Map<String, String> params);
     void sortView(@NonNull String filterChoice, @Nullable Map<String, String> params);

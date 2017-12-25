@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.submission.adapters.link;
+package com.matie.redgram.ui.submission.adapters.link.items;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -39,7 +39,6 @@ public class PostItemView extends CardView {
     Resources res;
     Context context;
     LayoutInflater inflater;
-
 
     Uri uri;
     private SingleLinkView listener;

@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.submission.adapters.comment;
+package com.matie.redgram.ui.submission.adapters.comment.items;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -53,21 +53,19 @@ public class CommentBaseItemView extends RelativeLayout{
     public void setUp(CommentBaseItem item, int position, Map<Integer, Integer> levelToColorMap){
         baseItem = item;
         itemPosition = position;
+
         resolveLevelDimension(item.getLevel());
         resolveLevelColor(item.getLevel(), levelToColorMap);
+
         ((CommentItemView)dynamicView).setUpView(item);
+
         requestLayout();
     }
 
     private void resolveLevelColor(int level, Map<Integer, Integer> levelToColorMap) {
-        if(level > 0){
-            for(Integer key : levelToColorMap.keySet()){
-                if(level == key){
-                    levelView.setBackgroundColor(levelToColorMap.get(key));
-                    break;
-                }
-            }
-        }
+        if (level <= 0 || !levelToColorMap.containsKey(level)) return;
+
+        levelView.setBackgroundColor(levelToColorMap.get(level));
     }
 
     public FrameLayout getContainer() {
@@ -83,23 +81,11 @@ public class CommentBaseItemView extends RelativeLayout{
     }
 
     private void resolveLevelDimension(int level){
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(level*10, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams lp =
+                new LinearLayout.LayoutParams((level * 10), LinearLayout.LayoutParams.MATCH_PARENT);
+
         levelView.setLayoutParams(lp);
     }
-
-//    private void resolveDimensions(int position) {
-//
-//        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(this.getLayoutParams());
-//
-//        if(position != 0){
-//            lp.setMargins(0, 0, 0, 0);
-//        }else{
-//            lp.setMargins(0, 100, 0, 0);
-//        }
-//
-//        this.setLayoutParams(lp);
-//
-//    }
 
     public CommentBaseItem getItem() {
         return baseItem;

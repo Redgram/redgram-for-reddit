@@ -3,36 +3,29 @@ package com.matie.redgram.ui.submission.adapters;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
-import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionViewHolder> {
 
-    public static final int TYPE_POST = 0;
-    public static final int TYPE_COMMENT = 1;
-
     private List<SubmissionItem> items = Collections.emptyList();
-    private SubmissionViewHolderDelegate viewHolderDelegate;
+    private SubmissionViewCreator viewHolderDelegate;
 
-    public SubmissionAdapter() {
-    }
-
-    public SubmissionAdapter(SubmissionViewHolderDelegate viewHolderDelegate) {
-        this();
+    public SubmissionAdapter(SubmissionViewCreator viewHolderDelegate) {
         this.viewHolderDelegate = viewHolderDelegate;
     }
 
-    public SubmissionAdapter(List<SubmissionItem> items, SubmissionViewHolderDelegate viewHolderDelegate) {
+    public SubmissionAdapter(List<SubmissionItem> items, SubmissionViewCreator viewHolderDelegate) {
         this(viewHolderDelegate);
         this.viewHolderDelegate = viewHolderDelegate;
     }
 
     @Override
     public SubmissionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewHolderDelegate == null) return null;
         return viewHolderDelegate.createViewHolder(parent, viewType);
     }
 
@@ -43,20 +36,18 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        final SubmissionItem item = items.get(position);
-
-        if (item instanceof PostItem) {
-            return TYPE_POST;
-        } else if (item instanceof CommentBaseItem) {
-            return TYPE_COMMENT;
-        }
-
-        return -1;
+        if (viewHolderDelegate == null) return -1;
+        return viewHolderDelegate.getItemViewType(position, getItem(position));
     }
 
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void replaceWith(List<SubmissionItem> items) {
+        this.items = new ArrayList<>(items);
+        notifyDataSetChanged();
     }
 
     public SubmissionItem getItem(int position) {
@@ -67,11 +58,11 @@ public class SubmissionAdapter extends RecyclerView.Adapter<SubmissionViewHolder
         return items;
     }
 
-    public SubmissionViewHolderDelegate getViewHolderDelegate() {
+    public SubmissionViewCreator getViewHolderDelegate() {
         return viewHolderDelegate;
     }
 
-    public void setViewHolderDelegate(SubmissionViewHolderDelegate viewHolderDelegate) {
+    public void setViewHolderDelegate(SubmissionViewCreator viewHolderDelegate) {
         this.viewHolderDelegate = viewHolderDelegate;
     }
 }

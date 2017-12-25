@@ -3,6 +3,7 @@ package com.matie.redgram.ui.submission.adapters.link;
 import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
 import com.matie.redgram.ui.submission.adapters.SubmissionViewHolder;
+import com.matie.redgram.ui.submission.adapters.link.items.PostItemView;
 import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 

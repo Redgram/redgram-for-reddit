@@ -5,9 +5,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
-import com.matie.redgram.R;
-import com.matie.redgram.data.models.main.items.submission.PostItem;
-import com.matie.redgram.ui.common.views.adapters.PostAdapter;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
+import com.matie.redgram.ui.submission.adapters.SubmissionAdapter;
+import com.matie.redgram.ui.submission.adapters.link.PostItemViewCreator;
 import com.matie.redgram.ui.submission.links.views.SingleLinkView;
 
 import java.util.List;
@@ -17,29 +17,32 @@ import butterknife.ButterKnife;
 public class PostRecyclerView extends RecyclerView {
 
     private final LayoutManager layoutManager;
-    private final PostAdapter postAdapter;
+//    private final PostAdapter postAdapter;
+    private final SubmissionAdapter adapter = new SubmissionAdapter(new PostItemViewCreator());
 
     public PostRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.layoutManager = new LinearLayoutManager(context);
-        this.postAdapter = new PostAdapter(context, R.layout.post_item_view);
+//        this.postAdapter = new PostAdapter(context, R.layout.post_item_view);
     }
 
     @Override
-    public void onFinishInflate(){
+    public void onFinishInflate() {
         super.onFinishInflate();
         ButterKnife.inject(this);
 
         setLayoutManager(layoutManager);
-        setAdapter(postAdapter);
+        setAdapter(adapter);
+//        setAdapter(postAdapter);
     }
 
-    public void setListener(SingleLinkView singleLinkView){
-        postAdapter.setPostItemListener(singleLinkView);
+    public void setListener(SingleLinkView singleLinkView) {
+//        postAdapter.setPostItemListener(singleLinkView);
     }
 
-    public void replaceWith(List<PostItem> items){
-        postAdapter.replaceWith(items);
+    public void replaceWith(List<SubmissionItem> items) {
+        adapter.replaceWith(items);
+//        postAdapter.replaceWith(items);
     }
 
     @Override
@@ -49,6 +52,7 @@ public class PostRecyclerView extends RecyclerView {
 
     @Override
     public Adapter getAdapter() {
-        return postAdapter;
+        return adapter;
+//        return postAdapter;
     }
 }

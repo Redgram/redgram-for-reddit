@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.submission.adapters.link;
+package com.matie.redgram.ui.submission.adapters.link.items;
 
 import android.content.Context;
 import android.graphics.PointF;
@@ -27,19 +27,18 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 
-public class PostItemAnimatedView extends PostItemSubView {
+public class PostItemGalleryView extends PostItemSubView {
 
     public static final int OVERLAY_OPACITY = 120;
 
-    @InjectView(R.id.gif_text_view)
-    PostItemTextView postItemTextView;
-
     @InjectView(R.id.image_view)
     SimpleDraweeView thumbnailView;
+    //    include tag
+    @InjectView(R.id.gallery_overlay)
+    FrameLayout galleryOverlay;
 
-    // include tag
-    @InjectView(R.id.animated_overlay)
-    FrameLayout animatedOverlay;
+    @InjectView(R.id.gallery_text_view)
+    PostItemTextView postItemTextView;
 
     @InjectView(R.id.overlay_image)
     ImageView overlayImage;
@@ -51,17 +50,19 @@ public class PostItemAnimatedView extends PostItemSubView {
     View overlay;
 
     PostItem postItem;
-    SingleLinkView listener;
     int position;
+    SingleLinkView listener;
 
-    public PostItemAnimatedView(Context context, AttributeSet attrs) {
+    public PostItemGalleryView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
+
     @Override
     public void onFinishInflate(){
         super.onFinishInflate();
         ButterKnife.inject(this);
     }
+
     @Override
     public void setupView(PostItem item, int position, SingleLinkView listener) {
         this.postItem = item;
@@ -75,8 +76,8 @@ public class PostItemAnimatedView extends PostItemSubView {
 
 //        add transparency
         overlay.setBackgroundColor(OVERLAY_OPACITY * 0x1000000);
-        overlayText.setText(item.getType().toString());
-        overlayImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_action_play_circle_fill));
+        overlayText.setVisibility(GONE);
+        overlayImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_photo_library));
     }
 
     private GenericDraweeHierarchy getDraweeHierarchy(PostItem item) {
@@ -95,11 +96,11 @@ public class PostItemAnimatedView extends PostItemSubView {
         PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
                 .setImageRequest(thumbnail)
                 .setOldController(thumbnailView.getController());
-
         return builder.build();
     }
 
-    @OnClick({R.id.animated_overlay, R.id.overlay_image, R.id.overlay_text})
+
+    @OnClick({R.id.gallery_overlay, R.id.overlay_image, R.id.overlay_text})
     public void onGalleryClick(){
         if(postItem.isAdult() && (!getSessionPrefs().isOver18() || getSessionPrefs().isDisableNsfwPreview())){
             listener.callAgeConfirmDialog(getContext());
@@ -107,5 +108,4 @@ public class PostItemAnimatedView extends PostItemSubView {
             listener.viewWebMedia(getContext(), position);
         }
     }
-
 }

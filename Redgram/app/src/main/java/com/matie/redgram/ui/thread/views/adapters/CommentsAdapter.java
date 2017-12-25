@@ -10,9 +10,9 @@ import android.widget.FrameLayout;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
+import com.matie.redgram.ui.submission.adapters.comment.CommentViewHolder;
+import com.matie.redgram.ui.submission.adapters.comment.items.CommentBaseItemView;
 import com.matie.redgram.ui.thread.views.CommentsView;
-import com.matie.redgram.ui.submission.adapters.comment.CommentBaseItemView;
-import com.matie.redgram.ui.thread.views.widgets.comment.CommentViewHolder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-/**
- * Created by matie on 2016-01-31.
- */
 public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
     private static final int TYPE_REGULAR = 0;
@@ -45,13 +42,14 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentViewHolder> {
 
         View dynamicView = getCommentView(viewType, v.getDynamicView(), v.getContainer());
 
-        if(!dynamicView.equals(v.getDynamicView())){
+        if (!dynamicView.equals(v.getDynamicView())) {
             v.getContainer().removeAllViews();
             v.getContainer().addView(dynamicView);
         }
+
         v.setDynamicView(dynamicView);
 
-        if(commentListener != null){
+        if (commentListener != null) {
             return new CommentViewHolder(v, commentListener);
         }
 

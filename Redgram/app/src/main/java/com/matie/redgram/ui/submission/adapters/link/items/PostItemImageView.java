@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.submission.adapters.link;
+package com.matie.redgram.ui.submission.adapters.link.items;
 
 import android.content.Context;
 import android.graphics.drawable.Animatable;
