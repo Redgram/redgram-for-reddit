@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemTextView
+<com.matie.redgram.ui.feed.adapters.link.items.PostItemTextView
     xmlns:android="http://schemas.android.com/apk/res/android" style="@style/TextPostItem">
 
         <!--android:maxLines="3"-->
@@ -20,4 +20,4 @@
             layout="@layout/post_item_tag_view" />
 
 
-</com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemTextView>
+</com.matie.redgram.ui.feed.adapters.link.items.PostItemTextView>

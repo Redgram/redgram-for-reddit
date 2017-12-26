@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemHeaderView
+<com.matie.redgram.ui.feed.adapters.link.items.PostItemHeaderView
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/HeaderPostItem">
 
@@ -14,4 +14,4 @@
         android:id="@+id/header_more_view"
         style="@style/HeaderPostItemMore"/>
 
-</com.matie.redgram.ui.common.views.widgets.postlist.dynamic.PostItemHeaderView>
+</com.matie.redgram.ui.feed.adapters.link.items.PostItemHeaderView>

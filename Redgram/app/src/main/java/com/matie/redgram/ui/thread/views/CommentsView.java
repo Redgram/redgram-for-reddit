@@ -1,6 +1,6 @@
 package com.matie.redgram.ui.thread.views;
 
-import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
 import com.matie.redgram.ui.common.views.ContentView;
 
 import java.util.List;
@@ -14,5 +14,5 @@ public interface CommentsView extends ContentView {
      void hideItem(int position);
      void scrollTo(int position);
      void loadMore(int position);
-     void setItems(List<CommentBaseItem> items);
+     void setItems(List<SubmissionItem> items);
 }

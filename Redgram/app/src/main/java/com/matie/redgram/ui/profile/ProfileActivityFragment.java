@@ -19,8 +19,8 @@ import com.matie.redgram.ui.profile.components.ProfileActivityComponent;
 import com.matie.redgram.ui.profile.components.ProfileComponent;
 import com.matie.redgram.ui.profile.modules.ProfileActivityModule;
 import com.matie.redgram.ui.profile.views.ProfileActivityView;
-import com.matie.redgram.ui.submission.SubmissionControlView;
-import com.matie.redgram.ui.submission.links.views.LinksFeedLayout;
+import com.matie.redgram.ui.feed.SubmissionControlView;
+import com.matie.redgram.ui.feed.links.views.LinksFeedLayout;
 
 import java.util.Arrays;
 import java.util.HashMap;

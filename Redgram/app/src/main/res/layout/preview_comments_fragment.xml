@@ -5,9 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
     <!--replace with expand collapse recycleview-->
     <com.matie.redgram.ui.thread.views.widgets.comment.CommentRecyclerView
         android:id="@+id/comment_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
 </LinearLayout>

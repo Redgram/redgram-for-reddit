@@ -1,7 +1,7 @@
 package com.matie.redgram.data.managers.presenters;
 
 import com.matie.redgram.data.managers.presenters.base.BasePresenter;
-import com.matie.redgram.data.models.main.items.PostItem;
+import com.matie.redgram.data.models.main.items.submission.PostItem;
 
 import java.util.Map;
 

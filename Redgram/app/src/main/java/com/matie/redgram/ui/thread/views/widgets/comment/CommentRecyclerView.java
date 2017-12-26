@@ -6,29 +6,26 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 
-import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
+import com.matie.redgram.ui.feed.adapters.SubmissionAdapter;
+import com.matie.redgram.ui.feed.adapters.comment.CommentItemViewCreator;
 import com.matie.redgram.ui.thread.views.CommentsView;
-import com.matie.redgram.ui.thread.views.adapters.CommentsAdapter;
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 
-/**
- * Created by matie on 2016-02-12.
- */
 public class CommentRecyclerView extends RecyclerView {
 
     private final Context context;
     private final LayoutManager layoutManager;
-    private final CommentsAdapter commentsAdapter;
+    private final SubmissionAdapter adapter = new SubmissionAdapter(new CommentItemViewCreator());
 
     public CommentRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         this.context = context;
         this.layoutManager = new WrapContentLinearLayoutManager(context);
-        this.commentsAdapter = new CommentsAdapter(context);
     }
 
     @Override
@@ -37,11 +34,11 @@ public class CommentRecyclerView extends RecyclerView {
         ButterKnife.inject(this);
 
         setLayoutManager(layoutManager);
-        setAdapter(commentsAdapter);
+        setAdapter(adapter);
     }
 
-    public void replaceWith(List<CommentBaseItem> items){
-        commentsAdapter.replaceWith(items);
+    public void replaceWith(List<SubmissionItem> items) {
+        adapter.replaceWith(items);
     }
 
     @Override
@@ -51,11 +48,11 @@ public class CommentRecyclerView extends RecyclerView {
 
     @Override
     public Adapter getAdapter() {
-        return commentsAdapter;
+        return adapter;
     }
 
     public void setAdapterListener(CommentsView listener) {
-        commentsAdapter.setCommentListener(listener);
+//        commentsAdapter.setCommentListener(listener);
     }
 
     /**

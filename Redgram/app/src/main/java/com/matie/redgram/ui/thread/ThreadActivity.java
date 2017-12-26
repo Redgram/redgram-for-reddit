@@ -29,8 +29,8 @@ import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.media.video.ImageManager;
 import com.matie.redgram.data.managers.presenters.ThreadPresenterImpl;
-import com.matie.redgram.data.models.main.items.PostItem;
-import com.matie.redgram.data.models.main.items.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.submission.PostItem;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.common.base.ViewPagerActivity;
@@ -468,7 +468,7 @@ public class ThreadActivity extends ViewPagerActivity
     }
 
     @Override
-    public void passDataToCommentsView(List<CommentBaseItem> commentItems) {
+    public void passDataToCommentsView(List<SubmissionItem> commentItems) {
         commentsView.setItems(commentItems);
     }
 
