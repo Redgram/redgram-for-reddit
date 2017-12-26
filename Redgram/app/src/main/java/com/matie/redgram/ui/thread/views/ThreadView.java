@@ -2,14 +2,11 @@ package com.matie.redgram.ui.thread.views;
 
 import android.support.annotation.Nullable;
 
-import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
 import com.matie.redgram.ui.common.views.ContentView;
 
 import java.util.List;
 
-/**
- * Created by matie on 2016-02-10.
- */
 public interface ThreadView extends ContentView {
     String TRUE = "true";
     String FALSE = "false";
@@ -20,7 +17,7 @@ public interface ThreadView extends ContentView {
     void toggleVote(@Nullable int direction);
     void toggleSave(boolean save);
     void toggleUnHide();
-    void passDataToCommentsView(List<CommentBaseItem> commentItems);
+    void passDataToCommentsView(List<SubmissionItem> commentItems);
 
     //helper
     void sharePost();

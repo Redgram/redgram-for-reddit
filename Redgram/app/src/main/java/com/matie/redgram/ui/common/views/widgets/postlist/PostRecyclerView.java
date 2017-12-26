@@ -6,9 +6,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
 import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
-import com.matie.redgram.ui.submission.adapters.SubmissionAdapter;
-import com.matie.redgram.ui.submission.adapters.link.PostItemViewCreator;
-import com.matie.redgram.ui.submission.links.views.SingleLinkView;
+import com.matie.redgram.ui.feed.adapters.SubmissionAdapter;
+import com.matie.redgram.ui.feed.adapters.link.PostItemViewCreator;
+import com.matie.redgram.ui.feed.links.views.SingleLinkView;
 
 import java.util.List;
 

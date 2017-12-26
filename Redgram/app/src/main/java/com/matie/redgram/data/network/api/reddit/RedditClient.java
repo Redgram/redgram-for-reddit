@@ -20,6 +20,7 @@ import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.items.UserItem;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentMoreItem;
@@ -205,15 +206,15 @@ public class RedditClient extends RedditService implements RedditClientInterface
                                     .first() //first listing is the post
                                     .flatMap(data -> Observable.from(data.getData().getChildren()))
                                     .cast(RedditLink.class)
-                                    .map(postData -> mapLinkToPostItem(postData));
+                                    .map(this::mapLinkToPostItem);
 
-        Observable<List<CommentBaseItem>>
+        Observable<List<SubmissionItem>>
                 redditCommentObjects = listings
                                         .last() //second listing are the comments
                                         .flatMap(data -> Observable.from(data.getData().getChildren()))
                                         .concatMap(comment -> {
 
-                                            List<CommentBaseItem> comments = new ArrayList<CommentBaseItem>();
+                                            List<SubmissionItem> comments = new ArrayList<>();
 
                                             if (comment instanceof RedditComment) {
                                                 mapCommentToCommentItem((RedditComment) comment, 0, comments);
@@ -365,7 +366,7 @@ public class RedditClient extends RedditService implements RedditClientInterface
         return map;
     }
 
-    private int mapCommentToCommentItem(RedditComment commentData, int level, List<CommentBaseItem> comments) {
+    private int mapCommentToCommentItem(RedditComment commentData, int level, List<SubmissionItem> comments) {
         CommentItem item = new CommentItem();
         int count = 0; //child count defaults 0
 
@@ -402,7 +403,7 @@ public class RedditClient extends RedditService implements RedditClientInterface
         return count;
     }
 
-    private void mapCommentToCommentMoreItem(RedditMore commentData, int level, List<CommentBaseItem> comments) {
+    private void mapCommentToCommentMoreItem(RedditMore commentData, int level, List<SubmissionItem> comments) {
         CommentMoreItem item = new CommentMoreItem();
 
         item.setCommentType(CommentBaseItem.CommentType.MORE);

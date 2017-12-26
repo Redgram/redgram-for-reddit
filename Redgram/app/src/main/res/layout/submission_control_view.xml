@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.ui.submission.SubmissionControlView
+<com.matie.redgram.ui.feed.SubmissionControlView
     style="@style/Match"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/home_toolbar_container">
@@ -60,4 +60,4 @@
 
     </LinearLayout>
 
-</com.matie.redgram.ui.submission.SubmissionControlView>
+</com.matie.redgram.ui.feed.SubmissionControlView>

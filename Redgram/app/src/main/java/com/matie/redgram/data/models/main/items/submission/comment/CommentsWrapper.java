@@ -1,19 +1,20 @@
 package com.matie.redgram.data.models.main.items.submission.comment;
 
 import com.matie.redgram.data.models.main.items.submission.PostItem;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
 
 import java.util.List;
 
 
 public class CommentsWrapper {
-    private List<CommentBaseItem> commentItems;
+    private List<SubmissionItem> commentItems;
     private PostItem postItem;
 
-    public List<CommentBaseItem> getCommentItems() {
+    public List<SubmissionItem> getCommentItems() {
         return commentItems;
     }
 
-    public void setCommentItems(List<CommentBaseItem> commentItem) {
+    public void setCommentItems(List<SubmissionItem> commentItem) {
         this.commentItems = commentItem;
     }
 

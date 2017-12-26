@@ -4,8 +4,8 @@ import com.matie.redgram.data.managers.presenters.SearchPresenter;
 import com.matie.redgram.ui.FragmentScope;
 import com.matie.redgram.ui.common.main.MainComponent;
 import com.matie.redgram.ui.search.views.SearchView;
-import com.matie.redgram.ui.submission.links.LinksComponent;
-import com.matie.redgram.ui.submission.links.LinksModule;
+import com.matie.redgram.ui.feed.links.LinksComponent;
+import com.matie.redgram.ui.feed.links.LinksModule;
 
 import dagger.Component;
 

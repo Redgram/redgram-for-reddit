@@ -10,8 +10,8 @@ import android.widget.FrameLayout;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
-import com.matie.redgram.ui.submission.adapters.comment.CommentViewHolder;
-import com.matie.redgram.ui.submission.adapters.comment.items.CommentBaseItemView;
+import com.matie.redgram.ui.feed.adapters.comment.CommentViewHolder;
+import com.matie.redgram.ui.feed.adapters.comment.items.CommentBaseItemView;
 import com.matie.redgram.ui.thread.views.CommentsView;
 
 import java.util.ArrayList;

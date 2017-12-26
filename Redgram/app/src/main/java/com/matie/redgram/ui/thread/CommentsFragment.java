@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.CommentsPresenterImpl;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentMoreItem;
@@ -49,7 +50,7 @@ public class CommentsFragment extends BaseFragment implements CommentsView {
     @Inject
     DialogUtil dialogUtil;
 
-    List<CommentBaseItem> commentItems;
+    List<SubmissionItem> commentItems;
     Map<String, List<CommentBaseItem>> collapsedComments = new HashMap<>();
 
     @Override
@@ -87,7 +88,7 @@ public class CommentsFragment extends BaseFragment implements CommentsView {
         ((ThreadActivity)context).commentsView = this;
     }
 
-    public void setComments(List<CommentBaseItem> items){
+    public void setComments(List<SubmissionItem> items){
         this.commentItems = items;
     }
 
@@ -151,27 +152,28 @@ public class CommentsFragment extends BaseFragment implements CommentsView {
 
     @Override
     public void loadMore(int position) {
-        if(commentItems.get(position) instanceof CommentMoreItem){
+        if (commentItems.get(position) instanceof CommentMoreItem) {
             app.getToastHandler().showToast("load more", Toast.LENGTH_SHORT);
         }
     }
 
     @Override
-    public void setItems(List<CommentBaseItem> items) {
+    public void setItems(List<SubmissionItem> items) {
         refreshComments(items);
     }
 
-    private void refreshComments(List<CommentBaseItem> items){
+    private void refreshComments(List<SubmissionItem> items) {
         setComments(items);
+
         //refresh adapter
         commentRecyclerView.replaceWith(commentItems);
     }
 
-    private CommentBaseItem getItem(int position){
+    private CommentBaseItem getItem(int position) {
         return ((CommentsAdapter)commentRecyclerView.getAdapter()).getItem(position);
     }
 
-    private List<CommentBaseItem> getCommentItems(){
+    private List<CommentBaseItem> getCommentItems() {
         return ((CommentsAdapter)commentRecyclerView.getAdapter()).getCommentItems();
     }
 

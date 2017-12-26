@@ -13,7 +13,7 @@ import com.matie.redgram.data.network.api.utils.subscriber.NullCheckSubscriber;
 import com.matie.redgram.data.network.api.utils.subscriber.NullSubscriptionExecutor;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
-import com.matie.redgram.ui.submission.links.views.LinksView;
+import com.matie.redgram.ui.feed.links.views.LinksView;
 
 import java.util.Map;
 

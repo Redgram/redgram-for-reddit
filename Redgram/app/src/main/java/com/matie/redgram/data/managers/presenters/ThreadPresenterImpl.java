@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.items.submission.PostItem;
-import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
+import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentsWrapper;
 import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
 import com.matie.redgram.data.network.api.utils.subscriber.NullCheckSubscriber;
@@ -69,7 +69,7 @@ public class ThreadPresenterImpl extends BasePresenterImpl implements ThreadPres
                     @Override
                     public void onNext(CommentsWrapper wrapper) {
                         //todo: update post too?
-                        List<CommentBaseItem> commentItems = wrapper.getCommentItems();
+                        List<SubmissionItem> commentItems = wrapper.getCommentItems();
                         threadView.passDataToCommentsView(commentItems);
                     }
                 });

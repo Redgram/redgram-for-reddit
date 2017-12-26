@@ -28,12 +28,12 @@ import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.home.views.HomeView;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
-import com.matie.redgram.ui.submission.SubmissionControlView;
-import com.matie.redgram.ui.submission.links.LinksComponent;
-import com.matie.redgram.ui.submission.links.LinksModule;
-import com.matie.redgram.ui.submission.links.delegates.LinksFeedDelegate;
-import com.matie.redgram.ui.submission.links.views.LinksFeedLayout;
-import com.matie.redgram.ui.submission.links.views.LinksView;
+import com.matie.redgram.ui.feed.SubmissionControlView;
+import com.matie.redgram.ui.feed.links.LinksComponent;
+import com.matie.redgram.ui.feed.links.LinksModule;
+import com.matie.redgram.ui.feed.links.delegates.LinksFeedDelegate;
+import com.matie.redgram.ui.feed.links.views.LinksFeedLayout;
+import com.matie.redgram.ui.feed.links.views.LinksView;
 import com.matie.redgram.ui.thread.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 

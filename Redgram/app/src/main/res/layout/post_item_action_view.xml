@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.ui.submission.adapters.link.items.PostItemActionView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.matie.redgram.ui.feed.adapters.link.items.PostItemActionView xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/ActionPostItem">
 
     <LinearLayout
@@ -41,4 +41,4 @@
             android:src="@drawable/ic_action_remove"/>
     </LinearLayout>
 
-</com.matie.redgram.ui.submission.adapters.link.items.PostItemActionView>
+</com.matie.redgram.ui.feed.adapters.link.items.PostItemActionView>
