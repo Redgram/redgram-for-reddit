@@ -8,7 +8,7 @@ import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.profile.Karma;
 import com.matie.redgram.data.models.main.profile.ProfileUser;
-import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
+import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.profile.views.ProfileAboutView;
 

@@ -10,12 +10,14 @@ import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
+import com.matie.redgram.data.network.api.reddit.auth.RedditAuthProvider;
+import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.data.utils.reddit.BooleanDateDeserializer;
 import com.matie.redgram.data.utils.reddit.DateTimeDeserializer;
 import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.auth.AuthActivity;
+import com.matie.redgram.ui.auth.AuthActivity;
 
 import org.joda.time.DateTime;
 
@@ -43,10 +45,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 
-/**
- * Created by matie on 15/04/15.
- */
-public class RedditService extends RedditServiceBase implements RedditServiceInterface{
+public class RedditService extends RedditServiceBase implements RedditAuthInterface {
 
     private static final int MAX_AGE = 60; //1 minute
     private static final int MAX_STALE = 60 * 60 * 24 * 28; //tolerate 4-weeks
@@ -63,6 +62,103 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
     private final RedditAuthProvider authProvider;
     private final String uuid;
 
+    private class RedditGeneralInterceptor implements Interceptor {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            boolean isOnline = connectionManager.isOnline();
+
+            Request originalRequest = chain.request();
+            Request.Builder requestBuilder = originalRequest.newBuilder();
+            String authHeader = originalRequest.header("Authorization");
+            String host = originalRequest.url().host();
+
+            if (REDDIT_HOST.equalsIgnoreCase(host)) {
+                requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
+                requestBuilder.addHeader("accept", "application/json");
+                requestBuilder.addHeader("Authorization", getCredentials());
+            } else if (OAUTH_HOST.equalsIgnoreCase(host)) {
+                requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
+                requestBuilder.addHeader("accept", "application/json");
+
+                if (authHeader == null) {
+                    if (getToken() == null) {
+                        app.startActivity(AuthActivity.intent(app, true));
+                        return null;
+                    }
+
+                    requestBuilder.addHeader("Authorization", "bearer "+ getToken());
+                }
+
+                if (!isOnline) {
+                    connectionManager.showConnectionStatus(false);
+                    requestBuilder.addHeader("Cache-Control",
+                            "public, only-if-cached, max-stale=" + MAX_STALE);
+                    Log.d("CSTATUS", "no connection!, stale = " + MAX_STALE);
+                }
+            }
+
+            Request request = requestBuilder.build();
+
+            Response.Builder responseBuilder = chain.proceed(request).newBuilder();
+
+            if (OAUTH_HOST.equalsIgnoreCase(originalRequest.url().host()) && isOnline) {
+                responseBuilder.header("cache-control", "public, max-age=" + MAX_AGE);
+                responseBuilder.header("Connection-Status", "Connected");
+                Log.d("CSTATUS", "connected to internet! age = " + MAX_AGE + " seconds");
+            }
+
+            return responseBuilder.build();
+        }
+    }
+
+    private class RedditAuthenticator implements Authenticator {
+        @Override
+        public Request authenticate(Route route, Response response) throws IOException {
+            if ((response.code() != 401 && response.code() != 403) || response.message() == null) {
+                return null;
+            }
+
+            //unauthorized
+            List<Challenge> challenges = response.challenges();
+            for (Challenge challenge : challenges) {
+                String scheme = challenge.scheme();
+                if (BEARER.equalsIgnoreCase(scheme)) {
+                    String refreshToken = getRefreshToken();
+                    retrofit2.Response<AccessToken> accessToken;
+
+                    if (refreshToken != null && !refreshToken.isEmpty()) {
+                        accessToken = refreshToken().execute();
+                    } else {
+                        // app only grant does not receive a refresh token
+                        accessToken = getAccessToken().execute();
+                    }
+
+                    if (accessToken != null && accessToken.isSuccess() && accessToken.body().getAccessToken() != null) {
+                        updateToken(accessToken.body());
+
+                        return response.request().newBuilder()
+                                .header("Authorization", BEARER + " " + getToken())
+                                .build();
+                    } else {
+                        app.startActivity(AuthActivity.intent(app, true));
+                    }
+
+                } else if (BASIC.equalsIgnoreCase(scheme)) {
+                    Log.d("Unauthorized", response.code() + " - Basic Auth failed.");
+
+                    if (response.request().header(REFRESH_HEADER_TAG).equalsIgnoreCase(REFRESH_HEADER_TAG)) {
+                        // if refresh token mechanism is unauthorized return a message
+                        app.getToastHandler().showBackgroundToast(response.code() + " - Unauthorized Refresh Token", Toast.LENGTH_LONG);
+                        app.startActivity(AuthActivity.intent(app, true));
+                    }
+                }
+            }
+
+
+            return null;
+        }
+    }
+
     @Inject
     public RedditService(App application) {
         app = application;
@@ -76,24 +172,25 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
         uuid = UUID.randomUUID().toString();
     }
 
-    public Retrofit buildRetrofit(String host) {
+    protected Retrofit buildRetrofit(String host) {
         return retrofitBuilder.baseUrl(host).build();
     }
 
-    protected Retrofit.Builder getRetrofitBuilder(final Context context) {
+    private Retrofit.Builder getRetrofitBuilder(final Context context) {
         return new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(getGson()))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(myHttpClient(context));
     }
 
-    protected OkHttpClient myHttpClient(final Context context){
+    private OkHttpClient myHttpClient(final Context context) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
         builder.addInterceptor(getMainInterceptor());
-        builder.authenticator(new MyAuthenticator());
+        builder.authenticator(new RedditAuthenticator());
 //        builder.addInterceptor(getCachingInterceptor());
         builder.cache(myCache(context));
+
         return builder.build();
     }
 
@@ -105,7 +202,7 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
                 .create();
     }
 
-    protected Cache myCache(final Context context){
+    private Cache myCache(final Context context) {
         //setup cache
         File httpCacheDir = new File(context.getCacheDir(), "HttpCacheDir");
         return new Cache(httpCacheDir, CACHE_DIR_SIZE);
@@ -129,62 +226,22 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
         };
     }
 
-    protected Interceptor getMainInterceptor() {
+    private Interceptor getMainInterceptor() {
         return new RedditGeneralInterceptor();
     }
 
-    protected class MyAuthenticator implements Authenticator {
-        @Override
-        public Request authenticate(Route route, Response response) throws IOException {
-            if((response.code() == 401 || response.code() == 403) && response.message() != null){ //unauthorized
-                List<Challenge> challenges = response.challenges();
-                for(Challenge challenge : challenges){
-                    String scheme = challenge.scheme();
-                    if(BEARER.equalsIgnoreCase(scheme)){
-                        String refreshToken = getRefreshToken();
-                        retrofit2.Response<AccessToken> accessToken;
-                        if(refreshToken != null && !refreshToken.isEmpty()){
-                            accessToken = refreshToken().execute();
-                        }else{
-                            // app only grant does not receive a refresh token
-                            accessToken = getAccessToken().execute();
-                        }
-
-                        if(accessToken != null && accessToken.isSuccess() && accessToken.body().getAccessToken() != null){
-                            updateToken(accessToken.body());
-                            return response.request().newBuilder()
-                                    .header("Authorization", BEARER + " " + getToken())
-                                    .build();
-                        }else{
-                            app.startActivity(AuthActivity.intent(app, true));
-                        }
-
-                    }else if(BASIC.equalsIgnoreCase(scheme)){
-                        Log.d("Unauthorized", response.code() + " - Basic Auth failed.");
-                        if (response.request().header(REFRESH_HEADER_TAG).equalsIgnoreCase(REFRESH_HEADER_TAG)){
-                            //if refresh token mechanism is unauthorized return a message
-                            app.getToastHandler().showBackgroundToast(response.code() + " - Unauthorized Refresh Token", Toast.LENGTH_LONG);
-                            app.startActivity(AuthActivity.intent(app, true));
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-    }
-
-    private void updateToken(AccessToken body){
+    private void updateToken(AccessToken body) {
         sm.setTokenInfo(body);
         //update to new token info
         sm.setCurrentToken(sm.getSessionUser().getTokenInfo());
     }
 
     @Override
-    public Observable<AccessToken> getAccessToken(String code){
+    public Observable<AccessToken> getAccessToken(String code) {
         return authProvider.obtainAccessToken(GRANT_TYPE_AUTHORIZE, code, REDIRECT_URI);
     }
 
-    public Observable<AccessToken> getAccessTokenObservable(){
+    public Observable<AccessToken> getAccessTokenObservable() {
         return authProvider.obtainAccessToken(GRANT_TYPE_INSTALLED, uuid);
     }
 
@@ -194,86 +251,48 @@ public class RedditService extends RedditServiceBase implements RedditServiceInt
     }
 
     @Override
-    public Call<AccessToken> refreshToken(){
+    public Call<AccessToken> refreshToken() {
         return authProvider.refreshAccessToken(REFRESH_HEADER_TAG, GRANT_TYPE_REFRESH, getRefreshToken());
     }
 
     //revoke token of the current authenticated user
     @Override
     public Observable<AccessToken> revokeToken(String tokenType){
-        if(RedditAuthProvider.ACCESS_TOKEN.equalsIgnoreCase(tokenType)){
+        if (RedditAuthProvider.ACCESS_TOKEN.equalsIgnoreCase(tokenType)) {
             return authProvider.revokeToken(getToken(), tokenType);
-        }else if(RedditAuthProvider.REFRESH_TOKEN.equalsIgnoreCase(tokenType)){
+        } else if (RedditAuthProvider.REFRESH_TOKEN.equalsIgnoreCase(tokenType)) {
             return authProvider.revokeToken(getRefreshToken(), tokenType);
         }
+
         return null;
     }
 
     //revoke token passed to this method
     //returns code 204 even if the token was invalid
     @Override
-    public Observable<AccessToken> revokeToken(String token, String tokenType){
-        if(RedditAuthProvider.ACCESS_TOKEN.equalsIgnoreCase(tokenType) || RedditAuthProvider.REFRESH_TOKEN.equalsIgnoreCase(tokenType)){
+    public Observable<AccessToken> revokeToken(String token, String tokenType) {
+        if (RedditAuthProvider.ACCESS_TOKEN.equalsIgnoreCase(tokenType)
+                || RedditAuthProvider.REFRESH_TOKEN.equalsIgnoreCase(tokenType)) {
             return authProvider.revokeToken(token, tokenType);
         }
+
         return null;
     }
 
-    protected String getToken(){
-        if(sm.getCurrentToken() != null){
+    protected String getToken() {
+        if (sm.getCurrentToken() != null) {
             return sm.getCurrentToken().getToken();
         }
+
         return null;
     }
 
-    protected String getRefreshToken(){
-        if(sm.getCurrentToken() != null){
+    private String getRefreshToken() {
+        if (sm.getCurrentToken() != null) {
             return sm.getCurrentToken().getRefreshToken();
         }
+
         return null;
     }
 
-    private class RedditGeneralInterceptor implements Interceptor {
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            boolean isOnline = connectionManager.isOnline();
-            Request originalRequest = chain.request();
-            String authHeader = originalRequest.header("Authorization");
-            String host = originalRequest.url().host();
-            Request.Builder requestBuilder = originalRequest.newBuilder();
-            if(REDDIT_HOST.equalsIgnoreCase(host)){
-                requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
-                requestBuilder.addHeader("accept", "application/json");
-                requestBuilder.addHeader("Authorization", getCredentials());
-            }else if(OAUTH_HOST.equalsIgnoreCase(host)){
-                requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
-                requestBuilder.addHeader("accept", "application/json");
-                if(authHeader == null){
-                    if(getToken() != null){
-                        requestBuilder.addHeader("Authorization", "bearer "+ getToken());
-                    }else{
-                        app.startActivity(AuthActivity.intent(app, true));
-                        return null;
-                    }
-                }
-                if(!isOnline){
-                    connectionManager.showConnectionStatus(false);
-                    requestBuilder.addHeader("Cache-Control",
-                            "public, only-if-cached, max-stale=" + MAX_STALE);
-                    Log.d("CSTATUS", "no connection!, stale = " + MAX_STALE);
-                }
-            }
-            Request request = requestBuilder.build();
-
-            Response.Builder responseBuilder = chain.proceed(request).newBuilder();
-            if(OAUTH_HOST.equalsIgnoreCase(originalRequest.url().host())){
-                if(isOnline){
-                    responseBuilder.header("cache-control", "public, max-age=" + MAX_AGE);
-                    responseBuilder.header("Connection-Status", "Connected");
-                    Log.d("CSTATUS", "connected to internet! age = " + MAX_AGE + " seconds");
-                }
-            }
-            return responseBuilder.build();
-        }
-    }
 }

@@ -9,9 +9,9 @@ import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.UserItem;
-import com.matie.redgram.data.network.api.reddit.base.RedditAuthProvider;
+import com.matie.redgram.data.network.api.reddit.auth.RedditAuthProvider;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.user.views.UserListControllerView;
+import com.matie.redgram.ui.user.views.UserListControllerView;
 import com.matie.redgram.ui.common.views.ContentView;
 
 import java.util.ArrayList;

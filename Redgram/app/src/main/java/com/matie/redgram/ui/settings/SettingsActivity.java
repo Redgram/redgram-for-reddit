@@ -25,7 +25,7 @@ import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.views.BaseView;
+import com.matie.redgram.ui.base.BaseView;
 import com.matie.redgram.ui.settings.fragments.CommentsPreferenceFragment;
 import com.matie.redgram.ui.settings.fragments.GeneralPreferenceFragment;
 import com.matie.redgram.ui.settings.fragments.NotificationPreferenceFragment;

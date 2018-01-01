@@ -2,7 +2,7 @@ package com.matie.redgram.ui.feed;
 
 import android.view.View;
 
-import com.matie.redgram.ui.common.views.BaseView;
+import com.matie.redgram.ui.base.BaseView;
 
 public abstract class SubmissionViewDelegate implements SubmissionView {
 

@@ -3,7 +3,7 @@ package com.matie.redgram.ui.common.previews;
 import android.os.Bundle;
 
 import com.matie.redgram.R;
-import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.base.BaseFragment;
 
 /**
  * Created by matie on 2015-11-03.

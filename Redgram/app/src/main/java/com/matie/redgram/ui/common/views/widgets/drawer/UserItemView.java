@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.UserItem;
-import com.matie.redgram.ui.common.user.views.UserListControllerView;
+import com.matie.redgram.ui.user.views.UserListControllerView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;

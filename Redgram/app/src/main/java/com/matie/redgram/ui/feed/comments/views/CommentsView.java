@@ -1,7 +1,7 @@
 package com.matie.redgram.ui.feed.comments.views;
 
 import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
-import com.matie.redgram.ui.common.views.BaseView;
+import com.matie.redgram.ui.base.BaseView;
 
 import java.util.List;
 

@@ -11,8 +11,8 @@ import android.widget.FrameLayout;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.submission.PostItem;
-import com.matie.redgram.ui.common.base.BaseFragment;
-import com.matie.redgram.ui.common.views.widgets.renders.MDTextView;
+import com.matie.redgram.ui.base.BaseFragment;
+import com.matie.redgram.ui.common.utils.text.markdown.MDTextView;
 import com.matie.redgram.ui.thread.views.PostView;
 
 import butterknife.ButterKnife;

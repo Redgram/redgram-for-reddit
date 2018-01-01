@@ -7,8 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
 import com.matie.redgram.data.models.main.items.UserItem;
-import com.matie.redgram.ui.common.user.views.UserListControllerView;
-import com.matie.redgram.ui.common.views.adapters.UserAdapter;
+import com.matie.redgram.ui.user.views.UserListControllerView;
+import com.matie.redgram.ui.user.views.adapters.UserAdapter;
 
 import java.util.List;
 

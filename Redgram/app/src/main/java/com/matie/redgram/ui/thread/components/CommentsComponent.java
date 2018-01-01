@@ -1,7 +1,7 @@
 package com.matie.redgram.ui.thread.components;
 
 import com.matie.redgram.data.managers.presenters.CommentsPresenter;
-import com.matie.redgram.ui.FragmentScope;
+import com.matie.redgram.ui.scopes.FragmentScope;
 import com.matie.redgram.ui.thread.CommentsFragment;
 import com.matie.redgram.ui.thread.modules.CommentsModule;
 import com.matie.redgram.ui.thread.views.CommentsView;

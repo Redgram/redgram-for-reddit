@@ -1,10 +1,8 @@
 package com.matie.redgram.ui.common.views.widgets.drawer;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
-import com.matie.redgram.ui.common.user.UserListView;
-import com.matie.redgram.ui.common.user.views.UserListControllerView;
+import com.matie.redgram.ui.user.views.UserListControllerView;
 
 /**
  * Created by matie on 2016-05-04.

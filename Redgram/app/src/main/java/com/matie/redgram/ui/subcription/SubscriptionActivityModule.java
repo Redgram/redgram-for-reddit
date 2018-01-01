@@ -2,7 +2,7 @@ package com.matie.redgram.ui.subcription;
 
 import android.app.Activity;
 
-import com.matie.redgram.ui.ActivityScope;
+import com.matie.redgram.ui.scopes.ActivityScope;
 
 import dagger.Module;
 import dagger.Provides;

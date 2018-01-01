@@ -3,7 +3,7 @@ package com.matie.redgram.ui.search;
 import com.matie.redgram.data.managers.presenters.SearchPresenter;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.FragmentScope;
+import com.matie.redgram.ui.scopes.FragmentScope;
 import com.matie.redgram.ui.search.views.SearchView;
 
 import dagger.Module;

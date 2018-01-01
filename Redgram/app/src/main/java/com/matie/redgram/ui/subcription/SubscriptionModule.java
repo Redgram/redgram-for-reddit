@@ -3,7 +3,7 @@ package com.matie.redgram.ui.subcription;
 import com.matie.redgram.data.managers.presenters.SubscriptionPresenter;
 import com.matie.redgram.data.managers.presenters.SubscriptionPresenterImpl;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.FragmentScope;
+import com.matie.redgram.ui.scopes.FragmentScope;
 import com.matie.redgram.ui.subcription.views.SubscriptionView;
 
 import dagger.Module;

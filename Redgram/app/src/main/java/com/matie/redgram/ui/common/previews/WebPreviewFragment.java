@@ -16,8 +16,8 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.submission.PostItem;
-import com.matie.redgram.ui.common.base.SlidingUpPanelActivity;
-import com.matie.redgram.ui.common.main.MainActivity;
+import com.matie.redgram.ui.base.SlidingUpPanelActivity;
+import com.matie.redgram.ui.main.MainActivity;
 import com.matie.redgram.ui.thread.ThreadActivity;
 
 import butterknife.ButterKnife;

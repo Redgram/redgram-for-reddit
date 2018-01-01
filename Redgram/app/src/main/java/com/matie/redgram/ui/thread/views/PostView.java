@@ -1,6 +1,6 @@
 package com.matie.redgram.ui.thread.views;
 
-import com.matie.redgram.ui.common.views.BaseView;
+import com.matie.redgram.ui.base.BaseView;
 
 /**
  * Created by matie on 2016-02-10.

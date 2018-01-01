@@ -13,15 +13,13 @@ import android.widget.LinearLayout;
 import com.matie.redgram.R;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.common.base.BaseActivity;
-import com.matie.redgram.ui.common.base.Fragments;
-import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.base.BaseActivity;
+import com.matie.redgram.ui.base.Fragments;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import io.realm.RealmChangeListener;
 
 /**
  * Created by matie on 2015-11-24.

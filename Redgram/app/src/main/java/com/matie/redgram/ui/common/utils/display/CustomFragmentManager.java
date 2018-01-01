@@ -9,10 +9,6 @@ import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by matie on 2017-09-19.
- */
-
 public class CustomFragmentManager extends android.support.v4.app.FragmentManager.FragmentLifecycleCallbacks {
 
     private List<WeakReference<Fragment>> fragmentList = new ArrayList<>();

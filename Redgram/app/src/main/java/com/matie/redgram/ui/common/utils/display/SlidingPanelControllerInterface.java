@@ -3,7 +3,7 @@ package com.matie.redgram.ui.common.utils.display;
 import android.os.Bundle;
 import android.view.View;
 
-import com.matie.redgram.ui.common.base.Fragments;
+import com.matie.redgram.ui.base.Fragments;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 /**

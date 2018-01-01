@@ -4,13 +4,10 @@ import android.app.Application;
 import android.content.Context;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
-import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
+import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
-/**
- * Created by matie on 21/05/15.
- */
 public class App extends Application {
 
     private AppComponent component;
@@ -18,6 +15,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         setupGraph();
     }
 
@@ -25,6 +23,7 @@ public class App extends Application {
         component = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
                 .build();
+
         component.inject(this);
     }
 

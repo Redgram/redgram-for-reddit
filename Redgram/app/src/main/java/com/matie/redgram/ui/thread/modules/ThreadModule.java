@@ -4,7 +4,7 @@ import android.app.Activity;
 
 import com.matie.redgram.data.managers.presenters.ThreadPresenter;
 import com.matie.redgram.data.managers.presenters.ThreadPresenterImpl;
-import com.matie.redgram.ui.ActivityScope;
+import com.matie.redgram.ui.scopes.ActivityScope;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.thread.ThreadActivity;
@@ -13,9 +13,6 @@ import com.matie.redgram.ui.thread.views.ThreadView;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by matie on 2016-02-10.
- */
 @Module
 public class ThreadModule {
 
@@ -30,7 +27,7 @@ public class ThreadModule {
     @ActivityScope
     @Provides
     ThreadActivity activity(){
-        return (ThreadActivity)activity;
+        return (ThreadActivity) activity;
     }
 
     @ActivityScope
@@ -41,7 +38,9 @@ public class ThreadModule {
 
     @ActivityScope
     @Provides
-    public ThreadView provideView(){return threadView;}
+    public ThreadView provideView() {
+        return threadView;
+    }
 
     @ActivityScope
     @Provides

@@ -3,7 +3,7 @@ package com.matie.redgram.ui.home;
 import com.matie.redgram.data.managers.presenters.HomePresenter;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.FragmentScope;
+import com.matie.redgram.ui.scopes.FragmentScope;
 import com.matie.redgram.ui.home.views.HomeView;
 
 import dagger.Module;

@@ -1,6 +1,6 @@
 package com.matie.redgram.ui.profile.modules;
 
-import com.matie.redgram.ui.ActivityScope;
+import com.matie.redgram.ui.scopes.ActivityScope;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.profile.ProfileActivity;
 

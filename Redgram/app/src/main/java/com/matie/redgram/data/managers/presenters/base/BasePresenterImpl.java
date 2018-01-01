@@ -2,7 +2,7 @@ package com.matie.redgram.data.managers.presenters.base;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.views.BaseView;
+import com.matie.redgram.ui.base.BaseView;
 import com.matie.redgram.ui.common.views.ContentView;
 import com.trello.rxlifecycle.LifecycleTransformer;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;

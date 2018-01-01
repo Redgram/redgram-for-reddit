@@ -3,7 +3,7 @@ package com.matie.redgram.ui.profile.modules;
 import com.matie.redgram.data.managers.presenters.ProfileAboutPresenter;
 import com.matie.redgram.data.managers.presenters.ProfileAboutPresenterImpl;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.FragmentScope;
+import com.matie.redgram.ui.scopes.FragmentScope;
 import com.matie.redgram.ui.profile.views.ProfileAboutView;
 
 import dagger.Module;

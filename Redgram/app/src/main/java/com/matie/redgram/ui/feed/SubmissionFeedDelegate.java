@@ -1,6 +1,6 @@
 package com.matie.redgram.ui.feed;
 
-import com.matie.redgram.ui.common.views.BaseView;
+import com.matie.redgram.ui.base.BaseView;
 import com.matie.redgram.ui.common.views.ContentView;
 
 public abstract class SubmissionFeedDelegate implements ContentView {

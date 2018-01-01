@@ -1,7 +1,7 @@
 package com.matie.redgram.ui.profile.components;
 
 import com.matie.redgram.data.managers.presenters.ProfileAboutPresenter;
-import com.matie.redgram.ui.FragmentScope;
+import com.matie.redgram.ui.scopes.FragmentScope;
 import com.matie.redgram.ui.profile.ProfileAboutFragment;
 import com.matie.redgram.ui.profile.modules.ProfileAboutModule;
 import com.matie.redgram.ui.profile.views.ProfileAboutView;

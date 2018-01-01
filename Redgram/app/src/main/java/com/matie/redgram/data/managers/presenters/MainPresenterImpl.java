@@ -3,7 +3,7 @@ package com.matie.redgram.data.managers.presenters;
 import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.main.views.MainView;
+import com.matie.redgram.ui.main.views.MainView;
 
 public class MainPresenterImpl extends BasePresenterImpl implements MainPresenter {
 

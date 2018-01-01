@@ -10,9 +10,9 @@ import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
-import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
+import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.auth.views.AuthView;
+import com.matie.redgram.ui.auth.views.AuthView;
 
 import javax.inject.Inject;
 

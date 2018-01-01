@@ -2,7 +2,7 @@ package com.matie.redgram.ui;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.managers.storage.db.DatabaseModule;
-import com.matie.redgram.data.network.api.reddit.RedditClientInterface;
+import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.data.network.api.reddit.RedditModule;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.data.network.connection.ConnectionModule;
@@ -12,9 +12,6 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 
-/**
- * Created by matie on 06/06/15.
- */
 @Singleton
 @Component(
         modules = {

@@ -15,7 +15,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.matie.redgram.R;
-import com.matie.redgram.ui.common.base.BaseFragment;
+import com.matie.redgram.ui.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.text.StringFormatter;
 
 import butterknife.ButterKnife;

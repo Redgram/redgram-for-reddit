@@ -17,13 +17,11 @@ import butterknife.ButterKnife;
 public class PostRecyclerView extends RecyclerView {
 
     private final LayoutManager layoutManager;
-//    private final PostAdapter postAdapter;
     private final SubmissionAdapter adapter = new SubmissionAdapter(new PostItemViewCreator());
 
     public PostRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.layoutManager = new LinearLayoutManager(context);
-//        this.postAdapter = new PostAdapter(context, R.layout.post_item_view);
     }
 
     @Override
