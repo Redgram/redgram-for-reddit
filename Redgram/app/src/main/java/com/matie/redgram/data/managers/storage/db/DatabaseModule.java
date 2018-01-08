@@ -1,6 +1,6 @@
 package com.matie.redgram.data.managers.storage.db;
 
-import com.matie.redgram.ui.App;
+import android.content.Context;
 
 import javax.inject.Singleton;
 
@@ -11,7 +11,7 @@ import dagger.Provides;
 public class DatabaseModule {
     @Singleton
     @Provides
-    public DatabaseManager provideSessionManager(App app){
-        return new DatabaseManager(app);
+    public DatabaseManager provideSessionManager(Context context){
+        return new DatabaseManager(context);
     }
 }

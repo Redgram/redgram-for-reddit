@@ -12,7 +12,6 @@ import com.matie.redgram.data.models.db.Subreddit;
 import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.SubredditItem;
-import com.matie.redgram.ui.App;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +44,8 @@ public class DatabaseManager {
     private Token currentAccessToken;
 
     @Inject
-    public DatabaseManager(App app) {
-        this.configuration = new RealmConfiguration.Builder(app.getApplicationContext())
+    public DatabaseManager(Context context) {
+        this.configuration = new RealmConfiguration.Builder(context)
                 .deleteRealmIfMigrationNeeded()
                 .setModules(this)
                 .build();

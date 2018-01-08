@@ -1,175 +1,54 @@
 package com.matie.redgram.data.network.api.reddit.base;
 
 import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
-import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
-import com.matie.redgram.data.network.api.reddit.auth.RedditAuthProvider;
-import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
-import com.matie.redgram.data.network.connection.ConnectionManager;
+import com.matie.redgram.data.network.api.reddit.interceptors.RedditAuthenticator;
+import com.matie.redgram.data.network.api.reddit.interceptors.RedditGeneralInterceptor;
 import com.matie.redgram.data.utils.reddit.BooleanDateDeserializer;
 import com.matie.redgram.data.utils.reddit.DateTimeDeserializer;
 import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
-import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.auth.AuthActivity;
 
 import org.joda.time.DateTime;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import okhttp3.Authenticator;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
-import okhttp3.Challenge;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observable;
 
-public class RedditService extends RedditServiceBase implements RedditAuthInterface {
+public class RedditService extends RedditServiceBase {
 
-    private static final int MAX_AGE = 60; //1 minute
-    private static final int MAX_STALE = 60 * 60 * 24 * 28; //tolerate 4-weeks
     private static final int CACHE_DIR_SIZE = 10 * 1024 * 1024; //
-    private static final String REFRESH_HEADER_TAG = "redgram-refresh-header"; //
 
-    private static final String BASIC = "basic";
-    private static final String BEARER = "bearer";
-
-    private final App app;
-    private final ConnectionManager connectionManager;
     private final Retrofit.Builder retrofitBuilder;
-    private final DatabaseManager sm;
-    private final RedditAuthProvider authProvider;
-    private final String uuid;
+    protected final DatabaseManager databaseManager;
 
-    private class RedditGeneralInterceptor implements Interceptor {
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            boolean isOnline = connectionManager.isOnline();
-
-            Request originalRequest = chain.request();
-            Request.Builder requestBuilder = originalRequest.newBuilder();
-            String authHeader = originalRequest.header("Authorization");
-            String host = originalRequest.url().host();
-
-            if (REDDIT_HOST.equalsIgnoreCase(host)) {
-                requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
-                requestBuilder.addHeader("accept", "application/json");
-                requestBuilder.addHeader("Authorization", getCredentials());
-            } else if (OAUTH_HOST.equalsIgnoreCase(host)) {
-                requestBuilder.addHeader("content-type", "application/x-www-form-urlencoded");
-                requestBuilder.addHeader("accept", "application/json");
-
-                if (authHeader == null) {
-                    if (getToken() == null) {
-                        app.startActivity(AuthActivity.intent(app, true));
-                        return null;
-                    }
-
-                    requestBuilder.addHeader("Authorization", "bearer "+ getToken());
-                }
-
-                if (!isOnline) {
-                    connectionManager.showConnectionStatus(false);
-                    requestBuilder.addHeader("Cache-Control",
-                            "public, only-if-cached, max-stale=" + MAX_STALE);
-                    Log.d("CSTATUS", "no connection!, stale = " + MAX_STALE);
-                }
-            }
-
-            Request request = requestBuilder.build();
-
-            Response.Builder responseBuilder = chain.proceed(request).newBuilder();
-
-            if (OAUTH_HOST.equalsIgnoreCase(originalRequest.url().host()) && isOnline) {
-                responseBuilder.header("cache-control", "public, max-age=" + MAX_AGE);
-                responseBuilder.header("Connection-Status", "Connected");
-                Log.d("CSTATUS", "connected to internet! age = " + MAX_AGE + " seconds");
-            }
-
-            return responseBuilder.build();
-        }
-    }
-
-    private class RedditAuthenticator implements Authenticator {
-        @Override
-        public Request authenticate(Route route, Response response) throws IOException {
-            if ((response.code() != 401 && response.code() != 403) || response.message() == null) {
-                return null;
-            }
-
-            //unauthorized
-            List<Challenge> challenges = response.challenges();
-            for (Challenge challenge : challenges) {
-                String scheme = challenge.scheme();
-                if (BEARER.equalsIgnoreCase(scheme)) {
-                    String refreshToken = getRefreshToken();
-                    retrofit2.Response<AccessToken> accessToken;
-
-                    if (refreshToken != null && !refreshToken.isEmpty()) {
-                        accessToken = refreshToken().execute();
-                    } else {
-                        // app only grant does not receive a refresh token
-                        accessToken = getAccessToken().execute();
-                    }
-
-                    if (accessToken != null && accessToken.isSuccess() && accessToken.body().getAccessToken() != null) {
-                        updateToken(accessToken.body());
-
-                        return response.request().newBuilder()
-                                .header("Authorization", BEARER + " " + getToken())
-                                .build();
-                    } else {
-                        app.startActivity(AuthActivity.intent(app, true));
-                    }
-
-                } else if (BASIC.equalsIgnoreCase(scheme)) {
-                    Log.d("Unauthorized", response.code() + " - Basic Auth failed.");
-
-                    if (response.request().header(REFRESH_HEADER_TAG).equalsIgnoreCase(REFRESH_HEADER_TAG)) {
-                        // if refresh token mechanism is unauthorized return a message
-                        app.getToastHandler().showBackgroundToast(response.code() + " - Unauthorized Refresh Token", Toast.LENGTH_LONG);
-                        app.startActivity(AuthActivity.intent(app, true));
-                    }
-                }
-            }
-
-
-            return null;
-        }
-    }
+    private final RedditAuthenticator authenticator;
+    private final RedditGeneralInterceptor interceptor;
 
     @Inject
-    public RedditService(App application) {
-        app = application;
-        connectionManager = app.getConnectionManager();
-        sm = app.getDatabaseManager();
-
-        final Context context = app.getApplicationContext();
-        retrofitBuilder = getRetrofitBuilder(context);
-
-        authProvider = buildRetrofit(REDDIT_HOST_ABSOLUTE).create(RedditAuthProvider.class);
-        uuid = UUID.randomUUID().toString();
+    public RedditService(Context context,
+                         DatabaseManager databaseManager,
+                         RedditAuthenticator authenticator,
+                         RedditGeneralInterceptor interceptor) {
+        this.databaseManager = databaseManager;
+        this.retrofitBuilder = getRetrofitBuilder(context);
+        this.authenticator = authenticator;
+        this.interceptor = interceptor;
     }
 
     protected Retrofit buildRetrofit(String host) {
@@ -186,8 +65,8 @@ public class RedditService extends RedditServiceBase implements RedditAuthInterf
     private OkHttpClient myHttpClient(final Context context) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
-        builder.addInterceptor(getMainInterceptor());
-        builder.authenticator(new RedditAuthenticator());
+        builder.addInterceptor(interceptor);
+        builder.authenticator(authenticator);
 //        builder.addInterceptor(getCachingInterceptor());
         builder.cache(myCache(context));
 
@@ -226,73 +105,19 @@ public class RedditService extends RedditServiceBase implements RedditAuthInterf
         };
     }
 
-    private Interceptor getMainInterceptor() {
-        return new RedditGeneralInterceptor();
-    }
-
-    private void updateToken(AccessToken body) {
-        sm.setTokenInfo(body);
-        //update to new token info
-        sm.setCurrentToken(sm.getSessionUser().getTokenInfo());
-    }
-
-    @Override
-    public Observable<AccessToken> getAccessToken(String code) {
-        return authProvider.obtainAccessToken(GRANT_TYPE_AUTHORIZE, code, REDIRECT_URI);
-    }
-
-    public Observable<AccessToken> getAccessTokenObservable() {
-        return authProvider.obtainAccessToken(GRANT_TYPE_INSTALLED, uuid);
-    }
-
-    @Override
-    public Call<AccessToken> getAccessToken() {
-        return authProvider.obtainAccessTokenSync(GRANT_TYPE_INSTALLED, uuid);
-    }
-
-    @Override
-    public Call<AccessToken> refreshToken() {
-        return authProvider.refreshAccessToken(REFRESH_HEADER_TAG, GRANT_TYPE_REFRESH, getRefreshToken());
-    }
-
-    //revoke token of the current authenticated user
-    @Override
-    public Observable<AccessToken> revokeToken(String tokenType){
-        if (RedditAuthProvider.ACCESS_TOKEN.equalsIgnoreCase(tokenType)) {
-            return authProvider.revokeToken(getToken(), tokenType);
-        } else if (RedditAuthProvider.REFRESH_TOKEN.equalsIgnoreCase(tokenType)) {
-            return authProvider.revokeToken(getRefreshToken(), tokenType);
-        }
-
-        return null;
-    }
-
-    //revoke token passed to this method
-    //returns code 204 even if the token was invalid
-    @Override
-    public Observable<AccessToken> revokeToken(String token, String tokenType) {
-        if (RedditAuthProvider.ACCESS_TOKEN.equalsIgnoreCase(tokenType)
-                || RedditAuthProvider.REFRESH_TOKEN.equalsIgnoreCase(tokenType)) {
-            return authProvider.revokeToken(token, tokenType);
+    protected String getRefreshToken() {
+        if (databaseManager.getCurrentToken() != null) {
+            return databaseManager.getCurrentToken().getRefreshToken();
         }
 
         return null;
     }
 
     protected String getToken() {
-        if (sm.getCurrentToken() != null) {
-            return sm.getCurrentToken().getToken();
+        if (databaseManager.getCurrentToken() != null) {
+            return databaseManager.getCurrentToken().getToken();
         }
 
         return null;
     }
-
-    private String getRefreshToken() {
-        if (sm.getCurrentToken() != null) {
-            return sm.getCurrentToken().getRefreshToken();
-        }
-
-        return null;
-    }
-
 }

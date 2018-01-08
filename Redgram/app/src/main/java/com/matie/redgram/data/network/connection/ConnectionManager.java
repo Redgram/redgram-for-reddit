@@ -13,9 +13,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-/**
- * Created by matie on 22/05/15.
- */
 public class ConnectionManager {
 
     private Context mContext;

@@ -1,11 +1,12 @@
 package com.matie.redgram.data.network.api.reddit.user;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.google.gson.JsonElement;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
-import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
 import com.matie.redgram.data.models.api.reddit.base.RedditResponse;
 import com.matie.redgram.data.models.api.reddit.main.RedditComment;
@@ -14,19 +15,19 @@ import com.matie.redgram.data.models.api.reddit.main.RedditListing;
 import com.matie.redgram.data.models.api.reddit.main.RedditMore;
 import com.matie.redgram.data.models.api.reddit.main.RedditSubreddit;
 import com.matie.redgram.data.models.api.reddit.main.RedditUser;
-import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.base.BaseModel;
 import com.matie.redgram.data.models.main.base.Listing;
-import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.items.UserItem;
+import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentMoreItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentsWrapper;
 import com.matie.redgram.data.network.api.reddit.base.RedditService;
-import com.matie.redgram.ui.App;
+import com.matie.redgram.data.network.api.reddit.interceptors.RedditAuthenticator;
+import com.matie.redgram.data.network.api.reddit.interceptors.RedditGeneralInterceptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,47 +39,20 @@ import javax.inject.Inject;
 import rx.Observable;
 
 public class RedditClient extends RedditService implements RedditClientInterface {
-    public static final String BEFORE = "before";
-    public static final String AFTER = "after";
-    public static final String MODHASH = "modhash";
+    private static final String BEFORE = "before";
+    private static final String AFTER = "after";
+    private static final String MODHASH = "modhash";
 
     private final RedditProvider provider;
 
     @Inject
-    public RedditClient(App app) {
-        super(app);
+    public RedditClient(Context context,
+                        DatabaseManager databaseManager,
+                        RedditAuthenticator authenticator,
+                        RedditGeneralInterceptor interceptor) {
+        super(context, databaseManager, authenticator, interceptor);
 
         this.provider = buildRetrofit(OAUTH_HOST_ABSOLUTE).create(RedditProvider.class);
-    }
-
-    @Override
-    public Observable<AuthWrapper> getAuthWrapper(String code){
-        return getAccessToken(code)
-                .filter(accessToken -> accessToken.getAccessToken() != null) //make sure it's not null
-                .flatMap(accessToken -> {
-                    String token = accessToken.getAccessToken();
-                    return Observable.zip(getUser(token), getUserPrefs(token), Observable.just(accessToken),
-                        (authUser, authPrefs, accessToken1) -> {
-                            AuthWrapper wrapper = new AuthWrapper();
-                            wrapper.setAccessToken(accessToken1);
-                            wrapper.setAuthUser(authUser);
-                            wrapper.setAuthPrefs(authPrefs);
-                            wrapper.setType(User.USER_AUTH);
-                            return wrapper;
-                    });
-                });
-    }
-
-    @Override
-    public Observable<AuthWrapper> getAuthWrapper(){
-        return getAccessTokenObservable()
-                .filter(accessToken -> accessToken.getAccessToken() != null) //make sure it's not null
-                .map(accessToken -> {
-                    AuthWrapper wrapper = new AuthWrapper();
-                    wrapper.setAccessToken(accessToken);
-                    wrapper.setType(User.USER_GUEST);
-                    return wrapper;
-                });
     }
 
     @Override

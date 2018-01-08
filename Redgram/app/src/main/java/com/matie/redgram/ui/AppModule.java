@@ -1,6 +1,6 @@
 package com.matie.redgram.ui;
 
-import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
+import android.content.Context;
 
 import javax.inject.Singleton;
 
@@ -18,14 +18,8 @@ public class AppModule {
 
     @Singleton
     @Provides
-    public App provideApplication(){
-        return app;
-    }
-
-    @Singleton
-    @Provides
-    public ToastHandler provideToastHandler(){
-        return new ToastHandler(app.getApplicationContext());
+    public Context provideContext(){
+        return app.getApplicationContext();
     }
 
 }

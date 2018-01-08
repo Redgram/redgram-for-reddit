@@ -7,28 +7,25 @@ import android.widget.Toast;
 
 import javax.inject.Inject;
 
-/**
- * Created by matie on 23/09/15.
- */
 public class ToastHandler {
 
-    private Context mContext;
-    private Handler handler;
+    private final Context context;
+    private final Handler handler;
 
     @Inject
     public ToastHandler(Context context) {
-        mContext = context;
-        handler = new Handler(Looper.getMainLooper());
+        this.context = context;
+        this.handler = new Handler(Looper.getMainLooper());
     }
 
     @Deprecated
     public void showToast(String msg, int length){
-        Toast.makeText(mContext, msg, length).show();
+        Toast.makeText(context, msg, length).show();
     }
 
     @Deprecated
     public void showBackgroundToast(String msg, int length){
-        handler.post(() -> Toast.makeText(mContext, msg, length).show());
+        handler.post(() -> Toast.makeText(context, msg, length).show());
     }
 
     public static void showToast(Context context, String msg, int length) {

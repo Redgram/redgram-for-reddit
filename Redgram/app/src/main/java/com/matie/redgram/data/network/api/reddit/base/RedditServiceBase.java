@@ -1,7 +1,5 @@
 package com.matie.redgram.data.network.api.reddit.base;
 
-import android.util.Base64;
-
 import com.matie.redgram.data.network.api.ApiBase;
 
 public abstract class RedditServiceBase extends ApiBase {
@@ -24,7 +22,10 @@ public abstract class RedditServiceBase extends ApiBase {
 
     public static final String API_KEY = "SWISrdD3qV882w";
     private static final String API_SECRET = "";
-    private static final String CREDENTIALS = API_KEY+":"+API_SECRET;
+    public static final String CREDENTIALS = API_KEY+":"+API_SECRET;
+
+    public static final String BASIC = "basic";
+    public static final String BEARER = "bearer";
 
     @Override
     public String getKey() {
@@ -34,11 +35,5 @@ public abstract class RedditServiceBase extends ApiBase {
     @Override
     public String getSecret() {
         return API_SECRET;
-    }
-
-
-    public String getCredentials() {
-        return "Basic " +
-                Base64.encodeToString(CREDENTIALS.getBytes(), Base64.NO_WRAP);
     }
 }

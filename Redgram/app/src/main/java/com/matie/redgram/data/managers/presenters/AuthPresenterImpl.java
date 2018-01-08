@@ -5,11 +5,14 @@ import android.widget.Toast;
 
 import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
+import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
+import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
+import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
 import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.auth.views.AuthView;
@@ -19,6 +22,7 @@ import javax.inject.Inject;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
+import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -28,6 +32,7 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
 
     private final AuthView authView;
     private final RedditClientInterface redditClient;
+    private final RedditAuthInterface redditAuthClient;
     private Realm realm;
     private String authCode = "";
 
@@ -36,6 +41,7 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
         super(authView, app);
         this.authView = (AuthView) view;
         this.redditClient = app.getRedditClient();
+        this.redditAuthClient = app.getRedditAuthClient();
         this.realm = getRealmInstance();
     }
 
@@ -80,7 +86,7 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
     @Override
     public void getAccessToken() {
         authView.showLoading();
-        Subscription authSubscription = redditClient.getAuthWrapper()
+        Subscription authSubscription = redditAuthClient.getAuthWrapper()
                 .compose(getTransformer())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -105,7 +111,7 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
     }
 
     private void bindAuthSubscription() {
-        Subscription authSubscription = redditClient.getAuthWrapper(authCode)
+        Subscription authSubscription = getAuthWrapper(authCode)
                 .compose(getTransformer())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -126,6 +132,27 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
                 });
 
         addSubscription(authSubscription);
+    }
+
+    private Observable<AuthWrapper> getAuthWrapper(String code) {
+        return redditAuthClient.getAccessToken(code)
+                .filter(accessToken -> accessToken.getAccessToken() != null) //make sure it's not null
+                .flatMap(accessToken -> {
+                    String token = accessToken.getAccessToken();
+
+                    final Observable<AuthUser> user = redditClient.getUser(token);
+                    final Observable<AuthPrefs> userPrefs = redditClient.getUserPrefs(token);
+
+                    return Observable.zip(user, userPrefs, Observable.just(accessToken),
+                            (authUser, authPrefs, accessToken1) -> {
+                                AuthWrapper wrapper = new AuthWrapper();
+                                wrapper.setAccessToken(accessToken1);
+                                wrapper.setAuthUser(authUser);
+                                wrapper.setAuthPrefs(authPrefs);
+                                wrapper.setType(User.USER_AUTH);
+                                return wrapper;
+                            });
+                });
     }
 
     @Override

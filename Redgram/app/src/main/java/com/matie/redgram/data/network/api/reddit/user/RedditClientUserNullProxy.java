@@ -3,10 +3,8 @@ package com.matie.redgram.data.network.api.reddit.user;
 import android.support.annotation.Nullable;
 
 import com.google.gson.JsonElement;
-import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
-import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.api.reddit.main.RedditUser;
 import com.matie.redgram.data.models.main.base.BaseModel;
 import com.matie.redgram.data.models.main.base.Listing;
@@ -18,7 +16,6 @@ import com.matie.redgram.data.models.main.items.submission.comment.CommentsWrapp
 import java.util.List;
 import java.util.Map;
 
-import retrofit2.Call;
 import rx.Observable;
 
 /**
@@ -27,15 +24,6 @@ import rx.Observable;
  *
  */
 public class RedditClientUserNullProxy implements RedditClientInterface {
-    @Override
-    public Observable<AuthWrapper> getAuthWrapper(String code) {
-        return null;
-    }
-
-    @Override
-    public Observable<AuthWrapper> getAuthWrapper() {
-        return null;
-    }
 
     @Override
     public Observable<RedditUser> getUserDetails(String username) {
@@ -135,38 +123,4 @@ public class RedditClientUserNullProxy implements RedditClientInterface {
     }
 
     //end user
-
-    //oauth
-
-    @Override
-    public Observable<AccessToken> getAccessToken(String code) {
-        return null;
-    }
-
-    @Override
-    public Observable<AccessToken> getAccessTokenObservable() {
-        return null;
-    }
-
-    @Override
-    public Call<AccessToken> getAccessToken() {
-        return null;
-    }
-
-    @Override
-    public Call<AccessToken> refreshToken() {
-        return null;
-    }
-
-    @Override
-    public Observable<AccessToken> revokeToken(String tokenType) {
-        return null;
-    }
-
-    @Override
-    public Observable<AccessToken> revokeToken(String token, String tokenType) {
-        return null;
-    }
-
-    //end oauth
 }

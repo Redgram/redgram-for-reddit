@@ -5,15 +5,14 @@ import android.support.annotation.Nullable;
 import com.google.gson.JsonElement;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
-import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
 import com.matie.redgram.data.models.api.reddit.main.RedditUser;
-import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.base.BaseModel;
-import com.matie.redgram.data.models.main.items.submission.PostItem;
+import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.models.main.items.UserItem;
+import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentsWrapper;
-import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
+import com.matie.redgram.data.network.api.reddit.base.RedditServiceInterface;
 import com.matie.redgram.data.network.api.utils.AccessLevel;
 import com.matie.redgram.data.network.api.utils.Security;
 
@@ -22,14 +21,7 @@ import java.util.Map;
 
 import rx.Observable;
 
-public interface RedditClientInterface extends RedditAuthInterface {
-
-    //auth
-    @Security(accessLevel = AccessLevel.ANY)
-    Observable<AuthWrapper> getAuthWrapper(String code);
-
-    @Security(accessLevel = AccessLevel.ANY)
-    Observable<AuthWrapper> getAuthWrapper();
+public interface RedditClientInterface extends RedditServiceInterface {
 
     //public + user
     @Security(accessLevel = AccessLevel.ANY)
