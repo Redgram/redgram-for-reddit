@@ -10,7 +10,6 @@ import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.home.HomeViewWrapper;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.home.views.HomeView;
 
 import java.util.ArrayList;
@@ -32,16 +31,14 @@ public class HomePresenterImpl extends BasePresenterImpl implements HomePresente
 
     private final HomeView homeView;
     private final RedditClientInterface redditClient;
-    private final DatabaseManager databaseManager;
     private final Session session;
     private List<SubredditItem> subredditItems;
 
     @Inject
-    public HomePresenterImpl(HomeView homeView, App app) {
-        super(homeView, app);
+    public HomePresenterImpl(HomeView homeView, DatabaseManager databaseManager, RedditClientInterface redditClient) {
+        super(homeView, databaseManager);
         this.homeView = (HomeView) view;
-        this.redditClient = app.getRedditClient();
-        this.databaseManager = databaseManager();
+        this.redditClient = redditClient;
         this.subredditItems = new ArrayList<>();
 
         this.session = databaseManager.getSession();

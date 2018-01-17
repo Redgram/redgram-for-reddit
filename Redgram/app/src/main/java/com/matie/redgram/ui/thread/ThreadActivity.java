@@ -31,7 +31,6 @@ import com.matie.redgram.data.managers.media.video.ImageManager;
 import com.matie.redgram.data.managers.presenters.ThreadPresenterImpl;
 import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.base.ViewPagerActivity;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
@@ -90,8 +89,6 @@ public class ThreadActivity extends ViewPagerActivity
     //dagger
     ThreadComponent threadComponent;
 
-    @Inject
-    App app;
     @Inject
     ThreadPresenterImpl threadPresenter;
     @Inject
@@ -521,12 +518,12 @@ public class ThreadActivity extends ViewPagerActivity
     @Override
     public void openInBrowser() {
         MaterialDialog.ListCallback callback = LinksHelper.getBrowseCallback(this, postItem);
-        LinksHelper.showExternalDialog(dialogUtil, "Open in Browser" ,callback);
+        LinksHelper.showExternalDialog(this, "Open in Browser", callback);
     }
     @Override
     public void copyItemLink() {
-        MaterialDialog.ListCallback callback = LinksHelper.getCopyCallback(this, app.getToastHandler(), postItem);
-        LinksHelper.showExternalDialog(dialogUtil, "Copy" ,callback);
+        MaterialDialog.ListCallback callback = LinksHelper.getCopyCallback(this, postItem);
+        LinksHelper.showExternalDialog(this, "Copy" ,callback);
     }
 
     @Override

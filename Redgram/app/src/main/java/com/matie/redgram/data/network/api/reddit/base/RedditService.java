@@ -7,8 +7,6 @@ import com.google.gson.GsonBuilder;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.base.BooleanDate;
 import com.matie.redgram.data.models.api.reddit.base.RedditObject;
-import com.matie.redgram.data.network.api.reddit.interceptors.RedditAuthenticator;
-import com.matie.redgram.data.network.api.reddit.interceptors.RedditGeneralInterceptor;
 import com.matie.redgram.data.utils.reddit.BooleanDateDeserializer;
 import com.matie.redgram.data.utils.reddit.DateTimeDeserializer;
 import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
@@ -16,10 +14,10 @@ import com.matie.redgram.data.utils.reddit.RedditObjectDeserializer;
 import org.joda.time.DateTime;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
+import okhttp3.Authenticator;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Interceptor;
@@ -30,25 +28,19 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RedditService extends RedditServiceBase {
+public abstract class RedditService extends RedditServiceBase {
 
-    private static final int CACHE_DIR_SIZE = 10 * 1024 * 1024; //
+    private static final int CACHE_DIR_SIZE = 10 * 1024 * 1024;
 
+    protected final Context context;
     private final Retrofit.Builder retrofitBuilder;
     protected final DatabaseManager databaseManager;
 
-    private final RedditAuthenticator authenticator;
-    private final RedditGeneralInterceptor interceptor;
-
-    @Inject
     public RedditService(Context context,
-                         DatabaseManager databaseManager,
-                         RedditAuthenticator authenticator,
-                         RedditGeneralInterceptor interceptor) {
+                         DatabaseManager databaseManager) {
+        this.context = context;
         this.databaseManager = databaseManager;
         this.retrofitBuilder = getRetrofitBuilder(context);
-        this.authenticator = authenticator;
-        this.interceptor = interceptor;
     }
 
     protected Retrofit buildRetrofit(String host) {
@@ -65,13 +57,28 @@ public class RedditService extends RedditServiceBase {
     private OkHttpClient myHttpClient(final Context context) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
-        builder.addInterceptor(interceptor);
-        builder.authenticator(authenticator);
+
+        List<Interceptor> interceptors = getInterceptors();
+        for (Interceptor interceptor : interceptors) {
+            if (interceptor == null) continue;
+            builder.addInterceptor(interceptor);
+        }
+
+        List<Authenticator> authenticators = getAuthenticators();
+        for (Authenticator authenticator : authenticators) {
+            if (authenticator == null) continue;
+            builder.authenticator(authenticator);
+        }
+
 //        builder.addInterceptor(getCachingInterceptor());
         builder.cache(myCache(context));
 
         return builder.build();
     }
+
+    protected abstract List<Authenticator> getAuthenticators();
+
+    protected abstract List<Interceptor> getInterceptors();
 
     protected static Gson getGson() {
         return new GsonBuilder()

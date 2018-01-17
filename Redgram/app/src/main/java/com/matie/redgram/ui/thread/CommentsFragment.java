@@ -18,6 +18,7 @@ import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.base.BaseActivity;
 import com.matie.redgram.ui.base.BaseFragment;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.thread.components.CommentsComponent;
 import com.matie.redgram.ui.thread.components.DaggerCommentsComponent;
 import com.matie.redgram.ui.thread.components.ThreadComponent;
@@ -43,8 +44,6 @@ public class CommentsFragment extends BaseFragment implements CommentsView {
 
     CommentsComponent component;
 
-    @Inject
-    App app;
     @Inject
     CommentsPresenterImpl commentsPresenter;
     @Inject
@@ -95,7 +94,7 @@ public class CommentsFragment extends BaseFragment implements CommentsView {
     @Override
     public void expandItem(int position) {
         CommentItem item = (CommentItem)getItem(position);
-        if(item.hasReplies() && !item.isExpanded()){
+        if (item.hasReplies() && !item.isExpanded()) {
             item.setIsExpanded(true);
             int start = position+1;
             int count = (position+item.getChildCount());
@@ -103,15 +102,15 @@ public class CommentsFragment extends BaseFragment implements CommentsView {
             collapsedComments.remove(item.getId());
             commentRecyclerView.getAdapter().notifyItemRangeInserted(start, count);
             commentRecyclerView.getAdapter().notifyItemChanged(position);
-        }else{
-            app.getToastHandler().showToast("do nothing", Toast.LENGTH_SHORT);
+        } else {
+            ToastHandler.showToast(getContext(), "do nothing", Toast.LENGTH_SHORT);
         }
     }
 
     @Override
     public void collapseItem(int position) {
         CommentItem item = (CommentItem)getItem(position);
-        if(item.hasReplies() && item.isExpanded()){
+        if (item.hasReplies() && item.isExpanded()) {
             item.setIsExpanded(false);
             int start = position + 1;
             int count = (position+item.getChildCount());
@@ -125,8 +124,8 @@ public class CommentsFragment extends BaseFragment implements CommentsView {
             getCommentItems().removeAll(targetItems);
             commentRecyclerView.getAdapter().notifyItemRangeRemoved(start, count);
             commentRecyclerView.getAdapter().notifyItemChanged(position);
-        }else{
-            app.getToastHandler().showToast("do nothing", Toast.LENGTH_SHORT);
+        } else {
+            ToastHandler.showToast(getContext(), "do nothing", Toast.LENGTH_SHORT);
         }
     }
 
@@ -153,7 +152,7 @@ public class CommentsFragment extends BaseFragment implements CommentsView {
     @Override
     public void loadMore(int position) {
         if (commentItems.get(position) instanceof CommentMoreItem) {
-            app.getToastHandler().showToast("load more", Toast.LENGTH_SHORT);
+            ToastHandler.showToast(getContext(), "load more", Toast.LENGTH_SHORT);
         }
     }
 

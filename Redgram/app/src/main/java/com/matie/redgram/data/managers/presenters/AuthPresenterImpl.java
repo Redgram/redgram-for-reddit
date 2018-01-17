@@ -1,10 +1,10 @@
 package com.matie.redgram.data.managers.presenters;
 
 import android.net.Uri;
-import android.widget.Toast;
 
 import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseHelper;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.api.reddit.auth.AuthUser;
 import com.matie.redgram.data.models.api.reddit.auth.AuthWrapper;
@@ -14,7 +14,6 @@ import com.matie.redgram.data.models.db.Token;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
 import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.auth.views.AuthView;
 
 import javax.inject.Inject;
@@ -37,11 +36,15 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
     private String authCode = "";
 
     @Inject
-    public AuthPresenterImpl(AuthView authView, App app) {
-        super(authView, app);
+    public AuthPresenterImpl(AuthView authView,
+                             DatabaseManager databaseManager,
+                             RedditAuthInterface authClient,
+                             RedditClientInterface client) {
+        super(authView, databaseManager);
+
         this.authView = (AuthView) view;
-        this.redditClient = app.getRedditClient();
-        this.redditAuthClient = app.getRedditAuthClient();
+        this.redditClient = client;
+        this.redditAuthClient = authClient;
         this.realm = getRealmInstance();
     }
 
@@ -51,6 +54,7 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
 
     public void addRealmChangeListener(RealmChangeListener realmChangeListener) {
         if (realm == null || realmChangeListener == null) return;
+
         realm.addChangeListener(realmChangeListener);
     }
 
@@ -93,7 +97,6 @@ public class AuthPresenterImpl extends BasePresenterImpl implements AuthPresente
                 .subscribe(new Subscriber<AuthWrapper>() {
                     @Override
                     public void onCompleted() {
-                        app.getToastHandler().showToast("Guest User Updated", Toast.LENGTH_LONG);
                     }
 
                     @Override

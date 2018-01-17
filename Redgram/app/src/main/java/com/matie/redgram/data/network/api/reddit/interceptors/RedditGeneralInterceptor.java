@@ -8,8 +8,6 @@ import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -23,22 +21,20 @@ import static com.matie.redgram.data.network.api.reddit.base.RedditServiceBase.R
 
 public class RedditGeneralInterceptor implements Interceptor {
 
-    public interface InterceptorListener {
-        void onInterceptAuthRequest();
-    }
-
     private static final int MAX_AGE = 60; //1 minute
     private static final int MAX_STALE = 60 * 60 * 24 * 28; // tolerate 4-weeks
 
     private final ConnectionManager connectionManager;
     private final DatabaseManager databaseManager;
-    private final Set<InterceptorListener> listeners = new HashSet<>();
+    private final AuthenticatorListener listener;
 
     @Inject
     public RedditGeneralInterceptor(ConnectionManager connectionManager,
-                                    DatabaseManager databaseManager) {
+                                    DatabaseManager databaseManager,
+                                    AuthenticatorListener listener) {
         this.connectionManager = connectionManager;
         this.databaseManager = databaseManager;
+        this.listener = listener;
     }
 
     @Override
@@ -62,7 +58,7 @@ public class RedditGeneralInterceptor implements Interceptor {
                 final String token = getToken();
 
                 if (token == null) {
-                    notifyListeners();
+                    listener.onAuthenticationRequest();
                     return null;
                 }
 
@@ -93,22 +89,6 @@ public class RedditGeneralInterceptor implements Interceptor {
     private String getCredentials() {
         return "Basic " +
                 Base64.encodeToString(CREDENTIALS.getBytes(), Base64.NO_WRAP);
-    }
-
-    public void addListener(InterceptorListener listener) {
-        if (listener == null || listeners.contains(listener)) return;
-
-        listeners.add(listener);
-    }
-
-    public void removeListener(InterceptorListener listener) {
-        if (listener == null) return;
-
-        listeners.remove(listener);
-    }
-
-    private void notifyListeners() {
-        listeners.forEach(InterceptorListener::onInterceptAuthRequest);
     }
 
     private String getToken() {

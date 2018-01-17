@@ -4,9 +4,10 @@ import android.app.Activity;
 
 import com.matie.redgram.data.managers.presenters.ThreadPresenter;
 import com.matie.redgram.data.managers.presenters.ThreadPresenterImpl;
-import com.matie.redgram.ui.scopes.ActivityScope;
-import com.matie.redgram.ui.App;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.scopes.ActivityScope;
 import com.matie.redgram.ui.thread.ThreadActivity;
 import com.matie.redgram.ui.thread.views.ThreadView;
 
@@ -44,7 +45,8 @@ public class ThreadModule {
 
     @ActivityScope
     @Provides
-    public ThreadPresenter provideThreadPresenter(App app){
-        return new ThreadPresenterImpl(threadView, app);
+    public ThreadPresenter provideThreadPresenter(DatabaseManager databaseManager,
+                                                  RedditClientInterface redditClient){
+        return new ThreadPresenterImpl(threadView, databaseManager, redditClient);
     }
 }

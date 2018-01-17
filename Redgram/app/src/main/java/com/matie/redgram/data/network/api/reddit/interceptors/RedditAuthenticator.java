@@ -2,17 +2,13 @@ package com.matie.redgram.data.network.api.reddit.interceptors;
 
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
-import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -28,19 +24,17 @@ import static com.matie.redgram.data.network.api.reddit.base.RedditServiceBase.B
 
 public class RedditAuthenticator implements Authenticator {
 
-    public interface AuthenticatorListener {
-        void onAuthRequested();
-    }
-
     private final DatabaseManager databaseManager;
-    private final ToastHandler toastHandler;
-    private final Set<AuthenticatorListener> listeners = new HashSet<>();
+    private final RedditAuthInterface redditAuthClient;
+    private final AuthenticatorListener listener;
 
     @Inject
-    public RedditAuthenticator(ToastHandler toastHandler,
-                               DatabaseManager databaseManager) {
+    public RedditAuthenticator(DatabaseManager databaseManager,
+                               RedditAuthInterface redditAuthClient,
+                               AuthenticatorListener listener) {
         this.databaseManager = databaseManager;
-        this.toastHandler = toastHandler;
+        this.redditAuthClient = redditAuthClient;
+        this.listener = listener;
     }
 
     @Override
@@ -71,7 +65,7 @@ public class RedditAuthenticator implements Authenticator {
                             .header("Authorization", BEARER + " " + getToken())
                             .build();
                 } else {
-                    notifyListeners();
+                    listener.onAuthenticationRequest();
                 }
 
             } else if (BASIC.equalsIgnoreCase(scheme)) {
@@ -79,8 +73,8 @@ public class RedditAuthenticator implements Authenticator {
 
                 if (response.request().header(REFRESH_HEADER_TAG).equalsIgnoreCase(REFRESH_HEADER_TAG)) {
                     // if refresh token mechanism is unauthorized return a message
-                    toastHandler.showBackgroundToast(response.code() + " - Unauthorized Refresh Token", Toast.LENGTH_LONG);
-                    notifyListeners();
+                    Log.e("Unauth Refresh Token", response.code() + " - Refresh Token Failed");
+                    listener.onAuthenticationRequest();
                 }
             }
         }
@@ -93,22 +87,6 @@ public class RedditAuthenticator implements Authenticator {
         databaseManager.setTokenInfo(body);
         //update to new token info
         databaseManager.setCurrentToken(databaseManager.getSessionUser().getTokenInfo());
-    }
-
-    public void addListener(AuthenticatorListener listener) {
-        if (listener == null || listeners.contains(listener)) return;
-
-        listeners.add(listener);
-    }
-
-    public void removeListener(AuthenticatorListener listener) {
-        if (listener == null) return;
-
-        listeners.remove(listener);
-    }
-
-    private void notifyListeners() {
-        listeners.forEach(AuthenticatorListener::onAuthRequested);
     }
 
     private String getRefreshToken() {

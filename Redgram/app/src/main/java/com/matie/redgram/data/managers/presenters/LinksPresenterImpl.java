@@ -1,9 +1,9 @@
 package com.matie.redgram.data.managers.presenters;
 
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 
 import com.google.gson.JsonElement;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.api.reddit.auth.AuthPrefs;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.base.Listing;
@@ -11,8 +11,6 @@ import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.data.network.api.utils.subscriber.NullCheckSubscriber;
 import com.matie.redgram.data.network.api.utils.subscriber.NullSubscriptionExecutor;
-import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.feed.links.views.LinksView;
 
 import java.util.Map;
@@ -27,9 +25,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements LinksPresenter {
+
     private final LinksView linksView;
     private final RedditClientInterface redditClient;
-    private final ToastHandler toastHandler;
 
     //states
     private String loadMoreId;
@@ -37,12 +35,11 @@ public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements L
     private int removedItemPosition;
 
     @Inject
-    public LinksPresenterImpl(LinksView linksView, App app) {
-        super(linksView, app);
+    public LinksPresenterImpl(LinksView linksView, DatabaseManager databaseManager, RedditClientInterface redditClient) {
+        super(linksView, databaseManager);
 
         this.linksView = (LinksView) view;
-        this.redditClient = app.getRedditClient();
-        this.toastHandler = app.getToastHandler();
+        this.redditClient = redditClient;
         this.loadMoreId = "";
     }
 
@@ -51,6 +48,7 @@ public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements L
         if(params.containsKey("after")){
             params.remove("after");
         }
+
         params.put("limit", getPrefs().getNumSites() + "");
         linksView.showLoading();
 
@@ -233,7 +231,8 @@ public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements L
                     public void executeOnNext(JsonElement data) {
                         linksView.removeItem(position);
                         hide(position, name, false);
-                        toastHandler.showBackgroundToast("Reported", Toast.LENGTH_LONG);
+
+                        //// TODO: 2018-01-16 show "Reported" in the view
                     }
 
                     @Override
@@ -267,7 +266,7 @@ public class LinksPresenterImpl extends SubmissionFeedPresenterImpl implements L
 
                     @Override
                     public void onNext(AuthPrefs prefs) {
-                        app.getDatabaseManager().setPrefs(prefs);
+                        databaseManager.setPrefs(prefs);
                         //realm Prefs object will recognize a change a refresh the list in the UI
                     }
                 });

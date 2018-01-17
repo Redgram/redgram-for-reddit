@@ -12,6 +12,6 @@ import dagger.Component;
                 SubscriptionActivityModule.class
         }
 )
-public interface SubscriptionActivityComponent {
+public interface SubscriptionActivityComponent extends AppComponent {
     void inject(SubscriptionActivity activity);
 }

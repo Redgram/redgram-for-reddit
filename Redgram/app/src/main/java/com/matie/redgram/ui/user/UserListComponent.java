@@ -5,9 +5,6 @@ import com.matie.redgram.ui.user.views.UserListControllerView;
 
 import dagger.Subcomponent;
 
-/**
- * Created by matie on 2016-09-15.
- */
 @Subcomponent(modules = UserListModule.class)
 public interface UserListComponent {
     void inject(UserListView userListView);

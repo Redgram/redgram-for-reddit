@@ -9,7 +9,6 @@ import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.profile.Karma;
 import com.matie.redgram.data.models.main.profile.ProfileUser;
 import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.profile.views.ProfileAboutView;
 
 import javax.inject.Inject;
@@ -21,21 +20,23 @@ import rx.schedulers.Schedulers;
 
 import static com.matie.redgram.data.models.db.User.USER_AUTH;
 
-public class ProfileAboutPresenterImpl extends BasePresenterImpl implements ProfileAboutPresenter {
+public class ProfileAboutPresenterImpl extends BasePresenterImpl
+        implements ProfileAboutPresenter {
 
     private final RedditClientInterface redditClient;
-    private final DatabaseManager databaseManager;
     private final ProfileAboutView aboutView;
 
     private Session session;
 
     @Inject
-    public ProfileAboutPresenterImpl(App app, ProfileAboutView aboutView) {
-        super(aboutView, app);
+    public ProfileAboutPresenterImpl(ProfileAboutView aboutView,
+                                     DatabaseManager databaseManager,
+                                     RedditClientInterface redditClient) {
+        super(aboutView, databaseManager);
 
         this.aboutView = aboutView;
-        this.redditClient = app.getRedditClient();
-        this.databaseManager = databaseManager();
+        this.redditClient = redditClient;
+
         init();
     }
 

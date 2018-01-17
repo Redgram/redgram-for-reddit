@@ -2,7 +2,8 @@ package com.matie.redgram.ui.search;
 
 import com.matie.redgram.data.managers.presenters.SearchPresenter;
 import com.matie.redgram.data.managers.presenters.SearchPresenterImpl;
-import com.matie.redgram.ui.App;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.ui.scopes.FragmentScope;
 import com.matie.redgram.ui.search.views.SearchView;
 
@@ -23,7 +24,7 @@ public class SearchModule {
 
     @FragmentScope
     @Provides
-    public SearchPresenter provideSearchPresenter(App app) {
-        return new SearchPresenterImpl(searchView, app);
+    public SearchPresenter provideSearchPresenter(DatabaseManager databaseManager, RedditClientInterface redditClient) {
+        return new SearchPresenterImpl(searchView, databaseManager, redditClient);
     }
 }

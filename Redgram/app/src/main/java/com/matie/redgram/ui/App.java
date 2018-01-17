@@ -5,16 +5,12 @@ import android.content.Context;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
-import com.matie.redgram.data.network.api.reddit.interceptors.RedditAuthenticator;
-import com.matie.redgram.data.network.api.reddit.interceptors.RedditGeneralInterceptor;
 import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.ui.auth.AuthActivity;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
-public class App extends Application
-        implements RedditGeneralInterceptor.InterceptorListener,
-                    RedditAuthenticator.AuthenticatorListener {
+public class App extends Application {
 
     private AppComponent component;
 
@@ -27,8 +23,7 @@ public class App extends Application
     }
 
     private void setupListeners() {
-        component.getRedditAuthenticator().addListener(this);
-        component.getRedditInterceptor().addListener(this);
+        // TODO: 2018-01-09
     }
 
     @Override
@@ -39,8 +34,7 @@ public class App extends Application
     }
 
     private void destroyListeners() {
-        component.getRedditAuthenticator().removeListener(this);
-        component.getRedditInterceptor().removeListener(this);
+        // TODO: 2018-01-09
     }
 
     private void setupGraph() {
@@ -83,16 +77,7 @@ public class App extends Application
         return component.getToastHandler();
     }
 
-    @Override
-    public void onInterceptAuthRequest() {
-        startAuthActivity();
-    }
-
-    @Override
-    public void onAuthRequested() {
-        startAuthActivity();
-    }
-
+    // todo create generic launcher for each screen that can be invoked at an app level
     private void startAuthActivity() {
         startActivity(AuthActivity.intent(this, true));
     }

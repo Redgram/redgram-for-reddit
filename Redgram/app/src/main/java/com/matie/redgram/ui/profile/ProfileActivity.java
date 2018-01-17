@@ -27,8 +27,6 @@ import butterknife.ButterKnife;
 public class ProfileActivity extends BottomNavigationActivity {
 
     @Inject
-    App app;
-    @Inject
     DialogUtil dialogUtil;
 
     public static final String RESULT_USER_NAME = "result_user_name";

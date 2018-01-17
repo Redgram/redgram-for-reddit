@@ -7,9 +7,6 @@ import com.matie.redgram.ui.profile.ProfileActivity;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by matie on 2016-07-21.
- */
 @Module
 public class ProfileModule {
 

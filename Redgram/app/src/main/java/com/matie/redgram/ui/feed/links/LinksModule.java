@@ -2,7 +2,8 @@ package com.matie.redgram.ui.feed.links;
 
 import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
-import com.matie.redgram.ui.App;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.ui.base.BaseView;
 import com.matie.redgram.ui.feed.links.views.LinksView;
 
@@ -31,7 +32,8 @@ public class LinksModule {
     }
 
     @Provides
-    public LinksPresenter provideLinksPresenter(App app) {
-        return new LinksPresenterImpl(linksView, app);
+    public LinksPresenter provideLinksPresenter(DatabaseManager databaseManager,
+                                                RedditClientInterface redditClient) {
+        return new LinksPresenterImpl(linksView, databaseManager, redditClient);
     }
 }

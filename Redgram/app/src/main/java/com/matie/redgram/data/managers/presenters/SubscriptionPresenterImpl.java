@@ -8,7 +8,6 @@ import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.base.Listing;
 import com.matie.redgram.data.models.main.items.SubredditItem;
 import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.common.views.widgets.subreddit.SubredditRecyclerView;
 import com.matie.redgram.ui.subcription.views.SubscriptionView;
 
@@ -31,21 +30,22 @@ public class SubscriptionPresenterImpl extends BasePresenterImpl implements Subs
     private final SubscriptionView subscriptionView;
     private final SubredditRecyclerView subredditRecyclerView;
     private final RedditClientInterface redditClient;
-    private final DatabaseManager databaseManager;
 
     private List<SubredditItem> subredditItems;
     private Session session;
 
     @Inject
-    public SubscriptionPresenterImpl(SubscriptionView subscriptionView, App app) {
-        super(subscriptionView, app);
+    public SubscriptionPresenterImpl(SubscriptionView subscriptionView,
+                                     DatabaseManager databaseManager,
+                                     RedditClientInterface redditClient) {
+        super(subscriptionView, databaseManager);
+
         this.subscriptionView = (SubscriptionView) view;
-        this.redditClient = app.getRedditClient();
+        this.redditClient = redditClient;
         this.subredditItems = new ArrayList<>();
 
         this.subredditRecyclerView = subscriptionView.getRecyclerView();
-        this.databaseManager = databaseManager();
-        session = databaseManager.getSession();
+        this.session = databaseManager.getSession();
     }
 
     @Override

@@ -7,11 +7,9 @@ import com.matie.redgram.ui.scopes.ActivityScope;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by matie on 2015-11-29.
- */
 @Module
 public class SubscriptionActivityModule {
+
     private final Activity activity;
 
     public SubscriptionActivityModule(Activity activity) {
@@ -21,7 +19,7 @@ public class SubscriptionActivityModule {
     @ActivityScope
     @Provides
     SubscriptionActivity activity(){
-        return (SubscriptionActivity)activity;
+        return (SubscriptionActivity) activity;
     }
 
 }

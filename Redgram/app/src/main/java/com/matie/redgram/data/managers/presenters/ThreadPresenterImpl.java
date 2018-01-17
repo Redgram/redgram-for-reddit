@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.JsonElement;
 import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
@@ -11,7 +12,6 @@ import com.matie.redgram.data.models.main.items.submission.comment.CommentsWrapp
 import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.data.network.api.utils.subscriber.NullCheckSubscriber;
 import com.matie.redgram.data.network.api.utils.subscriber.NullSubscriptionExecutor;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.thread.views.ThreadView;
 
 import java.util.List;
@@ -30,10 +30,13 @@ public class ThreadPresenterImpl extends BasePresenterImpl implements ThreadPres
     private final RedditClientInterface redditClient;
 
     @Inject
-    public ThreadPresenterImpl(ThreadView threadView, App app) {
-        super(threadView, app);
+    public ThreadPresenterImpl(ThreadView threadView,
+                               DatabaseManager databaseManager,
+                               RedditClientInterface redditClient) {
+        super(threadView, databaseManager);
+
         this.threadView = (ThreadView) view;
-        this.redditClient = app.getRedditClient();
+        this.redditClient = redditClient;
     }
 
     @Override

@@ -2,16 +2,14 @@ package com.matie.redgram.ui.profile.modules;
 
 import com.matie.redgram.data.managers.presenters.ProfileAboutPresenter;
 import com.matie.redgram.data.managers.presenters.ProfileAboutPresenterImpl;
-import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.scopes.FragmentScope;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.ui.profile.views.ProfileAboutView;
+import com.matie.redgram.ui.scopes.FragmentScope;
 
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by matie on 2016-07-26.
- */
 @Module
 public class ProfileAboutModule {
     private ProfileAboutView profileAboutView;
@@ -26,7 +24,8 @@ public class ProfileAboutModule {
 
     @FragmentScope
     @Provides
-    public ProfileAboutPresenter provideProfileAboutPresenter(App app){
-        return new ProfileAboutPresenterImpl(app, profileAboutView);
+    public ProfileAboutPresenter provideProfileAboutPresenter(DatabaseManager databaseManager,
+                                                              RedditClientInterface redditClient){
+        return new ProfileAboutPresenterImpl(profileAboutView, databaseManager, redditClient);
     }
 }

@@ -5,8 +5,6 @@ import android.content.Context;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.network.api.reddit.auth.RedditAuthClient;
 import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
-import com.matie.redgram.data.network.api.reddit.interceptors.RedditAuthenticator;
-import com.matie.redgram.data.network.api.reddit.interceptors.RedditGeneralInterceptor;
 import com.matie.redgram.data.network.api.reddit.user.RedditClient;
 import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.data.network.connection.ConnectionManager;
@@ -24,22 +22,22 @@ public class RedditModule {
 
     @Singleton
     @Provides
-    public RedditAuthInterface provideRedditAuthClient(Context context,
+    RedditAuthInterface provideRedditAuthClient(Context context,
                                                        DatabaseManager databaseManager,
-                                                       RedditAuthenticator authenticator,
-                                                       RedditGeneralInterceptor interceptor) {
-        return new RedditAuthClient(context, databaseManager, authenticator, interceptor);
+                                                       ConnectionManager connectionManager) {
+        return new RedditAuthClient(context, databaseManager, connectionManager);
     }
 
     @Singleton
     @Provides
-    public RedditClientInterface provideRedditClient(Context context,
+    RedditClientInterface provideRedditClient(Context context,
                                                      ToastHandler toastHandler,
                                                      DatabaseManager databaseManager,
-                                                     RedditAuthenticator authenticator,
-                                                     RedditGeneralInterceptor interceptor) {
+                                                     ConnectionManager connectionManager,
+                                                     RedditAuthInterface redditAuthClient) {
         RedditClient redditClient =
-                new RedditClient(context, databaseManager, authenticator, interceptor);
+                new RedditClient(context, databaseManager, connectionManager, redditAuthClient);
+
         RedditServiceInvocationHandler handler =
                 new RedditServiceInvocationHandler(redditClient, databaseManager, toastHandler);
 
@@ -48,15 +46,4 @@ public class RedditModule {
                         new Class[]{RedditClientInterface.class}, handler);
     }
 
-    @Provides
-    public RedditAuthenticator provideRedditAuthenticator(ToastHandler toastHandler,
-                                                          DatabaseManager databaseManager) {
-        return new RedditAuthenticator(toastHandler, databaseManager);
-    }
-
-    @Provides
-    public RedditGeneralInterceptor provideRedditInterceptor(ConnectionManager connectionManager,
-                                                             DatabaseManager databaseManager) {
-        return new RedditGeneralInterceptor(connectionManager, databaseManager);
-    }
 }

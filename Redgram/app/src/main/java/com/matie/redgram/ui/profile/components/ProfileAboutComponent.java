@@ -8,9 +8,6 @@ import com.matie.redgram.ui.profile.views.ProfileAboutView;
 
 import dagger.Component;
 
-/**
- * Created by matie on 2017-09-30.
- */
 @FragmentScope
 @Component(
         dependencies = ProfileComponent.class,

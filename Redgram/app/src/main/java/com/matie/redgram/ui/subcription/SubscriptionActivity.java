@@ -11,19 +11,13 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.matie.redgram.R;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.base.BaseActivity;
 import com.matie.redgram.ui.base.Fragments;
 
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-/**
- * Created by matie on 2015-11-24.
- */
 public class SubscriptionActivity extends BaseActivity{
 
     public static final String RESULT_SUBREDDIT_NAME = "result_subreddit_name";
@@ -34,8 +28,6 @@ public class SubscriptionActivity extends BaseActivity{
     @InjectView(R.id.sub_linear_layout)
     LinearLayout linearLayout;
 
-    @Inject
-    App app;
     private SubscriptionDetailsFragment detailsFragment;
 
     @Override

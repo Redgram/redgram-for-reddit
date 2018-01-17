@@ -4,11 +4,9 @@ import android.content.Context;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.managers.storage.db.DatabaseModule;
-import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
-import com.matie.redgram.data.network.api.reddit.interceptors.RedditAuthenticator;
-import com.matie.redgram.data.network.api.reddit.interceptors.RedditGeneralInterceptor;
-import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.data.network.api.reddit.RedditModule;
+import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
+import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.data.network.connection.ConnectionModule;
 import com.matie.redgram.data.utils.Logger;
@@ -41,8 +39,6 @@ public interface AppComponent {
 
     RedditClientInterface getRedditClient();
     RedditAuthInterface getRedditAuthClient();
-    RedditAuthenticator getRedditAuthenticator();
-    RedditGeneralInterceptor getRedditInterceptor();
 
     Logger getLogger();
     ToastHandler getToastHandler();

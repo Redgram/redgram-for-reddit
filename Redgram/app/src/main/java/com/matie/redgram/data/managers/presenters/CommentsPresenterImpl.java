@@ -1,7 +1,7 @@
 package com.matie.redgram.data.managers.presenters;
 
 import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
-import com.matie.redgram.ui.App;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.ui.thread.views.CommentsView;
 
 import java.util.Map;
@@ -11,8 +11,8 @@ import javax.inject.Inject;
 public class CommentsPresenterImpl extends BasePresenterImpl implements CommentsPresenter {
 
     @Inject
-    public CommentsPresenterImpl(CommentsView commentsView, App app) {
-        super(commentsView, app);
+    public CommentsPresenterImpl(CommentsView commentsView, DatabaseManager databaseManager) {
+        super(commentsView, databaseManager);
     }
 
     @Override

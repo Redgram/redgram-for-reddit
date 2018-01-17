@@ -4,17 +4,18 @@ import android.app.Activity;
 
 import com.matie.redgram.data.managers.presenters.AuthPresenter;
 import com.matie.redgram.data.managers.presenters.AuthPresenterImpl;
-import com.matie.redgram.ui.scopes.ActivityScope;
-import com.matie.redgram.ui.App;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.network.api.reddit.auth.RedditAuthClient;
+import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
+import com.matie.redgram.data.network.api.reddit.user.RedditClient;
+import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.ui.auth.views.AuthView;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.scopes.ActivityScope;
 
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by matie on 2016-02-21.
- */
 @Module
 public class AuthModule {
     private final Activity activity;
@@ -37,8 +38,10 @@ public class AuthModule {
 
     @ActivityScope
     @Provides
-    public AuthPresenter provideAuthPresenter(App app){
-        return new AuthPresenterImpl(authView, app);
+    public AuthPresenter provideAuthPresenter(DatabaseManager databaseManager,
+                                              RedditAuthInterface authClient,
+                                              RedditClientInterface client){
+        return new AuthPresenterImpl(authView, databaseManager, authClient, client);
     }
 
     @ActivityScope

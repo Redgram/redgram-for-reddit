@@ -8,9 +8,6 @@ import com.matie.redgram.ui.thread.views.CommentsView;
 
 import dagger.Component;
 
-/**
- * Created by matie on 2016-01-04.
- */
 @FragmentScope
 @Component(
         dependencies = ThreadComponent.class,

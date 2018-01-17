@@ -1,7 +1,6 @@
 package com.matie.redgram.data.managers.presenters.base;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.base.BaseView;
 import com.matie.redgram.ui.common.views.ContentView;
 import com.trello.rxlifecycle.LifecycleTransformer;
@@ -13,12 +12,12 @@ import rx.subscriptions.CompositeSubscription;
 
 public abstract class BasePresenterImpl implements BasePresenter {
 
-    protected final App app;
     protected final ContentView view;
+    protected final DatabaseManager databaseManager;
     private CompositeSubscription subscriptions;
 
-    public BasePresenterImpl(ContentView contentView, App app) {
-        this.app = app;
+    public BasePresenterImpl(ContentView contentView, DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
         this.view = contentView;
     }
 
@@ -36,7 +35,7 @@ public abstract class BasePresenterImpl implements BasePresenter {
 
     @Override
     public DatabaseManager databaseManager() {
-        return app.getDatabaseManager();
+        return databaseManager;
     }
 
     @Override

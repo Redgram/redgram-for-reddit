@@ -2,9 +2,10 @@ package com.matie.redgram.ui.user;
 
 import com.matie.redgram.data.managers.presenters.UserListPresenter;
 import com.matie.redgram.data.managers.presenters.UserListPresenterImpl;
-import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.user.views.UserListControllerView;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
 import com.matie.redgram.ui.common.views.ContentView;
+import com.matie.redgram.ui.user.views.UserListControllerView;
 
 import dagger.Module;
 import dagger.Provides;
@@ -36,8 +37,9 @@ public class UserListModule {
     }
 
     @Provides
-    public UserListPresenter providesUserListPresenter(App app) {
-        return new UserListPresenterImpl(userListView, contentView, app, enableDefault);
+    public UserListPresenter providesUserListPresenter(DatabaseManager databaseManager,
+                                                       RedditAuthInterface redditAuthClient) {
+        return new UserListPresenterImpl(userListView, contentView, databaseManager, redditAuthClient, enableDefault);
     }
 
 }

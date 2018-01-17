@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import javax.inject.Inject;
 
-public class ToastHandler {
+public final class ToastHandler {
 
     private final Context context;
     private final Handler handler;

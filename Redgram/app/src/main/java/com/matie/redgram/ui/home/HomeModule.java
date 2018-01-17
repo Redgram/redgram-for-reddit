@@ -2,9 +2,10 @@ package com.matie.redgram.ui.home;
 
 import com.matie.redgram.data.managers.presenters.HomePresenter;
 import com.matie.redgram.data.managers.presenters.HomePresenterImpl;
-import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.scopes.FragmentScope;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
+import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.scopes.FragmentScope;
 
 import dagger.Module;
 import dagger.Provides;
@@ -24,8 +25,8 @@ public class HomeModule {
 
     @FragmentScope
     @Provides
-    public HomePresenter provideHomePresenter(App app){
-        return new HomePresenterImpl(homeView, app);
+    public HomePresenter provideHomePresenter(DatabaseManager databaseManager, RedditClientInterface redditClient){
+        return new HomePresenterImpl(homeView, databaseManager, redditClient);
     }
 
 }

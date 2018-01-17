@@ -25,34 +25,63 @@ import com.matie.redgram.data.models.main.items.submission.comment.CommentBaseIt
 import com.matie.redgram.data.models.main.items.submission.comment.CommentItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentMoreItem;
 import com.matie.redgram.data.models.main.items.submission.comment.CommentsWrapper;
+import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
 import com.matie.redgram.data.network.api.reddit.base.RedditService;
+import com.matie.redgram.data.network.api.reddit.interceptors.AuthenticatorListener;
 import com.matie.redgram.data.network.api.reddit.interceptors.RedditAuthenticator;
 import com.matie.redgram.data.network.api.reddit.interceptors.RedditGeneralInterceptor;
+import com.matie.redgram.data.network.connection.ConnectionManager;
+import com.matie.redgram.ui.auth.AuthActivity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import okhttp3.Authenticator;
+import okhttp3.Interceptor;
 import rx.Observable;
 
-public class RedditClient extends RedditService implements RedditClientInterface {
+public class RedditClient extends RedditService
+        implements RedditClientInterface, AuthenticatorListener {
+
     private static final String BEFORE = "before";
     private static final String AFTER = "after";
     private static final String MODHASH = "modhash";
 
+    private final ConnectionManager connectionManager;
+    private final RedditAuthInterface redditAuthClient;
     private final RedditProvider provider;
 
     @Inject
     public RedditClient(Context context,
                         DatabaseManager databaseManager,
-                        RedditAuthenticator authenticator,
-                        RedditGeneralInterceptor interceptor) {
-        super(context, databaseManager, authenticator, interceptor);
+                        ConnectionManager connectionManager,
+                        RedditAuthInterface redditAuthClient) {
+        super(context, databaseManager);
+
+        this.connectionManager = connectionManager;
+        this.redditAuthClient = redditAuthClient;
 
         this.provider = buildRetrofit(OAUTH_HOST_ABSOLUTE).create(RedditProvider.class);
+    }
+
+    @Override
+    protected List<Authenticator> getAuthenticators() {
+        return Collections.singletonList(new RedditAuthenticator(databaseManager, redditAuthClient, this));
+    }
+
+    @Override
+    protected List<Interceptor> getInterceptors() {
+        return Collections.singletonList(new RedditGeneralInterceptor(connectionManager, databaseManager, this));
+    }
+
+    @Override
+    public void onAuthenticationRequest() {
+        context.startActivity(AuthActivity.intent(context, true));
     }
 
     @Override

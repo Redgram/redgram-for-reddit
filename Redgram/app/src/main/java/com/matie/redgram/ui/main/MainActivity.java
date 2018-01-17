@@ -34,6 +34,7 @@ import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.auth.AuthActivity;
 import com.matie.redgram.ui.base.Fragments;
 import com.matie.redgram.ui.base.SlidingUpPanelActivity;
+import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.main.views.MainView;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
 import com.matie.redgram.ui.user.UserListComponent;
@@ -88,8 +89,6 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     Fragments currentPreviewFragment;
     UserListView userListLayout;
 
-    @Inject
-    App app;
     @Inject
     DialogUtil dialogUtil;
 
@@ -501,7 +500,7 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
             startActivity(intent);
         } else if(id == R.id.nav_logout){
             //logout is only visible to non-guest type and should revoke the access token of the current user
-            app.getToastHandler().showToast("Switching to Guest", Toast.LENGTH_SHORT);
+            ToastHandler.showToast(this, "Switching to Guest", Toast.LENGTH_SHORT);
             logoutCurrentUser();
         } else if(id == R.id.nav_about) {
             dialogUtil.build()

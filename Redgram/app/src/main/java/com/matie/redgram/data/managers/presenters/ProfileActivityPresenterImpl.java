@@ -1,7 +1,7 @@
 package com.matie.redgram.data.managers.presenters;
 
 import com.matie.redgram.data.managers.presenters.base.BasePresenterImpl;
-import com.matie.redgram.ui.App;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.ui.profile.views.ProfileActivityView;
 
 import java.util.Map;
@@ -11,8 +11,8 @@ import javax.inject.Inject;
 public class ProfileActivityPresenterImpl extends BasePresenterImpl implements ProfileActivityPresenter {
 
     @Inject
-    public ProfileActivityPresenterImpl(App app, ProfileActivityView view) {
-        super(view, app);
+    public ProfileActivityPresenterImpl(ProfileActivityView view, DatabaseManager databaseManager) {
+        super(view, databaseManager);
     }
 
     @Override

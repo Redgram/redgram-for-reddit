@@ -2,10 +2,10 @@ package com.matie.redgram.ui.main;
 
 import com.matie.redgram.data.managers.presenters.MainPresenter;
 import com.matie.redgram.data.managers.presenters.MainPresenterImpl;
-import com.matie.redgram.ui.scopes.ActivityScope;
-import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.main.views.MainView;
+import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.main.views.MainView;
+import com.matie.redgram.ui.scopes.ActivityScope;
 
 import dagger.Module;
 import dagger.Provides;
@@ -29,8 +29,8 @@ public class MainModule {
 
     @ActivityScope
     @Provides
-    MainPresenter provideMainPresenter(App app) {
-        return new MainPresenterImpl(activity, app);
+    MainPresenter provideMainPresenter(DatabaseManager databaseManager) {
+        return new MainPresenterImpl(activity, databaseManager);
     }
 
     @ActivityScope

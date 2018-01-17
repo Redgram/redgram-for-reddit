@@ -9,10 +9,10 @@ import com.matie.redgram.data.models.api.reddit.auth.AccessToken;
 import com.matie.redgram.data.models.db.Session;
 import com.matie.redgram.data.models.db.User;
 import com.matie.redgram.data.models.main.items.UserItem;
+import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
 import com.matie.redgram.data.network.api.reddit.auth.RedditAuthProvider;
-import com.matie.redgram.ui.App;
-import com.matie.redgram.ui.user.views.UserListControllerView;
 import com.matie.redgram.ui.common.views.ContentView;
+import com.matie.redgram.ui.user.views.UserListControllerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,20 +31,26 @@ import rx.schedulers.Schedulers;
 public class UserListPresenterImpl extends BasePresenterImpl implements UserListPresenter {
 
     private final Realm realm;
+    private final RedditAuthInterface redditAuthClient;
     private UserListControllerView userListView;
     private Session session;
-    private DatabaseManager databaseManager;
     private boolean enableDefault;
 
     @Inject
-    public UserListPresenterImpl(UserListControllerView userListView, ContentView contentView, App app, boolean enableDefault) {
-        super(contentView, app);
+    public UserListPresenterImpl(UserListControllerView userListView,
+                                 ContentView contentView,
+                                 DatabaseManager databaseManager,
+                                 RedditAuthInterface redditAuthClient,
+                                 boolean enableDefault) {
+        super(contentView, databaseManager);
+
         this.userListView = userListView;
-        this.databaseManager = databaseManager();
         this.enableDefault = enableDefault;
 
-        realm = databaseManager().getInstance();
-        session = DatabaseHelper.getSession(realm);
+        this.redditAuthClient = redditAuthClient;
+
+        this.realm = databaseManager().getInstance();
+        this.session = DatabaseHelper.getSession(realm);
     }
 
     @Override
@@ -188,12 +194,12 @@ public class UserListPresenterImpl extends BasePresenterImpl implements UserList
     }
 
     private Observable<AccessToken> getDefaultRevokeAccessObservable() {
-        return app.getRedditClient()
+        return redditAuthClient
                 .revokeToken(RedditAuthProvider.ACCESS_TOKEN);
     }
 
     private Observable<AccessToken> getRevokeTokenObservable(String token, String type) {
-        return app.getRedditClient().revokeToken(token, type);
+        return redditAuthClient.revokeToken(token, type);
     }
 
 
