@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.matie.redgram.ui.user.UserListView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.matie.redgram.ui.userlist.UserListView xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/Match"
     android:id="@+id/user_list_view">
 
@@ -44,4 +44,4 @@
             android:padding="@dimen/default_padding"/>
 
     </LinearLayout>
-</com.matie.redgram.ui.user.UserListView>
+</com.matie.redgram.ui.userlist.UserListView>

@@ -3,8 +3,8 @@ package com.matie.redgram.ui.main;
 import com.matie.redgram.data.managers.presenters.MainPresenter;
 import com.matie.redgram.ui.scopes.ActivityScope;
 import com.matie.redgram.ui.AppComponent;
-import com.matie.redgram.ui.user.UserListComponent;
-import com.matie.redgram.ui.user.UserListModule;
+import com.matie.redgram.ui.userlist.UserListComponent;
+import com.matie.redgram.ui.userlist.UserListModule;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 
 import dagger.Component;

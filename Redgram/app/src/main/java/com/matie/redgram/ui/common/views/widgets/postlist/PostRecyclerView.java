@@ -31,7 +31,6 @@ public class PostRecyclerView extends RecyclerView {
 
         setLayoutManager(layoutManager);
         setAdapter(adapter);
-//        setAdapter(postAdapter);
     }
 
     public void setListener(SingleLinkView singleLinkView) {
@@ -40,7 +39,6 @@ public class PostRecyclerView extends RecyclerView {
 
     public void replaceWith(List<SubmissionItem> items) {
         adapter.replaceWith(items);
-//        postAdapter.replaceWith(items);
     }
 
     @Override
@@ -51,6 +49,5 @@ public class PostRecyclerView extends RecyclerView {
     @Override
     public Adapter getAdapter() {
         return adapter;
-//        return postAdapter;
     }
 }

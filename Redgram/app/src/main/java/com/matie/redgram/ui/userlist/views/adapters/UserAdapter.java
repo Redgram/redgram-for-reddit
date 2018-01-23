@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.user.views.adapters;
+package com.matie.redgram.ui.userlist.views.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import com.matie.redgram.R;
 import com.matie.redgram.data.models.main.items.UserItem;
-import com.matie.redgram.ui.user.views.UserListControllerView;
+import com.matie.redgram.ui.userlist.views.UserListControllerView;
 import com.matie.redgram.ui.common.views.widgets.drawer.UserItemView;
 import com.matie.redgram.ui.common.views.widgets.drawer.UserViewHolder;
 

@@ -12,7 +12,7 @@ import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
 import com.matie.redgram.data.network.api.reddit.auth.RedditAuthProvider;
 import com.matie.redgram.ui.common.views.ContentView;
-import com.matie.redgram.ui.user.views.UserListControllerView;
+import com.matie.redgram.ui.userlist.views.UserListControllerView;
 
 import java.util.ArrayList;
 import java.util.List;

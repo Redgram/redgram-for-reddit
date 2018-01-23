@@ -13,11 +13,10 @@ import com.google.gson.Gson;
 import com.matie.redgram.R;
 import com.matie.redgram.data.managers.presenters.LinksPresenter;
 import com.matie.redgram.data.managers.presenters.LinksPresenterImpl;
-import com.matie.redgram.data.models.db.Prefs;
 import com.matie.redgram.data.models.main.items.submission.PostItem;
 import com.matie.redgram.data.models.main.items.submission.SubmissionItem;
-import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.base.BaseView;
+import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.views.adapters.PostAdapterBase;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
 import com.matie.redgram.ui.feed.SubmissionFeedDelegate;
@@ -59,9 +58,6 @@ public class LinksFeedDelegate extends SubmissionFeedDelegate implements LinksVi
         linksPresenter.getListing(subredditChoice, filterChoice, params);
     }
 
-    private Prefs getPrefs() {
-        return linksPresenter.databaseManager().getSessionPreferences();
-    }
 
     //region setters
 

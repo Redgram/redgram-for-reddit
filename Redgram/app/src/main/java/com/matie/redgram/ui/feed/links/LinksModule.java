@@ -6,6 +6,7 @@ import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.ui.base.BaseView;
 import com.matie.redgram.ui.feed.links.views.LinksView;
+import com.matie.redgram.ui.scopes.FeedScope;
 
 import dagger.Module;
 import dagger.Provides;
@@ -21,17 +22,17 @@ public class LinksModule {
         this.linksView = linksView;
     }
 
-    @Provides
+    @Provides @FeedScope
     public BaseView provideBaseView() {
         return baseView;
     }
 
-    @Provides
+    @Provides @FeedScope
     public LinksView provideLinksView() {
         return linksView;
     }
 
-    @Provides
+    @Provides @FeedScope
     public LinksPresenter provideLinksPresenter(DatabaseManager databaseManager,
                                                 RedditClientInterface redditClient) {
         return new LinksPresenterImpl(linksView, databaseManager, redditClient);

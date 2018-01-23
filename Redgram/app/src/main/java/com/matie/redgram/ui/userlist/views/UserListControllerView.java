@@ -1,4 +1,4 @@
-package com.matie.redgram.ui.user.views;
+package com.matie.redgram.ui.userlist.views;
 
 import com.matie.redgram.data.models.main.items.UserItem;
 import com.matie.redgram.ui.common.views.ContentView;
