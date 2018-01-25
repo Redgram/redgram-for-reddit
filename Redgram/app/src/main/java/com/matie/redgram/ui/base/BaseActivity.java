@@ -25,7 +25,7 @@ public abstract class BaseActivity extends RxAppCompatActivity implements BaseVi
 
         setContentView(getLayoutId());
 
-        AppComponent appComponent = ((App) getApplicationContext()).component(this);
+        AppComponent appComponent = ((App) getApplication()).component(this);
         if (appComponent != null) {
             setupComponent(appComponent);
         }
