@@ -1,10 +1,10 @@
 package com.matie.redgram.ui.subcription;
 
-import com.matie.redgram.ui.scopes.FragmentScope;
+import com.matie.redgram.ui.scopes.SubscriptionScope;
 
 import dagger.Component;
 
-@FragmentScope
+@SubscriptionScope
 @Component(
         dependencies = SubscriptionActivityComponent.class,
         modules = {

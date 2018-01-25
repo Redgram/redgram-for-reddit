@@ -14,6 +14,7 @@ import com.matie.redgram.R;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.base.BaseActivity;
 import com.matie.redgram.ui.base.Fragments;
+import com.matie.redgram.ui.user.UserComponent;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -66,8 +67,12 @@ public class SubscriptionActivity extends BaseActivity{
 
     @Override
     protected void setupComponent(AppComponent appComponent) {
+        if (!(appComponent instanceof UserComponent)) return;
+
+        final UserComponent userComponent = (UserComponent) appComponent;
+
         subscriptionActivityComponent = DaggerSubscriptionActivityComponent.builder()
-                .appComponent(appComponent)
+                .userComponent(userComponent)
                 .subscriptionActivityModule(new SubscriptionActivityModule(this))
                 .build();
         subscriptionActivityComponent.inject(this);

@@ -1,13 +1,13 @@
 package com.matie.redgram.ui;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.data.network.api.reddit.auth.RedditAuthInterface;
 import com.matie.redgram.data.network.api.reddit.user.RedditClientInterface;
 import com.matie.redgram.data.network.connection.ConnectionManager;
 import com.matie.redgram.ui.auth.AuthActivity;
+import com.matie.redgram.ui.base.BaseActivity;
 import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 
 public class App extends Application {
@@ -28,6 +28,8 @@ public class App extends Application {
 
     @Override
     public void onTerminate() {
+        component.injector().clearUserComponent();
+
         destroyListeners();
 
         super.onTerminate();
@@ -45,16 +47,10 @@ public class App extends Application {
         component.inject(this);
     }
 
-    /**
-     * @param context - current activity/fragment context
-     * @return Application context
-     */
-    public static App get(Context context){
-        return (App) context.getApplicationContext();
-    }
+    public AppComponent component(BaseActivity activity) {
+        if (activity == null || component == null) return null;
 
-    public AppComponent component() {
-        return component;
+        return component.injector().getParentComponent(activity);
     }
 
     public ConnectionManager getConnectionManager() {

@@ -33,20 +33,20 @@ import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.auth.AuthActivity;
 import com.matie.redgram.ui.base.Fragments;
 import com.matie.redgram.ui.base.SlidingUpPanelActivity;
-import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
-import com.matie.redgram.ui.main.views.MainView;
 import com.matie.redgram.ui.common.previews.BasePreviewFragment;
-import com.matie.redgram.ui.userlist.UserListComponent;
-import com.matie.redgram.ui.userlist.UserListModule;
-import com.matie.redgram.ui.userlist.UserListView;
 import com.matie.redgram.ui.common.utils.display.CoordinatorLayoutInterface;
 import com.matie.redgram.ui.common.utils.display.CustomFragmentManager;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
+import com.matie.redgram.ui.common.utils.widgets.ToastHandler;
 import com.matie.redgram.ui.home.HomeFragment;
+import com.matie.redgram.ui.main.views.MainView;
 import com.matie.redgram.ui.profile.ProfileActivity;
 import com.matie.redgram.ui.search.SearchFragment;
 import com.matie.redgram.ui.settings.SettingsActivity;
 import com.matie.redgram.ui.subcription.SubscriptionActivity;
+import com.matie.redgram.ui.user.UserComponent;
+import com.matie.redgram.ui.userlist.UserListComponent;
+import com.matie.redgram.ui.userlist.UserListView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import javax.inject.Inject;
@@ -195,19 +195,23 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
 
     @Override
     protected void setupComponent(AppComponent appComponent) {
+        if (!(appComponent instanceof UserComponent)) return;
+
+        final UserComponent userComponent = (UserComponent) appComponent;
+
         userListLayout = (UserListView) getLayoutInflater().inflate(R.layout.nav_user_list, null, false);
 
-        UserListModule userListModule = new UserListModule(userListLayout, this, true);
         mainComponent = DaggerMainComponent.builder()
-                        .appComponent(appComponent)
+                        .userComponent(userComponent)
                         .mainModule(new MainModule(this))
-                        .userListModule(userListModule)
                         .build();
 
         mainComponent.inject(this);
 
-        userListComponent = mainComponent.getUserListComponent(userListModule);
+        userListComponent = mainComponent.userComponentInjector()
+                .plusUserListComponent(userListLayout, this, true);
         userListComponent.inject(userListLayout);
+
         userListLayout.setComponent(userListComponent);
     }
 
@@ -323,7 +327,11 @@ public class MainActivity extends SlidingUpPanelActivity implements CoordinatorL
     @Override
     protected void onDestroy() {
         userListComponent.getUserListPresenter().unregisterForEvents();
+
         ButterKnife.reset(this);
+
+        mainComponent.userComponentInjector().clearUserListComponent();
+
         super.onDestroy();
     }
 

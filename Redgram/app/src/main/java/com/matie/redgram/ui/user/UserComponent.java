@@ -12,7 +12,7 @@ import dagger.Component;
 @UserScope
 @Component(dependencies = AppComponent.class, modules = UserModule.class)
 public interface UserComponent extends AppComponent {
-    UserComponentInjector injector();
+    UserComponentInjector userComponentInjector();
 
     LinksComponent plus(LinksModule linksModule);
     UserListComponent plus(UserListModule userListModule);

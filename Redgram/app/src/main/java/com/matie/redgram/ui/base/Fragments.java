@@ -13,9 +13,6 @@ import com.matie.redgram.ui.subcription.SubscriptionFragment;
 import com.matie.redgram.ui.thread.CommentsFragment;
 import com.matie.redgram.ui.thread.PostFragment;
 
-/**
- * Created by matie on 30/03/15.
- */
 public enum Fragments {
 
     HOME(HomeFragment.class),

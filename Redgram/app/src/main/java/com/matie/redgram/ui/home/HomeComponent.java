@@ -1,20 +1,18 @@
 package com.matie.redgram.ui.home;
 
 import com.matie.redgram.data.managers.presenters.HomePresenter;
-import com.matie.redgram.ui.scopes.FragmentScope;
-import com.matie.redgram.ui.main.MainComponent;
 import com.matie.redgram.ui.home.views.HomeView;
-import com.matie.redgram.ui.feed.links.LinksComponent;
-import com.matie.redgram.ui.feed.links.LinksModule;
+import com.matie.redgram.ui.main.MainComponent;
+import com.matie.redgram.ui.scopes.MainScope;
+import com.matie.redgram.ui.user.UserComponentInjector;
 
 import dagger.Component;
 
-@FragmentScope
+@MainScope
 @Component(
         dependencies = MainComponent.class,
         modules = {
-                HomeModule.class,
-                LinksModule.class,
+                HomeModule.class
         }
 )
 public interface HomeComponent {
@@ -23,5 +21,6 @@ public interface HomeComponent {
 
     HomeView getHomeView();
     HomePresenter getHomePresenter();
-    LinksComponent getLinksComponent(LinksModule linksModule);
+
+    UserComponentInjector userComponentInjector();
 }

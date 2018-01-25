@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 import com.matie.redgram.R;
-import com.matie.redgram.ui.App;
 import com.matie.redgram.ui.AppComponent;
 import com.matie.redgram.ui.base.BottomNavigationActivity;
 import com.matie.redgram.ui.base.Fragments;
@@ -19,6 +18,7 @@ import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.profile.components.DaggerProfileComponent;
 import com.matie.redgram.ui.profile.components.ProfileComponent;
 import com.matie.redgram.ui.profile.modules.ProfileModule;
+import com.matie.redgram.ui.user.UserComponent;
 
 import javax.inject.Inject;
 
@@ -46,10 +46,15 @@ public class ProfileActivity extends BottomNavigationActivity {
 
     @Override
     protected void setupComponent(AppComponent appComponent) {
+        if (!(appComponent instanceof UserComponent)) return;
+
+        final UserComponent userComponent = (UserComponent) appComponent;
+
         profileComponent = DaggerProfileComponent.builder()
-                            .appComponent(appComponent)
+                            .userComponent(userComponent)
                             .profileModule(new ProfileModule(this))
                             .build();
+
         profileComponent.inject(this);
     }
 

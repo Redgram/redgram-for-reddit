@@ -46,7 +46,7 @@ public class ThreadModule {
     @ActivityScope
     @Provides
     public ThreadPresenter provideThreadPresenter(DatabaseManager databaseManager,
-                                                  RedditClientInterface redditClient){
+                                                  RedditClientInterface redditClient) {
         return new ThreadPresenterImpl(threadView, databaseManager, redditClient);
     }
 }

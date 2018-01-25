@@ -29,6 +29,8 @@ import dagger.Component;
 public interface AppComponent {
     void inject(App app);
 
+    AppComponentInjector injector();
+
     //add getters for the instances provided by the included
     //modules.
     Context getContext();

@@ -44,6 +44,7 @@ import com.matie.redgram.ui.thread.views.CommentsView;
 import com.matie.redgram.ui.thread.views.ThreadView;
 import com.matie.redgram.ui.thread.views.adapters.CommentsPagerAdapter;
 import com.matie.redgram.ui.thread.views.widgets.OptionsView;
+import com.matie.redgram.ui.user.UserComponent;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrConfig;
 import com.r0adkll.slidr.model.SlidrInterface;
@@ -263,8 +264,12 @@ public class ThreadActivity extends ViewPagerActivity
 
     @Override
     protected void setupComponent(AppComponent appComponent) {
+        if (!(appComponent instanceof UserComponent)) return;
+
+        final UserComponent userComponent = (UserComponent) appComponent;
+
         threadComponent = DaggerThreadComponent.builder()
-                .appComponent(appComponent)
+                .userComponent(userComponent)
                 .threadModule(new ThreadModule(this))
                 .build();
         threadComponent.inject(this);

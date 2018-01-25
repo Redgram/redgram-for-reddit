@@ -21,17 +21,16 @@ import com.matie.redgram.ui.base.BaseActivity;
 import com.matie.redgram.ui.base.Fragments;
 import com.matie.redgram.ui.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.base.SlidingUpPanelFragment;
-import com.matie.redgram.ui.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.common.views.widgets.postlist.PostRecyclerView;
-import com.matie.redgram.ui.home.views.HomeView;
-import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.matie.redgram.ui.feed.SubmissionControlView;
 import com.matie.redgram.ui.feed.links.LinksComponent;
-import com.matie.redgram.ui.feed.links.LinksModule;
 import com.matie.redgram.ui.feed.links.delegates.LinksFeedDelegate;
 import com.matie.redgram.ui.feed.links.views.LinksFeedLayout;
 import com.matie.redgram.ui.feed.links.views.LinksView;
+import com.matie.redgram.ui.home.views.HomeView;
+import com.matie.redgram.ui.main.MainComponent;
+import com.matie.redgram.ui.subcription.SubscriptionActivity;
 import com.matie.redgram.ui.thread.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -118,17 +117,16 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         AppComponent appComponent = ((BaseActivity) getActivity()).component();
         MainComponent mainComponent = (MainComponent)appComponent;
 
-        LinksModule linksModule = new LinksModule(this, new LinksFeedDelegate(this));
-
         component = DaggerHomeComponent.builder()
                 .mainComponent(mainComponent)
                 .homeModule(new HomeModule(this))
-                .linksModule(linksModule)
                 .build();
 
         component.inject(this);
 
-        linksComponent = component.getLinksComponent(linksModule);
+        linksComponent = component
+                .userComponentInjector()
+                .plusLinksComponent(this, new LinksFeedDelegate(this));
 
         // set the delegate(s) that are delegate the interface
         setupLinksFeedLayout();
@@ -342,8 +340,10 @@ public class HomeFragment extends SlidingUpPanelFragment implements HomeView,
         homeRecyclerView.clearOnScrollListeners();
         homePresenter.unregisterForEvents();
         linksComponent.getLinksPresenter().unregisterForEvents();
+        component.userComponentInjector().clearUserListComponent();
 
         ButterKnife.reset(this);
+
         super.onDestroyView();
     }
 

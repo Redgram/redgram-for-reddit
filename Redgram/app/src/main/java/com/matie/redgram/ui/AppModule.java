@@ -18,6 +18,12 @@ public class AppModule {
 
     @Singleton
     @Provides
+    public AppComponentInjector provideInjector(AppComponent component) {
+        return new AppComponentInjector(component);
+    }
+
+    @Singleton
+    @Provides
     public Context provideContext(){
         return app.getApplicationContext();
     }

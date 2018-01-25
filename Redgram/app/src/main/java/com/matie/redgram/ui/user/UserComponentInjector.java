@@ -31,6 +31,10 @@ public class UserComponentInjector {
         return linksComponent;
     }
 
+    public void clearLinksComponent() {
+        linksComponent = null;
+    }
+
     public UserListComponent plusUserListComponent(UserListControllerView userListView,
                                                    ContentView contentView,
                                                    boolean enableDefault) {
@@ -39,5 +43,9 @@ public class UserComponentInjector {
         }
 
         return userListComponent;
+    }
+
+    public void clearUserListComponent() {
+        userListComponent = null;
     }
 }

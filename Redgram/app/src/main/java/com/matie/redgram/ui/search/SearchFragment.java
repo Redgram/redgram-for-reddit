@@ -34,15 +34,14 @@ import com.matie.redgram.ui.base.BaseActivity;
 import com.matie.redgram.ui.base.Fragments;
 import com.matie.redgram.ui.base.SlidingUpPanelActivity;
 import com.matie.redgram.ui.base.SlidingUpPanelFragment;
-import com.matie.redgram.ui.main.MainActivity;
-import com.matie.redgram.ui.main.MainComponent;
 import com.matie.redgram.ui.common.utils.widgets.DialogUtil;
 import com.matie.redgram.ui.feed.links.LinksComponent;
-import com.matie.redgram.ui.feed.links.LinksModule;
-import com.matie.redgram.ui.search.views.SearchView;
 import com.matie.redgram.ui.feed.links.delegates.LinksFeedDelegate;
 import com.matie.redgram.ui.feed.links.views.LinksFeedLayout;
 import com.matie.redgram.ui.feed.links.views.LinksView;
+import com.matie.redgram.ui.main.MainActivity;
+import com.matie.redgram.ui.main.MainComponent;
+import com.matie.redgram.ui.search.views.SearchView;
 import com.matie.redgram.ui.thread.ThreadActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -142,18 +141,19 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
 
     @Override
     protected void setupComponent() {
-        AppComponent appComponent = ((BaseActivity)getActivity()).component();
-        MainComponent mainComponent = (MainComponent)appComponent;
-        LinksModule linksModule = new LinksModule(this, new LinksFeedDelegate(this));
+        AppComponent appComponent = ((BaseActivity) getActivity()).component();
+        MainComponent mainComponent = (MainComponent) appComponent;
 
         component = DaggerSearchComponent.builder()
                 .mainComponent(mainComponent)
                 .searchModule(new SearchModule(this))
-                .linksModule(linksModule)
                 .build();
+
         component.inject(this);
 
-        linksComponent = component.getLinksComponent(linksModule);
+        linksComponent = component
+                .userComponentInjector()
+                .plusLinksComponent(this, new LinksFeedDelegate(this));
 
         setupLinksFeedLayout();
     }
@@ -386,8 +386,10 @@ public class SearchFragment extends SlidingUpPanelFragment implements SearchView
     public void onDestroyView() {
         searchPresenter.unregisterForEvents();
         linksComponent.getLinksPresenter().unregisterForEvents();
+        component.userComponentInjector().clearUserListComponent();
 
         ButterKnife.reset(this);
+
         super.onDestroyView();
     }
 

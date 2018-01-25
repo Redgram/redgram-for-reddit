@@ -4,7 +4,7 @@ import com.matie.redgram.data.managers.presenters.ProfileActivityPresenter;
 import com.matie.redgram.data.managers.presenters.ProfileActivityPresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
 import com.matie.redgram.ui.profile.views.ProfileActivityView;
-import com.matie.redgram.ui.scopes.FragmentScope;
+import com.matie.redgram.ui.scopes.ProfileScope;
 
 import dagger.Module;
 import dagger.Provides;
@@ -18,11 +18,12 @@ public class ProfileActivityModule {
         this.profileActivityView = profileActivityView;
     }
 
-    @FragmentScope
+    @ProfileScope
     @Provides
     public ProfileActivityView provideView(){return profileActivityView;}
 
-    @FragmentScope
+
+    @ProfileScope
     @Provides
     public ProfileActivityPresenter provideProfileActivityPresenter(DatabaseManager databaseManager){
         return new ProfileActivityPresenterImpl(profileActivityView, databaseManager);

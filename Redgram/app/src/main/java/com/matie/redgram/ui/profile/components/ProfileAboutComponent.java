@@ -1,14 +1,14 @@
 package com.matie.redgram.ui.profile.components;
 
 import com.matie.redgram.data.managers.presenters.ProfileAboutPresenter;
-import com.matie.redgram.ui.scopes.FragmentScope;
 import com.matie.redgram.ui.profile.ProfileAboutFragment;
 import com.matie.redgram.ui.profile.modules.ProfileAboutModule;
 import com.matie.redgram.ui.profile.views.ProfileAboutView;
+import com.matie.redgram.ui.scopes.ProfileScope;
 
 import dagger.Component;
 
-@FragmentScope
+@ProfileScope
 @Component(
         dependencies = ProfileComponent.class,
         modules = {

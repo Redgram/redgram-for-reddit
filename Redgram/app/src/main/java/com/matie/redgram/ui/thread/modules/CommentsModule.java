@@ -3,7 +3,7 @@ package com.matie.redgram.ui.thread.modules;
 import com.matie.redgram.data.managers.presenters.CommentsPresenter;
 import com.matie.redgram.data.managers.presenters.CommentsPresenterImpl;
 import com.matie.redgram.data.managers.storage.db.DatabaseManager;
-import com.matie.redgram.ui.scopes.FragmentScope;
+import com.matie.redgram.ui.scopes.ThreadScope;
 import com.matie.redgram.ui.thread.views.CommentsView;
 
 import dagger.Module;
@@ -17,11 +17,11 @@ public class CommentsModule {
         this.commentsView = commentsView;
     }
 
-    @FragmentScope
+    @ThreadScope
     @Provides
     public CommentsView provideView(){return commentsView;}
 
-    @FragmentScope
+    @ThreadScope
     @Provides
     public CommentsPresenter provideCommentsPresenter(DatabaseManager databaseManager){
         return new CommentsPresenterImpl(commentsView, databaseManager);
